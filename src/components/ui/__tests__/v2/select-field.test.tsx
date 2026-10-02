@@ -1,0 +1,622 @@
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { SelectField, type SelectOption } from "../../v2/select-field";
+
+const defaultOptions: SelectOption[] = [
+  { value: "option1", label: "Option 1" },
+  { value: "option2", label: "Option 2" },
+  { value: "option3", label: "Option 3" },
+];
+
+const groupedOptions: SelectOption[] = [
+  { value: "a1", label: "A1", group: "Group A" },
+  { value: "a2", label: "A2", group: "Group A" },
+  { value: "b1", label: "B1", group: "Group B" },
+];
+
+describe("SelectField", () => {
+  // Basic rendering
+  it("renders correctly", () => {
+    render(<SelectField options={defaultOptions} />);
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("renders placeholder text", () => {
+    render(
+      <SelectField options={defaultOptions} placeholder="Select an option" />
+    );
+    expect(screen.getByText("Select an option")).toBeInTheDocument();
+  });
+
+  // Label tests
+  it("renders label when provided", () => {
+    render(<SelectField label="Test Label" options={defaultOptions} />);
+    expect(screen.getByText("Test Label")).toBeInTheDocument();
+  });
+
+  it("renders required indicator when required", () => {
+    render(
+      <SelectField label="Test Label" options={defaultOptions} required />
+    );
+    expect(screen.getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
+  });
+
+  it("does not render required indicator when not required", () => {
+    render(<SelectField label="Test Label" options={defaultOptions} />);
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+  });
+
+  it("associates label with select via htmlFor", () => {
+    render(
+      <SelectField
+        label="Test Label"
+        options={defaultOptions}
+        id="test-select"
+      />
+    );
+    const label = screen.getByText("Test Label");
+    expect(label).toHaveAttribute("for", "test-select");
+  });
+
+  // Helper text tests
+  it("renders helper text when provided", () => {
+    render(
+      <SelectField options={defaultOptions} helperText="Helper text here" />
+    );
+    expect(screen.getByText("Helper text here")).toBeInTheDocument();
+    expect(screen.getByText("Helper text here")).toHaveClass(
+      "text-semantic-text-muted"
+    );
+  });
+
+  // Error message tests
+  it("shows error message when error prop is set", () => {
+    render(
+      <SelectField options={defaultOptions} error="This field is required" />
+    );
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
+    expect(screen.getByText("This field is required")).toHaveClass(
+      "text-semantic-error-text"
+    );
+  });
+
+  it("error message takes precedence over helper text", () => {
+    render(
+      <SelectField options={defaultOptions} helperText="Helper" error="Error" />
+    );
+    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.queryByText("Helper")).not.toBeInTheDocument();
+  });
+
+  it("applies error state styling when error is set", () => {
+    render(<SelectField options={defaultOptions} error="Error" />);
+    expect(screen.getByRole("combobox")).toHaveClass(
+      "border-semantic-error-primary"
+    );
+  });
+
+  it("sets aria-invalid when error is present", () => {
+    render(<SelectField options={defaultOptions} error="Error" />);
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+
+  // Disabled state tests
+  it("is disabled when disabled prop is set", () => {
+    render(<SelectField options={defaultOptions} disabled />);
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  // Loading state tests
+  it("is disabled when loading", () => {
+    render(<SelectField options={defaultOptions} loading />);
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("shows spinner when loading", () => {
+    const { container } = render(
+      <SelectField options={defaultOptions} loading />
+    );
+    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
+  // Options rendering
+  it("renders options when opened", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+    expect(screen.getByText("Option 3")).toBeInTheDocument();
+  });
+
+  // Grouped options
+  it("renders grouped options with labels", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={groupedOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Group A")).toBeInTheDocument();
+    expect(screen.getByText("Group B")).toBeInTheDocument();
+  });
+
+  it("keeps the selected value on the trigger while searching filters it out", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField options={defaultOptions} defaultValue="option1" searchable />
+    );
+
+    // Trigger shows the selected label before searching.
+    expect(screen.getByRole("combobox")).toHaveTextContent("Option 1");
+
+    await user.click(screen.getByRole("combobox"));
+    const searchInput = screen.getByPlaceholderText("Search...");
+    // Query that excludes the selected "Option 1".
+    await user.type(searchInput, "Option 2");
+
+    // The selected option must stay mounted (hidden) rather than being removed
+    // from the tree — this is what keeps Radix's trigger value and the search
+    // input's focus intact.
+    const selectedItem = screen.getByRole("option", { name: "Option 1" });
+    expect(selectedItem).toHaveClass("hidden");
+    // Search input keeps focus so the cursor stays visible.
+    expect(searchInput).toHaveFocus();
+  });
+
+  it("adds separator styling to group labels when separateGroups is set", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={groupedOptions} separateGroups />);
+
+    await user.click(screen.getByRole("combobox"));
+    const groupLabel = screen.getByText("Group A");
+    expect(groupLabel).toHaveClass("border-t", "uppercase");
+  });
+
+  // Selection
+  it("selects option on click", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} placeholder="Select" />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(screen.getByRole("combobox")).toHaveTextContent("Option 2");
+  });
+
+  // Controlled mode
+  it("works in controlled mode", async () => {
+    const handleValueChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        value="option1"
+        onValueChange={handleValueChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleValueChange).toHaveBeenCalledWith("option2");
+  });
+
+  // onSelect callback
+  it("calls onSelect with full option object when selection changes", async () => {
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(<SelectField options={defaultOptions} onSelect={handleSelect} />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option2",
+      label: "Option 2",
+    });
+  });
+
+  it("calls both onValueChange and onSelect when selection changes", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 3"));
+
+    expect(handleValueChange).toHaveBeenCalledWith("option3");
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option3",
+      label: "Option 3",
+    });
+  });
+
+  // interceptValue
+  it("skips onValueChange when interceptValue returns false", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        value="option1"
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+        interceptValue={(val) => val !== "option2"}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option2",
+      label: "Option 2",
+    });
+  });
+
+  it("allows onValueChange when interceptValue returns true", async () => {
+    const handleValueChange = vi.fn();
+    const handleSelect = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        value="option1"
+        onValueChange={handleValueChange}
+        onSelect={handleSelect}
+        interceptValue={() => true}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 3"));
+
+    expect(handleValueChange).toHaveBeenCalledWith("option3");
+    expect(handleSelect).toHaveBeenCalledWith({
+      value: "option3",
+      label: "Option 3",
+    });
+  });
+
+  // Uncontrolled mode
+  it("works in uncontrolled mode with defaultValue", () => {
+    render(<SelectField options={defaultOptions} defaultValue="option2" />);
+    expect(screen.getByRole("combobox")).toHaveTextContent("Option 2");
+  });
+
+  // Searchable
+  it("shows search input when searchable", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
+  });
+
+  it("filters options when searching", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "Option 1");
+
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.queryByText("Option 2")).not.toBeInTheDocument();
+    expect(screen.queryByText("Option 3")).not.toBeInTheDocument();
+  });
+
+  it("shows no results message when search has no matches", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "xyz");
+
+    expect(screen.getByText("No results found")).toBeInTheDocument();
+  });
+
+  it("shows default empty message when options is empty", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={[]} />);
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(screen.getByText("No options available")).toBeInTheDocument();
+  });
+
+  it("shows custom emptyMessage when options is empty", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={[]}
+        emptyMessage="No AI Agents yet. Build one in AI Agents first."
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(
+      screen.getByText("No AI Agents yet. Build one in AI Agents first.")
+    ).toBeInTheDocument();
+  });
+
+  it("does not show empty message when options exist", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+
+    expect(screen.queryByText("No options available")).not.toBeInTheDocument();
+  });
+
+  it("fires onSearchChange on every keystroke in uncontrolled mode", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        onSearchChange={onSearchChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "ab");
+
+    expect(onSearchChange).toHaveBeenCalledWith("a");
+    expect(onSearchChange).toHaveBeenCalledWith("ab");
+  });
+
+  it("skips client-side filtering when search is controlled", async () => {
+    const user = userEvent.setup();
+    const onSearchChange = vi.fn();
+
+    // searchValue=`xyz` would normally filter ALL options out in uncontrolled
+    // mode (none match), but in controlled mode the consumer is trusted to
+    // have already filtered, so the options passed in should still render.
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        searchValue="xyz"
+        onSearchChange={onSearchChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+    expect(screen.getByText("Option 3")).toBeInTheDocument();
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+  });
+
+  it("renders the controlled search value in the input", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        searchValue="hello"
+        onSearchChange={() => {}}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...") as HTMLInputElement;
+    expect(input.value).toBe("hello");
+  });
+
+  it("uses custom search placeholder", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        options={defaultOptions}
+        searchable
+        searchPlaceholder="Type to search..."
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(
+      screen.getByPlaceholderText("Type to search...")
+    ).toBeInTheDocument();
+  });
+
+  // Disabled items
+  it("renders disabled options", async () => {
+    const optionsWithDisabled: SelectOption[] = [
+      { value: "enabled", label: "Enabled" },
+      { value: "disabled", label: "Disabled", disabled: true },
+    ];
+    const user = userEvent.setup();
+
+    render(<SelectField options={optionsWithDisabled} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const disabledItem = screen.getByText("Disabled");
+    expect(disabledItem.closest("[data-disabled]")).toBeInTheDocument();
+  });
+
+  // Custom classNames
+  it("applies custom wrapperClassName", () => {
+    const { container } = render(
+      <SelectField options={defaultOptions} wrapperClassName="custom-wrapper" />
+    );
+    expect(container.firstChild).toHaveClass("custom-wrapper");
+  });
+
+  it("applies custom triggerClassName", () => {
+    render(
+      <SelectField options={defaultOptions} triggerClassName="custom-trigger" />
+    );
+    expect(screen.getByRole("combobox")).toHaveClass("custom-trigger");
+  });
+
+  it("applies custom labelClassName", () => {
+    render(
+      <SelectField
+        label="Test"
+        options={defaultOptions}
+        labelClassName="custom-label"
+      />
+    );
+    expect(screen.getByText("Test")).toHaveClass("custom-label");
+  });
+
+  // Accessibility
+  it("sets aria-describedby for helper text", () => {
+    render(
+      <SelectField options={defaultOptions} helperText="Helper" id="test" />
+    );
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-describedby",
+      "test-helper"
+    );
+  });
+
+  it("sets aria-describedby for error message", () => {
+    render(<SelectField options={defaultOptions} error="Error" id="test" />);
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-describedby",
+      "test-error"
+    );
+  });
+
+  // Lazy-load / infinite scroll
+  it("renders 'Loading more…' row when loadingMore is true", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} loadingMore />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Loading more…")).toBeInTheDocument();
+  });
+
+  it("does not render 'Loading more…' row when loadingMore is false", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} loadingMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("Loading more…")).not.toBeInTheDocument();
+  });
+
+  it("renders 'End of list' footer when hasMore is false", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} hasMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("End of list")).toBeInTheDocument();
+  });
+
+  it("hides 'End of list' footer while loadingMore is true (loader wins)", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField options={defaultOptions} hasMore={false} loadingMore />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Loading more…")).toBeInTheDocument();
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
+
+  it("does not render 'End of list' footer when no options are visible", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={[]} hasMore={false} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
+
+  it("does not render lazy-load rows by default (no regression)", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByText("Loading more…")).not.toBeInTheDocument();
+    expect(screen.queryByText("End of list")).not.toBeInTheDocument();
+  });
+  // Long option labels — truncation is CSS-only and must never change values
+  describe("long option labels", () => {
+    const LONG_LABEL =
+      "Customer support escalation queue for enterprise accounts in the APAC region";
+    const longOptions: SelectOption[] = [
+      { value: "long-value-kept-in-full", label: LONG_LABEL },
+      { value: "short", label: "Sales" },
+    ];
+
+    it("wraps option labels by default", async () => {
+      const user = userEvent.setup();
+      render(<SelectField options={longOptions} />);
+
+      await user.click(screen.getByRole("combobox"));
+      const wrapper = screen
+        .getByText(LONG_LABEL)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("whitespace-normal");
+      expect(wrapper.className).toContain("break-words");
+      expect(wrapper.className).not.toContain("truncate");
+    });
+
+    it("truncates option labels when truncateOptionText is set", async () => {
+      const user = userEvent.setup();
+      render(<SelectField options={longOptions} truncateOptionText />);
+
+      await user.click(screen.getByRole("combobox"));
+      const wrapper = screen
+        .getByText(LONG_LABEL)
+        .closest("span[class]") as HTMLElement;
+
+      expect(wrapper.className).toContain("truncate");
+      expect(wrapper.className).not.toContain("whitespace-normal");
+      expect(wrapper).toHaveAttribute("title", LONG_LABEL);
+    });
+
+    it.each([
+      ["wrapped", false],
+      ["truncated", true],
+    ])(
+      "reports the full, unclipped value and option when %s",
+      async (_mode, truncate) => {
+        const onValueChange = vi.fn();
+        const onSelect = vi.fn();
+        const user = userEvent.setup();
+
+        render(
+          <SelectField
+            options={longOptions}
+            truncateOptionText={truncate}
+            onValueChange={onValueChange}
+            onSelect={onSelect}
+          />
+        );
+
+        await user.click(screen.getByRole("combobox"));
+        await user.click(screen.getByText(LONG_LABEL));
+
+        expect(onValueChange).toHaveBeenCalledWith("long-value-kept-in-full");
+        expect(onSelect).toHaveBeenCalledWith(longOptions[0]);
+        expect(screen.getByRole("combobox")).toHaveTextContent(LONG_LABEL);
+      }
+    );
+  });
+});

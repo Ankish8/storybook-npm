@@ -1,0 +1,408 @@
+import * as React from "react";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+/**
+ * SelectTrigger variants matching TextField styling
+ */
+const selectTriggerVariants = cva(
+  "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-semantic-text-primary font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+        error:
+          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+);
+
+const Select = SelectPrimitive.Root;
+
+const SelectGroup = SelectPrimitive.Group;
+
+/**
+ * Lets `SelectContent` set the long-label behaviour once for every
+ * `SelectItem` it renders, so callers don't repeat the flag per item.
+ * Items may still override it individually.
+ */
+const SelectItemLayoutContext = React.createContext<{
+  truncateOptionText: boolean;
+}>({ truncateOptionText: false });
+
+const SelectValue = React.forwardRef(
+  (
+    {
+      className,
+      ...props
+    }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>
+  ) => (
+    <SelectPrimitive.Value
+      ref={ref}
+      className={cn(
+        "[&[data-placeholder]]:text-semantic-text-placeholder",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+SelectValue.displayName = SelectPrimitive.Value.displayName;
+
+export interface SelectTriggerProps
+  extends
+    React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>,
+    VariantProps<typeof selectTriggerVariants> {}
+
+const SelectTrigger = React.forwardRef(
+  (
+    { className, state, children, ...props }: SelectTriggerProps,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Trigger>>
+  ) => (
+    <SelectPrimitive.Trigger
+      ref={ref}
+      className={cn(selectTriggerVariants({ state }), className)}
+      {...props}
+    >
+      {children}
+      <SelectPrimitive.Icon asChild>
+        <ChevronDown className="size-4 shrink-0 text-semantic-text-muted opacity-70" />
+      </SelectPrimitive.Icon>
+    </SelectPrimitive.Trigger>
+  )
+);
+SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
+
+const SelectScrollUpButton = React.forwardRef(
+  (
+    {
+      className,
+      ...props
+    }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollUpButton>>
+  ) => (
+    <SelectPrimitive.ScrollUpButton
+      ref={ref}
+      className={cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      )}
+      {...props}
+    >
+      <ChevronUp className="size-4 text-semantic-text-muted" />
+    </SelectPrimitive.ScrollUpButton>
+  )
+);
+SelectScrollUpButton.displayName = SelectPrimitive.ScrollUpButton.displayName;
+
+const SelectScrollDownButton = React.forwardRef(
+  (
+    {
+      className,
+      ...props
+    }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollDownButton>,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.ScrollDownButton>>
+  ) => (
+    <SelectPrimitive.ScrollDownButton
+      ref={ref}
+      className={cn(
+        "flex cursor-default items-center justify-center py-1",
+        className
+      )}
+      {...props}
+    >
+      <ChevronDown className="size-4 text-semantic-text-muted" />
+    </SelectPrimitive.ScrollDownButton>
+  )
+);
+SelectScrollDownButton.displayName =
+  SelectPrimitive.ScrollDownButton.displayName;
+
+/**
+ * Radix Select v2 wraps content in RemoveScroll which locks body scroll
+ * via both CSS (overflow:hidden) and JS (preventDefault on wheel/touchmove).
+ *
+ * CSS fix: react-remove-scroll-bar uses `body[data-scroll-locked]` with
+ * `!important`. We use a doubled attribute selector for higher specificity
+ * so our override always wins regardless of style injection order.
+ *
+ * JS fix: react-remove-scroll checks `event.cancelable` before calling
+ * `preventDefault()`. We override this property in a capture-phase listener
+ * so the library skips the preventDefault call.
+ */
+function useUnlockBodyScroll() {
+  React.useEffect(() => {
+    // Don't unlock body scroll if inside a dialog/modal — the dialog's
+    // own scroll lock should remain active to prevent background scrolling
+    if (document.querySelector('[role="dialog"]')) return;
+
+    const style = document.createElement("style");
+    style.setAttribute("data-select-scroll-fix", "");
+    style.textContent =
+      "body[data-scroll-locked][data-scroll-locked] { overflow: auto !important; margin-right: 0 !important; overscroll-behavior: auto !important; }";
+    document.head.appendChild(style);
+
+    const preventScrollLock = (e: Event) => {
+      if (!document.body.hasAttribute("data-scroll-locked")) return;
+      Object.defineProperty(e, "cancelable", {
+        value: false,
+        configurable: true,
+      });
+    };
+
+    document.addEventListener("wheel", preventScrollLock, true);
+    document.addEventListener("touchmove", preventScrollLock, true);
+
+    return () => {
+      document.head.removeChild(style);
+      document.removeEventListener("wheel", preventScrollLock, true);
+      document.removeEventListener("touchmove", preventScrollLock, true);
+    };
+  }, []);
+}
+
+export type SelectContentProps = React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Content
+> & {
+  /**
+   * Fires on the scrollable list viewport when the user reaches the bottom.
+   * React 18 has no synthetic event for `scrollend`, so the listener is
+   * attached imperatively to the viewport DOM node. On browsers that
+   * support the native `scrollend` event (Chrome/Edge 114+, Firefox 109+,
+   * Safari 17.4+) we use it directly; on older Safari we fall back to a
+   * debounced `scroll` listener with a 24px bottom threshold.
+   *
+   * The handler receives a native Event typed as React.UIEvent for
+   * back-compat — `event.currentTarget` is the viewport div, so consumers
+   * can still read scrollTop/scrollHeight/clientHeight from it.
+   */
+  onViewportScrollEnd?: (event: React.UIEvent<HTMLDivElement>) => void;
+  hideScrollButtons?: boolean;
+  /**
+   * Clip long option labels to a single line with an ellipsis instead of
+   * wrapping them. Applies to every `SelectItem` inside this content;
+   * individual items can override it with their own `truncateOptionText`.
+   * The trigger value always truncates, regardless of this flag.
+   */
+  truncateOptionText?: boolean;
+};
+
+const BOTTOM_THRESHOLD_PX = 24;
+const SCROLL_DEBOUNCE_MS = 150;
+
+const SelectContent = React.forwardRef(
+  (
+    {
+      className,
+      children,
+      position = "popper",
+      onViewportScrollEnd,
+      hideScrollButtons,
+      truncateOptionText = false,
+      ...props
+    }: SelectContentProps,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
+  ) => {
+    useUnlockBodyScroll();
+
+    // Use a state-backed ref so the effect re-runs when the viewport mounts.
+    // The viewport lives inside Radix's Portal and only attaches when the
+    // Select opens — a plain useRef wouldn't trigger the effect.
+    const [viewport, setViewport] = React.useState<HTMLDivElement | null>(null);
+
+    React.useEffect(() => {
+      if (!viewport || !onViewportScrollEnd) return;
+
+      const isAtBottom = () => {
+        const { scrollTop, scrollHeight, clientHeight } = viewport;
+        return scrollTop + clientHeight >= scrollHeight - BOTTOM_THRESHOLD_PX;
+      };
+
+      const supportsScrollEnd =
+        typeof window !== "undefined" && "onscrollend" in window;
+
+      if (supportsScrollEnd) {
+        const handler = (event: Event) => {
+          if (isAtBottom()) {
+            onViewportScrollEnd(
+              event as unknown as React.UIEvent<HTMLDivElement>
+            );
+          }
+        };
+        viewport.addEventListener("scrollend", handler);
+        return () => viewport.removeEventListener("scrollend", handler);
+      }
+
+      let timeoutId: ReturnType<typeof setTimeout> | null = null;
+      const handler = (event: Event) => {
+        if (timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+          if (isAtBottom()) {
+            onViewportScrollEnd(
+              event as unknown as React.UIEvent<HTMLDivElement>
+            );
+          }
+        }, SCROLL_DEBOUNCE_MS);
+      };
+      viewport.addEventListener("scroll", handler, { passive: true });
+      return () => {
+        viewport.removeEventListener("scroll", handler);
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+    }, [viewport, onViewportScrollEnd]);
+
+    const itemLayout = React.useMemo(
+      () => ({ truncateOptionText }),
+      [truncateOptionText]
+    );
+
+    return (
+      <SelectPrimitive.Portal>
+        <SelectPrimitive.Content
+          ref={ref}
+          className={cn(
+            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+            "data-[state=open]:animate-in data-[state=closed]:animate-out",
+            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+            "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
+            "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            position === "popper" &&
+              "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+            className
+          )}
+          position={position}
+          {...props}
+        >
+          {!hideScrollButtons && <SelectScrollUpButton />}
+          <SelectPrimitive.Viewport
+            ref={setViewport}
+            data-select-viewport=""
+            className={cn(
+              "p-1",
+              position === "popper" &&
+                "h-[var(--radix-select-trigger-height)] w-full"
+            )}
+          >
+            <SelectItemLayoutContext.Provider value={itemLayout}>
+              {children}
+            </SelectItemLayoutContext.Provider>
+          </SelectPrimitive.Viewport>
+          {!hideScrollButtons && <SelectScrollDownButton />}
+        </SelectPrimitive.Content>
+      </SelectPrimitive.Portal>
+    );
+  }
+);
+SelectContent.displayName = SelectPrimitive.Content.displayName;
+
+const SelectLabel = React.forwardRef(
+  (
+    {
+      className,
+      ...props
+    }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Label>>
+  ) => (
+    <SelectPrimitive.Label
+      ref={ref}
+      className={cn(
+        "px-4 py-1.5 text-xs font-semibold text-semantic-text-muted",
+        className
+      )}
+      {...props}
+    />
+  )
+);
+SelectLabel.displayName = SelectPrimitive.Label.displayName;
+
+export interface SelectItemProps extends React.ComponentPropsWithoutRef<
+  typeof SelectPrimitive.Item
+> {
+  /**
+   * Clip this option's label to a single line with an ellipsis instead of
+   * wrapping it. Defaults to the value set on `SelectContent` (wrapped).
+   */
+  truncateOptionText?: boolean;
+}
+
+const SelectItem = React.forwardRef(
+  (
+    { className, children, truncateOptionText, ...props }: SelectItemProps,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Item>>
+  ) => {
+    const layout = React.useContext(SelectItemLayoutContext);
+    const truncate = truncateOptionText ?? layout.truncateOptionText;
+
+    return (
+      <SelectPrimitive.Item
+        ref={ref}
+        className={cn(
+          "relative flex w-full cursor-pointer select-none items-start rounded-md font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
+          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+          "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          className
+        )}
+        {...props}
+      >
+        <span className="absolute right-2 flex size-4 items-center justify-center">
+          <SelectPrimitive.ItemIndicator>
+            <Check className="size-4 text-semantic-brand" />
+          </SelectPrimitive.ItemIndicator>
+        </span>
+        <span
+          title={
+            truncate && typeof children === "string" ? children : undefined
+          }
+          className={cn(
+            "min-w-0 flex-1 leading-normal",
+            truncate ? "truncate" : "whitespace-normal break-words"
+          )}
+        >
+          <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
+        </span>
+      </SelectPrimitive.Item>
+    );
+  }
+);
+SelectItem.displayName = SelectPrimitive.Item.displayName;
+
+const SelectSeparator = React.forwardRef(
+  (
+    {
+      className,
+      ...props
+    }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>,
+    ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Separator>>
+  ) => (
+    <SelectPrimitive.Separator
+      ref={ref}
+      className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
+      {...props}
+    />
+  )
+);
+SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
+
+export {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+  selectTriggerVariants,
+};

@@ -1,0 +1,1257 @@
+import * as React from "react";
+import { createPortal } from "react-dom";
+import {
+  autoUpdate,
+  flip,
+  offset,
+  shift,
+  size,
+  useFloating,
+} from "@floating-ui/react-dom";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check, ChevronDown, CircleAlert, Loader2, X } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Checkbox } from "./checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";
+
+/**
+ * Single selectable row (similar to legacy OptionType — different name).
+ * Selection state is driven by `value` / `onValueChange`, not by a prop.
+ */
+export interface MultiSelectChoice {
+  value: string;
+  label: string;
+  /** Secondary line (e.g. “Assigned to …”) — alias of `secondaryText` on `MultiSelectOption` */
+  caption?: string;
+  /** Disabled row — alias of `disabled` */
+  isDisabled?: boolean;
+  /** Tooltip on disabled row — alias of `disabledTooltip` */
+  overlayMsg?: string;
+  isDeleted?: boolean;
+  isLast?: boolean;
+}
+
+/**
+ * Grouped options (similar to legacy GroupBase — different name).
+ */
+export interface MultiSelectGroupedSection<
+  T extends MultiSelectChoice = MultiSelectChoice,
+> {
+  readonly label?: string;
+  readonly options: readonly T[];
+}
+
+/** Flat list or grouped sections */
+export type MultiSelectOptionInput =
+  | MultiSelectOption[]
+  | readonly MultiSelectGroupedSection[];
+
+/**
+ * Normalized option: supports both `caption` / `isDisabled` / `overlayMsg` and
+ * `secondaryText` / `disabled` / `disabledTooltip`.
+ */
+export interface MultiSelectOption extends MultiSelectChoice {
+  secondaryText?: string;
+  disabled?: boolean;
+  disabledTooltip?: string;
+  group?: string;
+}
+
+/**
+ * Use when typing **object literals** for fixtures, stories, or tests so TypeScript applies
+ * [excess property checking](https://www.typescriptlang.org/docs/handbook/2/objects.html#excess-property-checks)
+ * (catches typos like `captoin` and mistaken duplicate keys).
+ *
+ * This omits `secondaryText`; use `caption` for the secondary line — runtime code still accepts
+ * both via {@link normalizeMultiSelectOption}. Widen to {@link MultiSelectOption} where a
+ * consumer expects both aliases.
+ */
+export type MultiSelectOptionAuthoring = Omit<
+  MultiSelectOption,
+  "secondaryText"
+>;
+
+function isGroupedSections(
+  input: MultiSelectOptionInput
+): input is readonly MultiSelectGroupedSection[] {
+  if (!Array.isArray(input) || input.length === 0) return false;
+  return input.every(
+    (item) =>
+      item !== null &&
+      typeof item === "object" &&
+      "options" in item &&
+      Array.isArray((item as MultiSelectGroupedSection).options)
+  );
+}
+
+export function normalizeMultiSelectOption(
+  o: MultiSelectOption | MultiSelectChoice
+): MultiSelectOption {
+  const merged = { ...(o as MultiSelectOption) };
+  merged.disabled = merged.disabled ?? merged.isDisabled ?? false;
+  merged.secondaryText = merged.secondaryText ?? merged.caption;
+  merged.disabledTooltip = merged.disabledTooltip ?? merged.overlayMsg;
+  return merged;
+}
+
+export function flattenMultiSelectOptions(
+  input: MultiSelectOptionInput
+): MultiSelectOption[] {
+  if (!input?.length) return [];
+  if (isGroupedSections(input)) {
+    const out: MultiSelectOption[] = [];
+    for (const section of input) {
+      const groupLabel = section.label ?? "";
+      for (const raw of section.options) {
+        const n = normalizeMultiSelectOption(raw as MultiSelectOption);
+        out.push({
+          ...n,
+          group: n.group ?? groupLabel,
+        });
+      }
+    }
+    return out;
+  }
+  return (input as MultiSelectOption[]).map(normalizeMultiSelectOption);
+}
+
+/** Menu never renders narrower than this, even off a tiny trigger. */
+const MENU_MIN_WIDTH = 180;
+/** Floor for the flip/shrink height so the list is never collapsed to nothing. */
+const MENU_MIN_HEIGHT = 120;
+
+/**
+ * Distance from the bottom of the option list, in px, at which `onScrollEnd`
+ * fires. Roughly one option row, so the next page starts loading just before
+ * the user actually hits the end.
+ */
+const SCROLL_END_THRESHOLD_PX = 48;
+
+/**
+ * How long to wait after a page lands before re-measuring the list. React has
+ * committed the new rows by the time the effect runs, but the browser has not
+ * necessarily laid them out, so `scrollHeight` can still read the pre-growth
+ * value. One frame is usually enough; 50ms is a cheap margin.
+ */
+const POST_FETCH_MEASURE_DELAY_MS = 50;
+
+/**
+ * MultiSelect trigger variants matching TextField styling
+ */
+const multiSelectTriggerVariants = cva(
+  "flex min-h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-semantic-text-primary transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+        error:
+          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+);
+
+export interface MultiSelectProps extends VariantProps<
+  typeof multiSelectTriggerVariants
+> {
+  /** Label text displayed above the select */
+  label?: string;
+  /** Shows red asterisk next to label when true */
+  required?: boolean;
+  /** Helper text displayed below the select */
+  helperText?: string;
+  /** Error message - shows error state with red styling */
+  error?: string;
+  /** Disabled state */
+  disabled?: boolean;
+  /** Loading state with spinner */
+  loading?: boolean;
+  /**
+   * Called once when the option list is scrolled to within
+   * `SCROLL_END_THRESHOLD_PX` of its bottom. Use it to fetch the next page of
+   * server-side options. Fires at most once per scroll gesture — it re-arms
+   * only after the user scrolls back away from the bottom, so a single
+   * trackpad flick (which keeps emitting scroll events while it decelerates)
+   * cannot fan out into several requests.
+   */
+  onScrollEnd?: () => void;
+  /**
+   * Whether the server has more pages. When false, `onScrollEnd` is never
+   * called.
+   * @default false
+   */
+  hasMore?: boolean;
+  /**
+   * Whether a page fetch is in flight. Renders a loading row at the bottom of
+   * the list and suppresses further `onScrollEnd` calls.
+   * @default false
+   */
+  loadingMore?: boolean;
+  /** Placeholder text when no value selected */
+  placeholder?: string;
+  /** Currently selected values (controlled) */
+  value?: string[];
+  /** Default values (uncontrolled) */
+  defaultValue?: string[];
+  /** Callback when values change */
+  onValueChange?: (value: string[]) => void;
+  /** Flat options or grouped sections (`MultiSelectGroupedSection[]`) */
+  options: MultiSelectOptionInput;
+  /**
+   * When false (default), the list only closes on outside click (not Escape).
+   * Set true to also close on Escape.
+   */
+  closeOnEscape?: boolean;
+  /** Enable search/filter functionality */
+  searchable?: boolean;
+  /** Search placeholder text */
+  searchPlaceholder?: string;
+  /**
+   * Controlled search value. Pair with `onSearchQueryChange` when filtering
+   * happens server-side (e.g. alongside `onScrollEnd` pagination, where each
+   * page only has a slice of the full result set — client-side filtering
+   * would search just that slice and show false "No results found" states).
+   * When provided, the component stops managing its own search state and
+   * stops filtering `options` itself; the caller is expected to pass already
+   * filtered `options` for the current `searchQuery`.
+   */
+  searchQuery?: string;
+  /** Fires on every search input change. Required to pair with `searchQuery`. */
+  onSearchQueryChange?: (query: string) => void;
+  /**
+   * When set, the trigger shows a single compact summary (e.g. "3 lines
+   * selected") instead of one chip per selection; hovering it reveals the full
+   * list of selected labels in a tooltip. Receives the selected count.
+   */
+  summaryLabel?: (count: number) => string;
+  /**
+   * When set, pins a select-all row at the top of the list with this label
+   * (e.g. "All lines"). Toggles every non-disabled option; respects
+   * `maxSelections`. Omit to hide the row entirely.
+   */
+  selectAllLabel?: string;
+  /** Maximum selections allowed */
+  maxSelections?: number;
+  /**
+   * When `maxSelections` is set, a footer shows the count (e.g. "3 / 5 selected").
+   * Set to false to hide that footer while still enforcing the limit.
+   * @default true
+   */
+  showSelectionFooter?: boolean;
+  /** Additional class for wrapper */
+  wrapperClassName?: string;
+  /** Additional class for trigger */
+  triggerClassName?: string;
+  /** Additional class for label */
+  labelClassName?: string;
+  /** ID for the select */
+  id?: string;
+  /** Name attribute for form submission */
+  name?: string;
+  /**
+   * simple: checkmark on the right (default).
+   * detailed: checkbox + primary + optional secondary text (Figma / WhatsApp-style rows).
+   */
+  optionVariant?: "simple" | "detailed";
+  /** When true, selected options appear first with a divider before the rest */
+  separateSelectedWithDivider?: boolean;
+  /** Show the clear-all control in the trigger (hidden in compact / Figma-style triggers) */
+  showClearAll?: boolean;
+  /** Vertical rule before the chevron (Figma-style trigger) */
+  showSeparatorBeforeChevron?: boolean;
+  /**
+   * Element the dropdown is portaled into. Defaults to `document.body` so the
+   * menu escapes `overflow` and `transform` ancestors (a Radix DialogContent is
+   * both, and a transformed ancestor would clip a `position: fixed` menu).
+   */
+  menuContainer?: HTMLElement | null;
+  /**
+   * Truncate long labels in the dropdown list to a single line with an ellipsis
+   * instead of wrapping them. Selected chips in the trigger always truncate —
+   * this only controls the option rows.
+   * @default false for `simple`, true for `detailed` (single-line row design)
+   */
+  truncateOptionText?: boolean;
+}
+
+/**
+ * A multi-select component with tags, search, and validation states.
+ *
+ * @example
+ * ```tsx
+ * <MultiSelect
+ *   label="Skills"
+ *   placeholder="Select skills"
+ *   options={[
+ *     { value: 'react', label: 'React' },
+ *     { value: 'vue', label: 'Vue' },
+ *     { value: 'angular', label: 'Angular' },
+ *   ]}
+ *   onValueChange={(values) => console.log(values)}
+ * />
+ * ```
+ */
+const MultiSelect = React.forwardRef(
+  (
+    {
+      label,
+      required,
+      helperText,
+      error,
+      disabled,
+      loading,
+      onScrollEnd,
+      hasMore = false,
+      loadingMore = false,
+      placeholder = "Select options",
+      value,
+      defaultValue = [],
+      onValueChange,
+      options,
+      searchable,
+      searchPlaceholder = "Search...",
+      searchQuery: searchQueryProp,
+      onSearchQueryChange,
+      selectAllLabel,
+      summaryLabel,
+      maxSelections,
+      showSelectionFooter = true,
+      wrapperClassName,
+      triggerClassName,
+      labelClassName,
+      state,
+      id,
+      name,
+      optionVariant = "simple",
+      separateSelectedWithDivider = false,
+      showClearAll = true,
+      menuContainer,
+      truncateOptionText,
+      showSeparatorBeforeChevron = false,
+      closeOnEscape = false,
+    }: MultiSelectProps,
+    ref: React.Ref<HTMLButtonElement>
+  ) => {
+    // Internal state for selected values (uncontrolled mode)
+    const [internalValue, setInternalValue] =
+      React.useState<string[]>(defaultValue);
+    // Dropdown open state
+    const [isOpen, setIsOpen] = React.useState(false);
+    // Search query — controlled when the caller passes `searchQuery` (server-side
+    // filtering), uncontrolled otherwise.
+    const [internalSearchQuery, setInternalSearchQuery] = React.useState("");
+    const isSearchControlled = searchQueryProp !== undefined;
+    const searchQuery = isSearchControlled
+      ? searchQueryProp
+      : internalSearchQuery;
+    const updateSearchQuery = React.useCallback(
+      (next: string) => {
+        if (!isSearchControlled) {
+          setInternalSearchQuery(next);
+        }
+        onSearchQueryChange?.(next);
+      },
+      [isSearchControlled, onSearchQueryChange]
+    );
+
+    // `detailed` rows are a single-line design, so they truncate unless the
+    // caller opts out; `simple` rows wrap the full label unless asked not to.
+    const truncateOptions = truncateOptionText ?? optionVariant === "detailed";
+
+    // Container ref for click outside detection
+    const containerRef = React.useRef<HTMLDivElement | null>(null);
+
+    /** Where the dropdown gets portaled; body unless the caller overrides. */
+    const [portalTarget, setPortalTarget] = React.useState<HTMLElement | null>(
+      null
+    );
+
+    React.useEffect(() => {
+      if (!isOpen || typeof document === "undefined") return;
+      setPortalTarget(menuContainer ?? document.body);
+    }, [isOpen, menuContainer]);
+
+    const { refs, floatingStyles, isPositioned } = useFloating({
+      open: isOpen,
+      placement: "bottom-start",
+      strategy: "fixed",
+      middleware: [
+        offset(4),
+        flip({ padding: 8 }),
+        shift({ padding: 8 }),
+        size({
+          padding: 8,
+          apply({ rects, elements, availableHeight, availableWidth }) {
+            // Match the trigger, but never render an unreadably narrow menu on a
+            // small trigger, and never spill past the viewport on a small screen.
+            const width = Math.min(
+              Math.max(rects.reference.width, MENU_MIN_WIDTH),
+              availableWidth
+            );
+            elements.floating.style.width = `${width}px`;
+            // Let the option list shrink instead of overflowing a short viewport.
+            elements.floating.style.setProperty(
+              "--multi-select-available-height",
+              `${Math.max(availableHeight, MENU_MIN_HEIGHT)}px`
+            );
+          },
+        }),
+      ],
+      whileElementsMounted: (reference, floating, update) =>
+        autoUpdate(reference, floating, update, { animationFrame: true }),
+    });
+
+    const setAnchorRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        refs.setReference(node);
+      },
+      [refs]
+    );
+
+    const setDropdownRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        refs.setFloating(node);
+      },
+      [refs]
+    );
+
+    /**
+     * Radix Dialog / Drawer wrap their content in `react-remove-scroll`, which
+     * listens for `wheel` / `touchmove` on `document` (bubble phase) and calls
+     * `preventDefault()` for anything outside the locked subtree — our
+     * body-portaled menu counts as outside, so its list would not scroll.
+     * Stopping propagation at the menu keeps that document listener from ever
+     * seeing the event, leaving the browser's native scrolling intact.
+     * Clicks are handled separately: the dialog sets `pointer-events: none` on
+     * `<body>`, which the menu overrides with `pointer-events: auto`.
+     */
+    React.useEffect(() => {
+      const node = refs.floating.current;
+      if (!isOpen || !node) return;
+
+      const stop = (event: Event) => event.stopPropagation();
+      node.addEventListener("wheel", stop, { passive: false });
+      node.addEventListener("touchmove", stop, { passive: false });
+
+      /**
+       * The dialog also traps focus. Radix `FocusScope` registers TWO bubble
+       * listeners on `document` and either one is enough to make the search
+       * input untypable:
+       *   - `focusin`  — target outside the dialog, so focus is pulled back.
+       *   - `focusout` — fired on the element focus is LEAVING (inside the
+       *     dialog) with `relatedTarget` = our input; since that is outside, it
+       *     restores the previously focused element.
+       * The `focusout` one never travels through the menu, so a listener on the
+       * menu node cannot see it. Intercepting in the CAPTURE phase on
+       * `document` does: capture at `document` runs before the bubble listeners
+       * on the same node, so stopping propagation there means FocusScope never
+       * runs — but only for focus events that involve the menu. Every other
+       * focus event in the app is untouched.
+       */
+      const stopMenuFocusEvent = (event: Event) => {
+        const { target, relatedTarget } = event as FocusEvent;
+        const touchesMenu =
+          (target instanceof Node && node.contains(target)) ||
+          (relatedTarget instanceof Node && node.contains(relatedTarget));
+        if (touchesMenu) event.stopPropagation();
+      };
+      document.addEventListener("focusin", stopMenuFocusEvent, true);
+      document.addEventListener("focusout", stopMenuFocusEvent, true);
+
+      return () => {
+        node.removeEventListener("wheel", stop);
+        node.removeEventListener("touchmove", stop);
+        document.removeEventListener("focusin", stopMenuFocusEvent, true);
+        document.removeEventListener("focusout", stopMenuFocusEvent, true);
+      };
+    }, [isOpen, portalTarget, refs.floating]);
+
+    /** The scrollable option list; also read by the no-scrollbar fallback. */
+    const listRef = React.useRef<HTMLDivElement | null>(null);
+    /**
+     * True once `onScrollEnd` has fired for the current visit to the bottom.
+     * Cleared when the user scrolls back out of the threshold zone, or when a
+     * landed page pushes the bottom back out of reach, so trackpad inertia —
+     * which keeps firing `scroll` for hundreds of ms after the finger lifts —
+     * cannot re-trigger the callback.
+     */
+    const isLatchedRef = React.useRef(false);
+    /** Previous `loadingMore`, so the re-measure knows a page just landed. */
+    const wasLoadingMoreRef = React.useRef(false);
+    /** Pending `requestAnimationFrame` id for the coalesced scroll handler. */
+    const scrollFrameRef = React.useRef<number | null>(null);
+    /**
+     * `onScrollEnd` read from a timer rather than from the closure, so an
+     * inline arrow from the consumer cannot restart the post-fetch timer on
+     * every render.
+     */
+    const onScrollEndRef = React.useRef(onScrollEnd);
+    React.useEffect(() => {
+      onScrollEndRef.current = onScrollEnd;
+    }, [onScrollEnd]);
+
+    /** Distance in px from the current scroll position to the list bottom. */
+    const distanceToBottom = () => {
+      const node = listRef.current;
+      if (!node) return null;
+      return node.scrollHeight - node.scrollTop - node.clientHeight;
+    };
+
+    /**
+     * Deliberately a plain function, not a `useCallback` — it must read the
+     * current `hasMore` / `loadingMore` on every scroll event, and a memoised
+     * handler would need a props ref (writing refs during render is banned).
+     */
+    const maybeLoadMore = () => {
+      const distance = distanceToBottom();
+      if (distance === null) return;
+
+      if (distance >= SCROLL_END_THRESHOLD_PX) {
+        // Only an explicit scroll away from the boundary re-arms the latch.
+        isLatchedRef.current = false;
+        return;
+      }
+      if (isLatchedRef.current || !hasMore || loadingMore || !onScrollEnd)
+        return;
+
+      isLatchedRef.current = true;
+      onScrollEnd();
+    };
+
+    /**
+     * `scroll` fires far more often than the browser paints, so a fast flick
+     * delivers a burst of events whose geometry is mid-flight. Coalescing to
+     * one `requestAnimationFrame` per burst measures once per frame, after
+     * layout has settled, and still sees the final resting position.
+     */
+    const handleListScroll = () => {
+      if (scrollFrameRef.current !== null) return;
+      scrollFrameRef.current = requestAnimationFrame(() => {
+        scrollFrameRef.current = null;
+        maybeLoadMore();
+      });
+    };
+
+    // A closed menu or a new search starts from a clean latch.
+    React.useEffect(() => {
+      isLatchedRef.current = false;
+    }, [isOpen, searchQuery]);
+
+    React.useEffect(
+      () => () => {
+        if (scrollFrameRef.current !== null) {
+          cancelAnimationFrame(scrollFrameRef.current);
+        }
+      },
+      []
+    );
+
+    /**
+     * Re-measure once a page has landed. Content growth emits no `scroll`
+     * event, so without this the latch set on the way down would never clear
+     * and pagination would stall permanently after a fast flick to the bottom.
+     * It also covers the case where the page does not make the list taller
+     * than its max-height (few results, or a short viewport), where no further
+     * `scroll` event would ever fire either.
+     *
+     * The latch is cleared only once the bottom is genuinely out of reach —
+     * while the user is still pinned at distance ~0, it stays armed and the
+     * next page is chained explicitly, so inertia cannot fan out into
+     * duplicate requests.
+     */
+    React.useEffect(() => {
+      const pageJustLanded = wasLoadingMoreRef.current && !loadingMore;
+      wasLoadingMoreRef.current = loadingMore;
+      if (!isOpen || loadingMore) return;
+
+      const timeoutId = window.setTimeout(() => {
+        const distance = distanceToBottom();
+        if (distance === null) return;
+
+        if (distance >= SCROLL_END_THRESHOLD_PX) {
+          isLatchedRef.current = false;
+          return;
+        }
+        if (!hasMore || !onScrollEndRef.current) return;
+        // Still latched and nothing landed: the scroll handler's request is
+        // in flight (or the consumer never set `loadingMore`) — don't refire.
+        if (isLatchedRef.current && !pageJustLanded) return;
+
+        isLatchedRef.current = true;
+        onScrollEndRef.current();
+      }, POST_FETCH_MEASURE_DELAY_MS);
+
+      return () => window.clearTimeout(timeoutId);
+    }, [isOpen, portalTarget, hasMore, loadingMore, options.length]);
+
+    const flatOptions = React.useMemo(
+      () => flattenMultiSelectOptions(options),
+      [options]
+    );
+
+    // Determine if controlled
+    const isControlled = value !== undefined;
+    const selectedValues = isControlled ? value : internalValue;
+
+    // Select-all: values eligible for select-all exclude disabled options
+    const selectableValues = React.useMemo(
+      () => flatOptions.filter((o) => !o.disabled).map((o) => o.value),
+      [flatOptions]
+    );
+    const allSelected =
+      selectableValues.length > 0 &&
+      selectableValues.every((v) => selectedValues.includes(v));
+    const someSelected = selectedValues.length > 0 && !allSelected;
+
+    const toggleSelectAll = () => {
+      const newValues = allSelected
+        ? []
+        : maxSelections
+          ? selectableValues.slice(0, maxSelections)
+          : selectableValues;
+      if (!isControlled) {
+        setInternalValue(newValues);
+      }
+      onValueChange?.(newValues);
+    };
+
+    // Derive state from props
+    const derivedState = error ? "error" : (state ?? "default");
+
+    // Generate unique IDs for accessibility
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const listboxId = `${selectId}-listbox`;
+    const helperId = `${selectId}-helper`;
+    const errorId = `${selectId}-error`;
+
+    // Determine aria-describedby
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
+
+    // Filter options by search query. Skipped when `searchQuery` is
+    // controlled — the caller owns filtering then (typically server-side, so
+    // `options` is already the filtered slice for the current query).
+    const filteredOptions = React.useMemo(() => {
+      if (isSearchControlled) return flatOptions;
+      if (!searchable || !searchQuery.trim()) return flatOptions;
+      const q = searchQuery.toLowerCase();
+      return flatOptions.filter((option) => {
+        const secondary = option.secondaryText ?? "";
+        return (
+          option.label.toLowerCase().includes(q) ||
+          secondary.toLowerCase().includes(q) ||
+          (option.group?.toLowerCase().includes(q) ?? false)
+        );
+      });
+    }, [flatOptions, searchable, searchQuery, isSearchControlled]);
+
+    type DisplayItem =
+      | { type: "option"; option: MultiSelectOption }
+      | { type: "divider" }
+      | { type: "header"; label: string };
+
+    const hasGroupedOptions = flatOptions.some(
+      (o) => o.group !== undefined && o.group !== ""
+    );
+
+    const displayItems = React.useMemo((): DisplayItem[] => {
+      const filtered = filteredOptions;
+
+      if (separateSelectedWithDivider) {
+        const selected = filtered.filter((o) =>
+          selectedValues.includes(o.value)
+        );
+        const unselected = filtered.filter(
+          (o) => !selectedValues.includes(o.value)
+        );
+        const items: DisplayItem[] = selected.map((o) => ({
+          type: "option",
+          option: o,
+        }));
+        if (selected.length > 0 && unselected.length > 0) {
+          items.push({ type: "divider" });
+        }
+        items.push(
+          ...unselected.map((o) => ({ type: "option" as const, option: o }))
+        );
+        return items;
+      }
+
+      if (hasGroupedOptions) {
+        const order: string[] = [];
+        const byGroup = new Map<string, MultiSelectOption[]>();
+        for (const o of filtered) {
+          const g = o.group ?? "";
+          if (!byGroup.has(g)) {
+            byGroup.set(g, []);
+            order.push(g);
+          }
+          byGroup.get(g)!.push(o);
+        }
+        const items: DisplayItem[] = [];
+        for (const g of order) {
+          if (g) {
+            items.push({ type: "header", label: g });
+          }
+          for (const o of byGroup.get(g)!) {
+            items.push({ type: "option", option: o });
+          }
+        }
+        return items;
+      }
+
+      return filtered.map((o) => ({ type: "option" as const, option: o }));
+    }, [
+      filteredOptions,
+      hasGroupedOptions,
+      separateSelectedWithDivider,
+      selectedValues,
+    ]);
+
+    // Get selected option labels
+    const selectedLabels = React.useMemo(() => {
+      return selectedValues
+        .map((v) => flatOptions.find((o) => o.value === v)?.label)
+        .filter(Boolean) as string[];
+    }, [selectedValues, flatOptions]);
+
+    // Handle toggle selection
+    const toggleOption = (optionValue: string) => {
+      const newValues = selectedValues.includes(optionValue)
+        ? selectedValues.filter((v) => v !== optionValue)
+        : maxSelections && selectedValues.length >= maxSelections
+          ? selectedValues
+          : [...selectedValues, optionValue];
+
+      if (!isControlled) {
+        setInternalValue(newValues);
+      }
+      onValueChange?.(newValues);
+    };
+
+    // Handle remove tag
+    const removeValue = (valueToRemove: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (disabled || loading) return;
+      const newValues = selectedValues.filter((v) => v !== valueToRemove);
+      if (!isControlled) {
+        setInternalValue(newValues);
+      }
+      onValueChange?.(newValues);
+    };
+
+    // Handle clear all
+    const clearAll = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (disabled || loading) return;
+      if (!isControlled) {
+        setInternalValue([]);
+      }
+      onValueChange?.([]);
+    };
+
+    // Close dropdown when clicking outside (defer so opening click does not close immediately)
+    React.useEffect(() => {
+      if (!isOpen) return;
+
+      const handleClickOutside = (event: MouseEvent) => {
+        const target = event.target as Node;
+        if (
+          containerRef.current?.contains(target) ||
+          refs.floating.current?.contains(target)
+        ) {
+          return;
+        }
+        setIsOpen(false);
+        updateSearchQuery("");
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+      }, 0);
+
+      return () => {
+        window.clearTimeout(timeoutId);
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, [isOpen, refs.floating, updateSearchQuery]);
+
+    // Handle keyboard navigation
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+      if (e.key === "Escape" && closeOnEscape) {
+        setIsOpen(false);
+        updateSearchQuery("");
+      } else if (e.key === "Enter" || e.key === " ") {
+        if (!isOpen) {
+          e.preventDefault();
+          setIsOpen(true);
+        }
+      }
+    };
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn(
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex min-w-0 flex-col gap-1",
+          wrapperClassName
+        )}
+      >
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={selectId}
+            className={cn(
+              "font-[family-name:var(--font-v2,Inter,sans-serif)] leading-5 tracking-[0.014px] break-words text-sm font-semibold text-semantic-text-secondary",
+              labelClassName
+            )}
+          >
+            {label}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
+          </label>
+        )}
+
+        {/* Anchor for floating menu (portaled to body to escape overflow:hidden scroll areas). */}
+        <div
+          ref={setAnchorRef}
+          className="relative w-full min-w-0 flex flex-col gap-1"
+        >
+          {/* Trigger */}
+          <button
+            ref={ref}
+            id={selectId}
+            type="button"
+            role="combobox"
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            aria-controls={listboxId}
+            aria-invalid={!!error}
+            aria-describedby={ariaDescribedBy}
+            disabled={disabled || loading}
+            onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
+            onKeyDown={handleKeyDown}
+            className={cn(
+              multiSelectTriggerVariants({ state: derivedState }),
+              "text-left gap-2",
+              triggerClassName
+            )}
+          >
+            <div className="min-w-0 flex-1 flex flex-wrap gap-1">
+              {selectedValues.length === 0 ? (
+                <span className="text-base text-semantic-text-placeholder">
+                  {placeholder}
+                </span>
+              ) : summaryLabel ? (
+                <TooltipProvider delayDuration={200}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="min-w-0 truncate text-sm text-semantic-text-primary">
+                        {summaryLabel(selectedValues.length)}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="flex flex-col gap-0.5">
+                        {selectedLabels.map((label, index) => (
+                          <span key={selectedValues[index]}>{label}</span>
+                        ))}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              ) : (
+                selectedLabels.map((label, index) => (
+                  <span
+                    key={selectedValues[index]}
+                    className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-semantic-text-primary text-sm font-semibold px-2 py-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout"
+                  >
+                    <span
+                      className="min-w-0 truncate"
+                      title={typeof label === "string" ? label : undefined}
+                    >
+                      {label}
+                    </span>
+                    <span
+                      role="button"
+                      tabIndex={disabled || loading ? -1 : 0}
+                      aria-disabled={disabled || loading || undefined}
+                      onClick={(e) => removeValue(selectedValues[index], e)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          removeValue(
+                            selectedValues[index],
+                            e as unknown as React.MouseEvent
+                          );
+                        }
+                      }}
+                      className="shrink-0 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                      aria-label={`Remove ${label}`}
+                    >
+                      <X className="size-3" />
+                    </span>
+                  </span>
+                ))
+              )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {showClearAll && selectedValues.length > 0 && (
+                <span
+                  role="button"
+                  tabIndex={disabled || loading ? -1 : 0}
+                  aria-disabled={disabled || loading || undefined}
+                  onClick={clearAll}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      clearAll(e as unknown as React.MouseEvent);
+                    }
+                  }}
+                  className="p-0.5 cursor-pointer hover:text-semantic-error-primary focus:outline-none"
+                  aria-label="Clear all"
+                >
+                  <X className="size-4 text-semantic-text-muted" />
+                </span>
+              )}
+              {showSeparatorBeforeChevron && (
+                <div
+                  className="w-px h-5 self-center border-l border-solid border-semantic-border-layout shrink-0"
+                  aria-hidden
+                />
+              )}
+              {loading ? (
+                <Loader2 className="size-4 animate-spin text-semantic-text-muted" />
+              ) : (
+                <ChevronDown
+                  className={cn(
+                    "size-4 text-semantic-text-muted transition-transform shrink-0",
+                    isOpen && "rotate-180"
+                  )}
+                />
+              )}
+            </div>
+          </button>
+
+          {/* Helper / error sits between trigger and dropdown (normal flow), matching Figma */}
+          {(error || helperText) && (
+            <div className="flex justify-between items-start gap-2">
+              {error ? (
+                <div
+                  id={errorId}
+                  role="alert"
+                  className="flex items-center gap-1.5 min-w-0"
+                >
+                  <CircleAlert
+                    className="size-3.5 shrink-0 text-semantic-error-primary"
+                    aria-hidden
+                  />
+                  <span className="min-w-0 break-words text-xs text-semantic-error-text">
+                    {error}
+                  </span>
+                </div>
+              ) : helperText ? (
+                <span
+                  id={helperId}
+                  className="min-w-0 break-words text-xs text-semantic-text-muted"
+                >
+                  {helperText}
+                </span>
+              ) : null}
+            </div>
+          )}
+
+          {isOpen &&
+            portalTarget &&
+            createPortal(
+              <TooltipProvider delayDuration={200}>
+                <div
+                  ref={setDropdownRef}
+                  id={listboxId}
+                  role="listbox"
+                  aria-multiselectable="true"
+                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md"
+                  style={{
+                    ...floatingStyles,
+                    zIndex: 10050,
+                    // Radix Dialog sets `pointer-events: none` on <body> while
+                    // open; without this the menu swallows nothing and clicks die.
+                    pointerEvents: "auto",
+                    visibility: isPositioned ? undefined : "hidden",
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  {/* Search input */}
+                  {searchable && (
+                    <div className="p-2 border-b border-solid border-semantic-border-layout">
+                      <input
+                        type="text"
+                        placeholder={searchPlaceholder}
+                        aria-label={searchPlaceholder}
+                        value={searchQuery}
+                        onChange={(e) => updateSearchQuery(e.target.value)}
+                        className="w-full h-10 px-3 text-base text-semantic-text-primary border border-solid border-semantic-border-input rounded-lg bg-semantic-bg-primary placeholder:text-semantic-text-placeholder focus:outline-none focus:border-semantic-border-accent focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                  )}
+
+                  {/* Select all */}
+                  {selectAllLabel && (
+                    <div
+                      role="option"
+                      aria-selected={allSelected}
+                      tabIndex={0}
+                      onClick={toggleSelectAll}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          toggleSelectAll();
+                        }
+                      }}
+                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-semantic-text-primary outline-none hover:bg-semantic-bg-ui"
+                    >
+                      <Checkbox
+                        checked={
+                          allSelected
+                            ? true
+                            : someSelected
+                              ? "indeterminate"
+                              : false
+                        }
+                        size="sm"
+                        className="pointer-events-none shrink-0"
+                        aria-hidden
+                        tabIndex={-1}
+                      />
+                      <span className="min-w-0 flex-1 truncate text-left">
+                        {selectAllLabel}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Options */}
+                  <div
+                    ref={listRef}
+                    onScroll={handleListScroll}
+                    className="overflow-auto overscroll-contain p-1"
+                    style={{
+                      maxHeight:
+                        "min(15rem, var(--multi-select-available-height, 15rem))",
+                    }}
+                  >
+                    {filteredOptions.length === 0 && !loadingMore ? (
+                      <div className="py-6 text-center text-sm text-semantic-text-muted">
+                        No results found
+                      </div>
+                    ) : (
+                      displayItems.map((item, itemIndex) => {
+                        if (item.type === "divider") {
+                          return (
+                            <div
+                              key={`divider-${itemIndex}`}
+                              role="separator"
+                              className="my-1 h-px bg-semantic-border-layout"
+                            />
+                          );
+                        }
+                        if (item.type === "header") {
+                          return (
+                            <div
+                              key={`header-${item.label}-${itemIndex}`}
+                              className="px-3 pt-2 pb-1 text-sm font-semibold uppercase tracking-wide text-semantic-text-muted"
+                            >
+                              {item.label}
+                            </div>
+                          );
+                        }
+
+                        const option = item.option;
+                        const isSelected = selectedValues.includes(
+                          option.value
+                        );
+                        const isMaxedOut =
+                          !isSelected &&
+                          maxSelections !== undefined &&
+                          maxSelections > 0 &&
+                          selectedValues.length >= maxSelections;
+                        const isDisabled =
+                          Boolean(option.disabled) || isMaxedOut;
+                        const secondaryLine =
+                          option.secondaryText ?? option.caption;
+
+                        const rowClass = cn(
+                          "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-semantic-text-primary outline-none",
+                          optionVariant === "detailed"
+                            ? "gap-2 px-2 py-2 text-sm"
+                            : "py-2 pl-4 pr-8 text-base",
+                          !isSelected &&
+                            "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                          isDisabled && "opacity-50 cursor-not-allowed",
+                          option.isDeleted && "line-through opacity-70"
+                        );
+
+                        const simpleRow = (
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={isSelected}
+                            disabled={isDisabled}
+                            onClick={() =>
+                              !isDisabled && toggleOption(option.value)
+                            }
+                            className={rowClass}
+                          >
+                            <span className="absolute right-2 flex size-4 items-center justify-center">
+                              {isSelected && (
+                                <Check className="size-4 text-semantic-primary" />
+                              )}
+                            </span>
+                            <span
+                              title={
+                                truncateOptions &&
+                                typeof option.label === "string"
+                                  ? option.label
+                                  : undefined
+                              }
+                              className={cn(
+                                "min-w-0 flex-1 text-left",
+                                truncateOptions
+                                  ? "truncate"
+                                  : "whitespace-normal break-words"
+                              )}
+                            >
+                              {option.label}
+                            </span>
+                          </button>
+                        );
+
+                        const detailedRow = (
+                          <div
+                            role="option"
+                            tabIndex={isDisabled ? -1 : 0}
+                            aria-selected={isSelected}
+                            aria-disabled={isDisabled}
+                            data-disabled={isDisabled ? "" : undefined}
+                            onClick={() =>
+                              !isDisabled && toggleOption(option.value)
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                if (!isDisabled) toggleOption(option.value);
+                              }
+                            }}
+                            className={rowClass}
+                          >
+                            <Checkbox
+                              checked={isSelected}
+                              disabled={isDisabled}
+                              size="sm"
+                              className="pointer-events-none shrink-0"
+                              aria-hidden
+                              tabIndex={-1}
+                            />
+                            <span
+                              title={
+                                typeof option.label === "string"
+                                  ? option.label
+                                  : undefined
+                              }
+                              className={cn(
+                                "min-w-0 flex-1 text-left",
+                                truncateOptions
+                                  ? "truncate"
+                                  : "whitespace-normal break-words"
+                              )}
+                            >
+                              {option.label}
+                            </span>
+                            {secondaryLine ? (
+                              <span className="shrink-0 max-w-[55%] truncate text-right text-sm text-semantic-text-muted">
+                                {secondaryLine}
+                              </span>
+                            ) : null}
+                          </div>
+                        );
+
+                        const overlayCopy =
+                          option.disabledTooltip ?? option.overlayMsg;
+
+                        const withDisabledTooltip = (
+                          node: React.ReactElement
+                        ) =>
+                          isDisabled && overlayCopy ? (
+                            <Tooltip key={option.value}>
+                              <TooltipTrigger asChild>
+                                <span className="block w-full cursor-default">
+                                  {node}
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="max-w-sm bg-semantic-primary text-semantic-text-inverted border-semantic-primary border-solid"
+                              >
+                                {overlayCopy}
+                              </TooltipContent>
+                            </Tooltip>
+                          ) : (
+                            <React.Fragment key={option.value}>
+                              {node}
+                            </React.Fragment>
+                          );
+
+                        if (optionVariant === "detailed") {
+                          return withDisabledTooltip(detailedRow);
+                        }
+
+                        return withDisabledTooltip(simpleRow);
+                      })
+                    )}
+
+                    {loadingMore ? (
+                      <div
+                        role="status"
+                        aria-live="polite"
+                        className="flex items-center justify-center gap-2 py-3 text-sm text-semantic-text-muted"
+                      >
+                        <Loader2 className="size-4 animate-spin" />
+                        <span>Loading more...</span>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {/* Footer with count */}
+                  {maxSelections && showSelectionFooter ? (
+                    <div className="p-2 border-t border-solid border-semantic-border-layout text-sm text-semantic-text-muted">
+                      {selectedValues.length} / {maxSelections} selected
+                    </div>
+                  ) : null}
+                </div>
+              </TooltipProvider>,
+              portalTarget
+            )}
+        </div>
+
+        {/* Hidden input for form submission */}
+        {name &&
+          selectedValues.map((v) => (
+            <input key={v} type="hidden" name={name} value={v} />
+          ))}
+      </div>
+    );
+  }
+);
+MultiSelect.displayName = "MultiSelect";
+
+export { MultiSelect, multiSelectTriggerVariants };

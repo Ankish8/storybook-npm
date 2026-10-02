@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "compilerOptions": {
+    "incremental": false
+  },
+  "include": ["./v2-api-parity.ts"],
+  "exclude": []
+}

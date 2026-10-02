@@ -32,6 +32,7 @@ const preview: Preview = {
           ['Colors', 'Typography', 'Spacing', 'Accessibility'],
           'Components',
           'Custom',
+          'V2',
           '*',
         ],
       },

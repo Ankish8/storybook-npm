@@ -1,0 +1,10 @@
+{
+  "name": "select-field",
+  "replacements": [],
+  "unmatched": [
+    {
+      "before": "text-sm font-medium text-semantic-text-muted",
+      "after": "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary"
+    }
+  ]
+}

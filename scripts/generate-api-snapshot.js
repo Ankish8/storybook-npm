@@ -10,6 +10,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from './lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -17,7 +18,13 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const COMPONENTS_DIR = path.resolve(__dirname, '../src/components/ui')
-const SNAPSHOT_FILE = path.resolve(__dirname, '../.api-snapshot.json')
+const outputIndex = process.argv.indexOf('--output')
+if (outputIndex !== -1 && !process.argv[outputIndex + 1]) {
+  throw new Error('--output requires a file path')
+}
+const SNAPSHOT_FILE = outputIndex === -1
+  ? path.resolve(__dirname, '../.api-snapshot.json')
+  : path.resolve(process.argv[outputIndex + 1])
 
 /**
  * Extract interface/type properties from TypeScript content
@@ -161,8 +168,7 @@ function generateSnapshot() {
     process.exit(1)
   }
 
-  const files = fs.readdirSync(COMPONENTS_DIR)
-    .filter(file => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.test.'))
+  const files = uiComponentFiles(COMPONENTS_DIR)
 
   const snapshot = {
     version: '1.0',

@@ -1,0 +1,18 @@
+{
+  "name": "table",
+  "replacements": [
+    [
+      "h-12 px-4 text-left align-middle font-semibold text-semantic-text-muted text-sm [&:has([role=checkbox])]:pr-0",
+      "h-12 px-6 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium uppercase tracking-[0.014px] text-semantic-text-secondary [&:has([role=checkbox])]:pr-0"
+    ],
+    [
+      "sticky left-0 bg-[var(--color-neutral-100)] z-10",
+      "sticky left-0 bg-semantic-primary-surface z-10"
+    ],
+    [
+      "px-4 align-middle text-semantic-text-primary [&:has([role=checkbox])]:pr-0",
+      "px-6 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-semantic-text-primary [&:has([role=checkbox])]:pr-0"
+    ]
+  ],
+  "unmatched": []
+}

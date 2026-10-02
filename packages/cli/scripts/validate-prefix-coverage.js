@@ -16,6 +16,9 @@ const __dirname = path.dirname(__filename)
 
 const PREFIX = 'tw-'
 
+// Where unprefixed (v2) component sources live; used to check they ship verbatim.
+const SOURCE_UI_DIR = path.resolve(__dirname, '../../../src/components/ui')
+
 // Single source of truth: derive prefix lists from prefix-utils.ts
 const PREFIX_UTILS_PATH = path.resolve(__dirname, '../src/utils/prefix-utils.ts')
 const prefixUtilsSource = fs.readFileSync(PREFIX_UTILS_PATH, 'utf-8')
@@ -163,6 +166,24 @@ async function validatePrefixCoverage() {
     const allIssues = []
 
     for (const [name, component] of Object.entries(registry)) {
+      // `unprefixed` (v2) components must ship EXACTLY as authored — no tw- prefix,
+      // no semantic var() rewriting — because the consumer builds them with an
+      // unprefixed Tailwind config. The only permitted edit is the lib/utils import.
+      if (component.unprefixed) {
+        for (const file of component.files) {
+          const source = fs.readFileSync(path.join(SOURCE_UI_DIR, file.name), 'utf-8')
+          const depth = file.name.split('/').length - 1
+          const expected = source.replace(
+            /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
+            `import { cn } from "${'../'.repeat(2 + depth)}lib/utils"`
+          )
+          if (file.content !== expected) {
+            hasErrors = true
+            console.error(`❌ ${name}: unprefixed component differs from its source (must ship verbatim)`)
+          }
+        }
+        continue
+      }
       for (const file of component.files) {
         const issues = findUnprefixedClasses(file.content, name)
         if (issues.length > 0) {

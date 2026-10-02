@@ -82,7 +82,7 @@ function parseComponentsYaml(content) {
     }
     if (!current) continue
 
-    const kvMatch = line.match(/^\s+(description|category|isMultiFile|templateOnly|group|directory|mainFile):\s*(.+)/)
+    const kvMatch = line.match(/^\s+(description|category|isMultiFile|templateOnly|group|directory|mainFile|path):\s*(.+)/)
     if (kvMatch) {
       const [, key, rawVal] = kvMatch
       let val = rawVal.replace(/^"(.*)"$/, '$1')
@@ -223,7 +223,8 @@ function flattenA11y(entry) {
 
 function resolveSourcePath(slug, meta, warnings) {
   if (meta.category !== 'custom') {
-    const rel = `src/components/ui/${slug}.tsx`
+    // `path` is set for namespaced primitives (v2-button → v2/button).
+    const rel = `src/components/ui/${meta.path || slug}.tsx`
     if (fs.existsSync(path.join(ROOT, rel))) return rel
     warnings.push(`${slug}: expected ${rel} does not exist`)
     return rel

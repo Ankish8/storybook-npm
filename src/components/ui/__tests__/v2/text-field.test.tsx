@@ -1,0 +1,528 @@
+import * as React from "react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { TextField } from "../../v2/text-field";
+
+describe("TextField", () => {
+  // Basic rendering
+  it("renders correctly", () => {
+    render(<TextField data-testid="input" />);
+    expect(screen.getByTestId("input")).toBeInTheDocument();
+  });
+
+  it("renders with placeholder", () => {
+    render(<TextField placeholder="Enter text" />);
+    expect(screen.getByPlaceholderText("Enter text")).toBeInTheDocument();
+  });
+
+  // Label tests
+  it("renders label when provided", () => {
+    render(<TextField label="Email" />);
+    expect(screen.getByText("Email")).toBeInTheDocument();
+  });
+
+  it("renders required indicator when required", () => {
+    render(<TextField label="Email" required />);
+    expect(screen.getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-text");
+  });
+
+  it("does not render required indicator when not required", () => {
+    render(<TextField label="Email" />);
+    expect(screen.queryByText("*")).not.toBeInTheDocument();
+  });
+
+  it("associates label with input via htmlFor", () => {
+    render(<TextField label="Email" id="email-input" />);
+    const label = screen.getByText("Email");
+    expect(label).toHaveAttribute("for", "email-input");
+  });
+
+  // State tests
+  it("applies error state styling when error is set", () => {
+    render(<TextField error="Error" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveClass(
+      "border-semantic-error-primary"
+    );
+  });
+
+  it("keeps error border when className overrides default border colors", () => {
+    render(
+      <TextField
+        error="Value can't be empty"
+        className="border-semantic-border-layout focus:border-semantic-border-layout focus:shadow-none"
+        data-testid="input"
+      />
+    );
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("border-semantic-error-primary");
+    expect(input).toHaveClass("shadow-[0_0_4px_0_rgba(240,68,56,0.4)]");
+  });
+
+  it("applies empty state styling", () => {
+    render(<TextField state="empty" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveClass(
+      "border-semantic-border-input"
+    );
+  });
+
+  it("sets aria-invalid when error is present", () => {
+    render(<TextField error="Error" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveAttribute("aria-invalid", "true");
+  });
+
+  // Helper text tests
+  it("renders helper text when provided", () => {
+    render(<TextField helperText="We will never share your email" />);
+    expect(
+      screen.getByText("We will never share your email")
+    ).toBeInTheDocument();
+    expect(screen.getByText("We will never share your email")).toHaveClass(
+      "text-semantic-text-muted"
+    );
+  });
+
+  // Error message tests
+  it("shows error message when error prop is set", () => {
+    render(<TextField error="This field is required" />);
+    expect(screen.getByText("This field is required")).toBeInTheDocument();
+    expect(screen.getByText("This field is required")).toHaveClass(
+      "text-semantic-error-text"
+    );
+  });
+
+  it("error message takes precedence over helper text", () => {
+    render(<TextField helperText="Helper" error="Error" />);
+    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.queryByText("Helper")).not.toBeInTheDocument();
+  });
+
+  // Icons tests
+  it("renders left icon when provided", () => {
+    render(<TextField leftIcon={<span data-testid="left-icon">L</span>} />);
+    expect(screen.getByTestId("left-icon")).toBeInTheDocument();
+  });
+
+  it("renders right icon when provided", () => {
+    render(<TextField rightIcon={<span data-testid="right-icon">R</span>} />);
+    expect(screen.getByTestId("right-icon")).toBeInTheDocument();
+  });
+
+  it("renders both icons when provided", () => {
+    render(
+      <TextField
+        leftIcon={<span data-testid="left-icon">L</span>}
+        rightIcon={<span data-testid="right-icon">R</span>}
+      />
+    );
+    expect(screen.getByTestId("left-icon")).toBeInTheDocument();
+    expect(screen.getByTestId("right-icon")).toBeInTheDocument();
+  });
+
+  // Prefix/Suffix tests
+  it("renders prefix when provided", () => {
+    render(<TextField prefix="https://" />);
+    expect(screen.getByText("https://")).toBeInTheDocument();
+  });
+
+  it("renders suffix when provided", () => {
+    render(<TextField suffix=".com" />);
+    expect(screen.getByText(".com")).toBeInTheDocument();
+  });
+
+  it("renders both prefix and suffix", () => {
+    render(<TextField prefix="https://" suffix=".com" />);
+    expect(screen.getByText("https://")).toBeInTheDocument();
+    expect(screen.getByText(".com")).toBeInTheDocument();
+  });
+
+  // Character count tests
+  it("shows character count when showCount and maxLength are set", () => {
+    render(<TextField showCount maxLength={20} defaultValue="test" />);
+    expect(screen.getByText("4/20")).toBeInTheDocument();
+  });
+
+  it("updates character count on input", async () => {
+    const user = userEvent.setup();
+    render(<TextField showCount maxLength={20} data-testid="input" />);
+
+    await user.type(screen.getByTestId("input"), "hello");
+    expect(screen.getByText("5/20")).toBeInTheDocument();
+  });
+
+  it("shows character count in red when over limit", () => {
+    render(<TextField showCount maxLength={3} defaultValue="hello" />);
+    expect(screen.getByText("5/3")).toHaveClass("text-semantic-error-text");
+  });
+
+  // Loading state tests
+  it("disables input when loading", () => {
+    render(<TextField loading data-testid="input" />);
+    expect(screen.getByTestId("input")).toBeDisabled();
+  });
+
+  it("shows spinner when loading", () => {
+    const { container } = render(<TextField loading />);
+    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
+  it("hides right icon when loading", () => {
+    render(
+      <TextField loading rightIcon={<span data-testid="right-icon">R</span>} />
+    );
+    expect(screen.queryByTestId("right-icon")).not.toBeInTheDocument();
+  });
+
+  // Disabled state tests
+  it("applies disabled state correctly", () => {
+    render(<TextField disabled data-testid="input" />);
+    expect(screen.getByTestId("input")).toBeDisabled();
+  });
+
+  // Controlled mode tests
+  it("works in controlled mode", () => {
+    const handleChange = vi.fn();
+    render(
+      <TextField value="test" onChange={handleChange} data-testid="input" />
+    );
+
+    const input = screen.getByTestId("input");
+    expect(input).toHaveValue("test");
+
+    fireEvent.change(input, { target: { value: "new value" } });
+    expect(handleChange).toHaveBeenCalled();
+  });
+
+  it("keeps the cursor in place when a second consecutive space is rejected", async () => {
+    const user = userEvent.setup();
+    function Controlled() {
+      const [value, setValue] = React.useState("Rhea from XYZ");
+      return (
+        <TextField
+          data-testid="input"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+        />
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByTestId("input") as HTMLInputElement;
+
+    await user.click(input);
+    input.setSelectionRange(5, 5);
+    await user.keyboard(" ");
+
+    expect(input).toHaveValue("Rhea from XYZ");
+    await waitFor(() => {
+      expect(input.selectionStart).toBe(5);
+      expect(input.selectionEnd).toBe(5);
+    });
+  });
+
+  // Uncontrolled mode tests
+  it("works in uncontrolled mode", async () => {
+    const user = userEvent.setup();
+    render(<TextField defaultValue="initial" data-testid="input" />);
+
+    const input = screen.getByTestId("input");
+    expect(input).toHaveValue("initial");
+
+    await user.clear(input);
+    await user.type(input, "new value");
+    expect(input).toHaveValue("new value");
+  });
+
+  // Ref forwarding tests
+  it("forwards ref correctly", () => {
+    const ref = { current: null };
+    render(<TextField ref={ref} />);
+    expect(ref.current).toBeInstanceOf(HTMLInputElement);
+  });
+
+  // Custom className tests
+  it("applies custom className to input without addons", () => {
+    render(<TextField className="custom-class" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveClass("custom-class");
+  });
+
+  it("applies custom wrapperClassName", () => {
+    const { container } = render(
+      <TextField wrapperClassName="wrapper-class" />
+    );
+    expect(container.firstChild).toHaveClass("wrapper-class");
+  });
+
+  it("applies custom labelClassName", () => {
+    render(<TextField label="Test" labelClassName="label-class" />);
+    expect(screen.getByText("Test")).toHaveClass("label-class");
+  });
+
+  // Accessibility tests
+  it("sets aria-describedby for helper text", () => {
+    render(<TextField helperText="Helper" id="test" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveAttribute(
+      "aria-describedby",
+      "test-helper"
+    );
+  });
+
+  it("sets aria-describedby for error message", () => {
+    render(<TextField error="Error" id="test" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveAttribute(
+      "aria-describedby",
+      "test-error"
+    );
+  });
+
+  // Props spreading tests
+  it("spreads additional props to input", () => {
+    render(
+      <TextField
+        data-testid="input"
+        aria-label="test input"
+        autoComplete="email"
+      />
+    );
+    const input = screen.getByTestId("input");
+    expect(input).toHaveAttribute("aria-label", "test input");
+    expect(input).toHaveAttribute("autocomplete", "email");
+  });
+
+  // Input type tests
+  it("renders with type attribute", () => {
+    render(<TextField type="email" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveAttribute("type", "email");
+  });
+
+  it("renders password type", () => {
+    render(<TextField type="password" data-testid="input" />);
+    expect(screen.getByTestId("input")).toHaveAttribute("type", "password");
+  });
+
+  // Clearable tests
+  it("does not show clear button when clearable is false", () => {
+    render(<TextField defaultValue="hello" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("shows clear button when clearable and has value", () => {
+    render(<TextField clearable defaultValue="hello" data-testid="input" />);
+    expect(screen.getByLabelText("Clear input")).toBeInTheDocument();
+  });
+
+  it("does not show clear button when clearable but value is empty", () => {
+    render(<TextField clearable defaultValue="" data-testid="input" />);
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("does not show clear button when disabled", () => {
+    render(
+      <TextField clearable disabled defaultValue="hello" data-testid="input" />
+    );
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("does not show clear button when loading", () => {
+    render(
+      <TextField clearable loading defaultValue="hello" data-testid="input" />
+    );
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  it("clears value in uncontrolled mode when clear button clicked", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(
+      <TextField
+        clearable
+        onClear={onClear}
+        defaultValue="hello"
+        data-testid="input"
+      />
+    );
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(screen.getByTestId("input")).toHaveValue("");
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
+  it("calls onClear in controlled mode when clear button clicked", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    render(
+      <TextField
+        clearable
+        onClear={onClear}
+        value="hello"
+        data-testid="input"
+      />
+    );
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(onClear).toHaveBeenCalledOnce();
+  });
+
+  it("hides clear button after clearing in uncontrolled mode", async () => {
+    const user = userEvent.setup();
+    render(<TextField clearable defaultValue="hello" data-testid="input" />);
+
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(screen.queryByLabelText("Clear input")).not.toBeInTheDocument();
+  });
+
+  // Size variant tests
+  it("renders with default size classes", () => {
+    render(<TextField data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("h-10");
+    expect(input).toHaveClass("px-4");
+    expect(input).toHaveClass("text-base");
+  });
+
+  it("renders with sm size classes", () => {
+    render(<TextField size="sm" data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass("h-9");
+    expect(input).toHaveClass("px-3");
+    expect(input).toHaveClass(
+      "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs"
+    );
+  });
+
+  it("renders sm size with addons (container path)", () => {
+    const { container } = render(
+      <TextField size="sm" leftIcon={<span>L</span>} data-testid="input" />
+    );
+    const inputContainer = container.querySelector(".h-9");
+    expect(inputContainer).toBeInTheDocument();
+    expect(screen.getByTestId("input")).toHaveClass(
+      "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs"
+    );
+  });
+
+  it("renders default size with addons (container path)", () => {
+    const { container } = render(
+      <TextField leftIcon={<span>L</span>} data-testid="input" />
+    );
+    const inputContainer = container.querySelector(".h-10");
+    expect(inputContainer).toBeInTheDocument();
+    expect(screen.getByTestId("input")).toHaveClass("text-base");
+  });
+
+  // Container styling with addons
+  it("uses container with focus-within styling when has addons", () => {
+    render(<TextField leftIcon={<span>L</span>} />);
+    const inputContainer = screen.getByRole("textbox").parentElement;
+    expect(inputContainer?.className).toContain(
+      "focus-within:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+    expect(inputContainer).toBeInTheDocument();
+  });
+
+  it("applies error state to container when has addons", () => {
+    const { container } = render(
+      <TextField leftIcon={<span>L</span>} error="Error" />
+    );
+    const inputContainer = container.querySelector(
+      ".border-semantic-error-primary"
+    );
+    expect(inputContainer).toBeInTheDocument();
+  });
+
+  it("applies empty state to container when has addons", () => {
+    const { container } = render(
+      <TextField leftIcon={<span>L</span>} state="empty" />
+    );
+    const inputContainer = container.querySelector(
+      ".border-semantic-border-input"
+    );
+    expect(inputContainer).toBeInTheDocument();
+  });
+
+  it("synchronizes a controlled clear action and character count", async () => {
+    const user = userEvent.setup();
+    const onClear = vi.fn();
+    function Controlled() {
+      const [value, setValue] = React.useState("Support");
+      return (
+        <TextField
+          label="Workspace"
+          clearable
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          onClear={() => {
+            setValue("");
+            onClear();
+          }}
+          showCount
+          maxLength={20}
+        />
+      );
+    }
+    render(<Controlled />);
+    await user.click(screen.getByRole("button", { name: "Clear input" }));
+    expect(screen.getByRole("textbox", { name: "Workspace" })).toHaveValue("");
+    expect(screen.getByText("0/20")).toBeInTheDocument();
+    expect(onClear).toHaveBeenCalledOnce();
+    await user.type(
+      screen.getByRole("textbox", { name: "Workspace" }),
+      "Sales"
+    );
+    expect(screen.getByText("5/20")).toBeInTheDocument();
+  });
+
+  it("uses distinct accessible descriptions for multiple labelled fields", () => {
+    render(
+      <>
+        <TextField label="Name" helperText="Enter your name." />
+        <TextField label="Email" error="Enter a valid email." />
+      </>
+    );
+    const name = screen.getByRole("textbox", { name: "Name" });
+    const email = screen.getByRole("textbox", { name: "Email" });
+    expect(name.id).not.toBe(email.id);
+    expect(name).toHaveAccessibleDescription("Enter your name.");
+    expect(email).toHaveAccessibleDescription("Enter a valid email.");
+    expect(email).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("does not expose the clear action while loading or disabled", () => {
+    const { rerender } = render(
+      <TextField value="Support" clearable loading />
+    );
+    expect(screen.queryByRole("button", { name: "Clear input" })).toBeNull();
+    expect(screen.getByRole("textbox")).toBeDisabled();
+    rerender(<TextField value="Support" clearable disabled />);
+    expect(screen.queryByRole("button", { name: "Clear input" })).toBeNull();
+    expect(screen.getByRole("textbox")).toBeDisabled();
+  });
+
+  it("blocks consecutive spaces when pasting and preserves the text order", () => {
+    const onChange = vi.fn();
+    render(<TextField onChange={onChange} data-testid="paste-target" />);
+    const input = screen.getByTestId("paste-target") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "Customer   Support" } });
+    expect(input).toHaveValue("Customer Support");
+    expect(onChange).toHaveBeenCalledOnce();
+  });
+
+  it("allows consecutive spaces when the existing opt-out is set", () => {
+    render(
+      <TextField preventConsecutiveSpaces={false} data-testid="paste-target" />
+    );
+    const input = screen.getByTestId("paste-target");
+    fireEvent.change(input, { target: { value: "Customer   Support" } });
+    expect(input).toHaveValue("Customer   Support");
+  });
+
+  it("retains the grey disabled surface for addon fields", () => {
+    render(<TextField prefix="https://" disabled error="Error" />);
+    expect(screen.getByRole("textbox").parentElement).toHaveClass(
+      "bg-semantic-bg-ui",
+      "border-semantic-border-layout",
+      "hover:border-semantic-border-layout",
+      "shadow-none"
+    );
+  });
+});

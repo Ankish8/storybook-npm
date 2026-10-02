@@ -1,0 +1,12 @@
+{
+  "source": "/Users/ankish/Downloads/Code/storybook-npm-v2",
+  "verificationCopy": "/tmp/myoperator-v2-final-n3zntvzw",
+  "overlay": [
+    {
+      "path": "src/components/custom/ivr-bot/create-function-modal.tsx",
+      "reason": "Pre-existing deletion blocks unrelated legacy app/CLI/Storybook validation",
+      "source": "HEAD",
+      "sha256": "8b882226bf6ee160183282c3d5ada16dd8af9beeae5346595493ca7c471f6dce"
+    }
+  ]
+}

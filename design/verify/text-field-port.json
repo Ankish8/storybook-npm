@@ -1,0 +1,79 @@
+{
+  "name": "text-field",
+  "replacements": [
+    [
+      "relative flex items-center rounded bg-semantic-bg-primary transition-all",
+      "relative flex items-center rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,box-shadow,background-color] duration-150"
+    ],
+    [
+      "border border-solid border-semantic-border-input focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+      "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    ],
+    [
+      "cursor-not-allowed opacity-50 bg-[var(--color-neutral-50)]",
+      "cursor-not-allowed border-semantic-border-layout bg-semantic-bg-ui hover:border-semantic-border-layout"
+    ],
+    [
+      "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+      "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:font-medium file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui"
+    ],
+    [
+      "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+      "border border-solid border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:outline-none focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    ],
+    [
+      "h-[42px] px-4 py-2 text-base file:text-base",
+      "h-10 px-4 py-0 text-base file:text-base"
+    ],
+    [
+      "h-9 px-3 py-1.5 text-sm file:text-sm",
+      "h-9 px-3 py-0 text-sm file:text-sm"
+    ],
+    [
+      "h-9 px-3",
+      "h-9 px-3"
+    ],
+    [
+      "h-[42px] px-4",
+      "h-10 px-4"
+    ],
+    [
+      "text-sm text-semantic-text-muted mr-2 select-none",
+      "text-base text-semantic-text-muted mr-2 select-none"
+    ],
+    [
+      "text-sm text-semantic-text-muted ml-2 select-none",
+      "text-base text-semantic-text-muted ml-2 select-none"
+    ],
+    [
+      "text-sm text-semantic-error-primary",
+      "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text"
+    ],
+    [
+      "text-sm text-semantic-text-muted",
+      "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-text-muted"
+    ],
+    [
+      "text-sm",
+      "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs"
+    ],
+    [
+      "text-semantic-error-primary",
+      "text-semantic-error-text"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "border border-solid border-semantic-error-primary/40 focus-within:border-semantic-error-primary focus-within:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      "after": "border border-solid border-semantic-error-primary focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+    },
+    {
+      "before": "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      "after": "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+    },
+    {
+      "before": "text-sm font-medium text-semantic-text-muted",
+      "after": "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary"
+    }
+  ]
+}

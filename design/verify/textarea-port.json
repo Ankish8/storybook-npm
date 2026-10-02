@@ -1,0 +1,23 @@
+{
+  "name": "textarea",
+  "replacements": [
+    [
+      "w-full rounded bg-semantic-bg-primary text-semantic-text-primary outline-none transition-all placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+      "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout"
+    ],
+    [
+      "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+      "border border-solid border-semantic-border-input focus:outline-none hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_0_1px_rgba(240,68,56,0.12)]",
+      "after": "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+    },
+    {
+      "before": "text-sm font-medium text-semantic-text-muted",
+      "after": "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] text-semantic-text-secondary"
+    }
+  ]
+}

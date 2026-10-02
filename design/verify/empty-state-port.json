@@ -1,0 +1,14 @@
+{
+  "name": "empty-state",
+  "replacements": [
+    [
+      "flex flex-col items-center justify-center gap-5 py-16 px-4",
+      "flex flex-col items-center justify-center gap-5 py-16 px-4 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+    ],
+    [
+      "m-0 text-base font-semibold text-semantic-text-primary",
+      "m-0 text-lg font-semibold text-semantic-text-primary"
+    ]
+  ],
+  "unmatched": []
+}

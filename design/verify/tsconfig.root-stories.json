@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "include": [
+    "../../src/components/ui/v2/button-group.stories.tsx",
+    "../../src/components/ui/v2/otp-input.stories.tsx",
+    "../../src/components/ui/v2/breadcrumbs.stories.tsx",
+    "../../src/components/ui/v2/radio.stories.tsx",
+    "../../src/components/ui/v2/readable-field.stories.tsx",
+    "../../src/components/ui/v2/skeleton.stories.tsx",
+    "../../src/components/ui/v2/spinner.stories.tsx",
+    "../../src/components/ui/v2/bouncing-loader.stories.tsx",
+    "../../src/components/ui/v2/typography.stories.tsx",
+    "../../src/components/ui/v2/ui-card.stories.tsx",
+    "../../src/components/ui/v2/page-footer.stories.tsx",
+    "../../src/components/ui/v2/progress-indicator.stories.tsx",
+    "../../src/components/ui/v2/scrollbar.stories.tsx",
+    "../../src/components/ui/v2/number-step-field.stories.tsx",
+    "../../src/components/ui/v2/shimmering-text.stories.tsx",
+    "../../src/components/ui/v2/stepper.stories.tsx",
+    "../../src/components/ui/v2/file-upload.stories.tsx"
+  ],
+  "exclude": []
+}

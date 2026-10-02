@@ -1,0 +1,47 @@
+{
+  "url": "http://127.0.0.1:6040",
+  "directory": "/tmp/myoperator-v2-completion-preview-final",
+  "buttonAction": "onClick: []\nClear",
+  "otpSix": {
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "states": [
+      {
+        "border": "rgb(233, 234, 235)",
+        "cells": 6,
+        "shadow": "none",
+        "state": "Default"
+      },
+      {
+        "border": "rgb(192, 195, 202)",
+        "cells": 6,
+        "shadow": "none",
+        "state": "Hover"
+      },
+      {
+        "border": "rgb(39, 171, 184)",
+        "cells": 6,
+        "shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(39, 171, 184, 0.4) 0px 0px 4px 0px",
+        "state": "Focus"
+      },
+      {
+        "border": "rgb(240, 68, 56)",
+        "cells": 6,
+        "shadow": "none",
+        "state": "Error"
+      },
+      {
+        "border": "rgb(233, 234, 235)",
+        "cells": 6,
+        "shadow": "none",
+        "state": "Disabled"
+      }
+    ],
+    "viewport": 980
+  },
+  "readableComparison": {
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "viewport": 980
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "avatar",
+  "replacements": [],
+  "unmatched": [
+    {
+      "before": [
+        "tw-relative tw-inline-flex tw-items-center tw-justify-center tw-rounded-full tw-font-semibold tw-select-none tw-shrink-0 tw-overflow-hidden",
+        "tw-bg-[var(--semantic-bg-grey,#E9EAEB)] tw-text-[var(--semantic-text-muted,#717680)]",
+        "tw-size-8 tw-text-xs"
+      ],
+      "after": [
+        "tw-relative tw-inline-flex tw-items-center tw-justify-center tw-rounded-full tw-font-v2 tw-font-medium tw-select-none tw-shrink-0 tw-overflow-hidden",
+        "tw-bg-[var(--semantic-info-surface,#ECF1FB)] tw-text-[var(--semantic-text-muted,#717680)]",
+        "tw-border tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-bg-[var(--semantic-bg-primary,#FFFFFF)] tw-text-[var(--semantic-text-muted,#717680)]",
+        "tw-size-[30px] tw-text-xs"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,666 @@
+import * as React from "react";
+import { ChevronDown, Plus, Info, X } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import {
+  creatableSelectTriggerVariants,
+  creatableEnterHintKbdClassName,
+  creatablePrimaryRoleHintRowClassName,
+} from "./creatable-select";
+
+/** @deprecated Use `creatableSelectTriggerVariants` from `./creatable-select` — aliases the same trigger styles as Primary Role. */
+const creatableMultiSelectTriggerVariants = creatableSelectTriggerVariants;
+
+export interface CreatableMultiSelectOption {
+  value: string;
+  label: string;
+  disabled?: boolean;
+}
+
+export interface CreatableMultiSelectProps extends Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  "onChange"
+> {
+  /** Currently selected values */
+  value?: string[];
+  /** Callback when values change */
+  onValueChange?: (values: string[]) => void;
+  /** Available preset options */
+  options?: CreatableMultiSelectOption[];
+  /** Placeholder when no values selected */
+  placeholder?: string;
+  /** Whether the component is disabled */
+  disabled?: boolean;
+  /** Error state */
+  state?: "default" | "error";
+  /** Helper text shown below the trigger */
+  helperText?: string;
+  /**
+   * Shown inside the open dropdown (e.g. "Type to create a custom tone").
+   * Pair with {@link maxItems} so users see guidance when no preset matches their typing.
+   */
+  createHintText?: string;
+  /** Max number of items that can be selected (default: unlimited) */
+  maxItems?: number;
+  /** Max character length per item when typing/creating (default: unlimited) */
+  maxLengthPerItem?: number;
+  /**
+   * When true (default), shows `current/max` under the trigger while typing when `maxLengthPerItem` is set.
+   * Set to false to match Figma (counter lives only in the field flow / not under the control).
+   */
+  showPerItemCharacterCounter?: boolean;
+  /**
+   * Closed trigger: show removable chips (default) or a single comma-separated summary line (Figma Tone).
+   * While open, the trigger always shows the summary line; selected chips with remove controls appear in the panel.
+   */
+  triggerDisplay?: "chips" | "summary";
+  /**
+   * When set, the text input is transformed (e.g. strip invalid characters).
+   * If the raw value differs from the sanitized value, `onInvalidCharacters` is called.
+   */
+  sanitizeInput?: (raw: string) => string;
+  /**
+   * Applied after `sanitizeInput` on typed draft values (e.g. collapse spaces).
+   * Does not affect invalid-character detection.
+   */
+  normalizeInput?: (sanitized: string) => string;
+  /** Fired when `sanitizeInput` removed one or more characters from the raw input. */
+  onInvalidCharacters?: () => void;
+  /**
+   * When `sanitizeInput` is set, fired on input change if the raw value is already valid.
+   * Use to clear validation errors when the user corrects input.
+   */
+  onValidInput?: () => void;
+  /** Fired with the current open-dropdown draft text so parents can validate while typing. */
+  onInputValueChange?: (value: string) => void;
+}
+
+function joinSelectedLabels(
+  values: string[],
+  options: CreatableMultiSelectOption[],
+  sanitizeInput?: (raw: string) => string,
+  maxLengthPerItem?: number
+): string {
+  return values
+    .map((val) => labelForValue(val, options, sanitizeInput, maxLengthPerItem))
+    .join(", ");
+}
+
+function storedValueCandidates(
+  option: CreatableMultiSelectOption,
+  sanitizeInput?: (raw: string) => string,
+  maxLengthPerItem?: number
+): string[] {
+  const values = [option.value];
+  if (sanitizeInput) values.push(sanitizeInput(option.value).trim());
+  if (maxLengthPerItem != null) {
+    values.push(option.value.slice(0, maxLengthPerItem));
+    if (sanitizeInput) {
+      values.push(
+        sanitizeInput(option.value).trim().slice(0, maxLengthPerItem)
+      );
+    }
+  }
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function labelForValue(
+  val: string,
+  options: CreatableMultiSelectOption[],
+  sanitizeInput?: (raw: string) => string,
+  maxLengthPerItem?: number
+): string {
+  const direct = options.find((o) => o.value === val);
+  if (direct) return direct.label;
+  const byStoredForm = options.find((o) =>
+    storedValueCandidates(o, sanitizeInput, maxLengthPerItem).includes(val)
+  );
+  if (byStoredForm) return byStoredForm.label;
+  return val;
+}
+
+/** Whether a preset option is already in the selection (including legacy stored forms). */
+function isOptionSelected(
+  option: CreatableMultiSelectOption,
+  selected: string[],
+  sanitizeInput?: (raw: string) => string,
+  maxLengthPerItem?: number
+): boolean {
+  return storedValueCandidates(option, sanitizeInput, maxLengthPerItem).some(
+    (candidate) => selected.includes(candidate)
+  );
+}
+
+/** Whether a candidate value is already selected (matches raw or legacy preset forms). */
+function isValueAlreadySelected(
+  candidate: string,
+  selected: string[],
+  options: CreatableMultiSelectOption[],
+  sanitizeInput?: (raw: string) => string,
+  maxLengthPerItem?: number
+): boolean {
+  if (selected.includes(candidate)) return true;
+  return options.some((o) => {
+    const candidates = storedValueCandidates(
+      o,
+      sanitizeInput,
+      maxLengthPerItem
+    );
+    return (
+      candidates.includes(candidate) &&
+      candidates.some((stored) => selected.includes(stored))
+    );
+  });
+}
+
+function restoreInputCursor(input: HTMLInputElement, cursorPosition: number) {
+  window.requestAnimationFrame(() => {
+    input.setSelectionRange(cursorPosition, cursorPosition);
+  });
+}
+
+const CreatableMultiSelect = React.forwardRef(
+  (
+    {
+      className,
+      value = [],
+      onValueChange,
+      options = [],
+      placeholder = "Enter or select",
+      disabled = false,
+      state = "default",
+      helperText,
+      createHintText,
+      maxItems,
+      maxLengthPerItem,
+      showPerItemCharacterCounter = true,
+      triggerDisplay = "chips",
+      sanitizeInput,
+      normalizeInput,
+      onInvalidCharacters,
+      onValidInput,
+      onInputValueChange,
+      ...props
+    }: CreatableMultiSelectProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [inputValue, setInputValue] = React.useState("");
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    const listboxId = React.useId();
+    const helperId = React.useId();
+    const descriptionId =
+      props["aria-describedby"] ||
+      (helperText && !isOpen ? helperId : undefined);
+
+    React.useImperativeHandle(ref, () => containerRef.current!);
+
+    const derivedState = state === "error" ? "error" : "default";
+
+    const selectedSummary = joinSelectedLabels(
+      value,
+      options,
+      sanitizeInput,
+      maxLengthPerItem
+    );
+
+    const normalizeDraftValue = React.useCallback(
+      (raw: string) => {
+        const sanitized = sanitizeInput ? sanitizeInput(raw) : raw;
+        const normalized = normalizeInput
+          ? normalizeInput(sanitized)
+          : sanitized;
+        return maxLengthPerItem != null
+          ? normalized.slice(0, maxLengthPerItem)
+          : normalized;
+      },
+      [maxLengthPerItem, normalizeInput, sanitizeInput]
+    );
+
+    const addValue = (val: string) => {
+      if (disabled) return;
+      const isPreset = options.some((o) => o.value === val);
+      const afterSanitize = isPreset
+        ? val
+        : sanitizeInput
+          ? sanitizeInput(val)
+          : val;
+      const afterNormalize =
+        isPreset || !normalizeInput
+          ? afterSanitize
+          : normalizeInput(afterSanitize);
+      const trimmed = afterNormalize.trim();
+      if (
+        !trimmed ||
+        isValueAlreadySelected(
+          trimmed,
+          value,
+          options,
+          sanitizeInput,
+          maxLengthPerItem
+        )
+      ) {
+        return;
+      }
+      if (maxItems != null && value.length >= maxItems) return;
+      const toAdd =
+        !isPreset && maxLengthPerItem != null
+          ? trimmed.slice(0, maxLengthPerItem)
+          : trimmed;
+      if (toAdd) {
+        const nextValue = [...value, toAdd];
+        onValueChange?.(nextValue);
+        setInputValue("");
+        onInputValueChange?.("");
+        const reachedMax = maxItems != null && nextValue.length >= maxItems;
+        if (reachedMax) {
+          setIsOpen(false);
+        } else {
+          requestAnimationFrame(() => inputRef.current?.focus());
+        }
+      }
+    };
+
+    const removeValue = (val: string) => {
+      if (disabled) return;
+      onValueChange?.(value.filter((v) => v !== val));
+    };
+
+    const handleOpen = React.useCallback(() => {
+      if (disabled) return;
+      setIsOpen(true);
+      setInputValue("");
+      onInputValueChange?.("");
+    }, [disabled, onInputValueChange]);
+
+    React.useEffect(() => {
+      if (!isOpen) return;
+      requestAnimationFrame(() => inputRef.current?.focus());
+    }, [isOpen]);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (inputValue.trim()) addValue(inputValue);
+      } else if (e.key === "Backspace" && !inputValue && value.length > 0) {
+        removeValue(value[value.length - 1]);
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+        setInputValue("");
+        onInputValueChange?.("");
+      }
+    };
+
+    // Close on outside click
+    React.useEffect(() => {
+      const handler = (e: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(e.target as Node)
+        ) {
+          setIsOpen(false);
+          setInputValue("");
+          onInputValueChange?.("");
+        }
+      };
+      document.addEventListener("mousedown", handler);
+      return () => document.removeEventListener("mousedown", handler);
+    }, [onInputValueChange]);
+
+    const availablePresets = options.filter(
+      (o) =>
+        !isOptionSelected(o, value, sanitizeInput, maxLengthPerItem) &&
+        !o.disabled
+    );
+    const trimmedInput = inputValue.trim();
+    const filteredPresets = trimmedInput
+      ? availablePresets.filter((o) =>
+          o.label.toLowerCase().includes(trimmedInput.toLowerCase())
+        )
+      : availablePresets;
+
+    const isCustomDraft =
+      trimmedInput.length > 0 &&
+      !options.some(
+        (o) => o.label.toLowerCase() === trimmedInput.toLowerCase()
+      ) &&
+      !isValueAlreadySelected(
+        trimmedInput,
+        value,
+        options,
+        sanitizeInput,
+        maxLengthPerItem
+      ) &&
+      (maxItems == null || value.length < maxItems);
+
+    const summaryTriggerLabel =
+      value.length === 0 ? placeholder : selectedSummary;
+
+    const canAddMore = maxItems == null || value.length < maxItems;
+
+    return (
+      <div
+        ref={containerRef}
+        className={cn(
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] relative w-full",
+          className
+        )}
+        {...props}
+      >
+        <div className="font-[family-name:var(--font-v2,Inter,sans-serif)] relative w-full">
+          {isOpen && (
+            <div
+              className={cn(
+                creatableSelectTriggerVariants({ state: derivedState }),
+                "flex h-auto min-h-10 cursor-text items-start gap-2 py-1.5 text-left",
+                disabled &&
+                  "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+              )}
+              onClick={(e) => {
+                if (disabled) return;
+                if ((e.target as HTMLElement).closest("[data-chip-remove]")) {
+                  return;
+                }
+                inputRef.current?.focus();
+              }}
+            >
+              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5">
+                {triggerDisplay === "chips" &&
+                  value.map((val) => (
+                    <span
+                      key={val}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-semibold text-semantic-text-primary"
+                    >
+                      <span className="min-w-0 truncate">
+                        {labelForValue(
+                          val,
+                          options,
+                          sanitizeInput,
+                          maxLengthPerItem
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        data-chip-remove
+                        disabled={disabled}
+                        aria-label={`Remove ${labelForValue(
+                          val,
+                          options,
+                          sanitizeInput,
+                          maxLengthPerItem
+                        )}`}
+                        className={cn(
+                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          !disabled &&
+                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!disabled) removeValue(val);
+                        }}
+                      >
+                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                      </button>
+                    </span>
+                  ))}
+                {triggerDisplay === "summary" && value.length > 0 ? (
+                  <span className="line-clamp-2 text-base text-semantic-text-primary">
+                    {selectedSummary}
+                  </span>
+                ) : null}
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    const sanitized = sanitizeInput ? sanitizeInput(raw) : raw;
+                    if (sanitizeInput) {
+                      if (raw !== sanitized) onInvalidCharacters?.();
+                      else onValidInput?.();
+                    }
+                    const nextInput = normalizeDraftValue(raw);
+                    setInputValue(nextInput);
+                    onInputValueChange?.(nextInput);
+
+                    if (nextInput !== raw) {
+                      const input = e.currentTarget;
+                      const rawCursor = input.selectionStart ?? raw.length;
+                      const nextCursor = Math.min(
+                        normalizeDraftValue(raw.slice(0, rawCursor)).length,
+                        nextInput.length
+                      );
+                      restoreInputCursor(input, nextCursor);
+                    }
+                  }}
+                  maxLength={maxLengthPerItem}
+                  onKeyDown={handleKeyDown}
+                  disabled={disabled}
+                  aria-label={props["aria-label"] || placeholder}
+                  aria-labelledby={props["aria-labelledby"]}
+                  aria-describedby={descriptionId}
+                  aria-invalid={props["aria-invalid"] ?? state === "error"}
+                  className="min-w-[120px] flex-1 bg-transparent text-base text-semantic-text-primary outline-none placeholder:text-semantic-text-placeholder"
+                  role="combobox"
+                  aria-expanded={isOpen}
+                  aria-controls={listboxId}
+                  aria-haspopup="listbox"
+                  aria-autocomplete="list"
+                />
+              </div>
+              {maxLengthPerItem != null && showPerItemCharacterCounter ? (
+                <span className="mr-2 mt-1 shrink-0 self-start text-sm text-semantic-text-muted">
+                  {inputValue.length}/{maxLengthPerItem}
+                </span>
+              ) : null}
+              <ChevronDown
+                className="mt-1 size-4 shrink-0 self-start rotate-180 text-semantic-text-muted opacity-70 transition-transform"
+                aria-hidden
+              />
+            </div>
+          )}
+
+          {!isOpen && (
+            <div
+              role="combobox"
+              tabIndex={disabled ? -1 : 0}
+              aria-haspopup="listbox"
+              aria-expanded={false}
+              aria-controls={listboxId}
+              aria-disabled={disabled || undefined}
+              aria-label={props["aria-label"] || placeholder}
+              aria-labelledby={props["aria-labelledby"]}
+              aria-describedby={descriptionId}
+              aria-invalid={props["aria-invalid"] ?? state === "error"}
+              onKeyDown={(e) => {
+                if (disabled) return;
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleOpen();
+                }
+              }}
+              onClick={(e) => {
+                if (disabled) return;
+                if ((e.target as HTMLElement).closest("[data-chip-remove]")) {
+                  return;
+                }
+                handleOpen();
+              }}
+              className={cn(
+                creatableSelectTriggerVariants({ state: derivedState }),
+                "flex h-auto min-h-10 cursor-pointer items-start gap-2 py-1.5 text-left outline-none",
+                disabled &&
+                  "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+              )}
+            >
+              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5">
+                {triggerDisplay === "summary" ? (
+                  <span
+                    className={cn(
+                      "line-clamp-2 flex-1 text-base",
+                      value.length === 0
+                        ? "text-semantic-text-placeholder"
+                        : "text-semantic-text-primary"
+                    )}
+                  >
+                    {summaryTriggerLabel}
+                  </span>
+                ) : value.length === 0 ? (
+                  <span
+                    className={cn(
+                      "line-clamp-2 flex-1 text-base",
+                      "text-semantic-text-placeholder"
+                    )}
+                  >
+                    {placeholder}
+                  </span>
+                ) : (
+                  value.map((val) => (
+                    <span
+                      key={val}
+                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-semibold text-semantic-text-primary"
+                    >
+                      <span className="min-w-0 truncate">
+                        {labelForValue(
+                          val,
+                          options,
+                          sanitizeInput,
+                          maxLengthPerItem
+                        )}
+                      </span>
+                      <button
+                        type="button"
+                        data-chip-remove
+                        disabled={disabled}
+                        aria-label={`Remove ${labelForValue(
+                          val,
+                          options,
+                          sanitizeInput,
+                          maxLengthPerItem
+                        )}`}
+                        className={cn(
+                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-semantic-text-muted transition-colors",
+                          !disabled &&
+                            "hover:bg-semantic-bg-hover hover:text-semantic-text-primary"
+                        )}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (!disabled) removeValue(val);
+                        }}
+                      >
+                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                      </button>
+                    </span>
+                  ))
+                )}
+              </div>
+              <ChevronDown
+                className="mt-1 size-4 shrink-0 self-start text-semantic-text-muted opacity-70 transition-transform"
+                aria-hidden
+              />
+            </div>
+          )}
+
+          {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above. */}
+          {isOpen && (
+            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+              {createHintText ? (
+                <div className={creatablePrimaryRoleHintRowClassName}>
+                  <span className="text-sm text-semantic-text-muted">
+                    {createHintText}
+                  </span>
+                  <kbd className={creatableEnterHintKbdClassName}>Enter ↵</kbd>
+                </div>
+              ) : null}
+
+              {(canAddMore || filteredPresets.length > 0 || isCustomDraft) && (
+                <div
+                  className={cn(
+                    "flex flex-col px-4",
+                    filteredPresets.length > 0 ||
+                      (canAddMore && maxItems != null)
+                      ? "gap-2.5 pb-4 pt-2.5"
+                      : "py-1"
+                  )}
+                >
+                  {maxItems != null && canAddMore ? (
+                    <p className="m-0 text-sm text-semantic-text-muted">
+                      Max selections allowed: {maxItems}
+                    </p>
+                  ) : null}
+
+                  {filteredPresets.length > 0 ? (
+                    <div
+                      id={listboxId}
+                      role="listbox"
+                      className="flex flex-wrap gap-1.5"
+                    >
+                      {filteredPresets.map((option) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          role="option"
+                          aria-selected={false}
+                          disabled={disabled}
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                          }}
+                          onClick={() => addValue(option.value)}
+                          className="inline-flex items-center gap-2.5 whitespace-nowrap rounded border-0 bg-semantic-bg-ui px-2 py-1 text-left text-sm text-semantic-text-primary transition-colors hover:bg-semantic-bg-hover"
+                        >
+                          <Plus
+                            className="size-2.5 shrink-0 text-semantic-text-muted"
+                            strokeWidth={2}
+                            aria-hidden
+                          />
+                          {option.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {isCustomDraft ? (
+                    <button
+                      type="button"
+                      role="option"
+                      aria-selected={false}
+                      disabled={disabled}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                      }}
+                      onClick={() => addValue(inputValue)}
+                      className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 rounded-none px-4 py-2 text-left text-base text-semantic-text-link outline-none transition-colors cursor-pointer select-none hover:bg-semantic-bg-ui"
+                    >
+                      Create &ldquo;{trimmedInput}&rdquo;
+                    </button>
+                  ) : null}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {helperText && !isOpen ? (
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <Info className="size-[18px] shrink-0 text-semantic-text-muted" />
+            <p id={helperId} className="m-0 text-xs text-semantic-text-muted">
+              {helperText}
+            </p>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+);
+CreatableMultiSelect.displayName = "CreatableMultiSelect";
+
+export { CreatableMultiSelect, creatableMultiSelectTriggerVariants };

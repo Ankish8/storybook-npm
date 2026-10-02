@@ -1,0 +1,1323 @@
+{
+  "componentCount": 56,
+  "storyCount": 747,
+  "guides": [
+    "V2/Foundations",
+    "V2/Introduction",
+    "V2/Migration"
+  ],
+  "missingViews": [],
+  "components": [
+    {
+      "title": "V2/Components/Accordion",
+      "storyCount": 15,
+      "stories": [
+        "All Modes",
+        "All Variants",
+        "Bordered",
+        "Controlled",
+        "Custom content",
+        "Default",
+        "FAQ",
+        "Multiple Mode",
+        "Overview",
+        "Single Mode",
+        "States",
+        "Usage",
+        "With Disabled Item",
+        "Without Chevron",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/accordion.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Alert",
+      "storyCount": 22,
+      "stories": [
+        "All Presentations",
+        "All Variants",
+        "Closable",
+        "Complex Example",
+        "Controlled Visibility",
+        "Default",
+        "Destructive",
+        "Error",
+        "Header",
+        "Info",
+        "Overlay",
+        "Overview",
+        "Screenshot Reference",
+        "States",
+        "Success",
+        "Usage",
+        "Warning",
+        "With Custom Icon",
+        "With Single Action",
+        "With Two Actions",
+        "Without Icon",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/alert.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Avatar",
+      "storyCount": 19,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Custom Content",
+        "Extra Large",
+        "Extra Small",
+        "Filled",
+        "Large",
+        "Medium",
+        "Outline",
+        "Overview",
+        "Profile composition",
+        "Small",
+        "Soft",
+        "States",
+        "Usage",
+        "With Custom Initials",
+        "With Image",
+        "With Status",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/avatar.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Badge",
+      "storyCount": 19,
+      "stories": [
+        "Active",
+        "All sizes",
+        "All variants",
+        "As a link",
+        "Destructive",
+        "Disabled",
+        "Failed",
+        "Information",
+        "Large",
+        "Outline",
+        "Overview",
+        "Primary",
+        "Secondary",
+        "Small",
+        "Usage",
+        "Variants and sizes",
+        "Warning",
+        "With icons",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/badge.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/BouncingLoader",
+      "storyCount": 6,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Larger Dots",
+        "Overview",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/bouncing-loader.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Breadcrumbs",
+      "storyCount": 5,
+      "stories": [
+        "All Variants",
+        "More Pages",
+        "Overview",
+        "Usage",
+        "With Icons"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/breadcrumbs.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Button",
+      "storyCount": 21,
+      "stories": [
+        "All sizes",
+        "All variants",
+        "Dashed",
+        "Default",
+        "Destructive",
+        "Disabled",
+        "Ghost",
+        "Icon only",
+        "Large",
+        "Link",
+        "Loading",
+        "Outline",
+        "Overview",
+        "Primary",
+        "Secondary",
+        "Small",
+        "States",
+        "Success",
+        "Usage",
+        "With icons",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/button.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ButtonGroup",
+      "storyCount": 10,
+      "stories": [
+        "All Variants",
+        "Disabled",
+        "Icons Only",
+        "Labels Only",
+        "Overview",
+        "Primary",
+        "States",
+        "Toggle",
+        "Toggle Labels",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/button-group.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Checkbox",
+      "storyCount": 17,
+      "stories": [
+        "All sizes",
+        "All variants",
+        "Checked",
+        "Disabled",
+        "Disabled Unchecked",
+        "Indeterminate",
+        "Label on the left",
+        "Label positions",
+        "Large",
+        "Overview",
+        "Separate label",
+        "Small",
+        "States",
+        "Unchecked",
+        "Usage",
+        "With a label",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/checkbox.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ConfirmationModal",
+      "storyCount": 10,
+      "stories": [
+        "All variants",
+        "Default",
+        "Destructive",
+        "Loading",
+        "Long Content",
+        "Overview",
+        "States",
+        "Usage",
+        "Without Description",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/confirmation-modal.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ContactListItem",
+      "storyCount": 8,
+      "stories": [
+        "All compositions",
+        "Long Name",
+        "Name Only",
+        "Overview",
+        "Selected",
+        "States",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/contact-list-item.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/CreatableMultiSelect",
+      "storyCount": 16,
+      "stories": [
+        "All Variants",
+        "Character Guard",
+        "Character Limit",
+        "Default",
+        "Disabled",
+        "Disabled Presets",
+        "Empty Options",
+        "Error State",
+        "Height and width",
+        "Overview",
+        "Selection Limit",
+        "States",
+        "Summary",
+        "Usage",
+        "With Preselected Values",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/creatable-multi-select.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/CreatableSelect",
+      "storyCount": 14,
+      "stories": [
+        "All Variants",
+        "Character Guard",
+        "Character Limit",
+        "Default",
+        "Disabled",
+        "Empty Options",
+        "Error State",
+        "Height and width",
+        "Overview",
+        "States",
+        "Usage",
+        "With Disabled Options",
+        "With Preselected Value",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/creatable-select.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/DateDivider",
+      "storyCount": 6,
+      "stories": [
+        "All label formats",
+        "Calendar Date",
+        "Long Label",
+        "Overview",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/date-divider.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/DateRangePicker",
+      "storyCount": 14,
+      "stories": [
+        "All Variants",
+        "Custom Presets",
+        "Date Bounds",
+        "Disabled",
+        "Empty",
+        "Error",
+        "Height and width",
+        "No Presets",
+        "Overview",
+        "Partial Range",
+        "Past Dates Disabled",
+        "States",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/date-range-picker.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/DateTimePicker",
+      "storyCount": 17,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Date Bounds",
+        "Date Only",
+        "Disabled",
+        "Empty",
+        "Error",
+        "Overview",
+        "Partial Value",
+        "Past Dates Disabled",
+        "Read Only",
+        "States",
+        "Time Only",
+        "Time Range",
+        "Usage",
+        "With Seconds",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/date-time-picker.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/DeleteConfirmationModal",
+      "storyCount": 11,
+      "stories": [
+        "Compositions",
+        "Custom Confirm Text",
+        "Custom Title",
+        "Default",
+        "Loading",
+        "Long Content",
+        "Overview",
+        "States",
+        "Usage",
+        "Without Description",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/delete-confirmation-modal.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Dialog",
+      "storyCount": 14,
+      "stories": [
+        "All sizes",
+        "All variants",
+        "Default",
+        "Extra Large",
+        "Full",
+        "Large",
+        "Loading action",
+        "Overview",
+        "Small",
+        "States",
+        "Usage",
+        "With an icon",
+        "Without the corner close button",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/dialog.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Dropdown Menu",
+      "storyCount": 15,
+      "stories": [
+        "All variants",
+        "Checkboxes",
+        "Default",
+        "Destructive",
+        "Disabled Items",
+        "Icon Trigger",
+        "Overview",
+        "Radio Groups",
+        "States",
+        "Submenus",
+        "Usage",
+        "With Description And Suffix",
+        "With Shortcuts",
+        "asChild link",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/dropdown-menu.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/EmptyState",
+      "storyCount": 10,
+      "stories": [
+        "All Variants",
+        "Inbox empty state",
+        "Overview",
+        "Search empty state",
+        "States",
+        "Usage",
+        "With Icon",
+        "Without action buttons",
+        "Without icon",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/empty-state.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/FileUpload",
+      "storyCount": 8,
+      "stories": [
+        "All Variants",
+        "Disabled",
+        "Error",
+        "Multiple Files",
+        "Overview",
+        "States",
+        "Usage",
+        "With Files"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/file-upload.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/FormModal",
+      "storyCount": 16,
+      "stories": [
+        "All sizes",
+        "Custom Buttons",
+        "Default",
+        "Extra Large",
+        "Full",
+        "Large",
+        "Loading",
+        "Long Content",
+        "Multiple Field Types",
+        "Overview",
+        "Save Disabled",
+        "Small",
+        "States",
+        "Usage",
+        "Without Description",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/form-modal.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ImageMedia",
+      "storyCount": 8,
+      "stories": [
+        "All height caps",
+        "Compact",
+        "Content states",
+        "Css Height",
+        "Overview",
+        "Tall",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/image-media.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Input",
+      "storyCount": 13,
+      "stories": [
+        "All variants",
+        "Default",
+        "Disabled",
+        "Error",
+        "Height and width",
+        "Number inputs",
+        "Overview",
+        "Read Only",
+        "States",
+        "Usage",
+        "With Value",
+        "With focus check icon",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/input.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/MultiSelect",
+      "storyCount": 26,
+      "stories": [
+        "All variants",
+        "Controlled form",
+        "Default",
+        "Detailed rows",
+        "Disabled",
+        "Disabled options",
+        "Empty options",
+        "Error",
+        "Form example",
+        "Grouped detailed rows",
+        "Height and width",
+        "Inside a dialog",
+        "Lazy loading",
+        "Loading",
+        "Loading more",
+        "Long option labels",
+        "Overview",
+        "Searchable",
+        "Select all",
+        "Selected chips",
+        "Selection limit",
+        "States",
+        "Summary",
+        "Usage",
+        "Validation states",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/multi-select.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/NumberStepField",
+      "storyCount": 9,
+      "stories": [
+        "All Variants",
+        "At Maximum",
+        "At Minimum",
+        "Disabled",
+        "Minutes",
+        "Overview",
+        "States",
+        "Usage",
+        "V 1 Vs V 2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/number-step-field.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/OtpInput",
+      "storyCount": 10,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Disabled",
+        "Error",
+        "Filled",
+        "Four Digits",
+        "Overview",
+        "Six Digits",
+        "States",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/otp-input.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/PageFooter",
+      "storyCount": 7,
+      "stories": [
+        "All Variants",
+        "Desktop",
+        "Disabled",
+        "Mobile",
+        "Overview",
+        "States",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/page-footer.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/PageHeader",
+      "storyCount": 16,
+      "stories": [
+        "Accessibility",
+        "All layouts",
+        "Header With Actions",
+        "Header With Back Button",
+        "Horizontal Layout",
+        "Long Title",
+        "Long-content guidance",
+        "Mobile View",
+        "Multiple Actions",
+        "Overview",
+        "States",
+        "Usage",
+        "Vertical Layout",
+        "With Badge And Info",
+        "Without Actions",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/page-header.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Pagination",
+      "storyCount": 19,
+      "stories": [
+        "Accessibility",
+        "All Compositions",
+        "All alignments",
+        "Composed Links",
+        "Few Pages",
+        "First Page Active",
+        "Icons Only",
+        "Last Page Active",
+        "Overview",
+        "Pagination Info Only",
+        "States",
+        "Usage",
+        "Widget",
+        "Widget Few Pages",
+        "Widget First Page",
+        "Widget Last Page",
+        "With Item Count",
+        "With More Pages",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/pagination.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Panel",
+      "storyCount": 13,
+      "stories": [
+        "All compositions",
+        "All sizes",
+        "Collapsed",
+        "Interactive open and close",
+        "Large",
+        "Overview",
+        "Scrollable",
+        "Small",
+        "States",
+        "Usage",
+        "With Custom Header",
+        "With Footer",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/panel.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Phone Input",
+      "storyCount": 17,
+      "stories": [
+        "All variants",
+        "Country chooser",
+        "Custom flag",
+        "Default",
+        "Digit limit",
+        "Disabled",
+        "Empty",
+        "Error",
+        "Form example",
+        "Height and width",
+        "No chevron",
+        "Overview",
+        "Read only",
+        "States",
+        "US number",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/phone-input.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ProgressIndicator",
+      "storyCount": 9,
+      "stories": [
+        "All Variants",
+        "Bottom Label",
+        "Circle",
+        "Hidden Label",
+        "Indeterminate",
+        "Overview",
+        "Semi Circle",
+        "States",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/progress-indicator.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Radio",
+      "storyCount": 6,
+      "stories": [
+        "All Variants",
+        "Disabled",
+        "Overview",
+        "Selected",
+        "States",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/radio.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ReadableField",
+      "storyCount": 9,
+      "stories": [
+        "All Variants",
+        "Base Url",
+        "Disabled Header Action",
+        "Overview",
+        "Secret",
+        "States",
+        "Usage",
+        "With Header Action",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/readable-field.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ReplyQuote",
+      "storyCount": 8,
+      "stories": [
+        "All compositions",
+        "Interactive",
+        "Long Text",
+        "Overview",
+        "States",
+        "Usage",
+        "With Thumbnail",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/reply-quote.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Scrollbar",
+      "storyCount": 7,
+      "stories": [
+        "All Variants",
+        "Dark",
+        "Horizontal",
+        "Overview",
+        "States",
+        "Usage",
+        "Without Controls"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/scrollbar.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/SearchFilter",
+      "storyCount": 15,
+      "stories": [
+        "All sizes",
+        "Disabled",
+        "Empty Results",
+        "Large",
+        "Long Labels",
+        "Min Search Length",
+        "Overview",
+        "Search Disabled",
+        "Search Modes",
+        "Selected",
+        "Small",
+        "States",
+        "Text Search",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/search-filter.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Select",
+      "storyCount": 16,
+      "stories": [
+        "All variants",
+        "Authentication example",
+        "Default",
+        "Disabled",
+        "Empty options",
+        "Error",
+        "Height and width",
+        "Long list",
+        "Long option labels",
+        "Overview",
+        "States",
+        "Usage",
+        "With disabled items",
+        "With groups",
+        "With selected value",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/select.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/SelectField",
+      "storyCount": 28,
+      "stories": [
+        "Action items",
+        "All variants",
+        "Controlled form",
+        "Controlled search",
+        "Default",
+        "Disabled",
+        "Empty options",
+        "End of list",
+        "Error",
+        "Form example",
+        "Height and width",
+        "Lazy loading",
+        "Loading",
+        "Loading more",
+        "Long option labels",
+        "Overview",
+        "Searchable",
+        "Searchable groups",
+        "Searchable separated groups",
+        "States",
+        "Usage",
+        "Validation states",
+        "Webhook form",
+        "With groups",
+        "With helper text",
+        "With required label",
+        "onSelect callback",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/select-field.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/ShimmeringText",
+      "storyCount": 6,
+      "stories": [
+        "All Variants",
+        "Importing",
+        "Overview",
+        "Paused",
+        "States",
+        "Usage"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/shimmering-text.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Skeleton",
+      "storyCount": 8,
+      "stories": [
+        "All Shapes",
+        "All Variants",
+        "Circle",
+        "Overview",
+        "Rectangle",
+        "Subtle",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/skeleton.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Spinner",
+      "storyCount": 10,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Extra Large",
+        "Inverted",
+        "Large",
+        "Muted",
+        "Overview",
+        "Small",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/spinner.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Stepper",
+      "storyCount": 9,
+      "stories": [
+        "All Sizes",
+        "All Variants",
+        "Disabled",
+        "Icons",
+        "Overview",
+        "Small",
+        "States",
+        "Usage",
+        "Vertical"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/stepper.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Switch",
+      "storyCount": 15,
+      "stories": [
+        "All sizes",
+        "All variants",
+        "Disabled",
+        "Disabled off",
+        "Label on the left",
+        "Label positions",
+        "Large",
+        "Off",
+        "On",
+        "Overview",
+        "Small",
+        "States",
+        "Usage",
+        "With a label",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/switch.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/SystemMessage",
+      "storyCount": 8,
+      "stories": [
+        "All formats",
+        "Content states",
+        "Long Text",
+        "Multiple Emphasis",
+        "Overview",
+        "Plain Text",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/system-message.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Table",
+      "storyCount": 25,
+      "stories": [
+        "All sizes",
+        "All variants",
+        "Borderless",
+        "Borders",
+        "Content wrapping",
+        "Density guidance",
+        "Empty State",
+        "Header functionality",
+        "Highlighted Row",
+        "Large",
+        "Loading",
+        "Long list (not virtualized)",
+        "Medium",
+        "Overview",
+        "Pagination loading",
+        "Scroll",
+        "Sizes",
+        "Small",
+        "States",
+        "Sticky column",
+        "Usage",
+        "Webhook table",
+        "With stacked tags",
+        "Wrapped",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/table.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Tabs",
+      "storyCount": 14,
+      "stories": [
+        "All layouts",
+        "All variants",
+        "Auto Width",
+        "Controlled",
+        "Full width with counts",
+        "Horizontal",
+        "Manual Activation",
+        "Overview",
+        "States",
+        "Usage",
+        "Vertical",
+        "With Counts",
+        "With Disabled Tab",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/tabs.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Tag",
+      "storyCount": 22,
+      "stories": [
+        "Accent",
+        "All sizes",
+        "All variants",
+        "Destructive",
+        "Disabled dismiss",
+        "Dismissible",
+        "Error",
+        "Group with overflow",
+        "Info",
+        "Large",
+        "Overview",
+        "Primary",
+        "Removable",
+        "Secondary",
+        "Small",
+        "Success",
+        "Usage",
+        "Variants and sizes",
+        "Warning",
+        "With a label",
+        "With icons",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/tag.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/TextField",
+      "storyCount": 25,
+      "stories": [
+        "All features",
+        "All sizes",
+        "All variants",
+        "Character count",
+        "Clearable",
+        "Controlled form",
+        "Default",
+        "Disabled",
+        "Empty",
+        "Error",
+        "Form example",
+        "Loading",
+        "Overview",
+        "Password",
+        "Read only",
+        "Size comparison",
+        "Small size",
+        "States",
+        "States with addons",
+        "Usage",
+        "Validation states",
+        "With icons",
+        "With prefix / suffix",
+        "With required label",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/text-field.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Textarea",
+      "storyCount": 19,
+      "stories": [
+        "All sizes",
+        "All states",
+        "All variants",
+        "Default",
+        "Disabled",
+        "Large size",
+        "Overview",
+        "Read only",
+        "Required",
+        "Resizable",
+        "Small size",
+        "Soft character limit",
+        "States",
+        "Usage",
+        "With character count",
+        "With error",
+        "With helper text",
+        "With label",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/textarea.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Toast",
+      "storyCount": 15,
+      "stories": [
+        "All variants",
+        "Default",
+        "Destructive",
+        "Disabled Action",
+        "Error",
+        "Info",
+        "Long Content",
+        "Overview",
+        "States",
+        "Success",
+        "Usage",
+        "Warning",
+        "Without Action",
+        "Without Description",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/toast.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Tooltip",
+      "storyCount": 13,
+      "stories": [
+        "All variants",
+        "Bottom",
+        "Default",
+        "Left",
+        "Long Content",
+        "Overview",
+        "Right",
+        "Sides and offsets",
+        "States",
+        "Usage",
+        "With Title",
+        "Without Arrow",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/tooltip.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/Typography",
+      "storyCount": 12,
+      "stories": [
+        "All Colors",
+        "All Sizes",
+        "All Variants",
+        "Body",
+        "Display",
+        "Headline",
+        "Label",
+        "Overview",
+        "States",
+        "Title",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/typography.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/UiCard",
+      "storyCount": 10,
+      "stories": [
+        "Action",
+        "All Variants",
+        "Disabled",
+        "Metrics",
+        "Overview",
+        "Selected",
+        "States",
+        "Template",
+        "Usage",
+        "With Icon"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/ui-card.stories.tsx"
+      ]
+    },
+    {
+      "title": "V2/Components/UnreadSeparator",
+      "storyCount": 7,
+      "stories": [
+        "Count states",
+        "Custom Label",
+        "No Unread",
+        "Overview",
+        "Singular",
+        "Usage",
+        "v1 vs v2"
+      ],
+      "docs": true,
+      "importPaths": [
+        "./src/components/ui/v2/unread-separator.stories.tsx"
+      ]
+    }
+  ],
+  "outputDirectory": "/tmp/myoperator-v2-completion-preview-final",
+  "preview": "http://127.0.0.1:6040",
+  "sourceUnchangedDuringBuild": true,
+  "previewHelperSha256": "f35bc23f37e5f78ccb57d7eec17734e9834a8207b7f2da864ed830e1228d6232"
+}

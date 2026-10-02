@@ -1,0 +1,23 @@
+{
+  "name": "multi-select",
+  "replacements": [
+    [
+      "flex min-h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)]",
+      "flex min-h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout"
+    ],
+    [
+      "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus/50 focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+      "border border-solid border-semantic-border-input focus:outline-none hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    ],
+    [
+      "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "absolute left-0 right-0 z-[100] mt-1 w-full rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+      "after": "absolute left-0 right-0 z-[100] mt-1 w-full rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md"
+    }
+  ]
+}

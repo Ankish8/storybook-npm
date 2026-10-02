@@ -1,0 +1,73 @@
+{
+  "name": "toast",
+  "replacements": [
+    [
+      "fixed top-0 z-[9999999] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      "fixed top-0 z-[9999999] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]"
+    ],
+    [
+      "group pointer-events-auto relative flex w-full items-center justify-between gap-4 overflow-hidden rounded-[5px] border border-solid p-3 shadow-md transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+      "group pointer-events-auto relative flex w-full flex-col items-stretch overflow-hidden rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full"
+    ],
+    [
+      "border-transparent bg-semantic-success-surface text-semantic-text-primary",
+      "border-[var(--color-success-200,#ABEFC6)] bg-semantic-success-surface text-semantic-success-text"
+    ],
+    [
+      "border-transparent bg-semantic-error-surface text-semantic-text-primary",
+      "border-[var(--color-error-200,#FECDCA)] bg-semantic-error-surface text-semantic-error-text"
+    ],
+    [
+      "border-transparent bg-semantic-warning-surface text-semantic-text-primary",
+      "border-[var(--color-warning-200,#FEDF89)] bg-semantic-warning-surface text-semantic-warning-text"
+    ],
+    [
+      "border-transparent bg-semantic-info-surface text-semantic-text-primary",
+      "border-semantic-info-border bg-semantic-info-surface text-semantic-info-text"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary border-solid",
+      "after": "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary"
+    },
+    {
+      "before": [
+        "tw-inline-flex tw-h-8 tw-shrink-0 tw-items-center tw-justify-center tw-rounded tw-border tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-bg-transparent tw-px-3 tw-text-sm tw-font-medium tw-transition-colors hover:tw-bg-[var(--semantic-bg-ui,#F5F5F5)] focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-[var(--semantic-info-primary,#4275D6)] focus:tw-ring-offset-2 disabled:tw-pointer-events-none disabled:tw-opacity-50",
+        "group-[.success]:tw-border-semantic-success-primary/30 group-[.success]:hover:tw-border-semantic-success-primary/50 group-[.success]:hover:tw-bg-semantic-success-primary/10",
+        "group-[.error]:tw-border-semantic-error-primary/30 group-[.error]:hover:tw-border-semantic-error-primary/50 group-[.error]:hover:tw-bg-semantic-error-primary/10",
+        "group-[.warning]:tw-border-semantic-warning-primary/30 group-[.warning]:hover:tw-border-semantic-warning-primary/50 group-[.warning]:hover:tw-bg-semantic-warning-primary/10",
+        "group-[.info]:tw-border-semantic-info-primary/30 group-[.info]:hover:tw-border-semantic-info-primary/50 group-[.info]:hover:tw-bg-semantic-info-primary/10"
+      ],
+      "after": [
+        "tw-inline-flex tw-h-8 tw-shrink-0 tw-items-center tw-justify-center tw-rounded-lg tw-border tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-bg-[var(--semantic-bg-primary,#FFFFFF)] tw-px-4 tw-font-v2 tw-text-xs tw-font-semibold tw-tracking-[0.06px] tw-text-[var(--semantic-text-secondary,#343E55)] tw-shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] tw-transition-colors hover:tw-bg-[var(--semantic-bg-ui,#F5F5F5)] focus-visible:tw-outline focus-visible:tw-outline-1 focus-visible:tw-outline-offset-[3px] focus-visible:tw-outline-[var(--semantic-primary,#343E55)] disabled:tw-pointer-events-none disabled:tw-opacity-50"
+      ]
+    },
+    {
+      "before": [
+        "tw-flex tw-items-center tw-gap-4",
+        "tw-size-6 tw-shrink-0",
+        "success",
+        "tw-text-[var(--semantic-success-primary,#17B26A)]",
+        "error",
+        "tw-text-[var(--semantic-error-primary,#F04438)]",
+        "warning",
+        "tw-text-[var(--semantic-warning-primary,#F79009)]",
+        "info",
+        "tw-text-[var(--semantic-info-primary,#4275D6)]",
+        "tw-flex tw-flex-col tw-gap-0.5"
+      ],
+      "after": [
+        "default",
+        "sm:tw-w-[384px] tw-max-w-full",
+        "tw-flex tw-w-full tw-items-center tw-gap-4 tw-p-4",
+        "tw-border-b-[0.4px] tw-border-solid tw-border-inherit",
+        "tw-size-5 tw-shrink-0",
+        "tw-flex-1",
+        "tw-flex-1 tw-text-sm",
+        "tw-flex tw-w-full tw-items-center tw-gap-3 tw-px-4 tw-py-3",
+        "tw-flex-1"
+      ]
+    }
+  ]
+}

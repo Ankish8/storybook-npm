@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "include": [
+    "../../src/components/ui/v2/button.stories.tsx",
+    "../../src/components/ui/v2/badge.stories.tsx",
+    "../../src/components/ui/v2/tag.stories.tsx",
+    "../../src/components/ui/v2/input.stories.tsx",
+    "../../src/components/ui/v2/checkbox.stories.tsx",
+    "../../src/components/ui/v2/switch.stories.tsx"
+  ],
+  "exclude": []
+}

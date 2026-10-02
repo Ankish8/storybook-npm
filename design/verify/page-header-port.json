@@ -1,0 +1,14 @@
+{
+  "name": "page-header",
+  "replacements": [
+    [
+      "m-0 text-lg font-semibold leading-normal text-semantic-text-primary truncate",
+      "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-normal text-semantic-text-primary truncate"
+    ],
+    [
+      "m-0 text-sm text-semantic-text-muted font-normal mt-1 line-clamp-2",
+      "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-text-muted font-normal mt-0.5 line-clamp-2"
+    ]
+  ],
+  "unmatched": []
+}

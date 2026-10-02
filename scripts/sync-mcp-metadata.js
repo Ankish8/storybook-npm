@@ -17,6 +17,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from './lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { COMPONENT_META, NPM_ONLY_COMPONENTS } from './component-meta.js'
@@ -41,13 +42,12 @@ function escapeForTemplate(str) {
 }
 
 function getComponentsFromSource() {
-  const files = fs.readdirSync(COMPONENTS_DIR)
-    .filter(file => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.test.'))
-  return files.map(file => file.replace('.tsx', ''))
+  const files = uiComponentFiles(COMPONENTS_DIR)
+  return files.map(file => file.replace('.tsx', '').replace(/^v2\//, 'v2-'))
 }
 
 function readComponentSource(componentName) {
-  const filePath = path.join(COMPONENTS_DIR, `${componentName}.tsx`)
+  const filePath = path.join(COMPONENTS_DIR, `${componentName.replace(/^v2-/, "v2/")}.tsx`)
   if (fs.existsSync(filePath)) {
     return fs.readFileSync(filePath, 'utf-8')
   }

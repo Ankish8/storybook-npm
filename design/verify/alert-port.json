@@ -1,0 +1,39 @@
+{
+  "name": "alert",
+  "replacements": [
+    [
+      "relative w-full rounded border border-solid p-4 text-sm text-semantic-text-primary [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4",
+      "relative w-full rounded-lg border border-solid p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm [&>svg~*]:pl-8 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-current"
+    ],
+    [
+      "m-0 mt-1 text-sm",
+      "m-0 mt-1 text-xs"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "bg-semantic-bg-ui border-semantic-border-layout [&>svg]:text-semantic-text-primary border-solid",
+      "after": "bg-semantic-bg-primary border-semantic-border-layout text-semantic-text-primary"
+    },
+    {
+      "before": "bg-semantic-success-surface border-semantic-success-border [&>svg]:text-semantic-success-primary border-solid",
+      "after": "bg-semantic-success-surface border-[var(--color-success-200,#ABEFC6)] text-semantic-success-text"
+    },
+    {
+      "before": "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary border-solid",
+      "after": "bg-semantic-error-surface border-[var(--color-error-200,#FECDCA)] text-semantic-error-text"
+    },
+    {
+      "before": "bg-semantic-error-surface border-semantic-error-border [&>svg]:text-semantic-error-primary border-solid",
+      "after": "bg-semantic-error-surface border-[var(--color-error-200,#FECDCA)] text-semantic-error-text"
+    },
+    {
+      "before": "bg-semantic-warning-surface border-semantic-warning-border [&>svg]:text-semantic-warning-primary border-solid",
+      "after": "bg-semantic-warning-surface border-[var(--color-warning-200,#FEDF89)] text-semantic-warning-text"
+    },
+    {
+      "before": "bg-semantic-info-surface border-semantic-info-border [&>svg]:text-semantic-info-primary border-solid",
+      "after": "bg-semantic-info-surface border-semantic-info-border text-semantic-info-text"
+    }
+  ]
+}

@@ -20,6 +20,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from './lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -215,17 +216,11 @@ function main() {
   console.log('=' .repeat(50))
 
   // Get component files
-  let files = fs.readdirSync(COMPONENTS_DIR)
-    .filter(f =>
-      f.endsWith('.tsx') &&
-      !f.includes('.stories.') &&
-      !f.includes('.test.') &&
-      f !== 'index.tsx'
-    )
+  let files = uiComponentFiles(COMPONENTS_DIR)
 
   // Filter to specific component if provided
   if (specificComponent) {
-    const targetFile = `${specificComponent}.tsx`
+    const targetFile = `${specificComponent.replace(/^v2-/, "v2/")}.tsx`
     if (!files.includes(targetFile)) {
       console.error(`\n❌ Component not found: ${specificComponent}`)
       process.exit(1)

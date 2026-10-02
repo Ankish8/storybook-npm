@@ -27,6 +27,16 @@ const REGISTRY_SCRIPT = path.resolve(__dirname, '../packages/cli/scripts/generat
 
 // Parse arguments
 const args = process.argv.slice(2)
+if (args.includes('--v2')) {
+  const { createV2Component } = await import('./lib/create-v2-component.js')
+  try {
+    createV2Component(path.resolve(__dirname, '..'), args.filter(arg => arg !== '--v2'))
+  } catch (error) {
+    console.error(`Error: ${error.message}`)
+    process.exit(1)
+  }
+  process.exit(0)
+}
 if (args.length === 0) {
   console.error('Usage: node scripts/create-component.js <component-name> [description]')
   console.error('Example: node scripts/create-component.js avatar "A circular avatar component"')

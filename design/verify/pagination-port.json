@@ -1,0 +1,21 @@
+{
+  "name": "pagination",
+  "replacements": [
+    [
+      "gap-1 px-2.5 sm:pl-2.5",
+      "gap-1 px-2.5 sm:pl-2.5 text-sm leading-5 tracking-[0.014px]"
+    ],
+    [
+      "gap-1 px-2.5 sm:pr-2.5",
+      "gap-1 px-2.5 sm:pr-2.5 text-sm leading-5 tracking-[0.014px]"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": [],
+      "after": [
+        "tw-text-[var(--semantic-text-muted,#717680)] hover:tw-text-[var(--semantic-text-secondary,#343E55)]"
+      ]
+    }
+  ]
+}

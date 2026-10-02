@@ -19,6 +19,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from './lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -35,11 +36,7 @@ function collectComponentFiles() {
 
   // UI components
   const uiDir = path.join(ROOT, 'src/components/ui')
-  for (const f of fs.readdirSync(uiDir)) {
-    if (f.endsWith('.tsx') && !f.includes('.stories.') && !f.includes('.test.')) {
-      files.push(path.join(uiDir, f))
-    }
-  }
+  for (const f of uiComponentFiles(uiDir)) files.push(path.join(uiDir, f))
 
   // Custom components (recursive)
   const customDir = path.join(ROOT, 'src/components/custom')

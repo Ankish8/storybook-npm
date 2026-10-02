@@ -1,0 +1,39 @@
+{
+  "name": "confirmation-modal",
+  "replacements": [],
+  "unmatched": [
+    {
+      "before": [],
+      "after": [
+        "lucide-react"
+      ]
+    },
+    {
+      "before": [
+        "sm",
+        "tw-sr-only",
+        "tw-gap-2 sm:tw-gap-0"
+      ],
+      "after": [
+        "sm",
+        "tw-gap-0 tw-overflow-hidden tw-p-0",
+        "tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-p-4",
+        "tw-flex tw-size-6 tw-shrink-0 tw-items-center tw-justify-center",
+        "destructive",
+        "tw-text-[var(--semantic-error-primary,#F04438)]",
+        "tw-text-[var(--semantic-info-primary,#4275D6)]",
+        "destructive",
+        "tw-size-[18px]",
+        "tw-size-[18px]",
+        "tw-min-w-0 tw-flex-1",
+        "tw-flex tw-size-6 tw-shrink-0 tw-items-center tw-justify-center tw-rounded-md tw-text-[var(--semantic-text-muted,#717680)] tw-transition-colors hover:tw-bg-[var(--semantic-bg-ui,#F5F5F5)] hover:tw-text-[var(--semantic-text-primary,#181D27)] focus-visible:tw-outline focus-visible:tw-outline-1 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-[var(--semantic-primary,#343E55)]",
+        "Close",
+        "tw-size-3",
+        "tw-px-4 tw-py-3",
+        "tw-text-sm tw-text-[var(--semantic-text-secondary,#343E55)]",
+        "tw-sr-only",
+        "tw-gap-2 tw-px-4 tw-pb-4 tw-pt-3 sm:tw-space-x-0 [&>button]:tw-flex-1"
+      ]
+    }
+  ]
+}

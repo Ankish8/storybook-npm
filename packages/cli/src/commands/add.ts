@@ -166,6 +166,22 @@ export async function add(components: string[], options: AddOptions) {
     process.exit(1)
   }
 
+  // v2 components ship with plain Tailwind classes (no prefix). In a project that
+  // builds Tailwind with a prefix, those classes generate no CSS until an
+  // unprefixed Tailwind pass also scans them — say so instead of failing silently.
+  if (prefix) {
+    const unprefixedNames = components.filter((name) => registry[name].unprefixed)
+    if (unprefixedNames.length > 0) {
+      console.log(
+        chalk.yellow(
+          `\n  ⚠ ${unprefixedNames.join(', ')} ${unprefixedNames.length === 1 ? 'uses' : 'use'} plain Tailwind classes (no "${prefix}" prefix).` +
+            `\n    Your project builds Tailwind with prefix "${prefix}", so ${unprefixedNames.length === 1 ? 'it' : 'they'} will only style` +
+            `\n    once an unprefixed Tailwind pass also scans the v2 folder.\n`
+        )
+      )
+    }
+  }
+
   // Get components directory
   const componentsDir = path.join(cwd, options.path)
 

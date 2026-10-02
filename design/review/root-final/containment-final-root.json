@@ -1,0 +1,78 @@
+[
+  {
+    "id": "v2-components-badge--v-1-vs-v-2",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-tag--v-1-vs-v-2",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-input--states",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [
+      {
+        "overflow": "auto",
+        "scroll": 1000,
+        "width": 948
+      }
+    ],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-checkbox--states",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-switch--states",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-buttongroup--all-variants",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-breadcrumbs--all-variants",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-radio--states",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-progressindicator--all-variants",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  },
+  {
+    "id": "v2-components-fileupload--states",
+    "document": 980,
+    "layout": "sb-main-padded sb-show-main",
+    "localScroll": [],
+    "viewport": 980
+  }
+]

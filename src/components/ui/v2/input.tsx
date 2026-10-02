@@ -1,0 +1,265 @@
+import * as React from "react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { Check } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+const blockedNumberKeys = new Set(["e", "E"]);
+const decimalSeparatorKeys = new Set([".", ","]);
+const consecutiveSpaceInputTypes = new Set([
+  "email",
+  "password",
+  "search",
+  "tel",
+  "text",
+  "url",
+]);
+
+function shouldPreventConsecutiveSpacesForType(
+  type: React.HTMLInputTypeAttribute | undefined
+): boolean {
+  return type == null || consecutiveSpaceInputTypes.has(type);
+}
+
+function collapseConsecutiveSpaces(value: string): string {
+  return value.replace(/ {2,}/g, " ");
+}
+
+function getCollapsedCursorPosition(value: string, cursorPosition: number) {
+  return collapseConsecutiveSpaces(value.slice(0, cursorPosition)).length;
+}
+
+/**
+ * Input variants for different visual states
+ */
+const inputVariants = cva(
+  "h-10 w-full box-border rounded-lg bg-semantic-bg-primary px-4 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-6 text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:text-base file:font-semibold file:text-semantic-text-primary placeholder:text-semantic-text-placeholder disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+  {
+    variants: {
+      state: {
+        default:
+          "border border-solid border-semantic-border-input enabled:hover:border-[var(--color-primary-100)] focus:outline-none focus:border-semantic-border-accent focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+        error:
+          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+      },
+    },
+    defaultVariants: {
+      state: "default",
+    },
+  }
+);
+
+/**
+ * A flexible input component for text entry with state variants.
+ *
+ * @example
+ * ```tsx
+ * <Input placeholder="Enter your email" />
+ * <Input state="error" placeholder="Invalid input" />
+ * <Input showCheckIcon placeholder="Enter amount" />
+ * ```
+ */
+export interface InputProps
+  extends
+    Omit<React.ComponentProps<"input">, "size">,
+    VariantProps<typeof inputVariants> {
+  /** Shows a check icon on the right side when the input is focused */
+  showCheckIcon?: boolean;
+  /**
+   * When `type="number"`, hide native stepper arrows (WebKit/Firefox).
+   * Default `true` — matches existing app-wide number styling.
+   * Set `false` to show native increment/decrement controls (e.g. delay fields).
+   */
+  hideNumberSpinners?: boolean;
+  /**
+   * When `type="number"`, prevent scientific notation characters (`e`/`E`).
+   * Default `true` so amount-like fields cannot accept exponent values such as `2e22`.
+   */
+  preventNumberExponent?: boolean;
+  /**
+   * When `type="number"`, whether decimal separators (`.` / `,`) are allowed.
+   * Default `true`. Set `false` for whole-number-only fields; uses `inputMode="numeric"` on supported agents.
+   */
+  decimal?: boolean;
+  /**
+   * Same as `decimal` for whole-number-only fields. If both are set, this wins.
+   */
+  allowDecimal?: boolean;
+  /**
+   * Prevents inserting a second consecutive space in text-like inputs while
+   * preserving the user's current cursor position. Defaults to `true`.
+   */
+  preventConsecutiveSpaces?: boolean;
+}
+
+const Input = React.forwardRef(
+  (
+    {
+      className,
+      state,
+      type,
+      showCheckIcon,
+      hideNumberSpinners = true,
+      preventNumberExponent = true,
+      decimal = true,
+      allowDecimal,
+      preventConsecutiveSpaces = true,
+      onFocus,
+      onBlur,
+      onWheel,
+      onKeyDown,
+      onPaste,
+      onBeforeInput,
+      onChange,
+      step,
+      ...props
+    }: InputProps,
+    ref: React.Ref<HTMLInputElement>
+  ) => {
+    const [isFocused, setIsFocused] = React.useState(false);
+    const decimalAllowed = allowDecimal ?? decimal;
+    const shouldPreventNumberExponent =
+      type === "number" && preventNumberExponent;
+    const shouldBlockDecimals = type === "number" && !decimalAllowed;
+    const shouldPreventConsecutiveSpaces =
+      preventConsecutiveSpaces && shouldPreventConsecutiveSpacesForType(type);
+
+    const inputEl = (
+      <input
+        type={type}
+        className={cn(
+          inputVariants({ state }),
+          className,
+          state === "error" &&
+            "border-semantic-error-primary focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          showCheckIcon && "pr-9",
+          type === "number" &&
+            hideNumberSpinners &&
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        )}
+        ref={ref}
+        inputMode={
+          type === "number"
+            ? decimalAllowed
+              ? "decimal"
+              : "numeric"
+            : undefined
+        }
+        step={type === "number" && !decimalAllowed ? (step ?? 1) : step}
+        onFocus={(e) => {
+          setIsFocused(true);
+          onFocus?.(e);
+        }}
+        onBlur={(e) => {
+          setIsFocused(false);
+          onBlur?.(e);
+        }}
+        onWheel={
+          type === "number"
+            ? (e) => {
+                e.currentTarget.blur();
+                onWheel?.(e);
+              }
+            : onWheel
+        }
+        onKeyDown={(e) => {
+          if (shouldPreventNumberExponent && blockedNumberKeys.has(e.key)) {
+            e.preventDefault();
+          }
+          if (shouldBlockDecimals && decimalSeparatorKeys.has(e.key)) {
+            e.preventDefault();
+          }
+          onKeyDown?.(e);
+        }}
+        onPaste={(e) => {
+          const text = e.clipboardData.getData("text");
+          if (shouldPreventNumberExponent && /[eE]/.test(text)) {
+            e.preventDefault();
+          }
+          if (shouldBlockDecimals && /[.,]/.test(text)) {
+            e.preventDefault();
+          }
+          onPaste?.(e);
+        }}
+        onBeforeInput={(e) => {
+          onBeforeInput?.(e);
+          if (!shouldPreventConsecutiveSpaces || e.defaultPrevented) {
+            return;
+          }
+
+          const nativeEvent = e.nativeEvent as InputEvent;
+          if (
+            nativeEvent.inputType !== "insertText" ||
+            nativeEvent.data !== " "
+          ) {
+            return;
+          }
+
+          const input = e.currentTarget;
+          const selectionStart = input.selectionStart ?? input.value.length;
+          const selectionEnd = input.selectionEnd ?? selectionStart;
+          const nextValue =
+            input.value.slice(0, selectionStart) +
+            nativeEvent.data +
+            input.value.slice(selectionEnd);
+
+          if (nextValue.includes("  ")) {
+            // Blocking the insertion is enough — nothing moved, so the caret is
+            // already where it belongs. Re-setting it (especially from a later
+            // animation frame, with a selection offset captured before this
+            // keystroke) drags the caret backwards and reorders what follows.
+            e.preventDefault();
+          }
+        }}
+        onChange={(e) => {
+          if (shouldPreventNumberExponent && /[eE]/.test(e.target.value)) {
+            return;
+          }
+          if (shouldBlockDecimals && /[.,]/.test(e.target.value)) {
+            return;
+          }
+          if (shouldPreventConsecutiveSpaces && e.target.value.includes("  ")) {
+            const input = e.currentTarget;
+            const rawValue = input.value;
+            const rawCursor = input.selectionStart ?? rawValue.length;
+            const collapsedValue = collapseConsecutiveSpaces(rawValue);
+            const nextCursor = Math.min(
+              getCollapsedCursorPosition(rawValue, rawCursor),
+              collapsedValue.length
+            );
+
+            input.value = collapsedValue;
+            // Restore the caret synchronously: assigning `value` above parks it
+            // at 0, and the next keystroke can land before any animation frame
+            // runs, which reorders what the user typed. The deferred pass is
+            // kept for browsers that reset the caret again after React
+            // re-renders, but it must no-op once the value has moved on — a
+            // frame that fires mid-typing would otherwise drag the caret back
+            // to a position captured several keystrokes ago.
+            input.setSelectionRange(nextCursor, nextCursor);
+            window.requestAnimationFrame(() => {
+              if (input.value !== collapsedValue) return;
+              input.setSelectionRange(nextCursor, nextCursor);
+            });
+          }
+          onChange?.(e);
+        }}
+        {...props}
+      />
+    );
+
+    if (!showCheckIcon) return inputEl;
+
+    return (
+      <div className="relative w-full">
+        {inputEl}
+        {isFocused && (
+          <Check className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-semantic-brand pointer-events-none" />
+        )}
+      </div>
+    );
+  }
+);
+Input.displayName = "Input";
+
+export { Input, inputVariants };

@@ -392,3 +392,22 @@ Component Status:
 ## License
 
 MIT
+
+
+## v2 components (local preview)
+
+v2 is an additive namespace. Shared primitives retain their v1 API; the new components are documented under V2 in Storybook. This branch is local and unpublished.
+
+```bash
+npx myoperator-ui add v2-button v2-text-field v2-dialog
+```
+
+```tsx
+import { Button } from "@/components/ui/v2/button";
+```
+
+Registry names use `v2-<name>`; installed files use `ui/v2/<name>.tsx`. Dependencies stay in the v2 family. v2 files are unprefixed and are installed verbatim apart from the utils import. Existing v1 files and prefixed output are preserved.
+
+Consumers need an unprefixed Tailwind build, semantic colors, `--font-v2` and Inter. A prefixed project receives a warning. Global Bootstrap utilities can collide with unprefixed Tailwind; decide the screen isolation/integration strategy before migrating a Bootstrap host.
+
+Migrate screen by screen, review behavior and responsive styling, and revert imports to roll back. Full guidance is in Storybook's V2 Introduction, Migration and Foundations pages and `design/V2-HANDOFF.md`.

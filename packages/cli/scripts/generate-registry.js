@@ -207,7 +207,11 @@ function loadConfig() {
  * Read a single-file component
  */
 async function readSingleFileComponent(componentName, meta) {
-  const filePath = path.join(UI_COMPONENTS_DIR, `${componentName}.tsx`)
+  // `path` (optional) is the file's location under src/components/ui, without
+  // the extension — e.g. "v2/button". It is also where the CLI installs it, so
+  // the registry file name carries the sub-folder and `add` recreates it.
+  const relPath = meta.path || componentName
+  const filePath = path.join(UI_COMPONENTS_DIR, `${relPath}.tsx`)
 
   if (!fs.existsSync(filePath)) {
     console.warn(`  Warning: Component file not found: ${filePath}`)
@@ -216,20 +220,23 @@ async function readSingleFileComponent(componentName, meta) {
 
   let content = fs.readFileSync(filePath, 'utf-8')
 
-  // Transform @/lib/utils import to relative path
+  // Transform @/lib/utils import to relative path. lib/ sits two levels above a
+  // flat ui file (ui/button.tsx → ../../lib/utils); each sub-folder adds one.
+  const utilsPath = `${'../'.repeat(2 + relPath.split('/').length - 1)}lib/utils`
   content = content.replace(
     /import\s*{\s*cn\s*}\s*from\s*["']@\/lib\/utils["']/g,
-    'import { cn } from "../../lib/utils"'
+    `import { cn } from "${utilsPath}"`
   )
 
   return {
     name: componentName,
-    fileName: `${componentName}.tsx`,
+    fileName: `${relPath}.tsx`,
     content,
     description: meta.description,
     dependencies: meta.dependencies || [],
     internalDependencies: meta.internalDependencies || [],
     category: meta.category,
+    unprefixed: meta.unprefixed === true,
   }
 }
 
@@ -381,6 +388,11 @@ async function readMultiFileComponent(componentName, meta, allComponents) {
 async function readAllComponents(config) {
   const readPromises = Object.entries(config.components).map(
     async ([name, meta]) => {
+      if (meta.isMultiFile && meta.unprefixed) {
+        throw new Error(
+          `${name}: "unprefixed" is only supported for single-file components (multi-file output is always prefixed).`
+        )
+      }
       if (meta.isMultiFile) {
         return readMultiFileComponent(name, meta, config.components)
       }
@@ -420,6 +432,24 @@ function groupByCategory(components, categories) {
 /**
  * Escape content for template literals
  */
+/**
+ * Expression that yields a single-file component's content when the registry loads.
+ *
+ * v1 primitives run through prefixTailwindClasses (tw- prefix + semantic var()
+ * fallbacks) so they work inside Bootstrap hosts. `unprefixed` components (v2) are
+ * emitted exactly as authored: no prefix, no rewriting. The consumer builds them
+ * with an unprefixed Tailwind config.
+ */
+function singleFileContentExpr(comp, escapedContent) {
+  return comp.unprefixed
+    ? '`' + escapedContent + '`'
+    : 'prefixTailwindClasses(`' + escapedContent + '`, prefix)'
+}
+
+function unprefixedLine(comp) {
+  return comp.unprefixed ? '\n      unprefixed: true,' : ''
+}
+
 function escapeForTemplate(str) {
   return str
     .replace(/\\/g, '\\\\')
@@ -1137,11 +1167,11 @@ ${filesArray}
           ? `
       internalDependencies: ${internalDeps},`
           : ''
-      }
+      }${unprefixedLine(comp)}
       files: [
         {
           name: ${JSON.stringify(comp.fileName)},
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+          content: ${singleFileContentExpr(comp, escapedContent)},
         },
       ],
     }`
@@ -1189,6 +1219,8 @@ export interface ComponentDefinition {
   group?: string
   mainFile?: string
   templateOnly?: boolean
+  // v2 components: classes ship as authored (no tw- prefix, no var() rewrite)
+  unprefixed?: boolean
 }
 
 export type Registry = Record<string, ComponentDefinition>
@@ -1382,11 +1414,11 @@ ${filesArray}
           ? `
       internalDependencies: ${internalDeps},`
           : ''
-      }
+      }${unprefixedLine(comp)}
       files: [
         {
           name: ${JSON.stringify(comp.fileName)},
-          content: prefixTailwindClasses(\`${escapedContent}\`, prefix),
+          content: ${singleFileContentExpr(comp, escapedContent)},
         },
       ],
     }`
@@ -1414,6 +1446,8 @@ export interface ComponentDefinition {
   group?: string
   mainFile?: string
   templateOnly?: boolean
+  // v2 components: classes ship as authored (no tw- prefix, no var() rewrite)
+  unprefixed?: boolean
 }
 
 export type Registry = Record<string, ComponentDefinition>

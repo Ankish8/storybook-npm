@@ -1,0 +1,27 @@
+{
+  "name": "dropdown-menu",
+  "replacements": [
+    [
+      "flex cursor-pointer select-none items-center rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[state=open]:bg-semantic-bg-ui",
+      "flex cursor-pointer select-none items-center rounded-md px-2 py-2.5 min-h-10 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[state=open]:bg-semantic-bg-ui"
+    ],
+    [
+      "px-2 py-1.5 text-sm font-semibold",
+      "px-2 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold text-semantic-text-secondary"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "after": "relative flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-2.5 min-h-10 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    },
+    {
+      "before": "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "after": "relative flex cursor-pointer select-none items-center rounded-md py-2.5 pl-8 pr-2 min-h-10 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    },
+    {
+      "before": "relative flex cursor-pointer select-none items-center rounded-sm py-2 pl-8 pr-2 text-sm text-semantic-text-secondary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "after": "relative flex cursor-pointer select-none items-center rounded-md py-2.5 pl-8 pr-2 min-h-10 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-colors focus:bg-semantic-bg-ui focus:text-semantic-text-primary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+    }
+  ]
+}

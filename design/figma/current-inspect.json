@@ -1,0 +1,667 @@
+[
+  {
+    "component": "phone-input",
+    "state": "Default surface",
+    "inspect": "Input Field\nFrame with auto layout\nThe layout in this layer differs from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2190-7694&m=dev\nCopy example prompt\nLayer properties\n4\n8\nBorder\n1\n8\n1\nPadding\n10\n10\n374\n×\n28\n16\n10\n1\n8\n1\n8\n4\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nheight: 48px;\npadding: 10px 16px 10px 10px;\nalign-items: center;\ngap: 8px;\nalign-self: stretch;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "input",
+    "state": "Default",
+    "inspect": "Input Field\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-21295&m=dev\nCopy example prompt\nLayer properties\n4\n8\nBorder\n1\n8\n1\nPadding\n10\n16\n388\n×\n28\n16\n10\n1\n8\n1\n8\n4\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\npadding: 10px 16px;\nalign-items: center;\ngap: 8px;\nalign-self: stretch;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "select-family",
+    "state": "single/default",
+    "inspect": "Input Field\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-23187&m=dev\nCopy example prompt\nLayer properties\n4\n8\nBorder\n1\n8\n1\nPadding\n10\n16\n448\n×\n28\n16\n10\n1\n8\n1\n8\n4\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\npadding: 10px 16px;\nalign-items: center;\ngap: 8px;\nalign-self: stretch;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "tooltip",
+    "state": "Top/default",
+    "inspect": "Tooltip\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12703&m=dev\nCopy example prompt\nComponent information\n\ndelayDuration: 700\n\nskipDelayDuration: 300\n\n\n\n\nPosition\nTop\nOffset\nDefault(4px)\nLabel\nTooltip\n5 more\nExplore component behavior\nLayer properties\n20\n10\n6\nBorder\n-\n6\n-\nPadding\n-\n-\n162\n×\n91.2\n-\n4\n-\n6\n-\n6\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: inline-flex;\npadding-bottom: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: -2px;\nStyle\n1\n2\n3\n4\nborder-radius: 6px;\n/* v2-Shadows/Surface */\nbox-shadow: 0 1px 3px 0 rgba(10, 13, 18, 0.10), 0 1px 2px -1px rgba(10, 13, 18, 0.10);\n"
+  },
+  {
+    "component": "tooltip",
+    "state": "Content",
+    "inspect": "Content\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12704&m=dev\nCopy example prompt\nLayer properties\n6\nBorder\n-\n6\n-\nPadding\n6\n16\n130\n×\n74\n16\n6\n-\n6\n-\n6\n-2\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nmax-width: 320px;\npadding: 6px 16px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 6px;\nStyle\n1\n2\nborder-radius: 6px;\nbackground: var(--Info-info-surface, #ECF1FB);\n"
+  },
+  {
+    "component": "dialog",
+    "state": "Small",
+    "inspect": "Dialog\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n3.5k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11705&m=dev\nCopy example prompt\nComponent information\nSize\nSmall\nTitle\nDialog Title\nDesc\nThis is the dialog description.\n3 more\nExplore component behavior\nLayer properties\n20\n20\n12\nBorder\n1.2\n12\n1.2\nPadding\n-\n-\n384\n×\n446\n-\n-\n1.2\n12\n1.2\n12\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 384px;\nflex-direction: column;\nalign-items: flex-start;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "confirmation-modal",
+    "state": "Default",
+    "inspect": "Confirmation Modal\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.5k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10153&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nTitle\nModal Title\nDesc\nAre you sure you want to Disable Webhook?\n2 more\nExplore component behavior\nLayer properties\n20\n20\n12\nBorder\n1.2\n12\n1.2\nPadding\n-\n-\n384\n×\n165\n-\n-\n1.2\n12\n1.2\n12\n20\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 384px;\nmax-width: 384px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "delete-confirmation-modal",
+    "state": "Default",
+    "inspect": "Delete Confirmation Modal\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.6k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11631&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nTitle\nModal Title\nDesc\nAdditional Description\n3 more\nExplore component behavior\nLayer properties\n20\n20\n12\nBorder\n1.2\n12\n1.2\nPadding\n-\n-\n384\n×\n260\n-\n-\n1.2\n12\n1.2\n12\n20\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 384px;\nmax-width: 384px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 24px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Default, Default",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7252&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nState\nDefault\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n480\n292\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Default, Hover",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7294&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nState\nHover\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n20\n250\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n250\n292\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Selection, Default",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n500\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7266&m=dev\nCopy example prompt\nComponent information\nVariant\nSelection\nState\nDefault\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n88\n20\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n480\n224\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Selection, Hover",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n500\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7308&m=dev\nCopy example prompt\nComponent information\nVariant\nSelection\nState\nHover\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n88\n250\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n250\n224\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Selection, Selected",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n500\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7329&m=dev\nCopy example prompt\nComponent information\nVariant\nSelection\nState\nSelected\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n88\n480\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n20\n224\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "subMenu, Default",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n563\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7273&m=dev\nCopy example prompt\nComponent information\nVariant\nsubMenu\nState\nDefault\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n156\n20\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n480\n156\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "subMenu, Hover",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n563\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7315&m=dev\nCopy example prompt\nComponent information\nVariant\nsubMenu\nState\nHover\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n156\n250\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n250\n156\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Disabled, Default",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7280&m=dev\nCopy example prompt\nComponent information\nVariant\nDisabled\nState\nDefault\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n224\n20\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n480\n88\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Destructive, Default",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7287&m=dev\nCopy example prompt\nComponent information\nVariant\nDestructive\nState\nDefault\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n292\n20\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n480\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "dropdown-menu",
+    "state": "Destructive, Hover",
+    "inspect": "Menu Items\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7322&m=dev\nCopy example prompt\nComponent information\nVariant\nDestructive\nState\nHover\nlabelText\nEdit\n5 more\nExplore component behavior\nLayer properties\n292\n250\n-\nBorder\n-\n-\n-\nPadding\n10\n6\n198\n×\n28\n6\n10\n-\n-\n1\n-\n250\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 210px;\nheight: 48px;\nmin-height: 40px;\npadding: 10px 6px;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "toast",
+    "variant": "Default",
+    "inspect": "Toast\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n813\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-13013&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nTitle\nInsert title here\nshowDesc\nTrue\n3 more\nExplore component behavior\nLayer properties\n20\n20\n8\nBorder\n1\n8\n1\nPadding\n-\n-\n384\n×\n108\n-\n-\n1\n8\n1\n8\n20\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 384px;\nflex-direction: column;\nalign-items: flex-start;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "tabs",
+    "variant": "Default, Horizontal",
+    "inspect": "Tab\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12606&m=dev\nCopy example prompt\nComponent information\nState\nDefault\nLayout\nHorizontal\nshowCount\nTrue\n1 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n-\nPadding\n16\n12\n63\n×\n20\n12\n16\n-\n-\n2\n-\n383\n82\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 16px 12px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\n"
+  },
+  {
+    "component": "tabs",
+    "variant": "Active, Vertical",
+    "inspect": "Tab\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2207-12696&m=dev\nCopy example prompt\nComponent information\nState\nActive\nLayout\nVertical\nshowCount\nTrue\n1 more\nExplore component behavior\nLayer properties\n82\n262\n-\nBorder\n-\n-\n4\nPadding\n16\n24\n63\n×\n20\n24\n16\n-\n-\n-\n-\n117\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 16px 24px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\nStyle\n1\n2\nborder-left: 4px solid var(--Border-border-accent, #27ABB8);\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "tabs",
+    "variant": "Disabled, Horizontal",
+    "inspect": "Tab\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12615&m=dev\nCopy example prompt\nComponent information\nState\nDisabled\nLayout\nHorizontal\nshowCount\nTrue\n1 more\nExplore component behavior\nLayer properties\n20\n383\n-\nBorder\n-\n-\n-\nPadding\n16\n12\n63\n×\n20\n12\n16\n-\n-\n2\n-\n20\n82\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 16px 12px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "table",
+    "variant": "Medium hover row",
+    "inspect": "Table Row\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2224-9190&m=dev\nCopy example prompt\nComponent information\nSize\nMedium\nState\nHover\nRow\nDefault\nExplore component behavior\nLayer properties\n84\n1327\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n1283\n×\n54\n-\n-\n-\n-\n1\n-\n1409\n168\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\nheight: 54px;\nalign-items: center;\nStyle\n1\nborder-bottom: 1px solid var(--Border-border-layout, #E9EAEB);\n"
+  },
+  {
+    "component": "table",
+    "variant": "Small, Hover",
+    "inspect": "Table Row\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2224-9178&m=dev\nCopy example prompt\nComponent information\nSize\nSmall\nState\nHover\nRow\nDefault\nExplore component behavior\nLayer properties\n12\n1327\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n1283\n×\n48\n-\n-\n-\n-\n1\n-\n1409\n246\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\nheight: 48px;\nalign-items: center;\nStyle\n1\nborder-bottom: 1px solid var(--Border-border-layout, #E9EAEB);\n"
+  },
+  {
+    "component": "table",
+    "variant": "Large, Hover",
+    "inspect": "Table Row\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2224-9202&m=dev\nCopy example prompt\nComponent information\nSize\nLarge\nState\nHover\nRow\nDefault\nExplore component behavior\nLayer properties\n162\n1327\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n1283\n×\n60\n-\n-\n-\n-\n1\n-\n1409\n84\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\nheight: 60px;\nalign-items: center;\nStyle\n1\nborder-bottom: 1px solid var(--Border-border-layout, #E9EAEB);\n"
+  },
+  {
+    "component": "accordion",
+    "variant": "Default, Expand=False",
+    "inspect": "9 selected\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n6.7k\nImplement these 9 designs from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9833&m=dev\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9832&m=dev\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9879&m=dev\nCopy example prompt\nSelection colors\nColor format\nHSL\nhsla(220, 24%, 12%, 1)\nhsla(210, 5%, 92%, 1)\nhsla(220, 6%, 47%, 1)\nhsla(0, 0%, 100%, 1)\n2 more\nExport"
+  },
+  {
+    "component": "accordion",
+    "variant": "Bordered, Expand=True",
+    "inspect": "Accordion Item\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9879&m=dev\nCopy example prompt\nComponent information\nVariant\nBordered\nExpand\nTrue\nwithChevron\nTrue\n6 more\nExplore component behavior\nLayer properties\n98\n320\n8\nBorder\n1\n8\n1\nPadding\n-\n-\n280\n×\n114\n-\n-\n1\n8\n1\n8\n620\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 280px;\nflex-direction: column;\njustify-content: center;\nalign-items: flex-start;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "alert",
+    "variant": "Default, Overlay",
+    "inspect": "Alert\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9917&m=dev\nCopy example prompt\nComponent information\nStyle\nDefault\nVariant\nOverlay\nTitle\nInsert title here\n6 more\nExplore component behavior\nLayer properties\n20\n20\n8\nBorder\n1\n8\n1\nPadding\n-\n-\n384\n×\n142\n-\n-\n1\n8\n1\n8\n414\n780\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 384px;\nflex-direction: column;\nalign-items: flex-start;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "alert",
+    "variant": "Success, Header",
+    "inspect": "Alert\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2220-8032&m=dev\nCopy example prompt\nComponent information\nStyle\nSuccess\nVariant\nHeader\nTitle\nInsert title here\n6 more\nExplore component behavior\nLayer properties\n172\n414\n-\nBorder\n-\n-\n-\nPadding\n16\n16\n352\n×\n32\n16\n16\n-\n-\n1.2\n-\n20\n706\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 384px;\npadding: 16px;\nalign-items: center;\ngap: 12px;\nStyle\n1\n2\nborder-bottom: 1.2px solid var(--Success-success-border, #ABEFC6);\nbackground: var(--Success-success-surface, #ECFDF3);\n"
+  },
+  {
+    "component": "avatar",
+    "variant": "Outline, xs, Offline",
+    "inspect": "Avatar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10108&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nxs\nStatus\nOffline\n6 more\nExplore component behavior\nLayer properties\n636\n20\n24\nBorder\n1\n24\n1\nChecker.\npng\n1\n24\n1\n24\n298\n764\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 24px;\nheight: 24px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n"
+  },
+  {
+    "component": "avatar",
+    "variant": "Outline, sm, Offline",
+    "inspect": "Avatar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10112&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nsm\nStatus\nOffline\n6 more\nExplore component behavior\nLayer properties\n636\n68\n24\nBorder\n1\n24\n1\nChecker.\npng\n1\n24\n1\n24\n244\n758\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 30px;\nheight: 30px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n"
+  },
+  {
+    "component": "avatar",
+    "variant": "Outline, md, Offline",
+    "inspect": "Avatar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10116&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nmd\nStatus\nOffline\n6 more\nExplore component behavior\nLayer properties\n636\n122\n24\nBorder\n1\n24\n1\nChecker.\npng\n1\n24\n1\n24\n180\n748\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 40px;\nheight: 40px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n"
+  },
+  {
+    "component": "avatar",
+    "variant": "Outline, lg, Offline",
+    "inspect": "Avatar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10120&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nlg\nStatus\nOffline\n6 more\nExplore component behavior\nLayer properties\n636\n186\n24\nBorder\n1\n24\n1\nChecker.\npng\n1\n24\n1\n24\n108\n740\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 48px;\nheight: 48px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n"
+  },
+  {
+    "component": "avatar",
+    "variant": "Outline, xl, Offline",
+    "inspect": "Avatar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-10124&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nxl\nStatus\nOffline\n6 more\nExplore component behavior\nLayer properties\n636\n258\n60\nBorder\n1\n60\n1\nChecker.\npng\n1\n60\n1\n60\n20\n724\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 64px;\nheight: 64px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 60px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n"
+  },
+  {
+    "component": "page-header",
+    "variant": "Horizontal",
+    "inspect": "Page Header\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.2k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11754&m=dev\nCopy example prompt\nComponent information\nLayout\nHorizontal\nmoreActions\nTrue\nTitle\nWebhooks\n9 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n-\nPadding\n16\n16\n1054\n×\n40\n16\n16\n-\n-\n1\n-\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 1086px;\npadding: 16px;\nalign-items: center;\nalign-content: center;\ngap: 24px;\nflex-wrap: wrap;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "pagination",
+    "variant": "Default",
+    "inspect": "Pagination\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11835&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nshowPageNumbers\nTrue\npageNumbers\nDefault\nExplore component behavior\nLayer properties\n20\n10\n-\nBorder\n-\n-\n-\nPadding\n10\n10\n395\n×\n32\n10\n10\n-\n-\n-\n-\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: inline-flex;\npadding: 10px;\nalign-items: center;\ngap: 12px;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Default",
+    "inspect": "Empty State\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7349&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nTitle\nTitle Text\nDesc\nDescription Text\n4 more\nExplore component behavior\nLayer properties\n20\n-\nBorder\n-\n-\n-\nPadding\n24\n24\n698\n×\n227\n24\n24\n-\n-\n-\n-\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 746px;\npadding: 24px;\nflex-direction: column;\nalign-items: center;\ngap: 20px;\n"
+  },
+  {
+    "component": "panel",
+    "variant": "Default",
+    "inspect": "Panel\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n7.2k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11972&m=dev\nCopy example prompt\nComponent information\nSize\nDefault\nTitle\nContact Details\ncustomHeader\nDefault\n2 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n1.2\nPadding\n72\n-\n320\n×\n904\n-\n-\n-\n-\n-\n-\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 320px;\nheight: 976px;\npadding-top: 72px;\nflex-direction: column;\nalign-items: flex-start;\nStyle\n1\n2\n3\n4\n5\nborder-left: 1.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Overlay */\nbox-shadow: 0 20px 24px -4px rgba(10, 13, 18, 0.08), 0 8px 8px -4px rgba(10, 13, 18, 0.03), 0 3px 3px -1.5px rgba(10, 13, 18, 0.04);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=True, Default",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14868&m=dev\nCopy example prompt\nComponent information\nChecked\nTrue\nState\nDefault\nExplore component behavior\nLayer properties\n20\n49\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n20\n102\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1.2px solid var(--Border-border-primary, #343E55);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=False, Default",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14866&m=dev\nCopy example prompt\nComponent information\nChecked\nFalse\nState\nDefault\nExplore component behavior\nLayer properties\n20\n20\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n49\n102\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=True, Hover",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14867&m=dev\nCopy example prompt\nComponent information\nChecked\nTrue\nState\nHover\nExplore component behavior\nLayer properties\n44\n49\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n20\n78\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1.2px solid var(--Text-text-primary, #181D27);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=False, Hover",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14865&m=dev\nCopy example prompt\nComponent information\nChecked\nFalse\nState\nHover\nExplore component behavior\nLayer properties\n44\n20\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n49\n78\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1.2px solid var(--Border-border-outline, #C0C3CA);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=True, Focussed",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14864&m=dev\nCopy example prompt\nComponent information\nChecked\nTrue\nState\nFocussed\nExplore component behavior\nLayer properties\n73\n49\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n20\n49\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 24px;\nborder: 1.2px solid var(--Border-border-primary, #343E55);\nbackground: var(--Background-bg-ui, #F5F5F5);\n/* Highlights/Primary */\nbox-shadow: 0 0 0 2px var(--Primary-primary-surface, #EBECEE), 0 0 0 0 #FFF;\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=False, Focussed",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14863&m=dev\nCopy example prompt\nComponent information\nChecked\nFalse\nState\nFocussed\nExplore component behavior\nLayer properties\n73\n20\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n49\n49\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 24px;\nborder: 1.2px solid var(--Border-border-primary, #343E55);\nbackground: var(--Background-bg-ui, #F5F5F5);\n/* Highlights/Primary */\nbox-shadow: 0 0 0 2px var(--Primary-primary-surface, #EBECEE), 0 0 0 0 #FFF;\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=True, Disabled",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14862&m=dev\nCopy example prompt\nComponent information\nChecked\nTrue\nState\nDisabled\nExplore component behavior\nLayer properties\n102\n49\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\nborder-radius: 24px;\nborder: 1.2px solid var(--Disabled-disabled-primary, #A2A6B1);\n"
+  },
+  {
+    "component": "radio",
+    "variant": "Checked=False, Disabled",
+    "inspect": "Radio\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2635-14861&m=dev\nCopy example prompt\nComponent information\nChecked\nFalse\nState\nDisabled\nExplore component behavior\nLayer properties\n102\n20\n24\nBorder\n1.2\n24\n1.2\nPadding\n4\n4\n8\n×\n8\n4\n4\n1.2\n24\n1.2\n24\n49\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: flex;\nwidth: 16px;\nheight: 16px;\npadding: 4px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 10px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: 24px;\nborder: 1.2px solid var(--Disabled-disabled-border, #F5F5F5);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "breadcrumbs",
+    "variant": "withIcons",
+    "inspect": "Breadcrumbs\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.4k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2274-47599&m=dev\nCopy example prompt\nComponent information\nProperty 1\nwithIcons\nSlot\nDefault\nExplore component behavior\nLayer properties\n10\n20\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n479\n×\n34\n-\n-\n-\n-\n-\n-\n20\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\nalign-items: center;\ngap: 2px;\n"
+  },
+  {
+    "component": "breadcrumbs",
+    "variant": "Ancestor link",
+    "inspect": "Buttons\nComponent instance\nThe color, border and layout in this instance differ from the main component.\nCompare with main component\n\nVercel (Component documentation)\n\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2274-47601&m=dev\nCopy example prompt\nComponent information\nVariant\nLink\nState\nDefault\nSize\nSmall\n5 more\nExplore component behavior\nLayer properties\n8\nBorder\n-\n8\n-\nPadding\n8\n8\n121\n×\n18\n8\n8\n-\n8\n-\n8\n3\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 8px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\nStyle\n1\nborder-radius: var(--New-sm, 8px);\n"
+  },
+  {
+    "component": "breadcrumbs",
+    "variant": "Current page",
+    "inspect": "Buttons\nComponent instance\nThe color, border and layout in this instance differ from the main component.\nCompare with main component\n\nVercel (Component documentation)\n\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2274-47605&m=dev\nCopy example prompt\nComponent information\nVariant\nLink\nState\nDefault\nSize\nSmall\n5 more\nExplore component behavior\nLayer properties\n3\n8\nBorder\n-\n8\n-\nPadding\n8\n8\n144\n×\n18\n8\n8\n-\n8\n-\n8\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 8px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\nStyle\n1\nborder-radius: var(--New-sm, 8px);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Default",
+    "inspect": "OTPInput\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1309-4432&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nshow6Cells\nFalse\nExplore component behavior\nLayer properties\n14\n20\n-\nBorder\n-\n-\n-\nPadding\n20\n20\n288\n×\n60\n20\n20\n-\n-\n-\n-\n20\n24\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 20px;\nflex-direction: column;\nalign-items: center;\ngap: 16px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Filled",
+    "inspect": "OTPInput\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1309-4496&m=dev\nCopy example prompt\nComponent information\nVariant\nFilled\nshow6Cells\nFalse\nExplore component behavior\nLayer properties\n24\n20\n-\nBorder\n-\n-\n-\nPadding\n20\n20\n288\n×\n60\n20\n20\n-\n-\n-\n-\n20\n24\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 20px;\nflex-direction: column;\nalign-items: center;\ngap: 10px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Error",
+    "inspect": "OTPInput\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n4k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1309-4519&m=dev\nCopy example prompt\nComponent information\nVariant\nError\nshow6Cells\nFalse\nExplore component behavior\nLayer properties\n24\n20\n-\nBorder\n-\n-\n-\nPadding\n20\n20\n288\n×\n91\n20\n20\n-\n-\n-\n-\n20\n14\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 20px;\nflex-direction: column;\nalign-items: center;\ngap: 16px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Error cell",
+    "inspect": "inputField\nComponent instance\nThe layout in this instance differs from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n875\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-19647&m=dev\nCopy example prompt\nComponent information\nState\nError\nwithValue\nTrue\nshowLabel\nFalse\n9 more\nExplore component behavior\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n54\n×\n60\n-\n-\n-\n-\n-\n-\n24\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 54px;\nheight: 60px;\nflex-direction: column;\nalign-items: flex-start;\ngap: 4px;\n"
+  },
+  {
+    "component": "button-group",
+    "variant": "onlyLabel",
+    "inspect": "Button Group\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2079-5771&m=dev\nCopy example prompt\nComponent information\nVariant\nonlyLabel\nmoreButtons\nDefault\nshowMoreButtons\nTrue\nExplore component behavior\nLayer properties\n20\n10\n36\nBorder\n0.4\n36\n0.4\nPadding\n-\n-\n184\n×\n48\n-\n-\n0.4\n36\n0.4\n36\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\ndisplay: inline-flex;\nalign-items: center;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 36px;\nborder: 0.4px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "button-group",
+    "variant": "Toggle1",
+    "inspect": "Button Group\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2214-9286&m=dev\nCopy example prompt\nComponent information\nVariant\nToggle1\nmoreButtons\nDefault\nshowMoreButtons\nTrue\nExplore component behavior\nLayer properties\n20\n10\n16\nBorder\n1\n16\n1\nPadding\n8\n8\n164\n×\n32\n8\n8\n1\n16\n1\n16\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 180px;\npadding: 8px;\nalign-items: center;\ngap: 8px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 16px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-ui, #F5F5F5);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Inner error field",
+    "inspect": "Text Field\nFrame with auto layout\nThe layout in this layer differs from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n625\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-19647&m=dev\nCopy example prompt\nLayer properties\n4\n8\nBorder\n1\n8\n1\nPadding\n10\n16\n22\n×\n40\n16\n10\n1\n8\n1\n8\n4\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\npadding: 10px 16px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\nflex: 1 0 0;\nalign-self: stretch;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 1px solid var(--Error-error-primary, #F04438);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "button-group",
+    "variant": "primaryButtons",
+    "inspect": "Button Group\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2079-5860&m=dev\nCopy example prompt\nComponent information\nVariant\nprimaryButtons\nmoreButtons\nDefault\nshowMoreButtons\nTrue\nExplore component behavior\nLayer properties\n20\n10\n36\nBorder\n-\n36\n-\nPadding\n-\n-\n128\n×\n48\n-\n-\n-\n36\n-\n36\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\nalign-items: center;\ngap: 1px;\nStyle\n1\n2\n3\n4\n5\nborder-radius: 36px;\nbackground: var(--Primary-primary-color, #343E55);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "button-group",
+    "variant": "Variant7",
+    "inspect": "Button Group\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2968-12543&m=dev\nCopy example prompt\nComponent information\nVariant\nVariant7\nmoreButtons\nDefault\nshowMoreButtons\nTrue\nExplore component behavior\nLayer properties\n20\n10\n16\nBorder\n1\n16\n1\nPadding\n8\n8\n164\n×\n32\n8\n8\n1\n16\n1\n16\n10\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 180px;\npadding: 8px;\nalign-items: center;\ngap: 8px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 16px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-ui, #F5F5F5);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "button-group",
+    "variant": "Toggle2",
+    "inspect": "Button Group\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2214-9347&m=dev\nCopy example prompt\nComponent information\nVariant\nToggle2\nmoreButtons\nDefault\nshowMoreButtons\nTrue\nExplore component behavior\nLayer properties\n20\n10\n16\nBorder\n1\n16\n1\nPadding\n8\n8\n164\n×\n32\n8\n8\n1\n16\n1\n16\n10\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 180px;\npadding: 8px;\njustify-content: flex-end;\nalign-items: center;\ngap: 8px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 16px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-ui, #F5F5F5);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "otp-input",
+    "variant": "Value typography",
+    "inspect": "Input\nFrame with auto layout\nThe layout in this layer differs from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-19647&m=dev\nCopy example prompt\nLayer properties\n10\n8\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n10\n×\n18\n-\n-\n-\n-\n-\n-\n8\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nheight: 18px;\nalign-items: center;\ngap: -2px;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "md, Horizontal, Numbered",
+    "inspect": "Stepper\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.6k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12570&m=dev\nCopy example prompt\nComponent information\nSize\nmd\nLayout\nHorizontal\nIcon\nNumbered\n5 more\nExplore component behavior\nLayer properties\n577\n16\n-\nBorder\n-\n-\n-\nPadding\n12\n96\n808\n×\n66\n96\n12\n-\n-\n-\n-\n776\n61\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: grid;\nwidth: 1000px;\nheight: 90px;\npadding: 12px 96px;\nrow-gap: 12px;\ncolumn-gap: 12px;\ngrid-template-rows: repeat(1,minmax(0,1fr));\ngrid-template-columns: minmax(0,2fr) minmax(0,1fr);\ngrid-auto-flow: row;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "sm, Horizontal, Stepper",
+    "inspect": "Stepper\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.2k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2654-11617&m=dev\nCopy example prompt\nComponent information\nSize\nsm\nLayout\nHorizontal\nIcon\nStepper\n5 more\nExplore component behavior\nLayer properties\n19\n16\n-\nBorder\n-\n-\n-\nPadding\n12\n96\n808\n×\n66\n96\n12\n-\n-\n-\n-\n776\n619\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\n9\ndisplay: grid;\nwidth: 1000px;\nheight: 90px;\npadding: 12px 96px;\nrow-gap: 12px;\ncolumn-gap: 12px;\ngrid-template-rows: repeat(1,minmax(0,1fr));\ngrid-template-columns: minmax(0,2fr) minmax(0,1fr);\ngrid-auto-flow: row;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "md, Vertical, Numbered",
+    "inspect": "Stepper\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n3.9k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12650&m=dev\nCopy example prompt\nComponent information\nSize\nmd\nLayout\nVertical\nIcon\nNumbered\n5 more\nExplore component behavior\nLayer properties\n391\n1445\n-\nBorder\n-\n-\n-\nPadding\n12\n-\n293\n×\n279\n-\n12\n-\n-\n-\n-\n54\n34\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\nheight: 303px;\npadding: 12px 0;\nflex-direction: column;\nalign-items: flex-start;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "md vertical numbered 3 Steps",
+    "inspect": "3 Steps\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.8k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12651&m=dev\nCopy example prompt\nLayer properties\n12\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n293\n×\n240\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nflex-direction: column;\njustify-content: center;\nalign-items: flex-start;\ngap: 2px;\nflex: 1 0 0;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Step 1",
+    "inspect": "Step 1\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12652&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n293\n×\n78.7\n-\n-\n-\n-\n-\n-\n2\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 293px;\nalign-items: flex-start;\nflex: 1 0 0;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Step 2",
+    "inspect": "Step 2\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12661&m=dev\nCopy example prompt\nLayer properties\n2\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n293\n×\n78.7\n-\n-\n-\n-\n-\n-\n2\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nalign-items: flex-start;\nflex: 1 0 0;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Step 3",
+    "inspect": "Step 3\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12670&m=dev\nCopy example prompt\nComponent information\nSize\n—\nLayout\n—\nIcon\n—\n5 more\nExplore component behavior\nLayer properties\n2\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n293\n×\n78.7\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nalign-items: flex-start;\nflex: 1 0 0;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Icon and Line",
+    "inspect": "Icon and Line\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12653&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n4\n-\n24\n×\n74.7\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 24px;\npadding-top: 4px;\nflex-direction: column;\nalign-items: flex-start;\ngap: 6px;\nflex-shrink: 0;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Selection Container",
+    "inspect": "Selection Container\nComponent instance\nThe color, border, text and 2 more properties in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n500\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2683-18748&m=dev\nCopy example prompt\nComponent information\n\nUse base components if not opting for any supporting element besides the selection component(checkbox, radio or switch) itself.\n\n\n\n\nCustomise the container as per layout.\n\nLayout\nLeft\nState\nDefault\nshowLabel\nTrue\n5 more\nExplore component behavior\nLayer properties\n8\nBorder\n-\n8\n-\nPadding\n-\n12\n245\n×\n39\n12\n-\n-\n8\n-\n8\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\npadding: 0 12px;\nflex-direction: column;\nalign-items: center;\ngap: 12px;\nflex: 1 0 0;\nStyle\n1\n2\nborder-radius: 8px;\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Indicator",
+    "inspect": "Indicator\nComponent instance\nThe color, border and layout in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12654&m=dev\nCopy example prompt\nComponent information\nState\nPrimary\nSize\nLarge\nLabel Text\n1\n2 more\nExplore component behavior\nLayer properties\n4\n9999\nBorder\n0.4\n9999\n0.4\nPadding\n6\n16\n0\n×\n12\n16\n6\n0.4\n9999\n0.4\n9999\n6\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 24px;\nheight: 24px;\npadding: 6px 16px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: var(--Full, 9999px);\nborder: 0.4px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-grey, #E9EAEB);\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Connector",
+    "inspect": "Connector\nVector\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12655&m=dev\nCopy example prompt\nLayer properties\n6\n-\nBorder\n2\n-\n2\nIcon · 44.67 x 12\n2\n-\n2\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 44.667px;\ntransform: rotate(90deg);\nflex: 1 0 0;\nStyle\n1\n2\nstroke-width: 2px;\nstroke: var(--Border-border-layout, #E9EAEB);\nSVG\n1\n2\n3\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"47\" viewBox=\"0 0 2 47\" fill=\"none\">\n<path d=\"M1 1L1 45.6667\" stroke=\"#E9EAEB\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n</svg>\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Text",
+    "inspect": "Text\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2683-18748&m=dev\nCopy example prompt\nLayer properties\n14px\n20px\nv2/Label/Large\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nalign-self: stretch;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\ncolor: var(--Text-text-primary, #171717);\n/* v2/Label/Large */\nfont-family: var(--v2, Inter);\nfont-size: 14px;\nfont-style: normal;\nfont-weight: 600;\nline-height: 20px; /* 142.857% */\nletter-spacing: 0.014px;\n"
+  },
+  {
+    "component": "Stepper",
+    "variant": "Supporting text",
+    "inspect": "Supporting text\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2683-18748&m=dev\nCopy example prompt\nLayer properties\n14px\n17px\nv2/Body/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nalign-self: stretch;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\ncolor: var(--Text-text-muted, #737373);\n/* v2/Body/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 14px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "Alert",
+    "variant": "Overlay Header",
+    "inspect": "Header\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-12561&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n16\n16\n352\n×\n19\n16\n16\n-\n-\n0.4\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\npadding: 16px;\nalign-items: center;\ngap: 16px;\nalign-self: stretch;\nStyle\n1\nborder-bottom: 0.4px solid var(--Border-border-layout, #E9EAEB);\n"
+  },
+  {
+    "component": "Alert",
+    "variant": "Overlay Content",
+    "inspect": "Content\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n813\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-12581&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n16\n16\n352\n×\n59\n16\n16\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\npadding: 16px;\nflex-direction: column;\njustify-content: flex-end;\nalign-items: flex-end;\ngap: 12px;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "Alert",
+    "variant": "Overlay Title",
+    "inspect": "Title\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-12563&m=dev\nCopy example prompt\nLayer properties\n16px\n19px\nv2/Title/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nflex: 1 0 0;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\ncolor: var(--Text-text-primary, #181D27);\n/* v2/Title/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 16px;\nfont-style: normal;\nfont-weight: 500;\nline-height: normal;\n"
+  },
+  {
+    "component": "Alert",
+    "variant": "Overlay Desc",
+    "inspect": "Desc\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-12582&m=dev\nCopy example prompt\nLayer properties\n12px\n15px\nv2/Body/Small\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nalign-self: stretch;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\ncolor: var(--Text-text-primary, #181D27);\ntext-align: justify;\n/* v2/Body/Small */\nfont-family: var(--v2, Inter);\nfont-size: 12px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Default, Default",
+    "inspect": "UI Card\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.8k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1007-13154&m=dev\nCopy example prompt\nComponent information\nState\nDefault\nVariant\nDefault\nshowMedia\nTrue\n2 more\nExplore component behavior\nLayer properties\n12\n20\n12\nBorder\n1\n12\n1\nPadding\n16\n16\n268\n×\n362\n16\n16\n1\n12\n1\n12\n723\n525\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 300px;\npadding: 16px;\nalign-items: flex-start;\ngap: 16px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Skeuomorphic */\nbox-shadow: 0 1px 2px 0 rgba(12, 15, 18, 0.05), 0 0 0 1px rgba(10, 13, 18, 0.18) inset, 0 -2px 0 0 rgba(12, 15, 18, 0.05) inset;\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Hover Default",
+    "inspect": "UI Card\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.8k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1007-13175&m=dev\nCopy example prompt\nComponent information\nState\nHover\nVariant\nDefault\nshowMedia\nTrue\n2 more\nExplore component behavior\nLayer properties\n525\n20\n12\nBorder\n1\n12\n1\nPadding\n16\n16\n268\n×\n362\n16\n16\n1\n12\n1\n12\n723\n12.1\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 300px;\npadding: 16px;\nalign-items: flex-start;\ngap: 16px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(290deg, var(--Background-bg-grey, rgba(233, 234, 235, 0.40)) 0.89%, var(--Text-text-inverted, rgba(255, 255, 255, 0.40)) 36.25%), var(--Background-bg-primary, #FFF);\n/* v2-Shadows/FAB */\nbox-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.06);\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Selected, withIcon",
+    "inspect": "UI Card\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n750\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2284-50196&m=dev\nCopy example prompt\nComponent information\nState\nSelected\nVariant\nwithIcon\nshowMedia\nTrue\n2 more\nExplore component behavior\nLayer properties\n500\n661\n12\nBorder\n1\n12\n1\nPadding\n16\n16\n168\n×\n110\n16\n16\n1\n12\n1\n12\n182\n289\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\npadding: 16px;\nalign-items: flex-start;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1px solid var(--Border-border-accent, #27ABB8);\nbackground: var(--Brand-brand-surface, #EAF8FA);\n/* v2-Shadows/Accent */\nbox-shadow: 0 0 4px 0 rgba(39, 171, 184, 0.40);\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Default, Action",
+    "inspect": "UI Card\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2343-19229&m=dev\nCopy example prompt\nComponent information\nState\nDefault\nVariant\nAction\nshowMedia\nTrue\n2 more\nExplore component behavior\nLayer properties\n642\n330\n12\nBorder\n1\n12\n1\nPadding\n16\n16\n168\n×\n55\n16\n16\n1\n12\n1\n12\n513\n202\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\npadding: 16px;\nalign-items: flex-start;\nStyle\n1\n2\n3\nborder-radius: 12px;\nborder: 1px dashed var(--Info-info-border, #A8C0EC);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Default, Metrics",
+    "inspect": "UI Card\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2284-49483&m=dev\nCopy example prompt\nComponent information\nState\nDefault\nVariant\nMetrics\nshowMedia\nTrue\n2 more\nExplore component behavior\nLayer properties\n525\n330\n12\nBorder\n1\n12\n1\nPadding\n16\n16\n94\n×\n71\n16\n16\n1\n12\n1\n12\n587\n303\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: inline-flex;\npadding: 16px;\nflex-direction: column;\nalign-items: flex-start;\ngap: 12px;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 12px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n/* v2-Shadows/Skeuomorphic */\nbox-shadow: 0 1px 2px 0 rgba(12, 15, 18, 0.05), 0 0 0 1px rgba(10, 13, 18, 0.18) inset, 0 -2px 0 0 rgba(12, 15, 18, 0.05) inset;\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Content",
+    "inspect": "Content2\nSlot with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.8k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2705-35346&m=dev\nCopy example prompt\nLayer properties\n16\n16\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n268\n×\n362\n-\n-\n-\n-\n-\n-\n16\n16\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nflex-direction: column;\nalign-items: flex-start;\ngap: 8px;\nflex: 1 0 0;\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Header",
+    "inspect": "Header\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2705-35348&m=dev\nCopy example prompt\nLayer properties\n8\n-\nBorder\n-\n-\n-\nPadding\n2\n-\n268\n×\n20\n-\n2\n-\n-\n-\n-\n8\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 268px;\npadding: 2px 0;\nalign-items: center;\ngap: 10px;\n"
+  },
+  {
+    "component": "UICard",
+    "variant": "Desc",
+    "inspect": "Desc\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2705-35352&m=dev\nCopy example prompt\nLayer properties\n14px\n17px\nv2/Body/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: -webkit-box;\nwidth: 268px;\n-webkit-box-orient: vertical;\n-webkit-line-clamp: 2;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\noverflow: hidden;\ncolor: var(--Text-text-muted, #717680);\ntext-overflow: ellipsis;\n/* v2/Body/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 14px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "PageFooter",
+    "variant": "Desktop",
+    "inspect": "Page Header\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2188-7797&m=dev\nCopy example prompt\nComponent information\nLayout\nDesktop\nshowDesc\nTrue\nDesc\nConfigure and manage your webhook integrations\n3 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n1\n-\n-\nPadding\n10\n16\n1054\n×\n40\n16\n10\n-\n-\n-\n-\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 1086px;\npadding: 10px 16px;\njustify-content: flex-end;\nalign-items: center;\ngap: 12px;\nStyle\n1\n2\nborder-top: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "PageFooter",
+    "variant": "Mobile",
+    "inspect": "Page Header\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.2k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2188-7846&m=dev\nCopy example prompt\nComponent information\nLayout\nMobile\nshowDesc\nTrue\nDesc\nConfigure and manage your webhook integrations\n3 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n1\n-\n-\nPadding\n16\n16\n328\n×\n70\n16\n16\n-\n-\n-\n-\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 360px;\npadding: 16px;\nflex-direction: column;\njustify-content: center;\nalign-items: flex-start;\ngap: 12px;\nStyle\n1\n2\nborder-top: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "PageFooter",
+    "variant": "supportingText",
+    "inspect": "supportingText\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2190-7663&m=dev\nCopy example prompt\nLayer properties\n16\n16\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n328\n×\n18\n-\n-\n-\n-\n-\n-\n16\n12\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nalign-items: center;\ngap: 8px;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "PageFooter",
+    "variant": "Actions",
+    "inspect": "Actions\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2188-7854&m=dev\nCopy example prompt\nLayer properties\n12\n16\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n328\n×\n40\n-\n-\n-\n-\n-\n-\n16\n12\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nalign-items: center;\ngap: 12px;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "ShimmeringText",
+    "variant": "Default",
+    "inspect": "Shimmering Text\nVariant\nEdited 9 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102661&m=dev\nCopy example prompt\nComponent information\nProperty 1\nDefault\nText\nLoading. Please wait\nExplore component behavior\nLayer properties\n10\n10\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n200\n×\n19\n-\n-\n-\n-\n-\n-\n10\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\nheight: 19px;\nalign-items: center;\n"
+  },
+  {
+    "component": "ShimmeringText",
+    "variant": "Variant2",
+    "inspect": "Shimmering Text\nVariant\nEdited 9 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102663&m=dev\nCopy example prompt\nComponent information\nProperty 1\nVariant2\nText\nLoading. Please wait\nExplore component behavior\nLayer properties\n10\n10\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n200\n×\n19\n-\n-\n-\n-\n-\n-\n10\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\nheight: 19px;\nalign-items: center;\n"
+  },
+  {
+    "component": "ShimmeringText",
+    "variant": "Variant3",
+    "inspect": "Shimmering Text\nVariant\nEdited 9 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102669&m=dev\nCopy example prompt\nComponent information\nProperty 1\nVariant3\nText\nLoading. Please wait\nExplore component behavior\nLayer properties\n10\n10\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n200\n×\n19\n-\n-\n-\n-\n-\n-\n10\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\nheight: 19px;\nalign-items: center;\n"
+  },
+  {
+    "component": "ShimmeringText",
+    "variant": "Variant4",
+    "inspect": "Shimmering Text\nVariant\nEdited 9 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102675&m=dev\nCopy example prompt\nComponent information\nProperty 1\nVariant4\nText\nLoading. Please wait\nExplore component behavior\nLayer properties\n10\n10\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n200\n×\n19\n-\n-\n-\n-\n-\n-\n10\n10\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 200px;\nheight: 19px;\nalign-items: center;\n"
+  },
+  {
+    "component": "Scrollbar",
+    "variant": "Vertical, Dark",
+    "inspect": "scroll bar\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1570-10968&m=dev\nCopy example prompt\nComponent information\nDirection\nVertical\nColor\nDark\nshowControls\nTrue\nExplore component behavior\nLayer properties\n20\n65\n-\nBorder\n-\n-\n1\nPadding\n32\n-\n16\n×\n600\n-\n32\n-\n-\n-\n-\n364\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 16px;\nheight: 664px;\npadding: var(--scrollBack, 32px) 0 var(--scrollNext, 32px) 0;\nflex-direction: column;\nalign-items: center;\ngap: 165px;\nStyle\n1\n2\nborder-left: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "Scrollbar",
+    "variant": "Vertical, Subtle",
+    "inspect": "scroll bar\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1570-10998&m=dev\nCopy example prompt\nComponent information\nDirection\nVertical\nColor\nSubtle\nshowControls\nTrue\nExplore component behavior\nLayer properties\n20\n24\n-\nBorder\n-\n-\n-\nPadding\n32\n-\n16\n×\n600\n-\n32\n-\n-\n-\n-\n405\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\ndisplay: flex;\nwidth: 16px;\nheight: 664px;\npadding: var(--scrollBack, 32px) 0 var(--scrollNext, 32px) 0;\nflex-direction: column;\nalign-items: center;\ngap: 165px;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "Scrollbar",
+    "variant": "Horizontal, Dark",
+    "inspect": "scroll bar\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1570-10975&m=dev\nCopy example prompt\nComponent information\nDirection\nHorizontal\nColor\nDark\nshowControls\nTrue\nExplore component behavior\nLayer properties\n52\n108\n-\nBorder\n1\n-\n-\nPadding\n-\n32\n251\n×\n16\n32\n-\n-\n-\n-\n-\n22\n636\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 315px;\nheight: 16px;\npadding: 0 var(--scrollNext, 32px) 0 var(--scrollBack, 32px);\nalign-items: center;\ngap: 165px;\nStyle\n1\n2\nborder-top: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "Scrollbar",
+    "variant": "thumb",
+    "inspect": "Frame 2087332229\nFrame\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=1570-10978&m=dev\nCopy example prompt\nLayer properties\n32\n8\nBorder\n-\n8\n-\nPadding\n-\n-\n149\n×\n8\n-\n-\n-\n8\n-\n8\n32\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 149px;\nheight: 8px;\nflex-shrink: 0;\nStyle\n1\n2\nborder-radius: 8px;\nbackground: var(--Text-text-placeholder, #A2A6B1);\n"
+  },
+  {
+    "component": "ProgressIndicator",
+    "variant": "30%, Label=Right",
+    "inspect": "Progress Bar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n438\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2759-12826&m=dev\nCopy example prompt\nComponent information\n\nRemove prototype settings to avoid loading gradient animation and update color to \"info-primary\" variable.\n\nProgress\n30%\nLabel\nRight\nshowSubtext\nTrue\n1 more\nExplore component behavior\nLayer properties\n256\n368\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n320\n×\n17\n-\n-\n-\n-\n-\n-\n368\n511\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nwidth: 320px;\nalign-items: center;\ngap: 12px;\n"
+  },
+  {
+    "component": "ProgressIndicator",
+    "variant": "100%, Label=Bottom",
+    "inspect": "Progress Bar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2759-12936&m=dev\nCopy example prompt\nComponent information\n\nRemove prototype settings to avoid loading gradient animation and update color to \"info-primary\" variable.\n\nProgress\n100%\nLabel\nBottom\nshowSubtext\nTrue\n1 more\nExplore component behavior\nLayer properties\n718\n720\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n320\n×\n53\n-\n-\n-\n-\n-\n-\n16\n13\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 320px;\nflex-direction: column;\nalign-items: flex-end;\ngap: 8px;\n"
+  },
+  {
+    "component": "ProgressIndicator",
+    "variant": "30%, Label=False",
+    "inspect": "Progress Bar\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2759-12838&m=dev\nCopy example prompt\nComponent information\n\nRemove prototype settings to avoid loading gradient animation and update color to \"info-primary\" variable.\n\nProgress\n30%\nLabel\nFalse\nshowSubtext\nTrue\n1 more\nExplore component behavior\nLayer properties\n264\n16\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n320\n×\n8\n-\n-\n-\n-\n-\n-\n720\n512\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 320px;\nheight: 8px;\nalign-items: center;\ngap: 12px;\n"
+  },
+  {
+    "component": "ProgressIndicator",
+    "variant": "linear track",
+    "inspect": "Progress bar\nFrame\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2759-12839&m=dev\nCopy example prompt\nLayer properties\n8\nBorder\n0.2\n8\n0.2\nPadding\n-\n-\n320\n×\n8\n-\n-\n0.2\n8\n0.2\n8\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: grid;\nflex: 1 0 0;\nalign-self: stretch;\ngrid-template-rows: repeat(1,minmax(0,1fr));\ngrid-template-columns: minmax(0,3fr) minmax(0,7fr);\ngrid-auto-flow: row;\nStyle\n1\n2\n3\nborder-radius: 8px;\nborder: 0.2px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-grey, #E9EAEB);\n"
+  },
+  {
+    "component": "ProgressIndicator",
+    "variant": "Default circle",
+    "inspect": "Progress\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n125\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3159-69276&m=dev\nCopy example prompt\nComponent information\nProperty 1\nDefault\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n1056\n×\n8\n-\n-\n-\n-\n-\n-\n20\n76\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 1056px;\nheight: 8px;\njustify-content: center;\nalign-items: center;\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "circle-30-root",
+    "inspect": "Progress Circle\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13034&m=dev\nCopy example prompt\nComponent information\nPercentage\n30%\nShape\nCircle\nPercentage\n100\n1 more\nExplore component behavior\nLayer properties\n40.5\n266\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n54\n×\n54\n-\n-\n-\n-\n-\n-\n578\n136\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 54px;\nheight: 54px;\naspect-ratio: 1/1;\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "circle-Ring",
+    "inspect": "Ring\nEllipse\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13036&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nIcon · 54 x 54\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 54px;\nheight: 54px;\naspect-ratio: 1/1;\nStyle\n1\nfill: var(--Info-info-primary, #4275D6);\nSVG\n1\n2\n3\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"27\" height=\"36\" viewBox=\"0 0 27 36\" fill=\"none\">\n<path d=\"M25.6328 35.3818C26.9556 31.3315 27.3009 27.0255 26.6407 22.8161C25.9804 18.6067 24.3333 14.6133 21.834 11.1625C19.3346 7.7116 16.0541 4.90124 12.2605 2.96117C8.4669 1.0211 4.26802 0.00639796 0.00714874 3.0152e-05L-0.000526428 5.13491C3.45001 5.14006 6.85035 5.96179 9.92246 7.53289C12.9946 9.104 15.6512 11.3799 17.6752 14.1745C19.6992 16.969 21.0331 20.203 21.5678 23.6118C22.1025 27.0207 21.8228 30.5077 20.7516 33.7878L25.6328 35.3818Z\" fill=\"#4275D6\"/>\n</svg>\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "circle-Label",
+    "inspect": "Label\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13037&m=dev\nCopy example prompt\nLayer properties\n20\n13\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n27\n×\n15\n-\n-\n-\n-\n-\n-\n14\n19\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\njustify-content: center;\nalign-items: center;\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "circle-Progress",
+    "inspect": "Progress\nEllipse\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13035&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nIcon · 54 x 54\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 54px;\nheight: 54px;\naspect-ratio: 1/1;\nStyle\n1\nfill: var(--Background-bg-grey, #E9EAEB);\nSVG\n1\n2\n3\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"54\" height=\"54\" viewBox=\"0 0 54 54\" fill=\"none\">\n<path d=\"M54 27C54 41.9117 41.9117 54 27 54C12.0883 54 0 41.9117 0 27C0 12.0883 12.0883 0 27 0C41.9117 0 54 12.0883 54 27ZM5.13488 27C5.13488 39.0758 14.9242 48.8651 27 48.8651C39.0758 48.8651 48.8651 39.0758 48.8651 27C48.8651 14.9242 39.0758 5.13488 27 5.13488C14.9242 5.13488 5.13488 14.9242 5.13488 27Z\" fill=\"#E9EAEB\"/>\n</svg>\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "semi-circle-30",
+    "inspect": "Progress Circle\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13040&m=dev\nCopy example prompt\nComponent information\nPercentage\n30%\nShape\nSemi-circle\nPercentage\n100\n1 more\nExplore component behavior\nLayer properties\n149\n266\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n54\n×\n27\n-\n-\n-\n-\n-\n-\n578\n54\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\nwidth: 54px;\nheight: 27px;\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "semi-label",
+    "inspect": "Label\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13043&m=dev\nCopy example prompt\nLayer properties\n15\n13.5\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n27\n×\n15\n-\n-\n-\n-\n-\n-\n13.5\n-3\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: inline-flex;\njustify-content: center;\nalign-items: center;\n"
+  },
+  {
+    "component": "progress-indicator",
+    "variant": "percentage-text",
+    "inspect": "30\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2761-13044&m=dev\nCopy example prompt\nLayer properties\n12px\n15px\nv2/Label/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\ncolor: var(--Text-text-primary, #181D27);\n/* v2/Label/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 12px;\nfont-style: normal;\nfont-weight: 600;\nline-height: normal;\nletter-spacing: 0.06px;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "default",
+    "inspect": "Empty State\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n2.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7349&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nTitle\nTitle Text\nDesc\nDescription Text\n4 more\nExplore component behavior\nLayer properties\n20\n-\nBorder\n-\n-\n-\nPadding\n24\n24\n698\n×\n227\n24\n24\n-\n-\n-\n-\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 746px;\npadding: 24px;\nflex-direction: column;\nalign-items: center;\ngap: 20px;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Avatar",
+    "inspect": "Avatar\nComponent instance\nThe color, border, effect and 1 more property in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2240-47050&m=dev\nCopy example prompt\nComponent information\nStyle\nOutline\nSize\nxl\nStatus\nOnline\n3 more\nExplore component behavior\nLayer properties\n24\n24\n60\nBorder\n1\n60\n1\nChecker.\npng\n1\n60\n1\n60\n24\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 90px;\nheight: 90px;\nflex-direction: column;\njustify-content: center;\nalign-items: center;\ngap: 2px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\n4\n5\n6\nborder-radius: 60px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\nbackground: linear-gradient(0deg, var(--Background-bg-primary, #FFF) 0%, var(--Background-bg-primary, #FFF) 100%), url(<path-to-image>) lightgray 50% / cover no-repeat;\n/* v2-Shadows/Skeuomorphic */\nbox-shadow: 0 1px 2px 0 rgba(12, 15, 18, 0.05), 0 0 0 1px rgba(10, 13, 18, 0.18) inset, 0 -2px 0 0 rgba(12, 15, 18, 0.05) inset;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Content",
+    "inspect": "Content\nSlot with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7353&m=dev\nCopy example prompt\nLayer properties\n20\n24\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n698\n×\n57\n-\n-\n-\n-\n-\n-\n24\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nflex-direction: column;\nalign-items: center;\ngap: 6px;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Actions",
+    "inspect": "Actions\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n688\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7356&m=dev\nCopy example prompt\nLayer properties\n20\n24\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n298\n×\n40\n-\n-\n-\n-\n-\n-\n24\n24\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\ndisplay: flex;\nalign-items: flex-start;\ngap: 12px;\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Title",
+    "inspect": "Title\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7354&m=dev\nCopy example prompt\nLayer properties\n24px\n32px\nv2/Headline/Small\nView\nList\nCode\nLanguage: CSS\nCSS\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\ncolor: var(--Text-text-primary, #181D27);\n/* v2/Headline/Small */\nfont-family: var(--v2, Inter);\nfont-size: 24px;\nfont-style: normal;\nfont-weight: 600;\nline-height: 32px; /* 133.333% */\n"
+  },
+  {
+    "component": "empty-state",
+    "variant": "Desc",
+    "inspect": "Desc\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7355&m=dev\nCopy example prompt\nLayer properties\n16px\n19px\nv2/Body/Large\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nwidth: 698px;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\ncolor: var(--Text-text-muted, #717680);\ntext-align: center;\n/* v2/Body/Large */\nfont-family: var(--v2, Inter);\nfont-size: 16px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "shimmering-text",
+    "variant": "Loading. Please wait",
+    "inspect": "2 selected\nLoading. Please wait\nFrame 2087332317\nCompare selected items\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n313\nImplement these 2 designs from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3217-102568&m=dev\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102660&m=dev\nCopy example prompt\nSelection colors\nColor format\nHSL\nhsla(220, 24%, 12%, 1)\nExport"
+  },
+  {
+    "component": "shimmering-text",
+    "variant": "Frame 2087332317",
+    "inspect": "Frame 2087332317\nFrame with auto layout\nEdited 9 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3259-102660&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n5\n×\n19\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\ndisplay: flex;\nalign-items: center;\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "default",
+    "inspect": "Number Step Field\nVariant\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n6k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16632&m=dev\nCopy example prompt\nComponent information\nVariant\nDefault\nshowHours\nTrue\nshowMinutes\nTrue\n1 more\nExplore component behavior\nLayer properties\n20\n20\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n673\n×\n40\n-\n-\n-\n-\n-\n-\n20\n20\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nwidth: 673px;\njustify-content: center;\nalign-items: center;\ngap: 12px;\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "hours",
+    "inspect": "Hours\nComponent instance\nThe color, border, text and 2 more properties in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.8k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16122&m=dev\nCopy example prompt\nComponent information\nState\nDefault\nwithValue\nFalse\nshowLabel\nFalse\n7 more\nExplore component behavior\nLayer properties\n8\nBorder\n1\n8\n1\nPadding\n-\n-\n192\n×\n40\n-\n-\n1\n8\n1\n8\n12\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 192px;\nflex-direction: column;\nalign-items: flex-start;\ngap: 4px;\nflex-shrink: 0;\nStyle\n1\n2\nborder-radius: 8px;\nborder: 1px solid var(--Border-border-layout, #E9EAEB);\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "input-field",
+    "inspect": "Input Field\nFrame with auto layout\nThe color, border and layout in this layer differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.6k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16122&m=dev\nCopy example prompt\nLayer properties\n4\n8\nBorder\n-\n8\n-\nPadding\n-\n-\n176\n×\n40\n16\n-\n-\n8\n-\n8\n4\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\npadding-right: 16px;\nalign-items: center;\ngap: 16px;\nalign-self: stretch;\nStyle\n1\n2\nborder-radius: 8px;\nbackground: var(--Background-bg-ui, #F5F5F5);\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "Prefix",
+    "inspect": "Prefix\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16122&m=dev\nCopy example prompt\nLayer properties\n16px\n19px\nv2/Body/Large\nView\nList\nCode\nLanguage: CSS\nCSS\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "Input",
+    "inspect": "Input\nFrame with auto layout\nThe color and layout in this layer differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n1.3k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16122&m=dev\nCopy example prompt\nLayer properties\n16\n-\nBorder\n-\n-\n-\nPadding\n-\n16\n106\n×\n40\n-\n-\n-\n-\n-\n-\n16\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\npadding-left: 16px;\nalign-items: center;\ngap: -2px;\nflex: 1 0 0;\nStyle\n1\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "number-step-field",
+    "variant": "Suffix",
+    "inspect": "Suffix\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-16122&m=dev\nCopy example prompt\nLayer properties\n14px\n17px\nv2/Body/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\ncolor: var(--Text-text-secondary, #343E55);\n/* v2/Body/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 14px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "shimmering-text",
+    "variant": "text",
+    "inspect": "Loading. Please wait\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=3217-102568&m=dev\nCopy example prompt\nLayer properties\n16px\n19px\nv2/Body/Large\nView\nList\nCode\nLanguage: CSS\nCSS\nTypography\n1\n2\n3\n4\n5\n6\n7\n/* v2/Body/Large */\nfont-family: var(--v2, Inter);\nfont-size: 16px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\nStyle\n1\n2\n3\n4\nbackground: linear-gradient(92deg, var(--Text-text-secondary, #343E55) 0%, var(--Text-text-inverted, #FFF) 28.77%, var(--Text-text-secondary, #343E55) 45.08%);\nbackground-clip: text;\n-webkit-background-clip: text;\n-webkit-text-fill-color: transparent;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-vertical-numbered",
+    "inspect": "Stepper\nVariant\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n3.9k\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12613&m=dev\nCopy example prompt\nComponent information\nSize\nsm\nLayout\nVertical\nIcon\nNumbered\n5 more\nExplore component behavior\nLayer properties\n391\n1097\n-\nBorder\n-\n-\n-\nPadding\n12\n-\n331\n×\n279\n-\n12\n-\n-\n-\n-\n364\n34\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: inline-flex;\nheight: 303px;\npadding: 12px 0;\nflex-direction: column;\nalign-items: flex-start;\ngap: 4px;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-step1",
+    "inspect": "Step 1\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n938\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12615&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n331\n×\n77\n-\n-\n-\n-\n-\n-\n6\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\ndisplay: flex;\nalign-items: flex-start;\nflex: 1 0 0;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Icon and Line",
+    "inspect": "Icon and Line\nFrame with auto layout\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n375\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12616&m=dev\nCopy example prompt\nLayer properties\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n20\n×\n77\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\nwidth: 20px;\nflex-direction: column;\nalign-items: flex-start;\ngap: 6px;\nalign-self: stretch;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Selection Container",
+    "inspect": "Selection Container\nComponent instance\nThe color, border, text and 2 more properties in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n500\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2674-16901&m=dev\nCopy example prompt\nComponent information\n\nUse base components if not opting for any supporting element besides the selection component(checkbox, radio or switch) itself.\n\n\n\n\nCustomise the container as per layout.\n\nLayout\nLeft\nState\nDefault\nshowLabel\nTrue\n5 more\nExplore component behavior\nLayer properties\n8\nBorder\n-\n8\n-\nPadding\n-\n12\n287\n×\n32\n12\n-\n-\n8\n-\n8\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\ndisplay: flex;\npadding: 0 12px;\nflex-direction: column;\nalign-items: center;\ngap: 12px;\nflex: 1 0 0;\nStyle\n1\n2\nborder-radius: 8px;\nbackground: var(--Background-bg-primary, #FFF);\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Indicator",
+    "inspect": "Indicator\nComponent instance\nThe color, border and layout in this instance differ from the main component.\nCompare with main component\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n250\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12617&m=dev\nCopy example prompt\nComponent information\nState\nPrimary\nSize\nSmall\nLabel Text\n1\n2 more\nExplore component behavior\nLayer properties\n9999\nBorder\n0.4\n9999\n0.4\nPadding\n2\n8\n4\n×\n16\n8\n2\n0.4\n9999\n0.4\n9999\n6\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\n6\n7\n8\ndisplay: flex;\nwidth: 20px;\nheight: 20px;\npadding: 2px 8px;\njustify-content: center;\nalign-items: center;\ngap: 8px;\naspect-ratio: 1/1;\nStyle\n1\n2\n3\nborder-radius: var(--Full, 9999px);\nborder: 0.4px solid var(--Border-border-layout, #E9EAEB);\nbackground: var(--Background-bg-grey, #E9EAEB);\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Connector",
+    "inspect": "Connector\nVector\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12618&m=dev\nCopy example prompt\nLayer properties\n6\n-\nBorder\n2\n-\n2\nIcon · 51 x 10\n2\n-\n2\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\nwidth: 51px;\ntransform: rotate(90deg);\nflex: 1 0 0;\nStyle\n1\n2\nstroke-width: 2px;\nstroke: var(--Border-border-layout, #E9EAEB);\nSVG\n1\n2\n3\n<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"53\" viewBox=\"0 0 2 53\" fill=\"none\">\n<path d=\"M1 1L1 52\" stroke=\"#E9EAEB\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n</svg>\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Text",
+    "inspect": "Text\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2674-16901&m=dev\nCopy example prompt\nLayer properties\n12px\n15px\nv2/Label/Medium\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nalign-self: stretch;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\n9\ncolor: var(--Text-text-primary, #171717);\n/* v2/Label/Medium */\nfont-family: var(--v2, Inter);\nfont-size: 12px;\nfont-style: normal;\nfont-weight: 600;\nline-height: normal;\nletter-spacing: 0.06px;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "small-Supporting text",
+    "inspect": "Supporting text\nText\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n63\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2674-16901&m=dev\nCopy example prompt\nLayer properties\n12px\n15px\nv2/Body/Small\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\nalign-self: stretch;\nTypography\n1\n2\n3\n4\n5\n6\n7\n8\ncolor: var(--Text-text-muted, #737373);\n/* v2/Body/Small */\nfont-family: var(--v2, Inter);\nfont-size: 12px;\nfont-style: normal;\nfont-weight: 400;\nline-height: normal;\n"
+  },
+  {
+    "component": "stepper",
+    "variant": "medium-horizontal-text",
+    "inspect": "Text\nFrame with auto layout\nEdited 13 days ago\nCompare with previous versions\nMCP\nSelection details\nSession activity\nNot sent\nEstimated tokens\n188\nImplement this design from Figma.\n@https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2657-12574&m=dev\nCopy example prompt\nLayer properties\n12\n-\nBorder\n-\n-\n-\nPadding\n-\n-\n24\n×\n39\n-\n-\n-\n-\n-\n-\nborder-box\nView\nList\nCode\nLanguage: CSS\nCSS\nLayout\n1\n2\n3\n4\n5\ndisplay: flex;\nflex-direction: column;\nalign-items: center;\ngap: 2px;\nalign-self: stretch;\n"
+  }
+]

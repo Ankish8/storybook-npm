@@ -1,0 +1,15 @@
+{
+  "name": "phone-input",
+  "replacements": [
+    [
+      "opacity-60 bg-semantic-bg-ui cursor-not-allowed",
+      "bg-semantic-bg-ui cursor-not-allowed"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "flex items-center border border-solid border-semantic-border-input rounded focus-within:outline-none focus-within:border-semantic-border-input-focus focus-within:shadow-[0_0_0_1px_rgba(43,188,202,0.15)] transition-all",
+      "after": "flex items-center border border-solid border-semantic-border-input rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] focus-within:outline-none hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] transition-all"
+    }
+  ]
+}

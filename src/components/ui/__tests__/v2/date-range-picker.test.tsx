@@ -1,0 +1,609 @@
+import * as React from "react";
+import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { DateRangePicker } from "../../v2/date-range-picker";
+
+// DateRangePicker renders no <p> elements (trigger + popover use span/div/button
+// only), so the Bootstrap margin-bleed check below is trivially satisfied. It's
+// kept as a regression guard, matching the convention in alert.test.tsx /
+// reply-quote.test.tsx.
+import { assertNoBootstrapMarginBleed } from "../utils/bootstrap-compat";
+
+function dayLabelFor(date: Date) {
+  return date.toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+describe("DateRangePicker", () => {
+  it("renders the default placeholder when no value is set", () => {
+    render(<DateRangePicker />);
+
+    expect(
+      screen.getByRole("button", { name: "Date Range" })
+    ).toBeInTheDocument();
+  });
+
+  it("merges triggerLabelClassName onto the label span for responsive icon-only collapsing", () => {
+    render(<DateRangePicker triggerLabelClassName="sr-only sm:not-sr-only" />);
+
+    const label = screen.getByText("Date Range");
+    expect(label.tagName).toBe("SPAN");
+    expect(label).toHaveClass("sr-only", "sm:not-sr-only");
+    // The label stays in the accessible name even while visually hidden via sr-only.
+    expect(
+      screen.getByRole("button", { name: "Date Range" })
+    ).toBeInTheDocument();
+  });
+
+  it("renders the formatted range in the trigger when defaultValue is set", () => {
+    render(
+      <DateRangePicker
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: "3 Aug 2026 - 10 Aug 2026" })
+    ).toBeInTheDocument();
+  });
+
+  it("opens the popover when the trigger is clicked", () => {
+    render(<DateRangePicker />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+  });
+
+  it("closes the popover when the trigger is clicked again", () => {
+    render(<DateRangePicker />);
+
+    const trigger = screen.getByRole("button", { name: "Date Range" });
+    fireEvent.click(trigger);
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+
+    fireEvent.click(trigger);
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("closes the popover when Escape is pressed", () => {
+    render(<DateRangePicker />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("closes the popover when clicking outside", () => {
+    render(
+      <div>
+        <DateRangePicker />
+        <button type="button">outside-target</button>
+      </div>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
+
+    fireEvent.pointerDown(
+      screen.getByRole("button", { name: "outside-target" })
+    );
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders every default preset label when open", () => {
+    render(<DateRangePicker />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    expect(screen.getByText("Yesterday")).toBeInTheDocument();
+    expect(screen.getByText("Last 7 days")).toBeInTheDocument();
+    expect(screen.getByText("Last 30 days")).toBeInTheDocument();
+    expect(screen.getByText("This month")).toBeInTheDocument();
+    expect(screen.getByText("Last month")).toBeInTheDocument();
+  });
+
+  it('clicking the "Today" preset commits start = end = start-of-today and closes the popover', () => {
+    const handleValueChange = vi.fn();
+    render(<DateRangePicker onValueChange={handleValueChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    fireEvent.click(screen.getByText("Today"));
+
+    const now = new Date();
+    const startOfToday = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      start: startOfToday,
+      end: startOfToday,
+    });
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders weekday headers in uppercase", () => {
+    render(<DateRangePicker defaultOpen />);
+
+    expect(screen.getByText("SU")).toBeInTheDocument();
+    expect(screen.getByText("MO")).toBeInTheDocument();
+    expect(screen.queryByText("Su")).not.toBeInTheDocument();
+  });
+
+  it("uses the info-surface token for the in-range highlight band", () => {
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+      />
+    );
+
+    const dayInBand = screen.getByLabelText(dayLabelFor(new Date(2026, 7, 5)));
+    expect(dayInBand.parentElement).toHaveClass("bg-semantic-info-surface");
+  });
+
+  it("shows the visible month and year as separate dropdown triggers", () => {
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+      />
+    );
+
+    expect(screen.getByText("August")).toBeInTheDocument();
+    expect(screen.getByText("2026")).toBeInTheDocument();
+  });
+
+  it("jumps to the selected month via the month dropdown", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+      />
+    );
+
+    await user.click(screen.getByText("August"));
+    await user.click(screen.getByText("March"));
+
+    expect(screen.getByText("March")).toBeInTheDocument();
+    expect(screen.getByText("2026")).toBeInTheDocument();
+  });
+
+  it("jumps to the selected year via the year dropdown", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+      />
+    );
+
+    await user.click(screen.getByText("2026"));
+    await user.click(screen.getByText("2024"));
+
+    expect(screen.getByText("August")).toBeInTheDocument();
+    expect(screen.getByText("2024")).toBeInTheDocument();
+  });
+
+  it("hides the presets column when presets={[]}", () => {
+    render(<DateRangePicker presets={[]} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    expect(screen.queryByText("Today")).not.toBeInTheDocument();
+    expect(screen.queryByText("Yesterday")).not.toBeInTheDocument();
+    // The calendar column still renders.
+    expect(screen.getByLabelText("Next month")).toBeInTheDocument();
+  });
+
+  it("commits and closes as soon as the second day click completes the range", () => {
+    const handleValueChange = vi.fn();
+    render(<DateRangePicker onValueChange={handleValueChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    const today = new Date();
+    const firstDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const secondDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 2
+    );
+
+    // Click 1 — sets a pending draft start (end temporarily equals start);
+    // nothing commits yet.
+    fireEvent.click(screen.getByLabelText(dayLabelFor(firstDay)));
+    expect(handleValueChange).not.toHaveBeenCalled();
+
+    // Click 2 — completes the range and commits immediately, no separate
+    // Apply step.
+    fireEvent.click(screen.getByLabelText(dayLabelFor(secondDay)));
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      start: firstDay,
+      end: secondDay,
+    });
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("auto-swaps the range when the second click lands before the first", () => {
+    const handleValueChange = vi.fn();
+    render(<DateRangePicker onValueChange={handleValueChange} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    const today = new Date();
+    const earlierDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const laterDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 2
+    );
+
+    // Click the later day first, then the earlier day — the committed range
+    // should still come out start = earlier, end = later.
+    fireEvent.click(screen.getByLabelText(dayLabelFor(laterDay)));
+    fireEvent.click(screen.getByLabelText(dayLabelFor(earlierDay)));
+
+    expect(handleValueChange).toHaveBeenCalledWith({
+      start: earlierDay,
+      end: laterDay,
+    });
+  });
+
+  it("discards an incomplete manual selection and leaves the trigger unchanged when closed without completing the range", () => {
+    const handleValueChange = vi.fn();
+    render(
+      <DateRangePicker
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 10),
+        }}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    const trigger = screen.getByRole("button", {
+      name: "3 Aug 2026 - 10 Aug 2026",
+    });
+    fireEvent.click(trigger);
+
+    // Start a new manual selection over the existing value, but never
+    // complete it with a second click.
+    fireEvent.click(screen.getByLabelText("August 15, 2026"));
+
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(handleValueChange).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "3 Aug 2026 - 10 Aug 2026" })
+    ).toBeInTheDocument();
+  });
+
+  it("does not open the popover when disabled", () => {
+    render(<DateRangePicker disabled />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("disables days before minDate and ignores clicks on them", () => {
+    const handleValueChange = vi.fn();
+    const today = new Date();
+    const minDate = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 5
+    );
+
+    render(
+      <DateRangePicker minDate={minDate} onValueChange={handleValueChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+
+    const disabledDay = screen.getByLabelText(dayLabelFor(today));
+    expect(disabledDay).toBeDisabled();
+
+    fireEvent.click(disabledDay);
+
+    // The click on a disabled day must not start a draft selection or
+    // commit anything.
+    expect(handleValueChange).not.toHaveBeenCalled();
+  });
+
+  it("merges a custom className onto the root element", () => {
+    render(
+      <DateRangePicker
+        className="custom-class"
+        data-testid="date-range-picker"
+      />
+    );
+
+    expect(screen.getByTestId("date-range-picker")).toHaveClass("custom-class");
+    expect(screen.getByTestId("date-range-picker")).toHaveClass("relative");
+  });
+
+  it("forwards ref to the root div", () => {
+    const ref = React.createRef<HTMLDivElement>();
+
+    render(<DateRangePicker ref={ref} />);
+
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+  });
+
+  it("spreads additional props onto the root element", () => {
+    render(
+      <DateRangePicker
+        data-testid="date-range-picker"
+        aria-label="test label"
+      />
+    );
+
+    expect(screen.getByTestId("date-range-picker")).toHaveAttribute(
+      "aria-label",
+      "test label"
+    );
+  });
+
+  it("applies error state styling to the trigger", () => {
+    render(<DateRangePicker state="error" />);
+
+    expect(screen.getByRole("button", { name: "Date Range" })).toHaveClass(
+      "border-semantic-error-primary"
+    );
+  });
+
+  it("clamps a preset range that starts before minDate", () => {
+    const onValueChange = vi.fn();
+    const minDate = new Date(2026, 8, 5);
+
+    render(
+      <DateRangePicker
+        minDate={minDate}
+        onValueChange={onValueChange}
+        presets={[
+          {
+            label: "Spans minDate",
+            getRange: () => ({
+              start: new Date(2026, 8, 1),
+              end: new Date(2026, 8, 10),
+            }),
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    fireEvent.click(screen.getByText("Spans minDate"));
+
+    expect(onValueChange).toHaveBeenCalledTimes(1);
+    const committed = onValueChange.mock.calls[0][0];
+    expect(committed.start).toEqual(minDate);
+    expect(committed.end).toEqual(new Date(2026, 8, 10));
+  });
+
+  it("disables a preset whose whole range falls outside minDate/maxDate", () => {
+    const onValueChange = vi.fn();
+
+    render(
+      <DateRangePicker
+        minDate={new Date(2026, 8, 1)}
+        onValueChange={onValueChange}
+        presets={[
+          {
+            label: "All in the past",
+            getRange: () => ({
+              start: new Date(2025, 0, 1),
+              end: new Date(2025, 0, 31),
+            }),
+          },
+        ]}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Date Range" }));
+    const preset = screen.getByText("All in the past");
+
+    expect(preset).toBeDisabled();
+    fireEvent.click(preset);
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("returns focus to the trigger after Escape closes the popover", () => {
+    render(<DateRangePicker />);
+
+    const trigger = screen.getByRole("button", { name: "Date Range" });
+    fireEvent.click(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+
+    expect(trigger).toHaveFocus();
+  });
+
+  it("omits years outside minDate/maxDate from the year dropdown", async () => {
+    const user = userEvent.setup();
+
+    render(
+      <DateRangePicker
+        defaultValue={{
+          start: new Date(2026, 7, 3),
+          end: new Date(2026, 7, 5),
+        }}
+        minDate={new Date(2026, 0, 1)}
+        maxDate={new Date(2027, 11, 31)}
+      />
+    );
+
+    await user.click(
+      screen.getByRole("button", { name: "3 Aug 2026 - 5 Aug 2026" })
+    );
+    await user.click(screen.getByText("2026"));
+
+    expect(screen.getByText("2027")).toBeInTheDocument();
+    expect(screen.queryByText("2025")).not.toBeInTheDocument();
+  });
+
+  it("closes the month dropdown when the year dropdown opens", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{
+          start: new Date(2026, 8, 3),
+          end: new Date(2026, 8, 5),
+        }}
+      />
+    );
+
+    await user.click(screen.getByText("September"));
+    expect(screen.getByText("January")).toBeInTheDocument();
+
+    await user.click(screen.getByText("2026"));
+    expect(screen.queryByText("January")).not.toBeInTheDocument();
+    expect(screen.getByText("2024")).toBeInTheDocument();
+  });
+
+  it("does not render the clear button unless clearable is set", () => {
+    render(
+      <DateRangePicker
+        defaultValue={{
+          start: new Date(2026, 4, 26),
+          end: new Date(2026, 5, 26),
+        }}
+      />
+    );
+
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("hides the clear button while no range is selected", () => {
+    render(<DateRangePicker clearable />);
+
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("clears the range and fires onValueChange/onClear", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    const onClear = vi.fn();
+    render(
+      <DateRangePicker
+        clearable
+        onClear={onClear}
+        onValueChange={onValueChange}
+        defaultValue={{
+          start: new Date(2026, 4, 26),
+          end: new Date(2026, 5, 26),
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear date range" }));
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: undefined,
+      end: undefined,
+    });
+    expect(onClear).toHaveBeenCalledTimes(1);
+    expect(
+      screen.getByRole("button", { name: /Date Range/ })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Clear date range" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not open the calendar when the clear button is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <DateRangePicker
+        clearable
+        defaultValue={{
+          start: new Date(2026, 4, 26),
+          end: new Date(2026, 5, 26),
+        }}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear date range" }));
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("supports a custom clear label", () => {
+    render(
+      <DateRangePicker
+        clearable
+        clearLabel="Reset dates"
+        defaultValue={{
+          start: new Date(2026, 4, 26),
+          end: new Date(2026, 5, 26),
+        }}
+      />
+    );
+
+    expect(
+      screen.getByRole("button", { name: "Reset dates" })
+    ).toBeInTheDocument();
+  });
+
+  it("has no Bootstrap margin bleed on <p> elements", () => {
+    const { container } = render(<DateRangePicker />);
+
+    assertNoBootstrapMarginBleed(container);
+  });
+});

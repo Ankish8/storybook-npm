@@ -246,6 +246,10 @@
     --input: 220 13% 91%;
     --ring: 222 26% 27%;
     --radius: 0.5rem;
+
+    /* v2 design system (src/components/ui/v2) — additive, v1 never reads these */
+    --font-v2: "Inter", sans-serif;
+    --border-skeuomorphic: rgba(255, 255, 255, 0.12);
   }
 
   .dark {

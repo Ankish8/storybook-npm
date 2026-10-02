@@ -1,0 +1,39 @@
+{
+  "name": "delete-confirmation-modal",
+  "replacements": [
+    [
+      "gap-2 sm:gap-0",
+      "gap-2 px-4 pb-4 sm:space-x-0"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": [],
+      "after": [
+        "lucide-react"
+      ]
+    },
+    {
+      "before": [
+        "sm",
+        "tw-sr-only",
+        "Delete confirmation dialog - this action cannot be undone",
+        "tw-grid tw-gap-2 tw-py-4"
+      ],
+      "after": [
+        "sm",
+        "tw-gap-0 tw-overflow-hidden tw-p-0",
+        "tw-flex tw-items-center tw-gap-4 tw-border-b tw-border-solid tw-border-[var(--semantic-border-layout,#E9EAEB)] tw-p-6",
+        "tw-flex tw-size-8 tw-shrink-0 tw-items-center tw-justify-center tw-rounded-lg tw-bg-[var(--semantic-error-surface,#FEF3F2)] tw-text-[var(--semantic-error-primary,#F04438)]",
+        "tw-size-[18px]",
+        "tw-flex tw-min-w-0 tw-flex-1 tw-flex-col tw-gap-0.5",
+        "tw-sr-only",
+        "Delete confirmation dialog - this action cannot be undone",
+        "tw-flex tw-size-6 tw-shrink-0 tw-items-center tw-justify-center tw-rounded-md tw-text-[var(--semantic-text-muted,#717680)] tw-transition-colors hover:tw-bg-[var(--semantic-bg-ui,#F5F5F5)] hover:tw-text-[var(--semantic-text-primary,#181D27)] focus-visible:tw-outline focus-visible:tw-outline-1 focus-visible:tw-outline-offset-2 focus-visible:tw-outline-[var(--semantic-primary,#343E55)]",
+        "Close",
+        "tw-size-3",
+        "tw-flex tw-flex-col tw-gap-1 tw-px-6 tw-py-6"
+      ]
+    }
+  ]
+}

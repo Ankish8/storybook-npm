@@ -1,0 +1,266 @@
+[
+  {
+    "component": "table",
+    "id": "v2-components-table--states",
+    "client": 834,
+    "headings": [
+      "Default",
+      "Hover",
+      "Selected"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 1120
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "tabs",
+    "id": "v2-components-tabs--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1 \u00b7 horizontal \u00b7 auto width",
+      "Inbox \u00b7 Open",
+      "v2 \u00b7 horizontal \u00b7 auto width"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 1100
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "alert",
+    "id": "v2-components-alert--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1 \u00b7 default",
+      "v2 \u00b7 default",
+      "v1 \u00b7 success"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 900
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "avatar",
+    "id": "v2-components-avatar--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "soft \u00b7 xs",
+      "soft \u00b7 sm",
+      "soft \u00b7 md"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 900
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "accordion",
+    "id": "v2-components-accordion--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1 \u00b7 default \u00b7 single",
+      "v2 \u00b7 default \u00b7 single",
+      "v1 \u00b7 default \u00b7 multiple"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 900
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "page-header",
+    "id": "v2-components-pageheader--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1 \u00b7 horizontal",
+      "Webhooks",
+      "v2 \u00b7 horizontal"
+    ],
+    "nested": [
+      {
+        "client": 800,
+        "scroll": 1100
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "pagination",
+    "id": "v2-components-pagination--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "empty-state",
+    "id": "v2-components-emptystate--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "panel",
+    "id": "v2-components-panel--sizes",
+    "client": 834,
+    "headings": [
+      "sm",
+      "default",
+      "lg"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 1500
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "contact-list-item",
+    "id": "v2-components-contactlistitem--states",
+    "client": 834,
+    "headings": [
+      "Default",
+      "Hovered",
+      "Selected"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 820
+      }
+    ],
+    "scroll": 834
+  },
+  {
+    "component": "image-media",
+    "id": "v2-components-imagemedia--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "reply-quote",
+    "id": "v2-components-replyquote--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "system-message",
+    "id": "v2-components-systemmessage--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "date-divider",
+    "id": "v2-components-datedivider--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "unread-separator",
+    "id": "v2-components-unreadseparator--v-1-vs-v-2",
+    "client": 834,
+    "headings": [
+      "v1",
+      "v2"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "stepper",
+    "id": "v2-components-stepper--states",
+    "client": 834,
+    "headings": [
+      "Current step 1",
+      "Current step 2",
+      "Current step 3"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "scrollbar",
+    "id": "v2-components-scrollbar--states",
+    "client": 834,
+    "headings": [
+      "Scrollable content",
+      "Fits in the viewport"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "number-step-field",
+    "id": "v2-components-numberstepfield--all-variants",
+    "client": 834,
+    "headings": [
+      "hours",
+      "minutes"
+    ],
+    "nested": [],
+    "scroll": 834
+  },
+  {
+    "component": "otp-input",
+    "id": "v2-components-otpinput--states",
+    "client": 834,
+    "headings": [
+      "Default",
+      "Hover",
+      "Focus"
+    ],
+    "nested": [
+      {
+        "client": 802,
+        "scroll": 1000
+      }
+    ],
+    "scroll": 834
+  }
+]

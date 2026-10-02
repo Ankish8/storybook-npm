@@ -1,0 +1,27 @@
+{
+  "name": "select",
+  "replacements": [
+    [
+      "border border-solid border-semantic-border-input focus:outline-none focus:border-semantic-border-input-focus focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]",
+      "border border-solid border-semantic-border-input focus:outline-none hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    ]
+  ],
+  "unmatched": [
+    {
+      "before": "flex h-[42px] w-full items-center justify-between rounded bg-semantic-bg-primary px-4 py-2 text-base text-semantic-text-primary outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:line-clamp-1",
+      "after": "flex h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout [&>span]:line-clamp-1"
+    },
+    {
+      "before": "border border-solid border-semantic-error-primary/40 focus:outline-none focus:border-semantic-error-primary/60 focus:shadow-[0_0_0_1px_rgba(240,68,56,0.1)]",
+      "after": "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+    },
+    {
+      "before": "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
+      "after": "relative z-[9999] max-h-96 min-w-[8rem] overflow-hidden rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md"
+    },
+    {
+      "before": "relative flex w-full cursor-pointer select-none items-center rounded-sm py-2 pl-4 pr-8 text-base text-semantic-text-primary outline-none",
+      "after": "relative flex w-full cursor-pointer select-none items-center rounded-md py-2 pl-4 pr-8 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base text-semantic-text-primary outline-none"
+    }
+  ]
+}

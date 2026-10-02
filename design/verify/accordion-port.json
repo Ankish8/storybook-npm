@@ -1,0 +1,22 @@
+{
+  "name": "accordion",
+  "replacements": [
+    [
+      "flex w-full items-center justify-between text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium text-semantic-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-semantic-text-muted"
+    ],
+    [
+      "py-3",
+      "hover:bg-semantic-bg-ui"
+    ],
+    [
+      "p-4 hover:bg-[var(--color-neutral-50)]",
+      "hover:bg-semantic-bg-ui"
+    ],
+    [
+      "h-4 w-4 shrink-0 text-semantic-text-muted transition-transform duration-300",
+      "h-4 w-4 shrink-0 text-semantic-text-primary transition-transform duration-300"
+    ]
+  ],
+  "unmatched": []
+}

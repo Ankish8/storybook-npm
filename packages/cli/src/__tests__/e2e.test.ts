@@ -574,12 +574,14 @@ describe('CLI E2E: component installation', () => {
   }, 15_000)
 
   // --------------------------------------------------------------------------
-  // Test 9: Prefix coverage across ALL registry components (broad scan)
+  // Test 9: Prefix coverage across all v1 registry components
   // --------------------------------------------------------------------------
-  it('all registry components have prefixed classes', async () => {
+  it('all v1 registry components have prefixed classes', async () => {
     const violations: Violation[] = []
 
     for (const [name, component] of Object.entries(registry)) {
+      // v2 intentionally ships unprefixed; its consumer checks are in v2-completion.test.ts.
+      if (name.startsWith('v2-')) continue
       for (const file of component.files) {
         const fileViolations = findBareClasses(file.content, `${name}/${file.name}`)
         violations.push(...fileViolations)

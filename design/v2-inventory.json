@@ -1,0 +1,237 @@
+[
+  {
+    "component": "button",
+    "figma": "924:6438",
+    "hasV1": true
+  },
+  {
+    "component": "button-group",
+    "figma": "932:19755",
+    "hasV1": false
+  },
+  {
+    "component": "badge",
+    "figma": "924:6748",
+    "hasV1": true
+  },
+  {
+    "component": "tag",
+    "figma": "924:9132",
+    "hasV1": true
+  },
+  {
+    "component": "input",
+    "figma": "924:7628",
+    "hasV1": true
+  },
+  {
+    "component": "text-field",
+    "figma": "924:7628",
+    "hasV1": true
+  },
+  {
+    "component": "textarea",
+    "figma": "924:9305",
+    "hasV1": true
+  },
+  {
+    "component": "checkbox",
+    "figma": "2650:18296",
+    "hasV1": true
+  },
+  {
+    "component": "switch",
+    "figma": "2650:18296",
+    "hasV1": true
+  },
+  {
+    "component": "radio",
+    "figma": "2650:18296",
+    "hasV1": false
+  },
+  {
+    "component": "select",
+    "figma": "2118:22190",
+    "hasV1": true
+  },
+  {
+    "component": "select-field",
+    "figma": "2118:22190",
+    "hasV1": true
+  },
+  {
+    "component": "multi-select",
+    "figma": "2118:22190",
+    "hasV1": true
+  },
+  {
+    "component": "creatable-select",
+    "figma": "2118:22190",
+    "hasV1": true
+  },
+  {
+    "component": "creatable-multi-select",
+    "figma": "2118:22190",
+    "hasV1": true
+  },
+  {
+    "component": "phone-input",
+    "figma": "2190:7669",
+    "hasV1": true
+  },
+  {
+    "component": "tooltip",
+    "figma": "924:12668",
+    "hasV1": true
+  },
+  {
+    "component": "dialog",
+    "figma": "924:11664",
+    "hasV1": true
+  },
+  {
+    "component": "confirmation-modal",
+    "figma": "924:10148",
+    "hasV1": true
+  },
+  {
+    "component": "delete-confirmation-modal",
+    "figma": "924:11626",
+    "hasV1": true
+  },
+  {
+    "component": "dropdown-menu",
+    "figma": "924:7148",
+    "hasV1": true
+  },
+  {
+    "component": "toast",
+    "figma": "924:12618",
+    "hasV1": true
+  },
+  {
+    "component": "accordion",
+    "figma": "924:9830",
+    "hasV1": true
+  },
+  {
+    "component": "alert",
+    "figma": "924:9912",
+    "hasV1": true
+  },
+  {
+    "component": "avatar",
+    "figma": "924:9983",
+    "hasV1": true
+  },
+  {
+    "component": "tabs",
+    "figma": "924:12601",
+    "hasV1": true
+  },
+  {
+    "component": "table",
+    "figma": "924:8961",
+    "hasV1": true
+  },
+  {
+    "component": "page-header",
+    "figma": "924:11749",
+    "hasV1": true
+  },
+  {
+    "component": "page-footer",
+    "figma": "2188:7792",
+    "hasV1": false
+  },
+  {
+    "component": "pagination",
+    "figma": "924:11830",
+    "hasV1": true
+  },
+  {
+    "component": "empty-state",
+    "figma": "924:7344",
+    "hasV1": true
+  },
+  {
+    "component": "panel",
+    "figma": "924:11892",
+    "hasV1": true
+  },
+  {
+    "component": "readable-field",
+    "figma": "924:12122",
+    "hasV1": true
+  },
+  {
+    "component": "bouncing-loader",
+    "figma": "2185:13995",
+    "hasV1": true
+  },
+  {
+    "component": "skeleton",
+    "figma": "924:12193",
+    "hasV1": true
+  },
+  {
+    "component": "spinner",
+    "figma": "924:12231",
+    "hasV1": true
+  },
+  {
+    "component": "breadcrumbs",
+    "figma": "2274:48709",
+    "hasV1": false
+  },
+  {
+    "component": "otp-input",
+    "figma": "2000:11973",
+    "hasV1": false
+  },
+  {
+    "component": "number-step-field",
+    "figma": "2185:15837",
+    "hasV1": true
+  },
+  {
+    "component": "shimmering-text",
+    "figma": "3217:102530",
+    "hasV1": false
+  },
+  {
+    "component": "scrollbar",
+    "figma": "2284:50242",
+    "hasV1": false
+  },
+  {
+    "component": "progress-indicator",
+    "figma": "2284:50240",
+    "hasV1": false
+  },
+  {
+    "component": "ui-card",
+    "figma": "2284:50241",
+    "hasV1": false
+  },
+  {
+    "component": "stepper",
+    "figma": "2705:35397",
+    "hasV1": false
+  },
+  {
+    "component": "date-range-picker",
+    "figma": "3217:27914",
+    "hasV1": true
+  },
+  {
+    "component": "date-time-picker",
+    "figma": "2185:14049",
+    "hasV1": true
+  },
+  {
+    "component": "file-upload",
+    "figma": "924:7516",
+    "hasV1": false
+  }
+]

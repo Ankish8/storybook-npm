@@ -9,6 +9,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from '../../../scripts/lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import yaml from 'js-yaml'
@@ -107,11 +108,10 @@ function validateAnimationDependencies() {
 
   // Check UI components
   if (fs.existsSync(UI_COMPONENTS_DIR)) {
-    const uiFiles = fs.readdirSync(UI_COMPONENTS_DIR)
-      .filter(f => f.endsWith('.tsx') && !f.includes('.stories.') && !f.includes('.test.'))
+    const uiFiles = uiComponentFiles(UI_COMPONENTS_DIR)
 
     for (const file of uiFiles) {
-      const componentName = file.replace('.tsx', '')
+      const componentName = file.replace('.tsx', '').replace(/^v2\//, 'v2-')
       const filePath = path.join(UI_COMPONENTS_DIR, file)
       const content = fs.readFileSync(filePath, 'utf-8')
 

@@ -1,0 +1,243 @@
+import * as React from "react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { PhoneInput } from "../../v2/phone-input";
+
+describe("PhoneInput", () => {
+  it("activates the country chooser with the keyboard without submitting a form", async () => {
+    const user = userEvent.setup();
+    const onCountryClick = vi.fn();
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <PhoneInput onCountryClick={onCountryClick} />
+      </form>
+    );
+    await user.tab();
+    expect(
+      screen.getByRole("button", { name: "Select country (IN +91)" })
+    ).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(onCountryClick).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("prevents country chooser activation when the phone field is disabled", async () => {
+    const user = userEvent.setup();
+    const onCountryClick = vi.fn();
+    render(<PhoneInput disabled onCountryClick={onCountryClick} />);
+    const country = screen.getByRole("button", {
+      name: "Select country (IN +91)",
+    });
+    expect(country).toBeDisabled();
+    await user.click(country);
+    expect(onCountryClick).not.toHaveBeenCalled();
+  });
+
+  it("renders the default IN svg flag and code", () => {
+    render(<PhoneInput />);
+    const flag = screen.getByLabelText("IN");
+    expect(flag).toBeInTheDocument();
+    expect(flag).toHaveAttribute("src", expect.stringContaining("in.svg"));
+    expect(screen.getByText("+91")).toBeInTheDocument();
+  });
+
+  it("renders the svg flag for a custom countryIso and countryCode", () => {
+    render(<PhoneInput countryIso="US" countryCode="+1" />);
+    const flag = screen.getByLabelText("US");
+    expect(flag).toHaveAttribute("src", expect.stringContaining("us.svg"));
+    expect(screen.getByText("+1")).toBeInTheDocument();
+  });
+
+  it("renders a custom countryFlag node instead of the svg flag", () => {
+    render(<PhoneInput countryFlag={<span>🇺🇸</span>} countryCode="+1" />);
+    expect(screen.getByText("🇺🇸")).toBeInTheDocument();
+    expect(screen.queryByLabelText("IN")).not.toBeInTheDocument();
+  });
+
+  it("forwards ref to the input element", () => {
+    const ref = React.createRef<HTMLInputElement>();
+    render(<PhoneInput ref={ref} />);
+    expect(ref.current).toBeInstanceOf(HTMLInputElement);
+    expect(ref.current?.type).toBe("tel");
+  });
+
+  it("fires onChange handler", () => {
+    const handleChange = vi.fn();
+    render(<PhoneInput onChange={handleChange} data-testid="phone" />);
+    fireEvent.change(screen.getByTestId("phone"), {
+      target: { value: "9876543210" },
+    });
+    expect(handleChange).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes alphabetic and special characters before change handlers receive the value", () => {
+    const changedValues: string[] = [];
+    const handleChange = vi.fn((event) => {
+      changedValues.push(event.currentTarget.value);
+    });
+    render(<PhoneInput onChange={handleChange} data-testid="phone" />);
+
+    const input = screen.getByTestId("phone");
+    fireEvent.change(input, {
+      target: { value: "98abc76-54 3210" },
+    });
+
+    expect(input).toHaveValue("9876543210");
+    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(changedValues).toEqual(["9876543210"]);
+  });
+
+  it("limits sanitized phone numbers with phoneMaxNumber", () => {
+    const changedValues: string[] = [];
+    const handleChange = vi.fn((event) => {
+      changedValues.push(event.currentTarget.value);
+    });
+    render(
+      <PhoneInput
+        phoneMaxNumber={5}
+        onChange={handleChange}
+        data-testid="phone"
+      />
+    );
+
+    const input = screen.getByTestId("phone");
+    fireEvent.change(input, {
+      target: { value: "98abc76543210" },
+    });
+
+    expect(input).toHaveValue("98765");
+    expect(input).toHaveAttribute("maxLength", "5");
+    expect(changedValues).toEqual(["98765"]);
+  });
+
+  it("blocks non-digit key entry", () => {
+    render(<PhoneInput data-testid="phone" />);
+
+    const input = screen.getByTestId("phone");
+    expect(fireEvent.keyDown(input, { key: "a" })).toBe(false);
+    expect(fireEvent.keyDown(input, { key: "-" })).toBe(false);
+    expect(fireEvent.keyDown(input, { key: "1" })).toBe(true);
+    expect(fireEvent.keyDown(input, { key: "Backspace" })).toBe(true);
+  });
+
+  it("fires onCountryClick when clicking country area", () => {
+    const handleCountryClick = vi.fn();
+    render(<PhoneInput onCountryClick={handleCountryClick} />);
+    fireEvent.click(screen.getByTestId("phone-input-country"));
+    expect(handleCountryClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("uses a solid grey surface when disabled", () => {
+    render(<PhoneInput disabled data-testid="phone" />);
+    const wrapper = screen
+      .getByTestId("phone")
+      .closest("div[class*='flex items-center border']");
+    expect(wrapper).toHaveClass("bg-semantic-bg-ui");
+  });
+
+  it("applies empty state classes", () => {
+    render(<PhoneInput state="empty" data-testid="phone" />);
+    const wrapper = screen
+      .getByTestId("phone")
+      .closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-border-input");
+    expect(screen.getByTestId("phone")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
+  });
+
+  it("applies error state classes", () => {
+    render(<PhoneInput state="error" data-testid="phone" />);
+    const wrapper = screen
+      .getByTestId("phone")
+      .closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-error-primary");
+    expect(screen.getByTestId("phone")).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("renders validation message and connects it to the input", () => {
+    render(
+      <PhoneInput validation="Enter a valid phone number" data-testid="phone" />
+    );
+
+    const input = screen.getByTestId("phone");
+    const validationMessage = screen.getByText("Enter a valid phone number");
+    const wrapper = input.closest("div[class*='flex items-center border']");
+
+    expect(wrapper).toHaveClass("border-semantic-error-primary");
+    expect(validationMessage).toHaveClass("m-0", "text-semantic-error-text");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAttribute("aria-describedby", validationMessage.id);
+  });
+
+  it("disables the input when disabled prop is set", () => {
+    render(<PhoneInput disabled data-testid="phone" />);
+    expect(screen.getByTestId("phone")).toBeDisabled();
+  });
+
+  it("applies wrapperClassName to the outer wrapper", () => {
+    render(
+      <PhoneInput wrapperClassName="custom-wrapper" data-testid="phone" />
+    );
+    // The immediate parent is the wrapper with flex items-center
+    const outerWrapper = screen.getByTestId(
+      "phone-input-country"
+    ).parentElement;
+    expect(outerWrapper).toHaveClass("custom-wrapper");
+  });
+
+  it("applies className to the input element", () => {
+    render(<PhoneInput className="custom-input" data-testid="phone" />);
+    expect(screen.getByTestId("phone")).toHaveClass("custom-input");
+  });
+
+  it("spreads data-testid to the input", () => {
+    render(<PhoneInput data-testid="my-phone-input" />);
+    const input = screen.getByTestId("my-phone-input");
+    expect(input.tagName).toBe("INPUT");
+  });
+
+  it("hides chevron when showChevron is false", () => {
+    const { container } = render(<PhoneInput showChevron={false} />);
+    const svg = container.querySelector("svg");
+    expect(svg).not.toBeInTheDocument();
+  });
+
+  it("shows chevron by default", () => {
+    const { container } = render(<PhoneInput />);
+    const svg = container.querySelector("svg");
+    expect(svg).toBeInTheDocument();
+  });
+
+  it("renders placeholder text", () => {
+    render(<PhoneInput placeholder="Enter phone number" />);
+    expect(
+      screen.getByPlaceholderText("Enter phone number")
+    ).toBeInTheDocument();
+  });
+
+  it("always sets type to tel", () => {
+    render(<PhoneInput data-testid="phone" />);
+    expect(screen.getByTestId("phone")).toHaveAttribute("type", "tel");
+  });
+
+  it("sets numeric input hints by default", () => {
+    render(<PhoneInput data-testid="phone" />);
+    const input = screen.getByTestId("phone");
+
+    expect(input).toHaveAttribute("inputmode", "numeric");
+    expect(input).toHaveAttribute("pattern", "[0-9]*");
+  });
+
+  it("renders with controlled value", () => {
+    render(
+      <PhoneInput value="9876543210" onChange={() => {}} data-testid="phone" />
+    );
+    expect(screen.getByTestId("phone")).toHaveValue("9876543210");
+  });
+});

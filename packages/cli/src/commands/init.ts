@@ -233,6 +233,10 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   --input: 220 13% 91%;
   --ring: 222 26% 27%;
   --radius: 0.5rem;
+
+  /* v2 design system (ui/v2) — additive, v1 components never read these */
+  --font-v2: "Inter", sans-serif;
+  --border-skeuomorphic: rgba(255, 255, 255, 0.12);
 }
 
 .dark {

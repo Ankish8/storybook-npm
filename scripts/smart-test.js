@@ -14,6 +14,7 @@
  *   4. No cache file needed — works on any fresh clone
  */
 
+import { uiComponentFiles } from './lib/ui-files.js'
 import { existsSync, readdirSync, statSync } from 'fs'
 import { execSync } from 'child_process'
 import { join, basename, dirname } from 'path'
@@ -43,6 +44,8 @@ function getChangedFiles() {
 // Map a changed file path to its component name
 function fileToComponent(filePath) {
   // UI component: src/components/ui/button.tsx or src/components/ui/__tests__/button.test.tsx
+  const v2Match = filePath.match(/^src\/components\/ui\/(?:__tests__\/)?v2\/([^/.]+?)(?:\.test)?\.tsx$/)
+  if (v2Match) return `v2/${v2Match[1]}`
   const uiMatch = filePath.match(/^src\/components\/ui\/(?:__tests__\/)?([^/.]+?)(?:\.test)?\.tsx$/)
   if (uiMatch) return uiMatch[1]
 
@@ -77,9 +80,9 @@ function getAllTestPaths() {
   const tests = []
 
   if (existsSync(UI_DIR)) {
-    for (const file of readdirSync(UI_DIR)) {
+    for (const file of uiComponentFiles(UI_DIR)) {
       if (!file.endsWith('.tsx') || file.includes('.stories.')) continue
-      const name = basename(file, '.tsx')
+      const name = file.replace(/\.tsx$/, '')
       const testPath = join(UI_TESTS, `${name}.test.tsx`)
       if (existsSync(testPath)) tests.push({ name, testPath })
     }

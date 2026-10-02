@@ -13,67 +13,123 @@ categories:
     description: "Essential UI primitives"
     components:
       - avatar
+      - v2-avatar
       - button
       - badge
+      - v2-badge
       - contact-list-item
+      - v2-contact-list-item
       - date-divider
+      - v2-date-divider
       - image-media
+      - v2-image-media
       - phone-input
+      - v2-phone-input
       - reply-quote
+      - v2-reply-quote
       - system-message
+      - v2-system-message
       - tabs
+      - v2-tabs
       - typography
+      - v2-typography
       - unread-separator
+      - v2-unread-separator
+      - v2-button
+      - v2-button-group
 
   form:
     description: "Form inputs and controls"
     components:
       - input
+      - v2-input
       - select
+      - v2-select
       - checkbox
+      - v2-checkbox
       - switch
+      - v2-switch
       - text-field
+      - v2-text-field
       - textarea
+      - v2-textarea
       - select-field
+      - v2-select-field
       - multi-select
+      - v2-multi-select
       - search-filter
+      - v2-search-filter
       - readable-field
+      - v2-readable-field
       - date-time-picker
+      - v2-date-time-picker
       - date-range-picker
+      - v2-date-range-picker
+      - v2-creatable-select
+      - v2-creatable-multi-select
+      - v2-number-step-field
+      - v2-radio
+      - v2-otp-input
+      - v2-file-upload
 
   data:
     description: "Data display components"
     components:
       - table
+      - v2-table
 
   overlay:
     description: "Popups, modals, menus"
     components:
       - dialog
+      - v2-dialog
       - dropdown-menu
+      - v2-dropdown-menu
       - tooltip
+      - v2-tooltip
       - delete-confirmation-modal
+      - v2-delete-confirmation-modal
       - confirmation-modal
+      - v2-confirmation-modal
       - form-modal
+      - v2-form-modal
 
   feedback:
     description: "Status and notifications"
     components:
       - tag
+      - v2-tag
       - alert
+      - v2-alert
       - toast
+      - v2-toast
       - spinner
+      - v2-spinner
       - bouncing-loader
+      - v2-bouncing-loader
       - skeleton
+      - v2-skeleton
       - empty-state
+      - v2-empty-state
+      - v2-stepper
+      - v2-shimmering-text
+      - v2-progress-indicator
 
   layout:
     description: "Layout and structure components"
     components:
       - accordion
+      - v2-accordion
       - page-header
+      - v2-page-header
       - panel
+      - v2-panel
       - pagination
+      - v2-pagination
+      - v2-breadcrumbs
+      - v2-ui-card
+      - v2-page-footer
+      - v2-scrollbar
 
   custom:
     description: "Multi-file complex components"
@@ -228,6 +284,33 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "lucide-react"
+
+  # ---------------------------------------------------------------------------
+  # V2 DESIGN SYSTEM — side-by-side with v1, never replaces it.
+  # `path` is the source file under src/components/ui WITHOUT the extension; it
+  # is also where the CLI installs it, so "v2/button" lands at ui/v2/button.tsx
+  # next to ui/button.tsx. Same exports and props as the v1 component, so moving
+  # a screen is an import-path change. Keys stay hyphenated (v2-<name>) because
+  # scripts/emit-catalog.js and scripts/sync-design-skill.js parse this file
+  # with a [\w-]+ regex.
+  #
+  # `unprefixed: true` — v1 is rewritten for Bootstrap hosts (tw- prefix, semantic
+  # classes → var(--x,#fallback)); v2 is NOT. Its classes ship exactly as authored,
+  # so the consumer must build them with an unprefixed Tailwind config that defines
+  # the semantic colors (what `init` generates with an empty prefix). Single-file
+  # components only.
+  # ---------------------------------------------------------------------------
+  v2-button:
+    description: "Button (v2 design): same props as button, new look from the v2 Figma system. Installs to ui/v2/button.tsx"
+    category: core
+    path: "v2/button"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-slot@^1.2.4"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
 
   badge:
     description: "A status badge component with active, failed, disabled, outline, secondary, and destructive variants"
@@ -2155,3 +2238,616 @@ components:
       - "setup-integration.tsx"
       - "index.ts"
     mainFile: "index.ts"
+
+  v2-badge:
+    description: "Badge (v2 design); same API as badge"
+    category: core
+    path: "v2/badge"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-slot@^1.2.4"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-tag:
+    description: "Tag (v2 design); same API as tag"
+    category: feedback
+    path: "v2/tag"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-input:
+    description: "Input (v2 design); same API as input"
+    category: form
+    path: "v2/input"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-checkbox:
+    description: "Checkbox (v2 design); same API as checkbox"
+    category: form
+    path: "v2/checkbox"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-checkbox@^1.3.3"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-switch:
+    description: "Boolean toggle (v2 design); same API as switch"
+    category: form
+    path: "v2/switch"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-switch@^1.2.6"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-textarea:
+    description: "Multiline field with v2 typography, validation and counters"
+    category: form
+    path: "v2/textarea"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-text-field:
+    description: "V2 labelled input with icons, prefixes and validation"
+    category: form
+    path: "v2/text-field"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-select:
+    description: "V2 Radix select with current keyboard and scroll behavior"
+    category: form
+    path: "v2/select"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-select@^2.2.6"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-select-field:
+    description: "V2 select field with search, groups and current pagination"
+    category: form
+    path: "v2/select-field"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-input
+      - v2-select
+
+  v2-phone-input:
+    description: "V2 phone input preserving country options and numeric input rules"
+    category: core
+    path: "v2/phone-input"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "react-country-flag@^3.1.0"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-multi-select:
+    description: "V2 multiselect with current search and selection behavior"
+    category: form
+    path: "v2/multi-select"
+    unprefixed: true
+    dependencies:
+      - "@floating-ui/react-dom"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-checkbox
+      - v2-tooltip
+
+  v2-creatable-select:
+    description: "V2 searchable select with option creation"
+    category: form
+    path: "v2/creatable-select"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-creatable-multi-select:
+    description: "V2 multiselect with inline option creation"
+    category: form
+    path: "v2/creatable-multi-select"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+    internalDependencies:
+      - v2-creatable-select
+
+  v2-tooltip:
+    description: "V2 tooltip preserving hover, focus and touch interaction"
+    category: overlay
+    path: "v2/tooltip"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-tooltip@^1.2.8"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-dialog:
+    description: "V2 dialog preserving focus, portals and scroll behavior"
+    category: overlay
+    path: "v2/dialog"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-dialog@^1.1.15"
+      - "lucide-react"
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-confirmation-modal:
+    description: "V2 confirmation modal preserving loading and confirmation behavior"
+    category: overlay
+    path: "v2/confirmation-modal"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-dialog
+      - v2-button
+
+  v2-delete-confirmation-modal:
+    description: "V2 destructive confirmation preserving confirmation input behavior"
+    category: overlay
+    path: "v2/delete-confirmation-modal"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-dialog
+      - v2-button
+      - v2-input
+
+  v2-dropdown-menu:
+    description: "V2 dropdown menu with current keyboard, checkbox and submenu behavior"
+    category: overlay
+    path: "v2/dropdown-menu"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-dropdown-menu@^2.1.16"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-toast:
+    description: "Toast (v2 design); same API as toast"
+    category: feedback
+    path: "v2/toast"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-toast@^1.2.15"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
+
+  v2-tabs:
+    description: "Tabs (v2 design); same API as tabs"
+    category: core
+    path: "v2/tabs"
+    unprefixed: true
+    dependencies:
+      - "@radix-ui/react-tabs"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-table:
+    description: "Table (v2 design); same API as table"
+    category: data
+    path: "v2/table"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-switch
+
+  v2-accordion:
+    description: "Accordion (v2 design); same API as accordion"
+    category: layout
+    path: "v2/accordion"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-alert:
+    description: "Alert (v2 design); same API as alert"
+    category: feedback
+    path: "v2/alert"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-avatar:
+    description: "Avatar (v2 design); same API as avatar"
+    category: core
+    path: "v2/avatar"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-page-header:
+    description: "PageHeader (v2 design); same API as page-header"
+    category: layout
+    path: "v2/page-header"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+
+  v2-pagination:
+    description: "Pagination (v2 design); same API as pagination"
+    category: layout
+    path: "v2/pagination"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+
+  v2-empty-state:
+    description: "EmptyState (v2 design); same API as empty-state"
+    category: feedback
+    path: "v2/empty-state"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-panel:
+    description: "Panel (v2 design); same API as panel"
+    category: layout
+    path: "v2/panel"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+
+  v2-readable-field:
+    description: "ReadableField (v2 design); same API as readable-field"
+    category: form
+    path: "v2/readable-field"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-skeleton:
+    description: "Skeleton (v2 design); same API as skeleton"
+    category: feedback
+    path: "v2/skeleton"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-spinner:
+    description: "Spinner (v2 design); same API as spinner"
+    category: feedback
+    path: "v2/spinner"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-bouncing-loader:
+    description: "BouncingLoader (v2 design); same API as bouncing-loader"
+    category: feedback
+    path: "v2/bouncing-loader"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-number-step-field:
+    description: "NumberStepField (v2 design); same API as number-step-field"
+    category: form
+    path: "v2/number-step-field"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-input
+
+  v2-radio:
+    description: "Radio from the v2 design system"
+    category: form
+    path: "v2/radio"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-typography:
+    description: "Typography (v2 design); same API as typography"
+    category: core
+    path: "v2/typography"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-breadcrumbs:
+    description: "Breadcrumbs from the v2 design system"
+    category: layout
+    path: "v2/breadcrumbs"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+      - v2-dropdown-menu
+
+  v2-otp-input:
+    description: "OtpInput from the v2 design system"
+    category: form
+    path: "v2/otp-input"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-button-group:
+    description: "ButtonGroup from the v2 design system"
+    category: core
+    path: "v2/button-group"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+
+  v2-date-range-picker:
+    description: "DateRangePicker (v2 design); same API as date-range-picker"
+    category: form
+    path: "v2/date-range-picker"
+    unprefixed: true
+    dependencies:
+      - "@floating-ui/react-dom"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-dropdown-menu
+
+  v2-date-time-picker:
+    description: "DateTimePicker (v2 design); same API as date-time-picker"
+    category: form
+    path: "v2/date-time-picker"
+    unprefixed: true
+    dependencies:
+      - "@floating-ui/react-dom"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-stepper:
+    description: "Step progress with numbered or icon markers"
+    category: feedback
+    path: "v2/stepper"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-ui-card:
+    description: "Composable v2 card with header, content and footer"
+    category: layout
+    path: "v2/ui-card"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-page-footer:
+    description: "Footer actions and contextual status for v2 pages"
+    category: layout
+    path: "v2/page-footer"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-shimmering-text:
+    description: "Animated text for loading and generated responses"
+    category: feedback
+    path: "v2/shimmering-text"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-scrollbar:
+    description: "Native scroll container with v2 scrollbar treatment"
+    category: layout
+    path: "v2/scrollbar"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-search-filter:
+    description: "Search and filter fields with the v2 visual treatment"
+    category: form
+    path: "v2/search-filter"
+    unprefixed: true
+    dependencies:
+      - "@floating-ui/react-dom"
+      - "class-variance-authority"
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-input
+
+  v2-form-modal:
+    description: "Form modal composition using v2 dialog and buttons"
+    category: overlay
+    path: "v2/form-modal"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-dialog
+      - v2-button
+
+  v2-progress-indicator:
+    description: "Linear and circular progress indicators"
+    category: feedback
+    path: "v2/progress-indicator"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-contact-list-item:
+    description: "Contact row using v2 visual primitives"
+    category: core
+    path: "v2/contact-list-item"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-avatar
+
+  v2-image-media:
+    description: "Chat image media in the v2 namespace"
+    category: core
+    path: "v2/image-media"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-reply-quote:
+    description: "Quoted message using v2 primitives"
+    category: core
+    path: "v2/reply-quote"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-system-message:
+    description: "Conversation system message using v2 typography"
+    category: core
+    path: "v2/system-message"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-date-divider:
+    description: "Conversation date divider using v2 typography"
+    category: core
+    path: "v2/date-divider"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-unread-separator:
+    description: "Unread boundary using v2 typography"
+    category: core
+    path: "v2/unread-separator"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+  v2-file-upload:
+    description: "Accessible file upload from v2 Figma"
+    category: form
+    path: "v2/file-upload"
+    unprefixed: true
+    dependencies:
+      - "lucide-react"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button

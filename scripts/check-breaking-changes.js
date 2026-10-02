@@ -17,6 +17,7 @@
  */
 
 import fs from 'fs'
+import { uiComponentFiles } from './lib/ui-files.js'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -293,7 +294,7 @@ async function main() {
   const args = process.argv.slice(2)
   const shouldUpdate = args.includes('--update')
   const componentFilter = args.includes('--component')
-    ? args[args.indexOf('--component') + 1]
+    ? args[args.indexOf('--component') + 1].replace(/^v2-/, 'v2/')
     : null
 
   console.log('\n' + colors.bold + '🔍 Breaking Change Detector' + colors.reset + '\n')
@@ -308,8 +309,7 @@ async function main() {
   const snapshot = JSON.parse(fs.readFileSync(SNAPSHOT_FILE, 'utf-8'))
   console.log(`Comparing against snapshot from: ${snapshot.generatedAt}\n`)
 
-  const files = fs.readdirSync(COMPONENTS_DIR)
-    .filter(file => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.test.'))
+  const files = uiComponentFiles(COMPONENTS_DIR)
 
   let totalBreaking = 0
   let totalWarnings = 0

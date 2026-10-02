@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.app.json",
+  "include": [
+    "../../src/components/ui/v2/**/*.ts",
+    "../../src/components/ui/v2/**/*.tsx",
+    "../../src/storybook/v2-preview.tsx"
+  ],
+  "exclude": []
+}

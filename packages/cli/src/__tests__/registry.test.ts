@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import { getRegistry } from "../utils/registry.js";
 import {
   prefixTailwindClasses,
@@ -1022,5 +1024,80 @@ describe("Registry", () => {
       const result = prefixTailwindClasses(input, "tw-");
       expect(result).not.toContain("border-solid");
     });
+  });
+});
+
+// v1 keeps the tw- prefix pipeline untouched; v2 (`unprefixed: true` in
+// components.yaml) bypasses it entirely and ships exactly as authored.
+describe("v1 prefixed vs v2 unprefixed", () => {
+  const V2_BUTTON_SOURCE = fileURLToPath(
+    new URL("../../../../src/components/ui/v2/button.tsx", import.meta.url)
+  );
+
+  describe("v1 (prefixed)", () => {
+    it("still prefixes primitives and rewrites semantic classes", async () => {
+      const button = (await getRegistry("tw-"))["button"];
+      const content = button.files[0].content;
+
+      expect(button.unprefixed).toBeUndefined();
+      expect(button.files[0].name).toBe("button.tsx");
+      expect(content).toContain("tw-inline-flex");
+      expect(content).toContain("tw-bg-[var(--semantic-primary,#343E55)]");
+      expect(content).toContain('from "../../lib/utils"');
+    });
+  });
+
+  describe("v2-button (unprefixed, namespaced)", () => {
+    it("is flagged unprefixed and installs under ui/v2/", async () => {
+      const v2 = (await getRegistry("tw-"))["v2-button"];
+
+      expect(v2.unprefixed).toBe(true);
+      expect(v2.files).toHaveLength(1);
+      expect(v2.files[0].name).toBe("v2/button.tsx");
+    });
+
+    it("resolves lib/utils from the sub-folder depth", async () => {
+      const content = (await getRegistry("tw-"))["v2-button"].files[0].content;
+
+      expect(content).toContain('from "../../../lib/utils"');
+      expect(content).not.toContain("@/lib/utils");
+    });
+
+    it.each(["tw-", "", "app-"])(
+      "ships identical output whatever the project prefix is (%j)",
+      async (prefix) => {
+        const expected = (await getRegistry("tw-"))["v2-button"].files[0].content;
+        const actual = (await getRegistry(prefix))["v2-button"].files[0].content;
+
+        expect(actual).toBe(expected);
+      }
+    );
+
+    it("contains no prefixed classes and keeps semantic classes verbatim", async () => {
+      const content = (await getRegistry("tw-"))["v2-button"].files[0].content;
+
+      expect(content).not.toMatch(/(^|[\s"'`:])-?tw-/);
+      expect(content).toContain("bg-semantic-primary");
+      expect(content).not.toContain("bg-[var(--semantic-primary,#343E55)]");
+    });
+
+    it("equals its source file apart from the lib/utils import", async () => {
+      const content = (await getRegistry("tw-"))["v2-button"].files[0].content;
+      const source = fs.readFileSync(V2_BUTTON_SOURCE, "utf-8");
+
+      expect(content).toBe(
+        source.replace('"@/lib/utils"', '"../../../lib/utils"')
+      );
+    });
+  });
+
+  it("only v2 components are unprefixed", async () => {
+    const registry = await getRegistry("tw-");
+    const unprefixed = Object.entries(registry)
+      .filter(([, component]) => component.unprefixed)
+      .map(([name]) => name);
+
+    expect(unprefixed.length).toBeGreaterThan(0);
+    expect(unprefixed.every((name) => name.startsWith("v2-"))).toBe(true);
   });
 });

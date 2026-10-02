@@ -1,0 +1,350 @@
+{
+  "viewport": {
+    "width": 1280,
+    "height": 960
+  },
+  "server": "http://127.0.0.1:6008",
+  "comparisons": [
+    {
+      "component": "ReadableField",
+      "view": "V1VsV2",
+      "client": 980,
+      "scroll": 992,
+      "layout": "centered",
+      "beforeFix": true
+    },
+    {
+      "component": "Skeleton",
+      "view": "V1VsV2",
+      "client": 980,
+      "layout": "sb-main-centered sb-show-main",
+      "scroll": 980,
+      "text": "v1\nv2"
+    },
+    {
+      "component": "Spinner",
+      "view": "V1VsV2",
+      "client": 980,
+      "layout": "sb-main-centered sb-show-main",
+      "scroll": 980,
+      "text": "v1\nLoading conversations\nv2\nLoading conversations"
+    },
+    {
+      "component": "BouncingLoader",
+      "view": "V1VsV2",
+      "client": 980,
+      "layout": "sb-main-centered sb-show-main",
+      "scroll": 980,
+      "text": "v1\nv2"
+    },
+    {
+      "component": "ReadableField",
+      "view": "V1VsV2",
+      "afterFix": true,
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "scroll": 980,
+      "text": "v1\nIntegration key\nexample_key_123456789\n\nExample value for demonstration only\n\n"
+    }
+  ],
+  "galleries": [
+    {
+      "component": "Dialog",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 968
+        }
+      ],
+      "scroll": 980,
+      "text": "v1 · ui/dialog\nv2 · ui/v2/dialog\nSmall · 384px\nUpdate conversation settings\n\nReview the change before continui"
+    },
+    {
+      "component": "Dialog",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1208
+        }
+      ],
+      "scroll": 980,
+      "text": "Open\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs "
+    },
+    {
+      "component": "Tooltip",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1 · ui/tooltip\n\nView conversation details.\n\nHover or focus me\nv2 · ui/v2/tooltip\n\nView conversation details.\n"
+    },
+    {
+      "component": "Tooltip",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1132
+        }
+      ],
+      "scroll": 980,
+      "text": "Closed\nHover or focus me\nVisible\n\nView conversation details.\n\nHover or focus me\nHover\n\nView conversation detai"
+    },
+    {
+      "component": "DropdownMenu",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1 · ui/dropdown-menu\nConversation\nEdit conversation\nEdit the name and assignee.\n⌘E\nDesktop notifications\nShar"
+    },
+    {
+      "component": "DropdownMenu",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 972
+        }
+      ],
+      "scroll": 980,
+      "text": "Default\nConversation\nEdit conversation\nDesktop notifications\nShare conversation\nArchive\nFocus\nConversation\nEdi"
+    },
+    {
+      "component": "ConfirmationModal",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 956
+        }
+      ],
+      "scroll": 980,
+      "text": "v1 · ui/confirmation-modal\nv2 · ui/v2/confirmation-modal\ndefault\nPause notifications?\n\nYou can enable notifica"
+    },
+    {
+      "component": "ConfirmationModal",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1792
+        }
+      ],
+      "scroll": 980,
+      "text": "Default\nHover\nFocus\nLoading\ndefault\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKee"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1 · ui/delete-confirmation-modal\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1672
+        }
+      ],
+      "scroll": 980,
+      "text": "Empty\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action "
+    },
+    {
+      "component": "Toast",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 956
+        }
+      ],
+      "scroll": 980,
+      "text": "v1 · ui/toast\nv2 · ui/v2/toast\ndefault\nChanges saved\nYour workspace settings are up to date.\nView\nChanges save"
+    },
+    {
+      "component": "Toast",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1256
+        }
+      ],
+      "scroll": 980,
+      "text": "Visible\nChanges saved\nYour workspace settings are up to date.\nView\nDisabled action\nChanges saved\nYour workspac"
+    },
+    {
+      "component": "FormModal",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1 · ui/form-modal\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepar"
+    },
+    {
+      "component": "FormModal",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1216
+        }
+      ],
+      "scroll": 980,
+      "text": "Ready\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustome"
+    },
+    {
+      "component": "SearchFilter",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1 · ui/search-filter\nv2 · ui/v2/search-filter"
+    },
+    {
+      "component": "SearchFilter",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [
+        {
+          "client": 948,
+          "scroll": 1224
+        }
+      ],
+      "scroll": 980,
+      "text": "Ready\nSelected\nNo results\nDisabled\nSearch disabled"
+    },
+    {
+      "component": "ReadableField",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Integration key\nexample_key_123456789\n\nExample value for demonstration only"
+    },
+    {
+      "component": "Skeleton",
+      "story": "all-shapes",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Line\nCircle\nRectangle"
+    },
+    {
+      "component": "Spinner",
+      "story": "all-variants",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Default\nLoading conversations\nSecondary\nLoading conversations\nMuted\nLoading conversations\nInverted\nLoading con"
+    },
+    {
+      "component": "BouncingLoader",
+      "story": "all-sizes",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "6px\n8px\n12px\n16px"
+    },
+    {
+      "component": "Typography",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "A deliberately long line demonstrating truncation when space is limited"
+    },
+    {
+      "component": "Typography",
+      "story": "v-1-vs-v-2",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "v1\nClear conversations start here\nv2\nClear conversations start here"
+    },
+    {
+      "component": "UiCard",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Default\nCustomer support\n\nKeep your team and conversations connected.\n\nHover\nCustomer support\n\nKeep your team "
+    },
+    {
+      "component": "UiCard",
+      "story": "all-variants",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Default\nCustomer support\n\nKeep your team and conversations connected.\n\nTemplate\nCustomer support\n\nKeep your te"
+    },
+    {
+      "component": "PageFooter",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Enabled\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result"
+    },
+    {
+      "component": "PageFooter",
+      "story": "all-variants",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Desktop\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result"
+    },
+    {
+      "component": "ShimmeringText",
+      "story": "states",
+      "client": 980,
+      "layout": "sb-main-padded sb-show-main",
+      "locals": [],
+      "scroll": 980,
+      "text": "Animated\nLoading. Please wait\n\nMotion follows the user's preference.\n\nStatic\nLoading. Please wait\n\nThe same st"
+    }
+  ]
+}

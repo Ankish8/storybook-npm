@@ -1,0 +1,977 @@
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { render, screen, within, fireEvent, act } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import {
+  MultiSelect,
+  flattenMultiSelectOptions,
+  type MultiSelectOption,
+} from "../../v2/multi-select";
+import { Dialog, DialogContent, DialogTitle } from "../../v2/dialog";
+
+const defaultOptions: MultiSelectOption[] = [
+  { value: "option1", label: "Option 1" },
+  { value: "option2", label: "Option 2" },
+  { value: "option3", label: "Option 3" },
+];
+
+describe("MultiSelect", () => {
+  it.each(["disabled", "loading"] as const)(
+    "prevents nested chip and clear controls from changing a %s field",
+    (state) => {
+      const onValueChange = vi.fn();
+      render(
+        <MultiSelect
+          options={defaultOptions}
+          value={["option1"]}
+          onValueChange={onValueChange}
+          {...{ [state]: true }}
+        />
+      );
+      const remove = screen.getByRole("button", { name: "Remove Option 1" });
+      const clear = screen.getByRole("button", { name: "Clear all" });
+      expect(remove).toHaveAttribute("tabindex", "-1");
+      expect(clear).toHaveAttribute("aria-disabled", "true");
+      fireEvent.keyDown(remove, { key: "Enter" });
+      fireEvent.keyDown(clear, { key: "Enter" });
+      expect(onValueChange).not.toHaveBeenCalled();
+    }
+  );
+  // Basic rendering
+  it("renders correctly", () => {
+    render(<MultiSelect options={defaultOptions} />);
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("renders placeholder text", () => {
+    render(
+      <MultiSelect options={defaultOptions} placeholder="Select options" />
+    );
+    expect(screen.getByText("Select options")).toBeInTheDocument();
+  });
+
+  // Label tests
+  it("renders label when provided", () => {
+    render(<MultiSelect label="Test Label" options={defaultOptions} />);
+    expect(screen.getByText("Test Label")).toBeInTheDocument();
+  });
+
+  it("renders required indicator when required", () => {
+    render(
+      <MultiSelect label="Test Label" options={defaultOptions} required />
+    );
+    expect(screen.getByText("*")).toBeInTheDocument();
+    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
+  });
+
+  // Helper text tests
+  it("renders helper text when provided", () => {
+    render(<MultiSelect options={defaultOptions} helperText="Helper text" />);
+    expect(screen.getByText("Helper text")).toBeInTheDocument();
+    expect(screen.getByText("Helper text")).toHaveClass(
+      "text-semantic-text-muted"
+    );
+  });
+
+  // Error message tests
+  it("shows error message when error prop is set", () => {
+    render(<MultiSelect options={defaultOptions} error="Required field" />);
+    expect(screen.getByText("Required field")).toBeInTheDocument();
+    expect(screen.getByText("Required field")).toHaveClass(
+      "text-semantic-error-text"
+    );
+  });
+
+  it("error message takes precedence over helper text", () => {
+    render(
+      <MultiSelect options={defaultOptions} helperText="Helper" error="Error" />
+    );
+    expect(screen.getByText("Error")).toBeInTheDocument();
+    expect(screen.queryByText("Helper")).not.toBeInTheDocument();
+  });
+
+  it("applies error state styling when error is set", () => {
+    render(<MultiSelect options={defaultOptions} error="Error" />);
+    expect(screen.getByRole("combobox")).toHaveClass(
+      "border-semantic-error-primary"
+    );
+  });
+
+  // Dropdown interaction
+  it("opens dropdown on click", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("shows options when opened", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+    expect(screen.getByText("Option 3")).toBeInTheDocument();
+  });
+
+  // Selection tests
+  it("selects option on click", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 1"));
+
+    // Tag should appear - there will be 2 elements (tag + option in dropdown)
+    const option1Elements = screen.getAllByText("Option 1");
+    expect(option1Elements.length).toBeGreaterThan(0);
+    // Check that the remove button exists (which means a tag was created)
+    expect(screen.getByLabelText("Remove Option 1")).toBeInTheDocument();
+  });
+
+  it("allows multiple selections", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 1"));
+    await user.click(screen.getByText("Option 2"));
+
+    // Both tags should appear
+    const option1Tags = screen.getAllByText("Option 1");
+    const option2Tags = screen.getAllByText("Option 2");
+    expect(option1Tags.length).toBeGreaterThan(0);
+    expect(option2Tags.length).toBeGreaterThan(0);
+  });
+
+  it("wraps long selected option text before the check icon", async () => {
+    const user = userEvent.setup();
+    const longLabel =
+      "AngularAngularAngularAngularAngularAngularAngularAngularAngular";
+
+    render(
+      <MultiSelect
+        options={[
+          { value: "react", label: "React" },
+          { value: "angular", label: longLabel },
+          { value: "svelte", label: "Svelte" },
+        ]}
+        defaultValue={["angular"]}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    const selectedOption = screen.getByRole("option", { name: longLabel });
+    const optionText = within(selectedOption).getByText(longLabel);
+    expect(selectedOption).toHaveClass("min-w-0");
+    expect(optionText).toHaveClass("min-w-0");
+    expect(optionText).toHaveClass("flex-1");
+    expect(optionText).toHaveClass("whitespace-normal");
+    expect(optionText).toHaveClass("break-words");
+    expect(optionText).not.toHaveClass("truncate");
+  });
+
+  it("deselects option on second click", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} defaultValue={["option1"]} />);
+
+    await user.click(screen.getByRole("combobox"));
+    // Find the option in the dropdown and click it
+    const optionInDropdown = screen.getByRole("option", { name: "Option 1" });
+    await user.click(optionInDropdown);
+
+    // Tag should be removed, but placeholder should appear since all are deselected
+    expect(screen.queryByLabelText("Remove Option 1")).not.toBeInTheDocument();
+  });
+
+  // Default value
+  it("shows default values as tags", () => {
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        defaultValue={["option1", "option2"]}
+      />
+    );
+
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+  });
+
+  // Remove tag
+  it("removes tag when X is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        defaultValue={["option1", "option2"]}
+      />
+    );
+
+    await user.click(screen.getByLabelText("Remove Option 1"));
+
+    expect(screen.queryByLabelText("Remove Option 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+  });
+
+  it("hides clear all when showClearAll is false", () => {
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        defaultValue={["option1", "option2"]}
+        showClearAll={false}
+      />
+    );
+    expect(screen.queryByLabelText("Clear all")).not.toBeInTheDocument();
+  });
+
+  // Clear all
+  it("clears all selections when clear button is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        defaultValue={["option1", "option2"]}
+      />
+    );
+
+    await user.click(screen.getByLabelText("Clear all"));
+
+    expect(screen.queryByLabelText("Remove Option 1")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Remove Option 2")).not.toBeInTheDocument();
+  });
+
+  // Controlled mode
+  it("works in controlled mode", async () => {
+    const handleValueChange = vi.fn();
+    const user = userEvent.setup();
+
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        value={["option1"]}
+        onValueChange={handleValueChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByText("Option 2"));
+
+    expect(handleValueChange).toHaveBeenCalledWith(["option1", "option2"]);
+  });
+
+  // Max selections
+  it("enforces max selections", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        maxSelections={2}
+        defaultValue={["option1", "option2"]}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const option3 = screen.getByRole("option", { name: "Option 3" });
+
+    // Option 3 should be disabled (has opacity-50 class)
+    expect(option3).toHaveClass("opacity-50");
+  });
+
+  it("shows selection count when maxSelections is set", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        maxSelections={3}
+        defaultValue={["option1"]}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByText("1 / 3 selected")).toBeInTheDocument();
+  });
+
+  // Searchable
+  it("shows search input when searchable", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByPlaceholderText("Search...")).toBeInTheDocument();
+  });
+
+  it("filters options when searching", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "Option 1");
+
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "Option 2" })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("option", { name: "Option 3" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows no results message when search has no matches", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    await user.type(screen.getByPlaceholderText("Search..."), "xyz");
+
+    expect(screen.getByText("No results found")).toBeInTheDocument();
+  });
+
+  // Controlled search (server-side filtering, e.g. paired with onScrollEnd
+  // pagination — client-side filtering would only search the loaded page).
+  it("controlled search: calls onSearchQueryChange instead of managing its own state", async () => {
+    const user = userEvent.setup();
+    const onSearchQueryChange = vi.fn();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery=""
+        onSearchQueryChange={onSearchQueryChange}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    fireEvent.change(input, { target: { value: "abc" } });
+
+    expect(onSearchQueryChange).toHaveBeenCalledWith("abc");
+    // Controlled: the input only reflects the `searchQuery` prop, which the
+    // parent didn't feed back here, so it doesn't update itself from typing.
+    expect(input).toHaveValue("");
+  });
+
+  it("controlled search: does not filter options client-side, even when searchQuery matches nothing", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        options={defaultOptions}
+        searchable
+        searchQuery="no-match-in-any-label"
+        onSearchQueryChange={vi.fn()}
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+
+    // The parent owns filtering server-side; the component must not also
+    // filter `options`, or it would show a false "No results found" against
+    // options the parent already filtered for this query.
+    expect(screen.getByText("Option 1")).toBeInTheDocument();
+    expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+  });
+
+  it("uncontrolled search still filters client-side when searchQuery is omitted", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+
+    await user.click(screen.getByRole("combobox"));
+    const input = screen.getByPlaceholderText("Search...");
+    await user.type(input, "Option 1");
+
+    // Uncontrolled: the component owns its own search state, so the input
+    // reflects what was typed and options are filtered internally.
+    expect(input).toHaveValue("Option 1");
+    expect(
+      screen.queryByRole("option", { name: "Option 2" })
+    ).not.toBeInTheDocument();
+  });
+
+  // Disabled state
+  it("is disabled when disabled prop is set", () => {
+    render(<MultiSelect options={defaultOptions} disabled />);
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("does not open when disabled", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} disabled />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  // Loading state
+  it("is disabled when loading", () => {
+    render(<MultiSelect options={defaultOptions} loading />);
+    expect(screen.getByRole("combobox")).toBeDisabled();
+  });
+
+  it("shows spinner when loading", () => {
+    const { container } = render(
+      <MultiSelect options={defaultOptions} loading />
+    );
+    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
+  });
+
+  // Disabled options
+  it("renders disabled options", async () => {
+    const optionsWithDisabled: MultiSelectOption[] = [
+      { value: "enabled", label: "Enabled" },
+      { value: "disabled", label: "Disabled", disabled: true },
+    ];
+    const user = userEvent.setup();
+
+    render(<MultiSelect options={optionsWithDisabled} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const disabledOption = screen.getByRole("option", { name: "Disabled" });
+    expect(disabledOption).toHaveClass("opacity-50");
+  });
+
+  // Custom classNames
+  it("applies custom wrapperClassName", () => {
+    const { container } = render(
+      <MultiSelect options={defaultOptions} wrapperClassName="custom-wrapper" />
+    );
+    expect(container.firstChild).toHaveClass("custom-wrapper");
+  });
+
+  it("applies custom triggerClassName", () => {
+    render(
+      <MultiSelect options={defaultOptions} triggerClassName="custom-trigger" />
+    );
+    expect(screen.getByRole("combobox")).toHaveClass("custom-trigger");
+  });
+
+  // Accessibility
+  it("has combobox role", () => {
+    render(<MultiSelect options={defaultOptions} />);
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+  });
+
+  it("has proper aria-expanded state", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    const trigger = screen.getByRole("combobox");
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("sets aria-invalid when error is present", () => {
+    render(<MultiSelect options={defaultOptions} error="Error" />);
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+
+  // Keyboard / dismiss behavior
+  it("closes dropdown on Escape when closeOnEscape is true", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} closeOnEscape />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  it("does not close on Escape by default (outside click only)", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("flattens grouped sections and maps caption / isDisabled / overlayMsg", () => {
+    const flat = flattenMultiSelectOptions([
+      {
+        label: "Group A",
+        options: [
+          {
+            value: "1",
+            label: "One",
+            caption: "Assigned to Bot X",
+            isDisabled: true,
+            overlayMsg: "This number is associated with another bot.",
+          },
+        ],
+      },
+    ]);
+    expect(flat).toHaveLength(1);
+    expect(flat[0].group).toBe("Group A");
+    expect(flat[0].secondaryText).toBe("Assigned to Bot X");
+    expect(flat[0].disabled).toBe(true);
+    expect(flat[0].disabledTooltip).toBe(
+      "This number is associated with another bot."
+    );
+  });
+
+  it("closes dropdown when clicking outside", async () => {
+    const user = userEvent.setup();
+    render(
+      <div>
+        <MultiSelect options={defaultOptions} />
+        <button type="button">outside-target</button>
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "outside-target" }));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+  });
+
+  it("portals the menu to document.body, not into a transformed dialog ancestor", async () => {
+    const user = userEvent.setup();
+    render(
+      <div role="dialog" data-testid="dialog-content">
+        <MultiSelect options={defaultOptions} />
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const listbox = screen.getByRole("listbox");
+    expect(listbox.parentElement).toBe(document.body);
+  });
+
+  it("stops wheel events at the menu so a dialog scroll lock cannot cancel them", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const listbox = screen.getByRole("listbox");
+
+    const onDocumentWheel = vi.fn();
+    document.addEventListener("wheel", onDocumentWheel);
+    listbox.dispatchEvent(
+      new WheelEvent("wheel", { bubbles: true, cancelable: true })
+    );
+    document.removeEventListener("wheel", onDocumentWheel);
+
+    expect(onDocumentWheel).not.toHaveBeenCalled();
+  });
+
+  it("portals to a caller-supplied container when menuContainer is set", async () => {
+    const user = userEvent.setup();
+    const host = document.createElement("div");
+    host.setAttribute("data-testid", "custom-host");
+    document.body.appendChild(host);
+
+    render(
+      <div role="dialog">
+        <MultiSelect options={defaultOptions} menuContainer={host} />
+      </div>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(host).toContainElement(screen.getByRole("listbox"));
+    host.remove();
+  });
+
+  it("truncates long option labels when truncateOptionText is set", async () => {
+    const user = userEvent.setup();
+    const longLabel = "A".repeat(200);
+    render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        truncateOptionText
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const text = screen.getByTitle(longLabel);
+    expect(text).toHaveClass("truncate");
+  });
+
+  it("wraps long option labels by default", async () => {
+    const user = userEvent.setup();
+    const longLabel = "B".repeat(200);
+    render(<MultiSelect options={[{ value: "long", label: longLabel }]} />);
+
+    await user.click(screen.getByRole("combobox"));
+    const option = screen.getByRole("option");
+    expect(option.querySelector("span.break-words")).not.toBeNull();
+  });
+
+  it("detailed rows truncate by default but honour truncateOptionText={false}", async () => {
+    const user = userEvent.setup();
+    const longLabel = "C".repeat(200);
+    const { rerender } = render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        optionVariant="detailed"
+      />
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
+
+    rerender(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        optionVariant="detailed"
+        truncateOptionText={false}
+      />
+    );
+    expect(screen.getByTitle(longLabel)).toHaveClass("break-words");
+  });
+
+  it("truncates selected chips in the trigger", async () => {
+    const longLabel = "D".repeat(200);
+    render(
+      <MultiSelect
+        options={[{ value: "long", label: longLabel }]}
+        defaultValue={["long"]}
+      />
+    );
+
+    expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
+  });
+
+  // Inside a Radix Dialog the focus trap must not steal focus from the
+  // body-portaled search input (regression: typing did nothing).
+  it("keeps the search input typable inside a Dialog", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Assign</DialogTitle>
+          <MultiSelect
+            options={defaultOptions}
+            searchable
+            placeholder="Select"
+          />
+        </DialogContent>
+      </Dialog>
+    );
+
+    await user.click(screen.getByRole("combobox"));
+    const search = await screen.findByPlaceholderText("Search...");
+    search.focus();
+    await user.type(search, "Option 2");
+
+    expect(search).toHaveValue("Option 2");
+    expect(document.activeElement).toBe(search);
+    expect(screen.queryByText("Option 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Option 2")).toBeInTheDocument();
+  });
+
+  // Radix FocusScope also restores focus from its document `focusout` handler,
+  // which fires on the element inside the dialog and so never passes through
+  // the menu. jsdom leaves `relatedTarget` null on a plain focus() call, so the
+  // browser's event is reconstructed here.
+  it("survives the Dialog focus trap's focusout handler", async () => {
+    const user = userEvent.setup();
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Assign</DialogTitle>
+          <MultiSelect
+            options={defaultOptions}
+            searchable
+            placeholder="Select"
+          />
+        </DialogContent>
+      </Dialog>
+    );
+
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    const search = await screen.findByPlaceholderText("Search...");
+    search.focus();
+
+    trigger.dispatchEvent(
+      new FocusEvent("focusout", {
+        bubbles: true,
+        composed: true,
+        relatedTarget: search,
+      })
+    );
+
+    expect(document.activeElement).toBe(search);
+  });
+
+  // Infinite scroll / server-side pagination
+  describe("infinite scroll", () => {
+    // jsdom reports 0 for every layout box, so the list geometry is stubbed on
+    // the prototype BEFORE render — the component measures the list in an
+    // effect that runs on open, so stubbing a node afterwards would be too
+    // late and the no-scrollbar fallback would already have fired.
+    const POST_FETCH_MEASURE_DELAY_MS = 50;
+
+    const stubGeometry = (scrollHeight: number, clientHeight: number) => {
+      vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockReturnValue(
+        scrollHeight
+      );
+      vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(
+        clientHeight
+      );
+    };
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    const openList = async (ui: React.ReactElement) => {
+      const user = userEvent.setup();
+      render(ui);
+      await user.click(screen.getByRole("combobox"));
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+      return { list, user };
+    };
+
+    /**
+     * The handler coalesces scroll bursts into one `requestAnimationFrame`, so
+     * the measurement lands a frame after the event — flush it.
+     */
+    const scrollTo = async (list: HTMLDivElement, top: number) => {
+      Object.defineProperty(list, "scrollTop", {
+        configurable: true,
+        value: top,
+      });
+      fireEvent.scroll(list);
+      // Let the queued frame run.
+      await act(async () => {
+        await new Promise((resolve) =>
+          requestAnimationFrame(() => resolve(null))
+        );
+      });
+    };
+
+    /** Flush the post-fetch re-measure timer (50ms). */
+    const flushRemeasure = async () => {
+      await act(async () => {
+        await new Promise((resolve) =>
+          setTimeout(resolve, POST_FETCH_MEASURE_DELAY_MS + 20)
+        );
+      });
+    };
+
+    it("calls onScrollEnd once when scrolled within 48px of the bottom", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      await scrollTo(list, 400); // 1000 - 400 - 240 = 360px left
+      expect(onScrollEnd).not.toHaveBeenCalled();
+
+      await scrollTo(list, 730); // 30px left — inside the threshold
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("latches so trackpad inertia cannot fire repeat requests", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      await scrollTo(list, 730);
+      // Momentum keeps emitting scroll events at/near the boundary.
+      await scrollTo(list, 745);
+      await scrollTo(list, 755);
+      await scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("re-arms only after the user scrolls away from the bottom", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      await scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      await scrollTo(list, 200); // away from the boundary — latch clears
+      await scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not call onScrollEnd when hasMore is false", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect options={defaultOptions} onScrollEnd={onScrollEnd} />
+      );
+
+      await scrollTo(list, 760);
+      expect(onScrollEnd).not.toHaveBeenCalled();
+    });
+
+    it("does not call onScrollEnd while loadingMore is true", async () => {
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { list } = await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      await scrollTo(list, 760);
+      expect(onScrollEnd).not.toHaveBeenCalled();
+    });
+
+    it("renders the loading row at the bottom of the list when loadingMore", async () => {
+      stubGeometry(1000, 240);
+      await openList(
+        <MultiSelect options={defaultOptions} hasMore loadingMore />
+      );
+
+      expect(screen.getByRole("status")).toHaveTextContent("Loading more...");
+      // Existing options stay visible while the next page loads.
+      expect(screen.getByText("Option 1")).toBeInTheDocument();
+    });
+
+    it("shows the loading row instead of the empty state on a first page fetch", async () => {
+      stubGeometry(1000, 240);
+      await openList(<MultiSelect options={[]} hasMore loadingMore />);
+
+      expect(screen.queryByText("No results found")).not.toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeInTheDocument();
+    });
+
+    it("requests the next page when the first page is too short to scroll", async () => {
+      // Content fits the viewport, so no scroll event will ever fire — without
+      // the fallback, pagination would stall on page 1 forever.
+      stubGeometry(120, 240);
+      const onScrollEnd = vi.fn();
+      await openList(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await flushRemeasure();
+
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+    });
+
+    it("re-arms after a page lands and pushes the bottom out of reach", async () => {
+      // The regression: a fast flick latches at the bottom, the page arrives
+      // and grows the list — which emits no scroll event — so the latch has to
+      // be cleared by the post-fetch re-measure or pagination stalls forever.
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { rerender } = render(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+
+      await scrollTo(list, 760); // flick to the bottom — latches
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      // Page in flight, then it lands and the list grows by 400px while
+      // `scrollTop` stays at 760 — no scroll event is emitted.
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      stubGeometry(1400, 240);
+      rerender(
+        <MultiSelect
+          options={[...defaultOptions, { value: "option4", label: "Option 4" }]}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await flushRemeasure();
+
+      // Latch cleared without any user scroll — the next flick paginates.
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+      await scrollTo(list, 1160);
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
+    });
+
+    it("chains the next page when a landed page leaves the user at the bottom", async () => {
+      // Short page: the list is still pinned to the bottom after the fetch, so
+      // the re-measure must keep the chain going rather than clear the latch.
+      stubGeometry(1000, 240);
+      const onScrollEnd = vi.fn();
+      const { rerender } = render(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await act(async () => {
+        fireEvent.click(screen.getByRole("combobox"));
+      });
+      const list = document.querySelector<HTMLDivElement>(
+        "[role='listbox'] .overflow-auto"
+      )!;
+
+      await scrollTo(list, 760);
+      expect(onScrollEnd).toHaveBeenCalledTimes(1);
+
+      rerender(
+        <MultiSelect
+          options={defaultOptions}
+          hasMore
+          loadingMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      // Page adds only 20px — still inside the threshold.
+      stubGeometry(1020, 240);
+      rerender(
+        <MultiSelect
+          options={[...defaultOptions, { value: "option4", label: "Option 4" }]}
+          hasMore
+          onScrollEnd={onScrollEnd}
+        />
+      );
+      await flushRemeasure();
+
+      expect(onScrollEnd).toHaveBeenCalledTimes(2);
+    });
+  });
+});
