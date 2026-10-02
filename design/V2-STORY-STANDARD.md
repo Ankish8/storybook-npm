@@ -35,7 +35,8 @@ These six components were manually reviewed: Docs tables, Overview controls, ind
 2. In the browser, change controls on Overview, an individual variant/state, a gallery and a usage/composed example. Confirm the rendered result, not just the control's selected value. Check click/keyboard/typing where applicable.
 3. Manually inspect screenshots of Docs (including both tables), galleries, state grids and Usage. Check clipping, wrapping, contrast, alignment and text hierarchy. Check the console for component errors.
 4. Run focused ESLint, formatting and a TypeScript check that includes stories (the app config excludes them), then build Storybook. Do not format another agent's files or regenerate unrelated outputs.
-5. Record which views and controls you actually reviewed and any remaining issues. Keep work local; no commit, push, publishing or Figma reread for components with recorded specs.
+5. If the component moves (overlay, toggle, expand, press), follow `design/V2-MOTION.md` and run `node design/verify/motion-probe.mjs --only <name>`; add a scenario to the probe for any new interaction.
+6. Record which views and controls you actually reviewed and any remaining issues. Keep work local; no commit, push, publishing or Figma reread for components with recorded specs.
 
 ## Short prompt for another agent
 
