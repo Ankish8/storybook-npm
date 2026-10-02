@@ -93,6 +93,10 @@ const meta: Meta<Args> = {
   component: EmptyState,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7344",
+    },
     layout: "padded",
     controls: { include: controls },
     docs: {

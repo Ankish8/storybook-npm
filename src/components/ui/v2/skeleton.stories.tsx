@@ -10,6 +10,10 @@ const meta: Meta<typeof Skeleton> = {
   component: Skeleton,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12193",
+    },
     layout: "centered",
     controls: { include: ["variant", "shape", "width", "height"] },
     docs: {

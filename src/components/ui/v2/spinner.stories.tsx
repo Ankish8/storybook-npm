@@ -18,6 +18,10 @@ const meta: Meta<typeof Spinner> = {
   component: Spinner,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12231",
+    },
     layout: "centered",
     controls: { include: ["variant", "size", "aria-label"] },
     docs: {

@@ -15,6 +15,10 @@ const meta: Meta<typeof NumberStepField> = {
   component: NumberStepField,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-15837",
+    },
     layout: "centered",
     controls: {
       include: [

@@ -12,6 +12,10 @@ const meta: Meta<typeof ReadableField> = {
   component: ReadableField,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12122",
+    },
     layout: "centered",
     controls: {
       include: ["label", "value", "helperText", "secret", "onValueCopy"],

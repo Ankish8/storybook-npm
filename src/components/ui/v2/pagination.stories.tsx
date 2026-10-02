@@ -173,6 +173,10 @@ const meta: Meta<Args> = {
   component: V2.PaginationWidget,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-11830",
+    },
     layout: "padded",
     controls: { include: controlNames },
     docs: {

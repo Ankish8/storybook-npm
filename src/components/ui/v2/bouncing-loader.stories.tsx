@@ -10,6 +10,10 @@ const meta: Meta<typeof BouncingLoader> = {
   component: BouncingLoader,
   tags: ["autodocs"],
   parameters: {
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2185-13995",
+    },
     layout: "centered",
     controls: { include: ["size", "spacing", "color", "aria-label"] },
     docs: {
