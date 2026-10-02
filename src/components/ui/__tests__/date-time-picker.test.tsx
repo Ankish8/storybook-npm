@@ -1,5 +1,5 @@
 import * as React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   fireEvent,
   render,
@@ -18,6 +18,10 @@ import {
 const mayTwelve = new Date(2026, 4, 12);
 
 describe("DateTimePicker", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("renders a formatted date and start time", () => {
     render(
       <DateTimePicker
@@ -1081,6 +1085,9 @@ describe("DateTimePicker", () => {
   });
 
   it("clears a value that was picked from the calendar and typed into the input", async () => {
+    // The calendar opens on the current month; pin the clock so "September 12, 2026" exists in any month.
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 8, 1));
     const user = userEvent.setup();
 
     render(<DateTimePicker />);
