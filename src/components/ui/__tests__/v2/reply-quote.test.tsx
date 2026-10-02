@@ -16,7 +16,7 @@ describe("ReplyQuote", () => {
       <ReplyQuote sender="John" message="Test" className="custom-class" />
     );
     expect(container.firstChild).toHaveClass("custom-class");
-    expect(container.firstChild?.className).toMatch(
+    expect((container.firstChild as HTMLElement).className).toMatch(
       /bg-\[var\(--semantic-bg-ui/
     );
   });

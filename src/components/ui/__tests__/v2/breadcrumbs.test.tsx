@@ -19,7 +19,7 @@ describe("Breadcrumbs", () => {
     );
   });
   it("selects hidden pages and closes even when navigation is prevented", async () => {
-    const navigate = vi.fn((e) => e);
+    const navigate = vi.fn((item: unknown, index: number) => ({ item, index }));
     render(
       <Breadcrumbs
         items={items}

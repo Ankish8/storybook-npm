@@ -11,6 +11,7 @@ import userEvent from "@testing-library/user-event";
 
 import {
   DateTimePicker,
+  type DateTimePickerValue,
   formatDateForDisplay,
   formatTimeForDisplay,
 } from "../../v2/date-time-picker";
@@ -18,7 +19,9 @@ import {
 const mayTwelve = new Date(2026, 4, 12);
 
 describe("DateTimePicker", () => {
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
   it("renders a formatted date and start time", () => {
     render(
       <DateTimePicker
@@ -1063,8 +1066,8 @@ describe("DateTimePicker", () => {
 
   it("hides the clear action after clearing a controlled value", () => {
     function ControlledPicker() {
-      const [value, setValue] = React.useState({
-        date: mayTwelve as Date | undefined,
+      const [value, setValue] = React.useState<DateTimePickerValue>({
+        date: mayTwelve,
         startTime: "10:30:00",
         endTime: "12:30:00",
       });

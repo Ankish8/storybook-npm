@@ -60,7 +60,7 @@ it("scrolls on the selected axis", () => {
     scrollWidth: { value: 1000 },
     scrollLeft: { value: 0, writable: true },
   });
-  view.scrollBy = vi.fn();
+  view.scrollBy = vi.fn() as unknown as typeof view.scrollBy;
   fireEvent.scroll(view);
   fireEvent.click(screen.getByRole("button", { name: "Scroll forward" }));
   expect(view.scrollBy).toHaveBeenCalledWith({

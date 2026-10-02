@@ -94,7 +94,7 @@ describe("Panel", () => {
   });
 
   it("forwards ref correctly", () => {
-    const ref = { current: null };
+    const ref = { current: null as HTMLElement | null };
     render(
       <Panel ref={ref} title="Ref Test">
         <p className="m-0">Body</p>

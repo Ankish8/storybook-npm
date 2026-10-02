@@ -172,11 +172,7 @@ describe("Toast", () => {
     it("returns toast id and control functions", () => {
       render(<Toaster />);
 
-      let result: {
-        id: string;
-        dismiss: () => void;
-        update: (...args: unknown[]) => void;
-      };
+      let result: ReturnType<typeof toast>;
       act(() => {
         result = toast({ title: "Test toast" });
       });
