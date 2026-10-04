@@ -49,3 +49,15 @@ Two real gaps were found and fixed in v2:
 - **Pass-through on compound components.** A direct className/ref/`data-*` probe reached the DOM for 29 of 45 components. Accordion, Dialog, DropdownMenu, Select, Tabs, Tooltip, Table, Toast and the modal/creatable/select-field families use custom-render stories, so for those the evidence is the v1 test replay, which includes their custom-className and ref tests.
 - **Real browsers.** Gates 2 and 3 run in jsdom. Layout, focus rings and animation are covered by the motion probe and Storybook review, not by these gates.
 - **v1 baseline.** `date-time-picker.test.tsx > clears a value that was picked from the calendar…` fails on v1 itself today because it hard-codes September 2026 (fix on branch `fix/date-time-picker-time-bomb`).
+
+## 2026-10-04 UI refresh: additive changes only
+
+The 30-component refresh (see `design/figma-reports/README.md`) re-ran all four gates: COMPATIBLE 4/4, 0 breaking. New, optional, default-off API (informational findings, nothing removed):
+
+- `Table`: `stickyHeader`; `TableHead`: `sortable` (opt-in "sortable but unsorted" glyph, pointer cursor, `aria-sort="none"`; `sortDirection={null}` alone still renders exactly like v1).
+- `Skeleton`: `animation="pulse" | "shimmer" | "none"`. `EmptyState`: `size="sm"`.
+- `TabsList`: `variant="pill"`. `Badge`: `dot`. New export `AvatarGroup`. `Avatar`: a failed image now falls back to initials.
+- `Checkbox`, `Switch`: `description`. `Radio`: `variant="card"`.
+- `DropdownMenuItem`: `destructive`.
+- Behaviour that is new but additive: messages in TextField/Textarea/PhoneInput animate open; hold-to-repeat on NumberStepField; arrow/Home/End keys inside a DateTimePicker time column; `aria-current` on the matching DateRangePicker preset; `aria-sort` on sortable table headers.
+- Visual only (no API): range band and preview, popover width 446px, selected-row tint, 4px option rows, neutral chip hover.

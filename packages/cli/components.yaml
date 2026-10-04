@@ -2673,6 +2673,7 @@ components:
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-button-group:
     description: "ButtonGroup from the v2 design system"

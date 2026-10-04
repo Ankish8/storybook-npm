@@ -177,8 +177,9 @@ export const SCENARIOS = [
   {
     name: "checkbox-tick-pops", story: "v2-components-checkbox--unchecked", observe: 600,
     async run(p) { await p.click("#storybook-root [role=checkbox]"); },
-    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 180),
-    reduced: (r) => !r.anims.some((a) => a.name === "enter" || a.name === "exit"),
+    // 2026-10-04 refresh: the tick draws in (stroke-dashoffset 150ms) and the box pops (enter 200ms). Reduced motion keeps only a fade.
+    normal: (r) => r.anims.some((a) => a.kind === "CSSTransition" && a.name === "stroke-dashoffset" && a.dur === 150) && r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 200),
+    reduced: (r) => !r.anims.some((a) => a.name === "enter" || a.name === "exit" || a.name === "stroke-dashoffset"),
   },
   {
     name: "radio-dot-grows", story: "v2-components-radio--all-variants", observe: 600,
@@ -259,8 +260,9 @@ export const SCENARIOS = [
   {
     name: "readable-field-copy-pops", story: "v2-components-readablefield--overview", observe: 600,
     async run(p) { await p.click("#storybook-root button[aria-label='Copy to clipboard']"); },
-    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 180),
-    reduced: (r) => !r.anims.some((a) => a.name === "enter"),
+    // 2026-10-04 refresh: Copy/Check cross-fade in a fixed box (opacity + scale .8 to 1, 180ms). Reduced motion drops the scale, keeps the fade.
+    normal: (r) => r.anims.some((a) => a.kind === "CSSTransition" && a.name === "opacity" && a.dur === 180) && r.anims.some((a) => a.kind === "CSSTransition" && a.name === "transform" && a.dur === 180),
+    reduced: (r) => r.anims.some((a) => a.name === "opacity" && a.dur === 180) && !r.anims.some((a) => a.name === "transform" && a.dur === 180),
   },
   {
     name: "tag-remove-hover", story: "v2-components-tag--removable",

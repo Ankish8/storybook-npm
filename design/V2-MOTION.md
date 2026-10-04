@@ -88,3 +88,21 @@ The original probe measures CSS motion; the refinement adds geometry and interru
 - **Switch press-stretch, avatar and image entrances**: they add distracting movement. The tab rail is now implemented, consistent with measured indicators in the references above.
 - **Spinner fade-in on `Button loading`**: needs a wrapper element and breaks the v1 markup parity test.
 - **Option-row hover transitions**: would make keyboard navigation feel laggy.
+
+## Entry/exit utilities must be gated with `motion-safe:` too (2026-10-04)
+
+`motion-safe:animate-in` (tailwindcss-animate) resets the `--tw-enter-*` variables, and `animate-out` resets `--tw-exit-*`. A plain
+`fade-in-0`, `zoom-in-[0.98]`, `slide-in-from-top-1` or `[--tw-enter-translate-y:4px]` in the same class string has equal
+specificity but is emitted earlier, so the reset wins. The animation still exists (`getAnimations()` lists it) but its
+keyframes are identity: nothing fades, scales or slides. This was true of the dialog and the date-picker popovers until this
+date; a motion probe that only counts animations cannot see it.
+
+- Write `data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:fade-in-0 data-[state=open]:motion-safe:zoom-in-[0.98]`:
+  gate EVERY enter/exit value utility. An attribute variant with strictly more attribute selectors than the reset
+  (`data-[side=bottom]:slide-in-from-top-1` next to a plain `motion-safe:animate-in`) out-ranks it and may stay as is.
+- `motion-gating.test.ts` scans every v2 source and fails on the pattern; `design/verify/motion-movement-probe.mjs` samples real
+  opacity/transform frames while overlays open and fails unless they ramp.
+- Tailwind `important: true` (Storybook and the web panel) pins every `transform` utility over an animation's transform. A
+  centred dialog therefore uses the CSS `translate` property (`[translate:-50%_-50%]`) so the 0.98 zoom and 4px slide can run.
+- The Select panel carries a static `translate-y-1` offset, so only its fade runs (known, moving the offset into `sideOffset`
+  is a layout change).
