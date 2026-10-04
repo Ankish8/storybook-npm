@@ -1,0 +1,13 @@
+{
+  "story": "v2-components-tooltip--overview",
+  "measured": {
+    "Tooltip surface": null
+  },
+  "popupBox": {
+    "x": 325.28125,
+    "y": 268,
+    "width": 349.4375,
+    "height": 264
+  },
+  "evals": []
+}

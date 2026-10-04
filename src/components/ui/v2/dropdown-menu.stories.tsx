@@ -182,11 +182,7 @@ function MenuExample({
               description={args.description || undefined}
               suffix={args.suffix || undefined}
               asChild={args.mode === "link"}
-              className={
-                args.destructive
-                  ? "text-semantic-error-text focus:text-semantic-error-text"
-                  : undefined
-              }
+              destructive={args.destructive}
               onSelect={(event) => select(event, args.itemLabel)}
             >
               {args.mode === "link" ? (
@@ -211,7 +207,7 @@ function MenuExample({
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="text-semantic-error-text focus:text-semantic-error-text"
+              destructive
               onSelect={(event) => select(event, "Conversation archived")}
             >
               {args.showIcon && <Trash className="h-4 w-4" />}Archive
@@ -487,7 +483,7 @@ function InlineMenu({
   const row = cn(
     "relative flex w-full min-w-0 items-center gap-2 border-0 bg-transparent text-left outline-none",
     version === "v2"
-      ? "min-h-12 rounded-none px-1.5 py-2.5 text-base font-normal"
+      ? "min-h-12 rounded-sm px-1.5 py-2.5 text-base font-normal"
       : "rounded-sm px-2 py-2 text-sm text-semantic-text-secondary"
   );
   return (
@@ -521,7 +517,11 @@ function InlineMenu({
             (version === "v2"
               ? "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
               : "bg-semantic-bg-ui"),
-          "hover:bg-semantic-bg-ui disabled:text-semantic-disabled-primary"
+          // v2 destructive rows tint their highlight, like the real DropdownMenuItem `destructive`.
+          args.destructive && version === "v2"
+            ? "hover:bg-semantic-error-surface"
+            : "hover:bg-semantic-bg-ui",
+          "disabled:text-semantic-disabled-primary"
         )}
         disabled={state === "Disabled" || args.disabled}
         onClick={() => args.onSelect({ type: "select", label: args.itemLabel })}
@@ -604,7 +604,12 @@ function InlineMenu({
       </button>
       <div className="-mx-1 my-1 h-px bg-semantic-border-layout" />
       <button
-        className={cn(row, "text-semantic-error-text hover:bg-semantic-bg-ui")}
+        className={cn(
+          row,
+          version === "v2"
+            ? "text-semantic-error-text hover:bg-semantic-error-surface"
+            : "text-semantic-error-text hover:bg-semantic-bg-ui"
+        )}
         onClick={() => args.onSelect({ type: "select", label: "Archive" })}
       >
         {args.showIcon && <Trash className="h-4 w-4" />}Archive

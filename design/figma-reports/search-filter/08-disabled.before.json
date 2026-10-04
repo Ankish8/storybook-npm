@@ -1,0 +1,28 @@
+{
+  "story": "v2-components-searchfilter--disabled",
+  "measured": {
+    "Search input": {
+      "width": 360,
+      "height": "40px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "transition-duration": "0.15s"
+    },
+    "Panel": null,
+    "Row (first)": null,
+    "Row (selected)": null,
+    "Row (focused)": null,
+    "Check icon (selected row)": null,
+    "Clear button": null
+  },
+  "popupBox": {
+    "x": 270,
+    "y": 360,
+    "width": 460,
+    "height": 80
+  },
+  "evals": []
+}

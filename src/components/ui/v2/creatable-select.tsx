@@ -10,7 +10,10 @@ const creatableSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          // The open field is its own element (data-state open), and clicking the
+          // list moves focus out of it, so `focus-within` alone lets the glow drop while
+          // the panel is still open. The `hover` variant outranks the grey hover border.
+          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] data-[state=open]:border-[var(--color-secondary-600,#27ABB8)] data-[state=open]:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] data-[state=open]:hover:border-[var(--color-secondary-600,#27ABB8)]",
         error:
           "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
       },
@@ -121,6 +124,9 @@ const CreatableSelect = React.forwardRef(
     const [open, setOpen] = React.useState(false);
     const [search, setSearch] = React.useState("");
     const [highlightIndex, setHighlightIndex] = React.useState(-1);
+    // Focus stays in the input, so the ring cannot come from the focus-visible pseudo-class.
+    // Track who moved the highlight instead: only arrow keys earn the ring.
+    const [highlightByKeyboard, setHighlightByKeyboard] = React.useState(false);
     const containerRef = React.useRef<HTMLDivElement>(null);
     const inputRef = React.useRef<HTMLInputElement>(null);
     const listRef = React.useRef<HTMLDivElement>(null);
@@ -225,6 +231,7 @@ const CreatableSelect = React.forwardRef(
 
       if (e.key === "ArrowDown") {
         e.preventDefault();
+        setHighlightByKeyboard(true);
         setHighlightIndex((prev) => {
           const next = prev + 1;
           return next >= filtered.length ? 0 : next;
@@ -234,6 +241,7 @@ const CreatableSelect = React.forwardRef(
 
       if (e.key === "ArrowUp") {
         e.preventDefault();
+        setHighlightByKeyboard(true);
         setHighlightIndex((prev) => {
           const next = prev - 1;
           return next < 0 ? filtered.length - 1 : next;
@@ -269,6 +277,7 @@ const CreatableSelect = React.forwardRef(
     // Reset highlight when filter changes
     React.useEffect(() => {
       setHighlightIndex(-1);
+      setHighlightByKeyboard(false);
     }, [search]);
 
     return (
@@ -283,6 +292,7 @@ const CreatableSelect = React.forwardRef(
         {/* Trigger / Input */}
         {open ? (
           <div
+            data-state="open"
             className={cn(
               creatableSelectTriggerVariants({ state }),
               "cursor-text",
@@ -367,9 +377,10 @@ const CreatableSelect = React.forwardRef(
           </button>
         )}
 
-        {/* Dropdown */}
+        {/* Dropdown. CSS-anchored below the field (no flip), so it always grows from the
+            top-left corner; there is no placement to derive the origin from. */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] slide-in-from-top-1">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-1">
             {creatableHint ? (
               <div className={creatablePrimaryRoleHintRowClassName}>
                 <span className="text-sm text-[var(--v2-text-muted,#707070)]">
@@ -399,13 +410,20 @@ const CreatableSelect = React.forwardRef(
                   aria-selected={opt.value === value}
                   disabled={disabled || opt.disabled}
                   onClick={() => !opt.disabled && handleSelect(opt.value)}
-                  onMouseEnter={() => setHighlightIndex(i)}
+                  onMouseEnter={() => {
+                    setHighlightIndex(i);
+                    setHighlightByKeyboard(false);
+                  }}
                   className={cn(
-                    "relative flex w-full items-center rounded-md py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none",
+                    // 4px radius = panel 8px minus its 4px padding (concentric corners).
+                    "relative flex w-full items-center rounded-sm py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none",
                     "hover:bg-semantic-bg-ui",
                     opt.value === value &&
                       "font-medium text-[var(--v2-text-primary,#484848)]",
                     highlightIndex === i && "bg-semantic-bg-ui",
+                    highlightIndex === i &&
+                      highlightByKeyboard &&
+                      "ring-1 ring-inset ring-semantic-border-accent",
                     opt.disabled &&
                       "pointer-events-none opacity-50 cursor-not-allowed"
                   )}
@@ -413,7 +431,7 @@ const CreatableSelect = React.forwardRef(
                   {opt.label}
                   {opt.value === value && (
                     <span className="absolute right-2 flex size-4 items-center justify-center">
-                      <Check className="size-4 text-semantic-brand" />
+                      <Check className="size-4 text-semantic-brand motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
                     </span>
                   )}
                 </button>
@@ -427,11 +445,17 @@ const CreatableSelect = React.forwardRef(
                   aria-selected={false}
                   disabled={disabled}
                   onClick={handleCreate}
-                  onMouseEnter={() => setHighlightIndex(filtered.length)}
+                  onMouseEnter={() => {
+                    setHighlightIndex(filtered.length);
+                    setHighlightByKeyboard(false);
+                  }}
                   className={cn(
                     "flex w-full items-center gap-2 rounded-sm py-2 pl-4 pr-8 text-base outline-none cursor-pointer select-none",
                     "text-semantic-text-link hover:bg-semantic-bg-ui",
-                    highlightIndex === filtered.length && "bg-semantic-bg-ui"
+                    highlightIndex === filtered.length && "bg-semantic-bg-ui",
+                    highlightIndex === filtered.length &&
+                      highlightByKeyboard &&
+                      "ring-1 ring-inset ring-semantic-border-accent"
                   )}
                 >
                   Create &ldquo;{search.trim()}&rdquo;

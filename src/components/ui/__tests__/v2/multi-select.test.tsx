@@ -1,4 +1,6 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import * as React from "react";
+import type { Placement } from "@floating-ui/react-dom";
 import { render, screen, within, fireEvent, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -7,6 +9,23 @@ import {
   type MultiSelectOption,
 } from "../../v2/multi-select";
 import { Dialog, DialogContent, DialogTitle } from "../../v2/dialog";
+
+// jsdom has no layout, so floating-ui never flips. Let a test force the placement
+// the hook reports; everything else passes straight through to the real hook.
+const forced = vi.hoisted(() => ({ placement: null as string | null }));
+vi.mock("@floating-ui/react-dom", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@floating-ui/react-dom")>();
+  return {
+    ...actual,
+    useFloating: (options: Parameters<typeof actual.useFloating>[0]) => {
+      const result = actual.useFloating(options);
+      return forced.placement
+        ? { ...result, placement: forced.placement as Placement }
+        : result;
+    },
+  };
+});
 
 const defaultOptions: MultiSelectOption[] = [
   { value: "option1", label: "Option 1" },
@@ -973,5 +992,203 @@ describe("MultiSelect", () => {
 
       expect(onScrollEnd).toHaveBeenCalledTimes(2);
     });
+  });
+});
+
+describe("MultiSelect v2 refresh", () => {
+  beforeEach(() => {
+    forced.placement = null;
+  });
+
+  it("keeps the trigger in its open look while the panel is open", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} searchable />);
+    const trigger = screen.getByRole("combobox");
+
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger.className).toContain(
+      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+    expect(trigger.className).toContain(
+      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    );
+    expect(trigger.className).toContain(
+      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("does not paint the open look on an error trigger", () => {
+    render(<MultiSelect options={defaultOptions} error="Required" />);
+    expect(screen.getByRole("combobox").className).not.toContain(
+      "aria-expanded:border-[var(--color-secondary-600"
+    );
+  });
+
+  it("grows the panel from the top-left and slides down when it opens below", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    const panel = screen.getByRole("listbox");
+
+    expect(panel).toHaveAttribute("data-side", "bottom");
+    expect(panel).toHaveAttribute("data-align", "start");
+    expect(panel.style.transformOrigin).toBe("top left");
+    expect(panel).toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+    expect(panel).not.toHaveClass("origin-top-left");
+    // fade/zoom must be motion-safe too: a bare `fade-in-0` is overridden by the
+    // motion-safe `animate-in` reset (--tw-enter-* back to initial) and does nothing.
+    expect(panel).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.98]"
+    );
+    expect(panel).not.toHaveClass("fade-in-0");
+    expect(panel).not.toHaveClass("zoom-in-[0.98]");
+  });
+
+  it.each([
+    ["top-start", "top", "start", "bottom left"],
+    ["top-end", "top", "end", "bottom right"],
+    ["bottom-end", "bottom", "end", "top right"],
+  ])(
+    "derives the panel origin from the placement actually used (%s)",
+    async (placement, side, align, origin) => {
+      forced.placement = placement;
+      const user = userEvent.setup();
+      render(<MultiSelect options={defaultOptions} />);
+      await user.click(screen.getByRole("combobox"));
+      const panel = screen.getByRole("listbox");
+
+      expect(panel).toHaveAttribute("data-side", side);
+      expect(panel).toHaveAttribute("data-align", align);
+      expect(panel.style.transformOrigin).toBe(origin);
+      // The slide class for each side is present; the data attribute selects it.
+      expect(panel).toHaveClass("data-[side=top]:slide-in-from-bottom-1");
+    }
+  );
+
+  it("gives option rows a 4px radius and a keyboard-only ring", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    const option = screen.getByRole("option", { name: "Option 1" });
+    // Rows are real Tab stops, so focus-visible (ring) is distinct from hover (fill).
+    expect(option).toHaveClass(
+      "rounded-sm",
+      "focus-visible:ring-1",
+      "focus-visible:ring-inset",
+      "focus-visible:ring-semantic-border-accent"
+    );
+    expect(option).toHaveClass("hover:bg-semantic-bg-ui");
+  });
+
+  it("pops the selected check in", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} defaultValue={["option2"]} />);
+    await user.click(screen.getByRole("combobox"));
+    const check = screen
+      .getByRole("option", { name: "Option 2" })
+      .querySelector("svg");
+    expect(check).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.85]",
+      "motion-safe:[animation-duration:180ms]"
+    );
+    expect(
+      screen.getByRole("option", { name: "Option 1" }).querySelector("svg")
+    ).toBeNull();
+  });
+
+  it("gives the chip remove control a 24px hit area and a neutral hover plate, keeping its label", () => {
+    render(
+      <MultiSelect options={defaultOptions} value={["option1", "option2"]} />
+    );
+    const remove = screen.getByRole("button", { name: "Remove Option 1" });
+    // 16px plate (12px icon) + `before:-inset-1` = 24px hit area, layout cancelled by -m-0.5.
+    expect(remove).toHaveClass(
+      "relative",
+      "-m-0.5",
+      "p-0.5",
+      "before:absolute",
+      "before:-inset-1"
+    );
+    // One step darker than the chip fill (bg-ui would vanish), gated for touch, never red.
+    expect(remove).toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+    );
+    expect(remove.className).not.toContain("error");
+    expect(remove.querySelector("svg")).toHaveClass("size-3");
+  });
+
+  it("gives Clear all a 24px neutral hover plate, not a red hover", () => {
+    render(<MultiSelect options={defaultOptions} value={["option1"]} />);
+    const clear = screen.getByRole("button", { name: "Clear all" });
+    expect(clear).toHaveClass(
+      "p-1",
+      "-m-0.5",
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+    );
+    expect(clear.className).not.toContain("error");
+    // The icon inherits the span colour so hover can darken it.
+    expect(clear.querySelector("svg")).toHaveClass("size-4");
+    expect(clear.querySelector("svg")?.getAttribute("class")).not.toContain(
+      "text-["
+    );
+  });
+
+  it("does not paint hover plates on chips of a disabled field", () => {
+    render(
+      <MultiSelect options={defaultOptions} value={["option1"]} disabled />
+    );
+    expect(
+      screen.getByRole("button", { name: "Remove Option 1" }).className
+    ).not.toContain("hover:bg-");
+    expect(
+      screen.getByRole("button", { name: "Clear all" }).className
+    ).not.toContain("hover:bg-");
+  });
+
+  it("only animates a newly added chip: existing chip nodes survive a re-render", async () => {
+    function Controlled() {
+      const [value, setValue] = React.useState(["option1"]);
+      return (
+        <>
+          <MultiSelect
+            options={defaultOptions}
+            value={value}
+            onValueChange={setValue}
+          />
+          <button
+            type="button"
+            onClick={() => setValue(["option1", "option2"])}
+          >
+            add
+          </button>
+        </>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Controlled />);
+    const first = screen.getByRole("button", { name: "Remove Option 1" })
+      .parentElement as HTMLElement;
+    expect(first).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-90",
+      "motion-safe:[animation-duration:150ms]"
+    );
+
+    await user.click(screen.getByRole("button", { name: "add" }));
+    // Same DOM node: React kept it mounted, so its CSS animation does not restart.
+    expect(
+      screen.getByRole("button", { name: "Remove Option 1" }).parentElement
+    ).toBe(first);
+    expect(
+      screen.getByRole("button", { name: "Remove Option 2" })
+    ).toBeInTheDocument();
   });
 });

@@ -735,3 +735,182 @@ describe("v2 asChild composition", () => {
     ).toBeInTheDocument();
   });
 });
+
+describe("DropdownMenu v2 refresh", () => {
+  const openMenu = async (menu: React.ReactNode) => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>{menu}</DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    return user;
+  };
+
+  it("styles a destructive item with the error text token and an error-tinted highlight", async () => {
+    await openMenu(
+      <>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem destructive>Delete</DropdownMenuItem>
+      </>
+    );
+    const del = screen.getByRole("menuitem", { name: "Delete" });
+    expect(del).toHaveClass(
+      "text-semantic-error-text",
+      "focus:bg-semantic-error-surface",
+      "focus:text-semantic-error-text"
+    );
+    expect(del).toHaveAttribute("data-destructive", "");
+    // The tint is an explicit token, never a slash-alpha modifier (compiles to nothing on var()).
+    expect(del.className).not.toMatch(/error[^ ]*\/\d/);
+    // `destructive` is consumed, not leaked to the DOM as an unknown attribute.
+    expect(del).not.toHaveAttribute("destructive");
+  });
+
+  it("leaves a default item unchanged: no destructive classes or hook", async () => {
+    await openMenu(<DropdownMenuItem>Edit</DropdownMenuItem>);
+    const edit = screen.getByRole("menuitem", { name: "Edit" });
+    expect(edit).not.toHaveAttribute("data-destructive");
+    expect(edit.className).not.toContain("semantic-error");
+    expect(edit).toHaveClass(
+      "focus:bg-semantic-bg-ui",
+      "focus:text-[var(--v2-text-primary,#484848)]"
+    );
+  });
+
+  it("keeps a destructive item selectable and disabled-aware", async () => {
+    const onSelect = vi.fn();
+    const user = await openMenu(
+      <>
+        <DropdownMenuItem destructive onSelect={onSelect}>
+          Delete
+        </DropdownMenuItem>
+        <DropdownMenuItem destructive disabled>
+          Purge
+        </DropdownMenuItem>
+      </>
+    );
+    expect(screen.getByRole("menuitem", { name: "Purge" })).toHaveAttribute(
+      "data-disabled"
+    );
+    // Disabled text still wins (data-[disabled]: has higher specificity than the base colour).
+    expect(screen.getByRole("menuitem", { name: "Purge" })).toHaveClass(
+      "data-[disabled]:text-semantic-disabled-primary"
+    );
+    await user.click(screen.getByRole("menuitem", { name: "Delete" }));
+    expect(onSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it("passes destructive through asChild onto the real element", async () => {
+    await openMenu(
+      <DropdownMenuItem asChild destructive>
+        <a href="#remove">Remove</a>
+      </DropdownMenuItem>
+    );
+    const link = screen.getByRole("menuitem", { name: "Remove" });
+    expect(link.tagName).toBe("A");
+    expect(link).toHaveAttribute("data-destructive", "");
+    expect(link).toHaveClass("text-semantic-error-text");
+  });
+
+  it("gives every row type a 4px radius concentric with the 8px menu", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Plain</DropdownMenuItem>
+          <DropdownMenuCheckboxItem checked>Check</DropdownMenuCheckboxItem>
+          <DropdownMenuRadioGroup value="a">
+            <DropdownMenuRadioItem value="a">Radio</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Inner</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    for (const row of [
+      screen.getByRole("menuitem", { name: "Plain" }),
+      screen.getByRole("menuitemcheckbox", { name: "Check" }),
+      screen.getByRole("menuitemradio", { name: "Radio" }),
+      screen.getByRole("menuitem", { name: "More" }),
+    ]) {
+      expect(row).toHaveClass("rounded-sm");
+      expect(row).not.toHaveClass("rounded-none");
+      // Row height and padding are untouched: 48px rows.
+      expect(row).toHaveClass("min-h-12");
+    }
+  });
+
+  it("has no keyboard-only ring: Radix focuses hovered rows too, so focus-visible cannot tell them apart", async () => {
+    await openMenu(<DropdownMenuItem>Plain</DropdownMenuItem>);
+    expect(
+      screen.getByRole("menuitem", { name: "Plain" }).className
+    ).not.toContain("focus-visible:ring");
+  });
+
+  it("pops the check in on checked checkbox and radio rows", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuCheckboxItem checked>Check</DropdownMenuCheckboxItem>
+          <DropdownMenuRadioGroup value="a">
+            <DropdownMenuRadioItem value="a">Radio</DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    await user.click(screen.getByRole("button", { name: "Open" }));
+    for (const row of [
+      screen.getByRole("menuitemcheckbox", { name: "Check" }),
+      screen.getByRole("menuitemradio", { name: "Radio" }),
+    ]) {
+      expect(row.querySelector("svg")).toHaveClass(
+        "motion-safe:animate-in",
+        "motion-safe:fade-in-0",
+        "motion-safe:zoom-in-[0.85]",
+        "motion-safe:[animation-duration:180ms]"
+      );
+    }
+  });
+
+  it("fades and zooms the menu with motion-safe vars so the reset in animate-in cannot cancel them", async () => {
+    await openMenu(<DropdownMenuItem>Edit</DropdownMenuItem>);
+    const menu = screen.getByRole("menu");
+    expect(menu).toHaveClass(
+      "data-[state=open]:motion-safe:fade-in-0",
+      "data-[state=open]:motion-safe:zoom-in-[0.98]",
+      "data-[state=closed]:motion-safe:fade-out-0",
+      "data-[state=closed]:motion-safe:zoom-out-[0.98]",
+      "data-[side=bottom]:motion-safe:slide-in-from-top-1",
+      "data-[side=top]:motion-safe:slide-in-from-bottom-1"
+    );
+    expect(menu).not.toHaveClass("data-[state=open]:fade-in-0");
+    expect(menu).not.toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+  });
+
+  it("keeps the group label on the recorded 14px / 500 / primary text role", async () => {
+    await openMenu(
+      <>
+        <DropdownMenuLabel>Conversation</DropdownMenuLabel>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+      </>
+    );
+    // design/V2-TEXT-HIERARCHY-OVERLAYS-REVIEW.md records the section label as #484848 / 500,
+    // so it is deliberately NOT unified with SelectLabel (12px muted).
+    expect(screen.getByText("Conversation")).toHaveClass(
+      "text-sm",
+      "font-medium",
+      "text-[var(--v2-text-primary,#484848)]"
+    );
+  });
+});

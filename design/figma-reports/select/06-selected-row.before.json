@@ -1,0 +1,88 @@
+{
+  "story": "v2-components-select--with-selected-value",
+  "measured": {
+    "Trigger": {
+      "width": 420,
+      "height": "40px",
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "transition-property": "border-color, box-shadow, background-color",
+      "transition-duration": "0.15s"
+    },
+    "Chevron": {
+      "width": 16,
+      "height": 16,
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "transition-duration": "0.2s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)"
+    },
+    "Panel": {
+      "width": 420,
+      "height": 210,
+      "border-radius": "8px",
+      "padding": "0px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.1) 0px 4px 8px -2px, rgba(16, 24, 40, 0.06) 0px 2px 4px -2px",
+      "transform-origin": "0px 0px"
+    },
+    "Panel padding (viewport)": {
+      "width": 418,
+      "height": 208,
+      "padding": "4px"
+    },
+    "Row (first)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-radius": "6px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "400"
+    },
+    "Row (highlighted)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "6px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "500"
+    },
+    "Row (selected)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "6px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "500"
+    },
+    "Check icon (selected row)": {
+      "width": 16,
+      "height": 16,
+      "opacity": "1",
+      "color": "rgb(43, 188, 202)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-timing-function": "ease"
+    }
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 365,
+    "width": 420,
+    "height": 284
+  },
+  "evals": []
+}

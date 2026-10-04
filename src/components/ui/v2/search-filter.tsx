@@ -7,6 +7,7 @@ import {
   shift,
   size as floatingSize,
   useFloating,
+  type Placement,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, Search, X } from "lucide-react";
@@ -31,6 +32,21 @@ const searchFilterVariants = cva(
 );
 
 const searchFilterDropdownVariants = cva("flex flex-col overflow-hidden p-0");
+
+/**
+ * The corner of the panel that touches the field, from the placement
+ * floating-ui actually used, so a flipped (above) or end-aligned panel still
+ * grows out of the field instead of out of a fixed top-left corner.
+ */
+function panelTransformOrigin(placement: Placement): string {
+  const [side, align] = placement.split("-");
+  if (side === "top" || side === "bottom") {
+    const x = align === "end" ? "right" : align === "start" ? "left" : "center";
+    return `${side === "top" ? "bottom" : "top"} ${x}`;
+  }
+  const y = align === "end" ? "bottom" : align === "start" ? "top" : "center";
+  return `${y} ${side === "left" ? "right" : "left"}`;
+}
 
 export type SearchFilterSearchMode = "text" | "numeric";
 
@@ -199,7 +215,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
 
     const containerRef = React.useRef<HTMLDivElement | null>(null);
 
-    const { refs, floatingStyles } = useFloating({
+    const { refs, floatingStyles, placement } = useFloating({
       open: isOpen,
       placement: "bottom-start",
       strategy: "fixed",
@@ -409,7 +425,10 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 aria-disabled={optionDisabled}
                 disabled={optionDisabled}
                 className={cn(
-                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
+                  // 4px radius = panel 8px minus its 4px list padding. Rows are real Tab
+                  // stops, so the focus-visible pseudo-class separates a keyboard highlight (ring)
+                  // from a mouse hover (fill only).
+                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
                   !isSelected &&
                     "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
                   isSelected &&
@@ -431,7 +450,9 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                     : option.label}
                 </span>
                 {isSelected ? (
-                  <Check className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-semantic-border-accent" />
+                  // Centred with auto margins, not `-translate-y-1/2`: the pop keyframe
+                  // writes `transform` and would shove the icon 8px down while it plays.
+                  <Check className="pointer-events-none absolute inset-y-0 right-3 my-auto size-4 text-semantic-border-accent motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
                 ) : null}
               </button>
             );
@@ -468,7 +489,13 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             aria-controls={dropdownId}
             aria-expanded={isOpen}
             aria-haspopup="listbox"
-            className={cn("pl-10 pr-9", inputClassName)}
+            // The list takes focus on Tab, so keep the focused look while it is open
+            // (`aria-expanded`). The extra `hover` selector outranks the grey hover
+            // border from Input (0,4,0 vs 0,3,0).
+            className={cn(
+              "pl-10 pr-9 aria-expanded:border-[var(--color-secondary-600,#27ABB8)] aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]",
+              inputClassName
+            )}
             {...searchInputProps}
             onClick={(event) => {
               setOpen(true);
@@ -507,13 +534,16 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
           createPortal(
             <div
               ref={setDropdownRef}
+              data-side={placement.split("-")[0]}
+              data-align={placement.split("-")[1] ?? "center"}
               className={cn(
                 "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
-                "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
+                "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
                 searchFilterDropdownVariants()
               )}
               style={{
                 ...floatingStyles,
+                transformOrigin: panelTransformOrigin(placement),
                 zIndex: 10050,
               }}
               role="presentation"

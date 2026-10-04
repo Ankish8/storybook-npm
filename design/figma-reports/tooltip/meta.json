@@ -1,0 +1,61 @@
+{
+  "title": "Tooltip",
+  "storybook": "V2/Components/Tooltip",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12668",
+  "summary": "The pale tooltip now has a 1px inset edge so it no longer melts into a white page. When Radix opens it with no delay (keyboard focus, or moving straight from one trigger to the next within its skip window) it appears instantly instead of replaying the grow-in. The default hover delay is unchanged.",
+  "why": [
+    "Task brief research summary (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria, Fluent): 'modern' here comes from connectedness and polish, not flashy motion. (Not re-researched in this pass.)",
+    "Radix reports data-state=instant-open when a tooltip opens with no delay (keyboard focus, or within the provider's skip-delay window after another tooltip); replaying a 160ms grow-in there makes follow-up tooltips feel laggy.",
+    "Measured: the #ECF1FB surface is about 1.1:1 against white, so without an edge the bubble relies on a soft shadow alone."
+  ],
+  "scenarioLabels": {
+    "01-closed": "Closed",
+    "02-hover-open": "Pointer hover (delayed-open)",
+    "03-focus-open-instant": "Keyboard focus (instant-open)",
+    "04-with-title": "Title + text",
+    "05-bottom": "Bottom side",
+    "06-long-content": "Long content (320px max)",
+    "07-no-arrow": "Without arrow",
+    "08-narrow": "Long content, 340px viewport"
+  },
+  "motion": [
+    {
+      "what": "Pointer hover (after the delay)",
+      "before": "160ms grow-in",
+      "after": "160ms: opacity 0 to 100%, scale 98% to 100%, 4px slide from the trigger side, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1)) (the fade/zoom now run; they were cancelled by a utility-order bug)"
+    },
+    {
+      "what": "Keyboard focus / instant follow-up",
+      "before": "160ms grow-in again",
+      "after": "0ms: appears instantly (data-state=instant-open)"
+    },
+    {
+      "what": "Close",
+      "before": "100ms",
+      "after": "100ms fade + scale 98% (unchanged duration)"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "120ms opacity fade",
+      "after": "unchanged for the delayed path; instant-open stays instant"
+    }
+  ],
+  "states": [
+    "Tooltip surface: add a 1px inside stroke",
+    "Tooltip arrow: unchanged (it has no edge, so against white only the bubble is outlined)"
+  ],
+  "figmaSteps": [
+    "Tooltip surface (unchanged): fill #ECF1FB, corner radius 6, padding 6 top/bottom and 16 left/right, label 12/400 #5E5E5E (title 12/500 #484848), max width 320, shadow 0 1 3 0 rgba(10,13,18,0.10) + 0 1 2 -1 rgba(10,13,18,0.10).",
+    "ADD an INSIDE stroke: 1px, colour #000000 at 5% opacity (resolves to about #E0E4EE over the #ECF1FB fill). Keep the shadow layers above.",
+    "Arrow: unchanged (fill #ECF1FB, 10 x 5); no stroke on the arrow.",
+    "Prototype: delayed hover (after the 700ms default delay, or the provider's) enters with Smart animate 160ms, opacity 0 to 100%, scale 98% to 100%, 4px offset toward the trigger, ease cubic-bezier(0.22, 1, 0.36, 1). A tooltip that opens with no delay (keyboard focus, next trigger within the skip window) has 0ms: no animation. Close 100ms."
+  ],
+  "notes": [
+    "The 'instant-open' state is also what Radix reports for keyboard focus and for a tooltip that is open from the start, not only for the skip-delay window; so keyboard-focused tooltips now appear without the grow-in too. That is intentional (the delay is already skipped).",
+    "Verified in Chrome: pointer hover reports delayed-open with a 0.16s animation; keyboard focus reports instant-open with 0s. A true pointer move between two adjacent triggers could not be scripted because no story has two real tooltips side by side; it uses the same Radix state.",
+    "The ring is also applied to caller-restyled tooltips (the dark disabled-row tooltip in MultiSelect): a 5% black edge on a dark surface is invisible, so nothing changes there.",
+    "The arrow has no edge, so on a white page the bubble is outlined but the 5px arrow tip is not. Accepted; a matching arrow outline would need an SVG stroke change.",
+    "Default hover delay unchanged (Radix default 700ms): verified by test.",
+    "Found while verifying motion: `motion-safe:animate-in` is emitted after bare `fade-in-0`/`zoom-in-*` classes and resets --tw-enter-opacity/--tw-enter-scale to initial, so the panel fade and 98% zoom documented in V2-MOTION.md never ran in normal-motion mode (measured at t=0: opacity 1, no scale). Fixed here by prefixing those classes with `motion-safe:` (as Checkbox/TextField already do). The same bare pattern remains in dialog.tsx, toast.tsx, tabs.tsx, date-range-picker.tsx and date-time-picker.tsx (not in this task's files, not individually verified)."
+  ]
+}

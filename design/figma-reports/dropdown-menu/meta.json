@@ -1,0 +1,74 @@
+{
+  "title": "DropdownMenu",
+  "storybook": "V2/Components/Dropdown Menu",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-7148",
+  "summary": "Menu rows are now 4px-radius pills concentric with the 8px menu (they were square). Items can be marked destructive: red label with a faint red tint on highlight. Checked rows pop their check in, and the menu now really fades, zooms and slides in as documented.",
+  "why": [
+    "Task brief research summary (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria, Fluent): 'modern' here comes from connectedness and polish, not flashy motion. (Not re-researched in this pass.)",
+    "Concentric radii (inner radius = outer radius - padding): the panel is 8px with 4px padding, so rows should be 4px. Measured before: Select and Creatable rows 6px, Dropdown and SearchFilter rows 0px.",
+    "Selection feedback should be acknowledged briefly: the same fade + 85% to 100% scale as the v2 Checkbox tick, 180ms.",
+    "Task brief item 7: a destructive action should be distinguishable on highlight, not only by label colour."
+  ],
+  "scenarioLabels": {
+    "01-closed": "Closed",
+    "02-open": "Open",
+    "03-hover-row": "Open, mouse hover on a row",
+    "04-keyboard-row": "Open by keyboard, ArrowDown",
+    "05-keyboard-open-then-hover": "Keyboard open, then hover",
+    "06-destructive-hover": "Destructive item highlighted (Archive)",
+    "07-destructive-story": "Destructive story, open",
+    "08-destructive-keyboard": "Destructive, keyboard highlight",
+    "09-disabled-items": "Disabled items",
+    "10-checkbox-checked": "Checkbox item, checked",
+    "11-radio": "Radio group",
+    "12-submenu": "Submenu open",
+    "13-description-suffix": "Row with description and suffix",
+    "14-narrow": "Open, 340px viewport"
+  },
+  "motion": [
+    {
+      "what": "Menu enter",
+      "before": "opacity stayed 100%, no scale, no slide (utility-order bug)",
+      "after": "200ms: opacity 0 to 100%, scale 98% to 100%, 4px slide from the trigger side, origin from Radix, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1)). Exit 120ms (fade + scale 98%)"
+    },
+    {
+      "what": "Checked checkbox / radio check",
+      "before": "appears instantly",
+      "after": "180ms opacity 0 to 100% + scale 85% to 100%, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1))"
+    },
+    {
+      "what": "Row highlight",
+      "before": "instant",
+      "after": "instant (deliberately not animated, keyboard navigation must not lag)"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "120ms fade in / 100ms out",
+      "after": "unchanged"
+    }
+  ],
+  "states": [
+    "Menu item / default, highlighted, checked, radio, submenu trigger: corner radius 0 -> 4",
+    "Menu item / destructive / default: label #B42318",
+    "Menu item / destructive / highlighted: fill #FEF3F2 + label #B42318 (was #F5F5F5)",
+    "Menu item / destructive / disabled: label #A2A6B1 (disabled wins)",
+    "Checkbox and radio item / checked: check enters with scale/fade",
+    "Group label: unchanged"
+  ],
+  "figmaSteps": [
+    "Menu (unchanged): fill #FFFFFF, border 1px #E9EAEB, corner radius 8, auto-layout padding 4, shadow 0 4 8 -2 rgba(16,24,40,0.10) + 0 2 4 -2 rgba(16,24,40,0.06), min width 128, max width 320.",
+    "Menu item, every type (item, checkbox, radio, submenu trigger): corner radius 4 (was 0). Geometry unchanged: min-height 48, padding 10 top/bottom and 6 left/right (32 left for checkbox/radio), gap 8, label 16/400 #5E5E5E, highlight fill #F5F5F5 with label #484848.",
+    "Add a boolean property Destructive on the item component. Destructive default: label #B42318 (error-700). Destructive highlighted: fill #FEF3F2 (error-50), label #B42318. Destructive disabled: label #A2A6B1 on no fill.",
+    "Checkbox/radio selected check: 16px #27ABB8, 8px from the left. Prototype: enters with opacity 0 to 100% + scale 85% to 100%, 180ms, ease cubic-bezier(0.22, 1, 0.36, 1).",
+    "Group label (DropdownMenuLabel): UNCHANGED: 14/500 #484848, padding 6 / 8. See notes for why it is not 12px muted.",
+    "Menu prototype: open 200ms Smart animate from opacity 0%, scale 98%, 4px offset toward the trigger, origin at the corner nearest the trigger; close 120ms opacity to 0% and scale 98%."
+  ],
+  "notes": [
+    "Group label NOT unified with SelectLabel (12px / 500 / muted). design/V2-TEXT-HIERARCHY-OVERLAYS-REVIEW.md records the Dropdown section label as an 'Ordinary title / section heading' at #484848 / 500 (and rows as #5E5E5E), the user's own hierarchy decision; v2-figma-specs.md records no group-label style. Changing it to 12px muted would contradict that, so it is left as is.",
+    "Keyboard-only ring NOT added: Radix highlights by focusing the row on pointer move too, so the focus-visible pseudo-class is also true under a mouse hover (verified in Chrome: pointer-opened menu + hover still matched, and keyboard open + hover too). A reliable version needs an input-modality flag; not done.",
+    "The destructive highlight uses #FEF3F2 (semantic-error-surface, error-50). The tighter error-25 (#FFFBFA) was tried first and is nearly invisible on white. Destructive text is semantic-error-text #B42318, as the existing review records.",
+    "Row height and density are unchanged (48px).",
+    "The additive prop is destructive?: boolean on DropdownMenuItem (default false); also sets data-destructive on the item. Stories now use it instead of hand-written classes. date-range-picker's month/year menus consume DropdownMenu and are unaffected API-wise (every export and prop is unchanged).",
+    "Found while verifying motion: `motion-safe:animate-in` is emitted after bare `fade-in-0`/`zoom-in-*` classes and resets --tw-enter-opacity/--tw-enter-scale to initial, so the panel fade and 98% zoom documented in V2-MOTION.md never ran in normal-motion mode (measured at t=0: opacity 1, no scale). Fixed here by prefixing those classes with `motion-safe:` (as Checkbox/TextField already do). The same bare pattern remains in dialog.tsx, toast.tsx, tabs.tsx, date-range-picker.tsx and date-time-picker.tsx (not in this task's files, not individually verified)."
+  ]
+}

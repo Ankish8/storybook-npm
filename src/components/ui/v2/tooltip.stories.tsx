@@ -57,7 +57,7 @@ function InlineTooltip({
     <div
       className={
         version === "v2"
-          ? "relative max-w-xs whitespace-normal rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)]"
+          ? "relative max-w-xs whitespace-normal rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)] ring-1 ring-inset ring-black/5"
           : "relative max-w-xs whitespace-normal rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md"
       }
       data-v2-component={version === "v2" ? "tooltip" : undefined}

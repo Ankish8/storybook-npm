@@ -620,3 +620,31 @@ describe("SelectField", () => {
     );
   });
 });
+
+describe("SelectField v2 refresh", () => {
+  it("inherits the open-trigger hold, 4px rows and the check pop from Select", async () => {
+    const user = userEvent.setup();
+    render(<SelectField options={defaultOptions} defaultValue="option2" />);
+    const trigger = screen.getByRole("combobox");
+
+    expect(trigger.className).toContain(
+      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+
+    const selected = screen.getByRole("option", { name: "Option 2" });
+    expect(selected).toHaveClass("rounded-sm");
+    expect(selected.querySelector("svg")).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:zoom-in-[0.85]"
+    );
+  });
+
+  it("keeps the error trigger red while open", () => {
+    render(<SelectField options={defaultOptions} error="Required" />);
+    expect(screen.getByRole("combobox").className).not.toContain(
+      "aria-expanded:border-[var(--color-secondary-600"
+    );
+  });
+});

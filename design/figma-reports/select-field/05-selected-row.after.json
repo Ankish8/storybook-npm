@@ -1,0 +1,81 @@
+{
+  "story": "v2-components-selectfield--default",
+  "measured": {
+    "Trigger": {
+      "width": 420,
+      "height": "40px",
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(39, 171, 184)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(39, 171, 184, 0.4) 0px 0px 4px 0px",
+      "transition-duration": "0.15s"
+    },
+    "Chevron": {
+      "width": 16,
+      "height": 16,
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "transition-duration": "0.2s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)"
+    },
+    "Panel": {
+      "width": 420,
+      "height": 210,
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.1) 0px 4px 8px -2px, rgba(16, 24, 40, 0.06) 0px 2px 4px -2px",
+      "transform-origin": "0px 0px"
+    },
+    "Row (first)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "400"
+    },
+    "Row (highlighted)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "500"
+    },
+    "Row (selected)": {
+      "width": 410,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "padding-left": "16px",
+      "padding-right": "32px",
+      "min-height": "0px",
+      "font-weight": "500"
+    },
+    "Check icon (selected row)": {
+      "width": 16,
+      "height": 16,
+      "opacity": "1",
+      "animation-name": "enter",
+      "animation-duration": "0.18s",
+      "animation-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)"
+    },
+    "Group label": null
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 358,
+    "width": 420,
+    "height": 278
+  },
+  "evals": []
+}

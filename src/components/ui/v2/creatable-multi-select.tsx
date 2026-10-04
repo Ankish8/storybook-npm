@@ -153,6 +153,21 @@ function isValueAlreadySelected(
   });
 }
 
+/**
+ * Chip remove button: 20px plate, 24px hit area (the invisible `::before` reaches
+ * 2px past the plate), 14px icon. The plate is `bg-semantic-bg-grey`, one step
+ * darker than the chip fill: `bg-semantic-bg-ui` / `bg-semantic-bg-hover` are
+ * both #F5F5F5, identical to the chip, so a hover plate in either was invisible.
+ * Hover is gated so a tap on touch does not leave the plate stuck.
+ */
+function chipRemoveClassName(disabled: boolean) {
+  return cn(
+    "relative inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-[var(--v2-text-muted,#707070)] transition-colors before:absolute before:-inset-0.5 before:content-['']",
+    !disabled &&
+      "[@media(hover:hover)]:hover:bg-semantic-bg-grey [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+  );
+}
+
 function restoreInputCursor(input: HTMLInputElement, cursorPosition: number) {
   window.requestAnimationFrame(() => {
     input.setSelectionRange(cursorPosition, cursorPosition);
@@ -351,6 +366,7 @@ const CreatableMultiSelect = React.forwardRef(
         <div className="font-[family-name:var(--font-v2,Inter,sans-serif)] relative w-full">
           {isOpen && (
             <div
+              data-state="open"
               className={cn(
                 creatableSelectTriggerVariants({ state: derivedState }),
                 "flex h-auto min-h-10 cursor-text items-start gap-2 py-1.5 text-left",
@@ -390,11 +406,7 @@ const CreatableMultiSelect = React.forwardRef(
                           sanitizeInput,
                           maxLengthPerItem
                         )}`}
-                        className={cn(
-                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] transition-colors",
-                          !disabled &&
-                            "hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
-                        )}
+                        className={chipRemoveClassName(disabled)}
                         onMouseDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -543,11 +555,7 @@ const CreatableMultiSelect = React.forwardRef(
                           sanitizeInput,
                           maxLengthPerItem
                         )}`}
-                        className={cn(
-                          "inline-flex size-5 shrink-0 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] transition-colors",
-                          !disabled &&
-                            "hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
-                        )}
+                        className={chipRemoveClassName(disabled)}
                         onMouseDown={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
@@ -570,9 +578,10 @@ const CreatableMultiSelect = React.forwardRef(
             </div>
           )}
 
-          {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above. */}
+          {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above.
+              CSS-anchored below the field (no flip), so it always grows from the top-left corner. */}
           {isOpen && (
-            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] slide-in-from-top-1">
+            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-1">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
                   <span className="text-sm text-[var(--v2-text-muted,#707070)]">

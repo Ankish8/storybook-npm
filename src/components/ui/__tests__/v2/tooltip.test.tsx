@@ -452,3 +452,77 @@ describe("Tooltip", () => {
     });
   });
 });
+
+describe("Tooltip v2 refresh", () => {
+  it("skips the grow-in when Radix opens it inside the skip-delay window or on keyboard focus", () => {
+    renderTooltip(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Trigger</TooltipTrigger>
+        <TooltipContent>Help</TooltipContent>
+      </Tooltip>
+    );
+    const content = getTooltipContent() as HTMLElement;
+    // A tooltip that is open from the start is not delayed, so Radix reports `instant-open`.
+    expect(content).toHaveAttribute("data-state", "instant-open");
+    expect(content).toHaveClass(
+      "data-[state=instant-open]:[animation-duration:0ms]"
+    );
+    // fade/zoom vars are motion-safe, or the motion-safe animate-in reset cancels them.
+    expect(content).toHaveClass(
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.98]",
+      "data-[state=closed]:motion-safe:fade-out-0"
+    );
+    expect(content).not.toHaveClass("fade-in-0");
+    // The default 160ms in / 100ms out and the spring curve stay for the delayed path.
+    expect(content).toHaveClass(
+      "motion-safe:[animation-duration:160ms]",
+      "data-[state=closed]:motion-safe:[animation-duration:100ms]"
+    );
+  });
+
+  it("keeps Radix's default open delay (700ms): not open right after hover, open later", async () => {
+    const user = userEvent.setup();
+    render(
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>Trigger</TooltipTrigger>
+          <TooltipContent>Help</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.getByRole("tooltip")).toBeInTheDocument(),
+      { timeout: 2000 }
+    );
+    // Opened through the delay path, so it keeps the 160ms grow-in.
+    expect(getTooltipContent()).toHaveAttribute("data-state", "delayed-open");
+  });
+
+  it("draws a 1px inset edge so the pale surface does not melt into a white page", () => {
+    renderTooltip(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Trigger</TooltipTrigger>
+        <TooltipContent>Help</TooltipContent>
+      </Tooltip>
+    );
+    const content = getTooltipContent();
+    expect(content).toHaveClass("ring-1", "ring-inset", "ring-black/5");
+    // The drop shadow stays alongside it.
+    expect(content?.className).toContain(
+      "shadow-[0_1px_3px_0_rgba(10,13,18,0.1)"
+    );
+  });
+
+  it("lets a caller restyle the surface (the dark disabled-row tooltip in MultiSelect)", () => {
+    renderTooltip(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Trigger</TooltipTrigger>
+        <TooltipContent className="bg-semantic-primary">Help</TooltipContent>
+      </Tooltip>
+    );
+    expect(getTooltipContent()).toHaveClass("bg-semantic-primary");
+  });
+});

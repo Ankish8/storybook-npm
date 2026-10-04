@@ -17,7 +17,11 @@ const selectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          // Radix moves focus into the open list, so `focus:` alone would drop the
+          // teal border the moment the panel opens. `aria-expanded` keeps it, and
+          // the extra `hover` selector outranks the grey hover border (specificity
+          // 0,4,0 vs 0,3,0) so the trigger does not flicker back under the cursor.
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] aria-expanded:border-[var(--color-secondary-600,#27ABB8)] aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]",
         error:
           "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
       },
@@ -280,10 +284,10 @@ const SelectContent = React.forwardRef(
             "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
             "origin-[var(--radix-select-content-transform-origin)] data-[state=open]:motion-safe:[animation-duration:200ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] data-[state=closed]:[animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]",
             "data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out",
-            "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-            "data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.98]",
-            "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1",
-            "data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
+            "data-[state=closed]:motion-safe:fade-out-0 data-[state=open]:motion-safe:fade-in-0",
+            "data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=open]:motion-safe:zoom-in-[0.98]",
+            "data-[side=bottom]:motion-safe:slide-in-from-top-1 data-[side=left]:motion-safe:slide-in-from-right-1",
+            "data-[side=right]:motion-safe:slide-in-from-left-1 data-[side=top]:motion-safe:slide-in-from-bottom-1",
             position === "popper" &&
               "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
             className
@@ -355,7 +359,10 @@ const SelectItem = React.forwardRef(
       <SelectPrimitive.Item
         ref={ref}
         className={cn(
-          "relative flex w-full cursor-pointer select-none items-start rounded-md font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
+          // 4px radius = panel 8px minus its 4px padding, so row and panel corners stay concentric.
+          // No keyboard-only ring here on purpose: Radix focuses the highlighted row on pointer move too,
+          // so the focus-visible pseudo-class is also true for a mouse hover (verified in Chrome) and cannot tell them apart.
+          "relative flex w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
           "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:font-medium data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
@@ -364,7 +371,7 @@ const SelectItem = React.forwardRef(
       >
         <span className="absolute right-2 flex size-4 items-center justify-center">
           <SelectPrimitive.ItemIndicator>
-            <Check className="size-4 text-semantic-brand" />
+            <Check className="size-4 text-semantic-brand motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
           </SelectPrimitive.ItemIndicator>
         </span>
         <span

@@ -520,3 +520,103 @@ describe("Select", () => {
     );
   });
 });
+
+describe("Select v2 refresh", () => {
+  it("keeps the trigger in its open look while the panel is open", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    const trigger = screen.getByTestId("trigger");
+
+    // Radix moves focus into the list, so the open look cannot rely on `focus:`.
+    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    expect(trigger.className).toContain(
+      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+    expect(trigger.className).toContain(
+      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    );
+    // Must outrank the grey hover border (specificity 0,4,0 vs 0,3,0).
+    expect(trigger.className).toContain(
+      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+
+    await user.click(trigger);
+    expect(trigger).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("does not paint the open look on an error trigger", () => {
+    renderSelect({ triggerProps: { state: "error" } });
+    expect(screen.getByTestId("trigger").className).not.toContain(
+      "aria-expanded:border-[var(--color-secondary-600"
+    );
+  });
+
+  it("rotates the chevron 180 degrees in 200ms with the spring curve", () => {
+    renderSelect();
+    const chevron = screen.getByTestId("trigger").querySelector("svg");
+    expect(chevron).toHaveClass(
+      "duration-200",
+      "group-data-[state=open]/v2-select:rotate-180",
+      "motion-reduce:transition-none"
+    );
+    expect(chevron?.getAttribute("class")).toContain("--v2-ease-spring");
+  });
+
+  it("fades and zooms the panel with motion-safe vars so the reset in animate-in cannot cancel them", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(screen.getByTestId("trigger"));
+    const panel = screen.getByRole("listbox");
+    expect(panel).toHaveClass(
+      "data-[state=open]:motion-safe:fade-in-0",
+      "data-[state=open]:motion-safe:zoom-in-[0.98]",
+      "data-[state=closed]:motion-safe:fade-out-0",
+      "data-[state=closed]:motion-safe:zoom-out-[0.98]",
+      "data-[side=bottom]:motion-safe:slide-in-from-top-1",
+      "data-[side=top]:motion-safe:slide-in-from-bottom-1"
+    );
+    expect(panel).not.toHaveClass("data-[state=open]:fade-in-0");
+    // A bare `data-[side=bottom]:slide-in-from-top-1` ties with the open-state animate-in
+    // on specificity and loses on order, so the 4px slide would silently never run.
+    expect(panel).not.toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+  });
+
+  it("gives rows a 4px radius concentric with the 8px panel", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(screen.getByTestId("trigger"));
+    const option = screen.getByRole("option", { name: "Option 1" });
+    expect(option).toHaveClass("rounded-sm");
+    expect(option).not.toHaveClass("rounded-md");
+  });
+
+  it("has no keyboard-only ring: Radix focuses hovered rows too, so focus-visible cannot tell them apart", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(screen.getByTestId("trigger"));
+    expect(
+      screen.getByRole("option", { name: "Option 1" }).className
+    ).not.toContain("focus-visible:ring");
+  });
+
+  it("pops the selected check in (fade + zoom 85 to 100, 180ms, spring, motion-safe only)", async () => {
+    const user = userEvent.setup();
+    renderSelect({ selectProps: { defaultValue: "option2" } });
+    await user.click(screen.getByTestId("trigger"));
+    const check = screen
+      .getByRole("option", { name: "Option 2" })
+      .querySelector("svg");
+    expect(check).not.toBeNull();
+    expect(check).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.85]",
+      "motion-safe:[animation-duration:180ms]"
+    );
+    expect(check?.getAttribute("class")).toContain("--v2-ease-spring");
+    expect(check).not.toHaveClass("animate-in");
+    expect(
+      screen.getByRole("option", { name: "Option 1" }).querySelector("svg")
+    ).toBeNull();
+  });
+});

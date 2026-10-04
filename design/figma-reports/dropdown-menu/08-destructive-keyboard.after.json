@@ -1,0 +1,75 @@
+{
+  "story": "v2-components-dropdown-menu--destructive",
+  "measured": {
+    "Menu": {
+      "width": 288,
+      "height": 204,
+      "border-radius": "8px",
+      "padding": "4px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.1) 0px 4px 8px -2px, rgba(16, 24, 40, 0.06) 0px 2px 4px -2px",
+      "transform-origin": "0px 0px"
+    },
+    "Group label": {
+      "width": 278,
+      "height": 32,
+      "font-size": "14px",
+      "font-weight": "500",
+      "color": "rgb(72, 72, 72)",
+      "padding-left": "8px",
+      "padding-top": "6px"
+    },
+    "Row (first)": {
+      "width": 278,
+      "height": 48,
+      "background-color": "rgb(254, 243, 242)",
+      "color": "rgb(180, 35, 24)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "min-height": "48px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "padding-top": "10px",
+      "font-weight": "400",
+      "font-size": "16px"
+    },
+    "Row (highlighted)": {
+      "width": 278,
+      "height": 48,
+      "background-color": "rgb(254, 243, 242)",
+      "color": "rgb(180, 35, 24)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "min-height": "48px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "padding-top": "10px",
+      "font-weight": "400",
+      "font-size": "16px"
+    },
+    "Row (destructive)": {
+      "width": 278,
+      "height": 48,
+      "background-color": "rgb(254, 243, 242)",
+      "color": "rgb(180, 35, 24)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "min-height": "48px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "padding-top": "10px",
+      "font-weight": "400",
+      "font-size": "16px"
+    },
+    "Row (checkbox)": null,
+    "Check icon (checkbox)": null,
+    "Row (radio, checked)": null,
+    "Check icon (radio)": null
+  },
+  "popupBox": {
+    "x": 364.125,
+    "y": 304,
+    "width": 335.875,
+    "height": 296
+  },
+  "evals": []
+}

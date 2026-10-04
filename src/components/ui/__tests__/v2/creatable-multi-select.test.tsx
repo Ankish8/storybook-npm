@@ -416,3 +416,65 @@ describe("CreatableMultiSelect", () => {
     });
   });
 });
+
+describe("CreatableMultiSelect v2 refresh", () => {
+  it("marks the open field so it keeps the focused look while the panel is open", async () => {
+    const user = userEvent.setup();
+    render(<CreatableMultiSelect options={OPTIONS} />);
+    await user.click(screen.getByRole("combobox"));
+
+    const field = screen.getByRole("combobox").parentElement?.parentElement;
+    expect(field).toHaveAttribute("data-state", "open");
+    expect(field?.className).toContain(
+      "data-[state=open]:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+  });
+
+  it.each(["closed", "open"] as const)(
+    "gives the chip remove control a 24px hit area and a visible neutral plate (%s field)",
+    async (mode) => {
+      const user = userEvent.setup();
+      render(
+        <CreatableMultiSelect options={OPTIONS} value={["Alpha", "Beta"]} />
+      );
+      if (mode === "open") await user.click(screen.getAllByRole("combobox")[0]);
+
+      const remove = screen.getByRole("button", { name: "Remove Alpha" });
+      // 20px plate, 24px hit area from the invisible ::before.
+      expect(remove).toHaveClass(
+        "relative",
+        "size-5",
+        "before:absolute",
+        "before:-inset-0.5"
+      );
+      // bg-semantic-bg-ui and bg-semantic-bg-hover are #F5F5F5, the chip fill: invisible.
+      expect(remove).toHaveClass(
+        "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+      );
+      expect(remove.className).not.toContain("hover:bg-semantic-bg-hover");
+      expect(remove.querySelector("svg")).toHaveClass("size-3.5");
+    }
+  );
+
+  it("does not paint a hover plate on a disabled field", () => {
+    render(
+      <CreatableMultiSelect options={OPTIONS} value={["Alpha"]} disabled />
+    );
+    expect(
+      screen.getByRole("button", { name: "Remove Alpha" }).className
+    ).not.toContain("hover:bg-");
+  });
+
+  it("keeps the CSS-anchored panel growing from the top-left (it cannot flip)", async () => {
+    const user = userEvent.setup();
+    render(<CreatableMultiSelect options={OPTIONS} createHintText="Hint" />);
+    await user.click(screen.getByRole("combobox"));
+    const panel = screen.getByText("Hint").closest(".absolute");
+    expect(panel).toHaveClass(
+      "origin-top-left",
+      "motion-safe:slide-in-from-top-1",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.98]"
+    );
+  });
+});

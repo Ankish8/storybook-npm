@@ -1,0 +1,45 @@
+{
+  "story": "v2-components-searchfilter--small",
+  "measured": {
+    "Search input": {
+      "width": 320,
+      "height": "40px",
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(39, 171, 184)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(39, 171, 184, 0.4) 0px 0px 4px 0px",
+      "transition-duration": "0.15s"
+    },
+    "Panel": {
+      "width": 320,
+      "height": 242,
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.1) 0px 4px 8px -2px, rgba(16, 24, 40, 0.06) 0px 2px 4px -2px",
+      "transform-origin": "0px 0px"
+    },
+    "Row (first)": {
+      "width": 310,
+      "height": 48,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "padding-left": "6px",
+      "padding-right": "36px",
+      "min-height": "48px",
+      "font-weight": "400"
+    },
+    "Row (selected)": null,
+    "Row (focused)": null,
+    "Check icon (selected row)": null,
+    "Clear button": null
+  },
+  "popupBox": {
+    "x": 270,
+    "y": 360,
+    "width": 460,
+    "height": 309
+  },
+  "evals": []
+}

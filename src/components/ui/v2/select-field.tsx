@@ -551,7 +551,7 @@ const SelectField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                className="text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
               >
                 {error}
               </span>

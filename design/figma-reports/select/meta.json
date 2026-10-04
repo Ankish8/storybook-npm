@@ -1,0 +1,74 @@
+{
+  "title": "Select",
+  "storybook": "V2/Components/Select",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-22190",
+  "summary": "The trigger keeps its teal focused look for as long as the list is open (before it fell back to grey the moment focus moved into the list). List rows are now 4px-radius, concentric with the 8px panel (were 6px). The selected check pops in, and the panel now actually fades in over 200ms.",
+  "why": [
+    "Task brief research summary (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria, Fluent): 'modern' here comes from connectedness and polish, not flashy motion. (Not re-researched in this pass.)",
+    "Connectedness: the trigger should read as part of its open panel. Measured before: while the list was open the Select trigger border was #E9EAEB with no glow, because Radix moves focus into the list and the focused look is keyed to `focus:`.",
+    "Concentric radii (inner radius = outer radius - padding): the panel is 8px with 4px padding, so rows should be 4px. Measured before: Select and Creatable rows 6px, Dropdown and SearchFilter rows 0px.",
+    "Selection feedback should be acknowledged briefly: the same fade + 85% to 100% scale as the v2 Checkbox tick, 180ms."
+  ],
+  "scenarioLabels": {
+    "01-closed": "Closed",
+    "02-open": "Open (trigger holds the focused look)",
+    "03-hover-row": "Open, mouse hover on a row",
+    "04-keyboard-row": "Open by keyboard, row highlighted with ArrowDown",
+    "05-keyboard-open-then-hover": "Keyboard open, then mouse hover",
+    "06-selected-row": "Open with a selected value (check)",
+    "07-error": "Error, closed",
+    "08-error-open": "Error, open (stays red)",
+    "09-disabled": "Disabled",
+    "10-long-labels": "Open, long option labels",
+    "11-empty": "Open, no options",
+    "12-narrow": "Open, 340px viewport",
+    "13-groups": "Open, grouped options"
+  },
+  "motion": [
+    {
+      "what": "Chevron",
+      "before": "rotates 180deg, 200ms, spring (already)",
+      "after": "unchanged: 200ms, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1)), no transition under reduced motion"
+    },
+    {
+      "what": "Trigger border/shadow when opening",
+      "before": "snaps back to grey as focus leaves the trigger",
+      "after": "stays #27ABB8 + glow; existing 150ms colour/shadow transition"
+    },
+    {
+      "what": "Selected check",
+      "before": "appears instantly",
+      "after": "180ms, opacity 0 to 100% and scale 85% to 100%, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1)); none under reduced motion"
+    },
+    {
+      "what": "Panel enter",
+      "before": "opacity stayed 100% (the fade was cancelled by a utility-order bug); only the 200ms animation shell ran",
+      "after": "200ms fade 0 to 100%, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1)). Exit 120ms fade. Reduced motion: opacity-only 120ms fade-in / 100ms fade-out"
+    }
+  ],
+  "states": [
+    "Trigger / default / open: NEW look (focused look while the list is open), also when hovered",
+    "Trigger / error / open: unchanged, stays red",
+    "Trigger / disabled: unchanged (cannot open)",
+    "Option row / default, highlighted (hover or keyboard): corner radius 6 -> 4",
+    "Option row / selected: radius 4 + check icon enters with scale/fade",
+    "Panel: no static change (8px radius, 4px padding)"
+  ],
+  "figmaSteps": [
+    "Trigger component, add (or update) the variant State=Open: fill #FFFFFF, border 1px #27ABB8 (--color-secondary-600) + drop shadow x0 y0 blur 4 spread 0 #27ABB8 @ 40%, corner radius 8, height 40, padding 10 / 16, gap 8. It is identical to State=Focus. Do NOT use the hover border #C0C3CA on Open: Open + hover keeps #27ABB8.",
+    "Trigger, State=Open + Error: border 1px #F04438 and drop shadow 0 0 4 0 #F04438 @ 40% (unchanged from Error). Error never turns teal.",
+    "Trigger, State=Disabled: unchanged (fill #F5F5F5, border 1px #E9EAEB, no shadow, label #A2A6B1). A disabled trigger has no Open variant.",
+    "Chevron layer in State=Open: rotation 180 degrees (16px icon, #707070 at 70% opacity). Prototype: Smart animate, 200ms, custom ease cubic-bezier(0.22, 1, 0.36, 1).",
+    "Panel (unchanged geometry): fill #FFFFFF, border 1px #E9EAEB, corner radius 8, auto-layout padding 4 on all sides, shadow 0 4 8 -2 rgba(16,24,40,0.10) + 0 2 4 -2 rgba(16,24,40,0.06).",
+    "Option row: corner radius 4 (was 6). Keep height 40 (padding 8 top/bottom, 16 left, 32 right, gap 8, label 16/400 #5E5E5E). Hover / highlighted fill #F5F5F5 (unchanged). Selected: label 16/500 #484848.",
+    "Selected check icon: 16 x 16, #2BBCCA, 8px from the right edge, vertically centred. Prototype: on entering the selected variant use Smart animate, 180ms, ease cubic-bezier(0.22, 1, 0.36, 1), from opacity 0% + scale 85% to opacity 100% + scale 100%.",
+    "Panel open prototype: Smart animate from opacity 0% to 100%, 200ms, same ease; close 120ms opacity to 0%."
+  ],
+  "notes": [
+    "Keyboard-only row ring was NOT added. Radix focuses the highlighted row on pointer move as well, so the focus-visible pseudo-class is true for a mouse hover too (verified in Chrome: pointer-opened list + hover still matched). It cannot tell mouse from keyboard here. A reliable version would need an explicit input-modality flag on SelectContent; not done.",
+    "The panel's scale-98% and 4px slide still do not visibly run on Select: the panel carries a static data-[side=bottom]:translate-y-1 offset and Chrome keeps that transform during the enter animation (keyframes are correct, measured). Suspected cause, not proven. Fix would be moving the 4px offset into Radix sideOffset, a layout change I did not make.",
+    "Found while verifying motion: `motion-safe:animate-in` is emitted after bare `fade-in-0`/`zoom-in-*` classes and resets --tw-enter-opacity/--tw-enter-scale to initial, so the panel fade and 98% zoom documented in V2-MOTION.md never ran in normal-motion mode (measured at t=0: opacity 1, no scale). Fixed here by prefixing those classes with `motion-safe:` (as Checkbox/TextField already do). The same bare pattern remains in dialog.tsx, toast.tsx, tabs.tsx, date-range-picker.tsx and date-time-picker.tsx (not in this task's files, not individually verified).",
+    "Observation, not changed: the selected check uses four different colours today: Select/CreatableSelect #2BBCCA (semantic-brand), Dropdown/SearchFilter #27ABB8 (semantic-border-accent), MultiSelect #343E55 (semantic-primary). Worth unifying in Figma.",
+    "Verified: tests, contract, lint and the existing motion probe (select-popper, normal + reduced) pass. See the final report."
+  ]
+}

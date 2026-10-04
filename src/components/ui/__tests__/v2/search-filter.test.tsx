@@ -1,10 +1,28 @@
 import * as React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Placement } from "@floating-ui/react-dom";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SearchFilter, type SearchFilterOption } from "../../v2/search-filter";
 import { assertNoBootstrapMarginBleed } from "../utils/bootstrap-compat";
+
+// jsdom has no layout, so floating-ui never flips. Let a test force the placement
+// the hook reports; everything else passes straight through to the real hook.
+const forced = vi.hoisted(() => ({ placement: null as string | null }));
+vi.mock("@floating-ui/react-dom", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@floating-ui/react-dom")>();
+  return {
+    ...actual,
+    useFloating: (options: Parameters<typeof actual.useFloating>[0]) => {
+      const result = actual.useFloating(options);
+      return forced.placement
+        ? { ...result, placement: forced.placement as Placement }
+        : result;
+    },
+  };
+});
 
 const options: SearchFilterOption[] = [
   { value: "3001", label: "+91 11 4000 3001" },
@@ -364,4 +382,113 @@ describe("SearchFilter", () => {
 
     expect(screen.getAllByPlaceholderText("Search...")).toHaveLength(1);
   });
+});
+
+describe("SearchFilter v2 refresh", () => {
+  beforeEach(() => {
+    forced.placement = null;
+  });
+
+  it("keeps the field in its open look while the list is open", async () => {
+    const user = userEvent.setup();
+    render(<SearchFilter options={options} />);
+    const input = screen.getByRole("searchbox");
+
+    expect(input).toHaveAttribute("aria-expanded", "false");
+    expect(input.className).toContain(
+      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+    expect(input.className).toContain(
+      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
+    );
+    expect(input.className).toContain(
+      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+    );
+
+    await user.click(input);
+    expect(input).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("keeps a caller className on the input next to the open look", () => {
+    render(
+      <SearchFilter options={options} inputProps={{ className: "custom-x" }} />
+    );
+    const input = screen.getByRole("searchbox");
+    expect(input).toHaveClass("custom-x", "pl-10", "pr-9");
+  });
+
+  it("gives rows a 4px radius and a keyboard-only ring", async () => {
+    const user = userEvent.setup();
+    render(<SearchFilter options={options} />);
+    await user.click(screen.getByRole("searchbox"));
+    const row = screen.getByRole("option", { name: "+91 11 4000 3001" });
+    expect(row).toHaveClass(
+      "rounded-sm",
+      "focus-visible:ring-1",
+      "focus-visible:ring-inset",
+      "focus-visible:ring-semantic-border-accent",
+      "hover:bg-semantic-bg-ui"
+    );
+  });
+
+  it("pops the selected check in without a transform that the keyframe would override", async () => {
+    const user = userEvent.setup();
+    render(<SearchFilter options={options} defaultValue="3453" />);
+    await user.click(screen.getByRole("searchbox"));
+    const check = screen
+      .getByRole("option", { name: "+91 11 4000 3453" })
+      .querySelector("svg");
+    expect(check).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.85]",
+      "motion-safe:[animation-duration:180ms]",
+      "inset-y-0",
+      "my-auto"
+    );
+    // `-translate-y-1/2` would be replaced by the keyframe's transform and shove it down.
+    expect(check).not.toHaveClass("-translate-y-1/2");
+  });
+
+  it("grows the panel from the top-left and slides down when it opens below", async () => {
+    const user = userEvent.setup();
+    render(<SearchFilter options={options} />);
+    await user.click(screen.getByRole("searchbox"));
+    const panel = screen.getByRole("listbox").parentElement as HTMLElement;
+
+    expect(panel).toHaveAttribute("data-side", "bottom");
+    expect(panel).toHaveAttribute("data-align", "start");
+    expect(panel.style.transformOrigin).toBe("top left");
+    expect(panel).toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+    expect(panel).not.toHaveClass("origin-top-left");
+    // fade/zoom must be motion-safe too: a bare `fade-in-0` is overridden by the
+    // motion-safe `animate-in` reset (--tw-enter-* back to initial) and does nothing.
+    expect(panel).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:zoom-in-[0.98]"
+    );
+    expect(panel).not.toHaveClass("fade-in-0");
+    expect(panel).not.toHaveClass("zoom-in-[0.98]");
+  });
+
+  it.each([
+    ["top-start", "top", "start", "bottom left"],
+    ["top-end", "top", "end", "bottom right"],
+    ["bottom-end", "bottom", "end", "top right"],
+  ])(
+    "derives the panel origin from the placement actually used (%s)",
+    async (placement, side, align, origin) => {
+      forced.placement = placement;
+      const user = userEvent.setup();
+      render(<SearchFilter options={options} />);
+      await user.click(screen.getByRole("searchbox"));
+      const panel = screen.getByRole("listbox").parentElement as HTMLElement;
+
+      expect(panel).toHaveAttribute("data-side", side);
+      expect(panel).toHaveAttribute("data-align", align);
+      expect(panel.style.transformOrigin).toBe(origin);
+      expect(panel).toHaveClass("data-[side=top]:slide-in-from-bottom-1");
+    }
+  );
 });

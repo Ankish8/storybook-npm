@@ -1,0 +1,28 @@
+{
+  "story": "v2-components-tooltip--overview",
+  "measured": {
+    "Tooltip surface": {
+      "width": 180.39,
+      "height": 28,
+      "background-color": "rgb(236, 241, 251)",
+      "border-radius": "6px",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px inset, rgba(10, 13, 18, 0.1) 0px 1px 3px 0px, rgba(10, 13, 18, 0.1) 0px 1px 2px -1px",
+      "padding-left": "16px",
+      "padding-top": "6px",
+      "font-size": "12px",
+      "color": "rgb(94, 94, 94)",
+      "animation-duration": "0s",
+      "animation-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "enter"
+    }
+  },
+  "popupBox": {
+    "x": 325.28125,
+    "y": 268,
+    "width": 349.4375,
+    "height": 264
+  },
+  "evals": [
+    "instant-open | 0s | rgb(255, 255, 255) 0px 0px 0px 0px inset, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px inset, rgba(10, 13, 18, 0.1) 0px 1px 3px 0px, rgba(10, 13, 18, 0.1) 0px 1px 2px -1px"
+  ]
+}

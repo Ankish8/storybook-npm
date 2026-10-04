@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-dropdown-menu--overview",
+  "measured": {
+    "Menu": null,
+    "Group label": null,
+    "Row (first)": null,
+    "Row (highlighted)": null,
+    "Row (destructive)": null,
+    "Row (checkbox)": null,
+    "Check icon (checkbox)": null,
+    "Row (radio, checked)": null,
+    "Check icon (radio)": null
+  },
+  "popupBox": {
+    "x": 364.125,
+    "y": 304,
+    "width": 271.75,
+    "height": 192
+  },
+  "evals": []
+}

@@ -1,0 +1,69 @@
+{
+  "title": "SelectField",
+  "storybook": "V2/Components/SelectField",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2118-22190",
+  "summary": "SelectField inherits the Select refresh: the field keeps its teal focused look while the list is open, rows are 4px-radius, and the selected check pops in. Its validation message now really fades in (150ms, 2px slide), matching TextField.",
+  "why": [
+    "Task brief research summary (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria, Fluent): 'modern' here comes from connectedness and polish, not flashy motion. (Not re-researched in this pass.)",
+    "Connectedness: the trigger should read as part of its open panel. Measured before: while the list was open the Select trigger border was #E9EAEB with no glow, because Radix moves focus into the list and the focused look is keyed to `focus:`.",
+    "Concentric radii (inner radius = outer radius - padding): the panel is 8px with 4px padding, so rows should be 4px. Measured before: Select and Creatable rows 6px, Dropdown and SearchFilter rows 0px.",
+    "Selection feedback should be acknowledged briefly: the same fade + 85% to 100% scale as the v2 Checkbox tick, 180ms."
+  ],
+  "scenarioLabels": {
+    "01-closed": "Closed",
+    "02-open": "Open",
+    "03-hover-row": "Open, mouse hover on a row",
+    "04-keyboard-row": "Open by keyboard, ArrowDown",
+    "05-selected-row": "Open with a selected value",
+    "06-error": "Error, closed",
+    "07-error-open": "Error, open (stays red)",
+    "08-disabled": "Disabled",
+    "09-searchable-open": "Searchable, open",
+    "10-search-empty-result": "Searchable, no results",
+    "11-long-labels": "Open, long option labels",
+    "12-empty-options": "Open, no options",
+    "13-groups": "Open, grouped options",
+    "14-narrow": "Open, 340px viewport"
+  },
+  "motion": [
+    {
+      "what": "Trigger border/shadow when opening",
+      "before": "snaps back to grey as focus leaves the trigger",
+      "after": "stays #27ABB8 + glow (150ms existing transition)"
+    },
+    {
+      "what": "Selected check",
+      "before": "appears instantly",
+      "after": "180ms, opacity 0 to 100% + scale 85% to 100%, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1))"
+    },
+    {
+      "what": "Panel enter",
+      "before": "opacity stayed 100% (fade cancelled by a utility-order bug)",
+      "after": "200ms fade 0 to 100%, spring ease (--v2-ease-spring; sampled critically damped curve, fallback cubic-bezier(0.22, 1, 0.36, 1))"
+    },
+    {
+      "what": "Validation message",
+      "before": "appeared instantly (fade/slide classes were cancelled by the same bug)",
+      "after": "150ms fade 0 to 100% + 2px slide down, ease-out; reduced motion: 150ms fade only"
+    }
+  ],
+  "states": [
+    "Field / default / open: focused look while the list is open (also under hover)",
+    "Field / error / open: unchanged, stays red",
+    "Field / disabled: unchanged",
+    "Option row: corner radius 6 -> 4",
+    "Option row / selected: check enters with scale/fade",
+    "Validation text: enters with a 150ms fade"
+  ],
+  "figmaSteps": [
+    "Apply every Select step to the SelectField trigger and panel: State=Open = fill #FFFFFF, border 1px #27ABB8 (--color-secondary-600) + drop shadow x0 y0 blur 4 spread 0 #27ABB8 @ 40%, radius 8, height 40; Open + Error stays #F04438 + 0 0 4 0 #F04438 @ 40%; Disabled unchanged (#F5F5F5 fill, #E9EAEB border).",
+    "Option rows: corner radius 4, height 40, hover/highlight fill #F5F5F5, selected label 16/500 #484848 with a 16px #2BBCCA check 8px from the right (prototype: 180ms scale 85% + opacity 0% to 100%).",
+    "Search row (searchable): unchanged: search icon 16px #707070, input 16/400, 12px side padding, bottom border 1px #E9EAEB.",
+    "Validation message: unchanged geometry (12px #B42318, 4px below the field); prototype entrance: opacity 0 to 100% and y -2 to 0, 150ms ease-out."
+  ],
+  "notes": [
+    "No source change in select-field.tsx itself: every visible change comes from select.tsx (SelectTrigger/SelectItem/SelectContent), except the validation-message motion which is one class change in select-field.tsx.",
+    "Panel scale/slide on the Radix Select panel: see the Select report notes (static translate-y-1 offset).",
+    "Found while verifying motion: `motion-safe:animate-in` is emitted after bare `fade-in-0`/`zoom-in-*` classes and resets --tw-enter-opacity/--tw-enter-scale to initial, so the panel fade and 98% zoom documented in V2-MOTION.md never ran in normal-motion mode (measured at t=0: opacity 1, no scale). Fixed here by prefixing those classes with `motion-safe:` (as Checkbox/TextField already do). The same bare pattern remains in dialog.tsx, toast.tsx, tabs.tsx, date-range-picker.tsx and date-time-picker.tsx (not in this task's files, not individually verified)."
+  ]
+}

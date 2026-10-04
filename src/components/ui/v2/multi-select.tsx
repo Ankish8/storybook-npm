@@ -7,6 +7,7 @@ import {
   shift,
   size,
   useFloating,
+  type Placement,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, CircleAlert, Loader2, X } from "lucide-react";
@@ -121,6 +122,22 @@ export function flattenMultiSelectOptions(
   return (input as MultiSelectOption[]).map(normalizeMultiSelectOption);
 }
 
+/**
+ * The corner of the panel that touches the trigger, from the placement
+ * floating-ui actually used. `flip` can put the panel above the trigger or
+ * right-aligned; growing it from a fixed top-left would then look like it
+ * detaches from the field.
+ */
+function panelTransformOrigin(placement: Placement): string {
+  const [side, align] = placement.split("-");
+  if (side === "top" || side === "bottom") {
+    const x = align === "end" ? "right" : align === "start" ? "left" : "center";
+    return `${side === "top" ? "bottom" : "top"} ${x}`;
+  }
+  const y = align === "end" ? "bottom" : align === "start" ? "top" : "center";
+  return `${y} ${side === "left" ? "right" : "left"}`;
+}
+
 /** Menu never renders narrower than this, even off a tiny trigger. */
 const MENU_MIN_WIDTH = 180;
 /** Floor for the flip/shrink height so the list is never collapsed to nothing. */
@@ -150,7 +167,10 @@ const multiSelectTriggerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          // Focus moves into the search field or a row while the panel is open, so
+          // `focus:` alone drops the teal border. `aria-expanded` keeps it, and the
+          // extra `hover` selector outranks the grey hover border (0,4,0 vs 0,3,0).
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] aria-expanded:border-[var(--color-secondary-600,#27ABB8)] aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]",
         error:
           "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
       },
@@ -381,7 +401,7 @@ const MultiSelect = React.forwardRef(
       setPortalTarget(menuContainer ?? document.body);
     }, [isOpen, menuContainer]);
 
-    const { refs, floatingStyles, isPositioned } = useFloating({
+    const { refs, floatingStyles, isPositioned, placement } = useFloating({
       open: isOpen,
       placement: "bottom-start",
       strategy: "fixed",
@@ -875,7 +895,9 @@ const MultiSelect = React.forwardRef(
                 selectedLabels.map((label, index) => (
                   <span
                     key={selectedValues[index]}
-                    className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)] text-sm font-medium px-2 py-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout"
+                    // Keyed chips stay mounted across renders, so only a newly added
+                    // chip plays this; existing ones do not re-animate.
+                    className="inline-flex min-w-0 max-w-full items-center gap-1 bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)] text-sm font-medium px-2 py-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-90 motion-safe:[animation-duration:150ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]"
                   >
                     <span
                       className="min-w-0 truncate"
@@ -897,7 +919,15 @@ const MultiSelect = React.forwardRef(
                           );
                         }
                       }}
-                      className="shrink-0 cursor-pointer transition-colors duration-150 hover:text-semantic-error-primary focus:outline-none"
+                      // 16px plate (12px icon + 2px padding) with a 24px hit area (the
+                      // invisible `::before` reaches 4px past it). `-m-0.5` cancels the
+                      // padding so the chip keeps its size. The plate is one step darker
+                      // than the chip fill (`bg-semantic-bg-ui` would vanish into it).
+                      className={cn(
+                        "relative -m-0.5 shrink-0 cursor-pointer rounded-sm p-0.5 transition-colors duration-150 before:absolute before:-inset-1 before:content-[''] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                        !(disabled || loading) &&
+                          "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+                      )}
                       aria-label={`Remove ${label}`}
                     >
                       <X className="size-3" />
@@ -919,10 +949,17 @@ const MultiSelect = React.forwardRef(
                       clearAll(e as unknown as React.MouseEvent);
                     }
                   }}
-                  className="p-0.5 cursor-pointer transition-colors duration-150 hover:text-semantic-error-primary focus:outline-none"
+                  // 24px plate (16px icon + 4px padding) is the hit area; `-m-0.5`
+                  // keeps the old 20px layout slot. Icon colour comes from the span so
+                  // hover can darken it.
+                  className={cn(
+                    "-m-0.5 cursor-pointer rounded-sm p-1 text-[var(--v2-text-muted,#707070)] transition-colors duration-150 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                    !(disabled || loading) &&
+                      "[@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+                  )}
                   aria-label="Clear all"
                 >
-                  <X className="size-4 text-[var(--v2-text-muted,#707070)]" />
+                  <X className="size-4" />
                 </span>
               )}
               {showSeparatorBeforeChevron && (
@@ -951,7 +988,7 @@ const MultiSelect = React.forwardRef(
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
                 >
                   <CircleAlert
                     className="size-3.5 shrink-0 text-semantic-error-primary"
@@ -981,9 +1018,12 @@ const MultiSelect = React.forwardRef(
                   id={listboxId}
                   role="listbox"
                   aria-multiselectable="true"
-                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                  data-side={placement.split("-")[0]}
+                  data-align={placement.split("-")[1] ?? "center"}
+                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
                   style={{
                     ...floatingStyles,
+                    transformOrigin: panelTransformOrigin(placement),
                     zIndex: 10050,
                     // Radix Dialog sets `pointer-events: none` on <body> while
                     // open; without this the menu swallows nothing and clicks die.
@@ -1020,7 +1060,7 @@ const MultiSelect = React.forwardRef(
                           toggleSelectAll();
                         }
                       }}
-                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-semantic-bg-ui"
+                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-semantic-bg-ui focus-visible:bg-semantic-bg-ui focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent"
                     >
                       <Checkbox
                         checked={
@@ -1092,7 +1132,10 @@ const MultiSelect = React.forwardRef(
                           option.secondaryText ?? option.caption;
 
                         const rowClass = cn(
-                          "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
+                          // Rows are real Tab stops, so the focus-visible pseudo-class separates a keyboard
+                          // highlight (ring) from a mouse hover (fill only). 4px radius = panel
+                          // 8px minus its 4px list padding.
+                          "relative flex w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
                           optionVariant === "detailed"
                             ? "gap-2 px-2 py-2 text-sm"
                             : "py-2 pl-4 pr-8 text-base",
@@ -1117,7 +1160,7 @@ const MultiSelect = React.forwardRef(
                           >
                             <span className="absolute right-2 flex size-4 items-center justify-center">
                               {isSelected && (
-                                <Check className="size-4 text-semantic-primary" />
+                                <Check className="size-4 text-semantic-primary motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
                               )}
                             </span>
                             <span
