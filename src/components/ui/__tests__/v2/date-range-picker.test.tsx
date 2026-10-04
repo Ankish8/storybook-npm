@@ -1012,7 +1012,7 @@ describe("DateRangePicker calendar refresh", () => {
   });
 
   describe("month change motion", () => {
-    const motionClasses = ["motion-safe:animate-in", "fade-in-0"];
+    const motionClasses = ["motion-safe:animate-in", "motion-safe:fade-in-0"];
     const renderOpen = () =>
       render(
         <DateRangePicker

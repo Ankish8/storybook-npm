@@ -77,7 +77,7 @@ const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-[90px] rounded-lg border bord
 // Month change motion. The grid only gets these classes after the user has
 // navigated, so mounting the popover never animates.
 const MONTH_MOTION =
-  "motion-safe:animate-in fade-in-0 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]";
+  "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]";
 const MONTH_MOTION_DIRECTION = {
   next: "motion-safe:slide-in-from-right-2",
   prev: "motion-safe:slide-in-from-left-2",
@@ -1195,7 +1195,7 @@ function CalendarDropdown({
             role="listbox"
             aria-label={`${label} options`}
             data-dtp-dropdown=""
-            className="motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            className="motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             style={{
               ...floatingStyles,
               width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
@@ -1475,7 +1475,7 @@ function TimeField({
             aria-label={`${label} options`}
             data-dtp-dropdown=""
             className={cn(
-              "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
+              "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
               "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
@@ -2081,7 +2081,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           }
           aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
-            "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
+            "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
             "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
@@ -2443,7 +2443,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <span
                 id={errorId}
                 role="alert"
-                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                className="text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
               >
                 {error}
               </span>

@@ -1402,7 +1402,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
       expect(dayGrid()).not.toBe(first);
       expect(dayGrid()).toHaveClass(
         "motion-safe:animate-in",
-        "fade-in-0",
+        "motion-safe:fade-in-0",
         "motion-safe:slide-in-from-right-2",
         "motion-safe:[animation-duration:200ms]",
         "motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
