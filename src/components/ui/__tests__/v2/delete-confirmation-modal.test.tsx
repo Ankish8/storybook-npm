@@ -237,4 +237,12 @@ describe("DeleteConfirmationModal", () => {
       expect(description).not.toHaveClass("sr-only");
     });
   });
+
+  it("keeps the fixed v1 input id that e2e tests and stylesheets can target", () => {
+    render(<DeleteConfirmationModal open={true} />);
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "id",
+      "delete-confirmation-input"
+    );
+  });
 });

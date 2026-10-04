@@ -82,4 +82,11 @@ describe("BouncingLoader", () => {
 
     expect(root).toHaveAttribute("aria-label", "Sending message");
   });
+
+  it("keeps the v1 hook classes so consumer CSS and tests that target them still match", () => {
+    const { container } = render(<BouncingLoader />);
+    const root = container.firstElementChild as HTMLElement;
+    expect(root).toHaveClass("bouncing-loader");
+    expect(container.querySelectorAll(".bouncing-loader__dot")).toHaveLength(3);
+  });
 });

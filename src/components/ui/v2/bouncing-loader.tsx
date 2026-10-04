@@ -20,8 +20,10 @@ function toCssLength(value: number | string, unit: string): string {
   return `${value}${unit}`;
 }
 
+// `bouncing-loader` and `bouncing-loader__dot` are v1 hook classes: consumer stylesheets and tests may target
+// them, so a drop-in replacement keeps them even though they carry no styling of their own.
 const bouncingLoaderVariants = cva(
-  "inline-flex shrink-0 min-w-0 items-center justify-center leading-[0] align-middle gap-[var(--bouncing-loader-spacing,0.375rem)]"
+  "bouncing-loader inline-flex shrink-0 min-w-0 items-center justify-center leading-[0] align-middle gap-[var(--bouncing-loader-spacing,0.375rem)]"
 );
 
 export interface BouncingLoaderProps
@@ -73,7 +75,7 @@ const BouncingLoader = React.forwardRef<HTMLSpanElement, BouncingLoaderProps>(
           <span
             key={i}
             data-v2-bounce-dot=""
-            className="box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))]"
+            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))]"
             style={{
               animation: `${ANIMATION_NAME} 1.4s cubic-bezier(0.4, 0, 0.2, 1) ${DOT_DELAYS_SEC[i]}s infinite`,
             }}

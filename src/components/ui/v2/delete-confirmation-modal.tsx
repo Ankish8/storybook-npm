@@ -88,7 +88,8 @@ const DeleteConfirmationModal = React.forwardRef(
     ref: React.Ref<HTMLDivElement>
   ) => {
     const [inputValue, setInputValue] = React.useState("");
-    const inputId = React.useId();
+    // Fixed id, exactly as in v1: e2e tests and stylesheets can target `#delete-confirmation-input`.
+    const inputId = "delete-confirmation-input";
     const isConfirmEnabled = inputValue === confirmText;
 
     // Reset input when modal closes

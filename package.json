@@ -46,6 +46,7 @@
     "emit-catalog": "node scripts/emit-catalog.js",
     "check-tests": "node scripts/check-component-tests.js",
     "api:snapshot": "node scripts/generate-api-snapshot.js",
+    "verify:v1-v2-compat": "node design/verify/v1-v2-compat.mjs",
     "api:check": "node scripts/check-breaking-changes.js",
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
