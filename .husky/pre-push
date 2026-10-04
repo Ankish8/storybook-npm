@@ -1,0 +1,16 @@
+# Blocks a push that would break the "v2 is a drop-in for v1" guarantee.
+# Runs `npm run verify:v1-v2-compat` (about 90 s) only when a v1 or v2 component source, or the compat
+# tooling, is part of what is being pushed. Skip once with:  SKIP_V2_COMPAT=1 git push
+[ -n "$SKIP_V2_COMPAT" ] && exit 0
+zero=0000000000000000000000000000000000000000
+touched=""
+while read -r _lref lsha _rref rsha; do
+  [ "$lsha" = "$zero" ] && continue
+  if [ "$rsha" = "$zero" ]; then base=$(git merge-base "$lsha" origin/main 2>/dev/null || git rev-list --max-parents=0 "$lsha" | tail -1); else base="$rsha"; fi
+  git cat-file -e "$base" 2>/dev/null || base=$(git merge-base "$lsha" origin/main 2>/dev/null)
+  touched="$touched $(git diff --name-only "$base" "$lsha" 2>/dev/null)"
+done
+if echo "$touched" | tr ' ' '\n' | grep -E -q '^src/components/ui/(v2/)?[a-z0-9-]+\.tsx$|^design/verify/v1-(v2|on-v2|stories|v2-)'; then
+  echo "v1/v2 component sources changed: running the v1 -> v2 compatibility gate (SKIP_V2_COMPAT=1 to skip)"
+  npm run --silent verify:v1-v2-compat || { echo "Push blocked: v2 is no longer a drop-in for v1. See design/V2-V1-COMPATIBILITY.md"; exit 1; }
+fi
