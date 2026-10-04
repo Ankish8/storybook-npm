@@ -96,6 +96,11 @@ const meta: Meta<typeof TextField> = {
             "A labelled single-line field with validation, icons, prefixes, suffixes, a counter and a clear action.",
           changes: [
             [
+              "Messages",
+              "Pop in",
+              "Glide open (240ms), polite live region; clear button fades with a 32px target",
+            ],
+            [
               "Height and radius",
               "Default 42px / compact 36px; 4px radius",
               "Default 40px / compact 36px; 8px radius",

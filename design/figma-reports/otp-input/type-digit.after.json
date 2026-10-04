@@ -1,0 +1,309 @@
+{
+  "story": "v2-components-otpinput--overview",
+  "measured": {
+    "Slot 1": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot 4": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgba(0, 0, 0, 0)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "14.4px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot row": {
+      "width": 288,
+      "height": 60,
+      "gap": "24px",
+      "column-gap": "24px",
+      "transform": "none",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Helper text": {
+      "width": 192.69,
+      "height": 16,
+      "color": "rgb(112, 112, 112)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "opacity": "1",
+      "transition-property": "all"
+    }
+  },
+  "popupBox": {
+    "x": 336,
+    "y": 334,
+    "width": 328,
+    "height": 132
+  },
+  "evals": [
+    [
+      {
+        "t": 3,
+        "value": "",
+        "filled": "false",
+        "colorAlpha": 0,
+        "fontSize": "14.4px",
+        "transform": "none"
+      },
+      {
+        "t": 4,
+        "value": "",
+        "filled": "false",
+        "colorAlpha": 0,
+        "fontSize": "14.4px",
+        "transform": "none"
+      },
+      {
+        "t": 13,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0,
+        "fontSize": "14.4px",
+        "transform": "none"
+      },
+      {
+        "t": 28,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.173,
+        "fontSize": "14.6745px",
+        "transform": "none"
+      },
+      {
+        "t": 45,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.435,
+        "fontSize": "15.0961px",
+        "transform": "none"
+      },
+      {
+        "t": 62,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.65,
+        "fontSize": "15.4385px",
+        "transform": "none"
+      },
+      {
+        "t": 80,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.796,
+        "fontSize": "15.6724px",
+        "transform": "none"
+      },
+      {
+        "t": 95,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.886,
+        "fontSize": "15.8171px",
+        "transform": "none"
+      },
+      {
+        "t": 111,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.937,
+        "fontSize": "15.9018px",
+        "transform": "none"
+      },
+      {
+        "t": 128,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.97,
+        "fontSize": "15.949px",
+        "transform": "none"
+      },
+      {
+        "t": 146,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.984,
+        "fontSize": "15.9749px",
+        "transform": "none"
+      },
+      {
+        "t": 162,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.992,
+        "fontSize": "15.9889px",
+        "transform": "none"
+      },
+      {
+        "t": 178,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 0.996,
+        "fontSize": "15.9965px",
+        "transform": "none"
+      },
+      {
+        "t": 200,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 220,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 228,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 244,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 261,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 278,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 296,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 311,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 328,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 346,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 362,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 378,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 396,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      },
+      {
+        "t": 412,
+        "value": "7",
+        "filled": "true",
+        "colorAlpha": 1,
+        "fontSize": "16px",
+        "transform": "none"
+      }
+    ],
+    [
+      {
+        "label": "Digit 1 of 4",
+        "filled": "true",
+        "value": "7"
+      },
+      {
+        "label": "Digit 2 of 4",
+        "filled": "false",
+        "value": ""
+      },
+      {
+        "label": "Digit 3 of 4",
+        "filled": "false",
+        "value": ""
+      },
+      {
+        "label": "Digit 4 of 4",
+        "filled": "false",
+        "value": ""
+      }
+    ]
+  ]
+}

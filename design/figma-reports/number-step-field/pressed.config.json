@@ -1,0 +1,4 @@
+[
+  { "name": "pressed-up", "story": "v2-components-numberstepfield--overview", "press": "button[aria-label=\"Increase value\"]", "hold": 200,
+    "measure": { "Increase button (pressed)": { "sel": "button[aria-label=\"Increase value\"]", "props": ["transform", "background-color", "color", "width", "height"] }, "Input": { "sel": "input[type=number]", "props": [] } } }
+]

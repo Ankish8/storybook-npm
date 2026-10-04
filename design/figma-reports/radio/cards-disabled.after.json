@@ -1,0 +1,20 @@
+{
+  "story": "v2-components-radio--cards",
+  "measured": {
+    "Disabled card (Enterprise)": {
+      "width": 380,
+      "height": 74,
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "cursor": "not-allowed",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 310,
+    "y": 87,
+    "width": 380,
+    "height": 246
+  },
+  "evals": []
+}

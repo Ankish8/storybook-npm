@@ -1,0 +1,6 @@
+[
+  { "name": "pressed-off", "story": "v2-components-switch--with-label", "press": "button[role=switch]",
+    "measure": { "Track (pressed)": { "sel": "button[role=switch]", "props": ["transform", "background-color", "transition-duration"] }, "Thumb (pressed)": { "sel": "button[role=switch] > span", "props": ["transform", "width", "height"] } } },
+  { "name": "pressed-on", "story": "v2-components-switch--on", "press": "button[role=switch]",
+    "measure": { "Track (pressed)": { "sel": "button[role=switch]", "props": ["transform", "background-color", "transition-duration"] }, "Thumb (pressed)": { "sel": "button[role=switch] > span", "props": ["transform", "width", "height"] } } }
+]

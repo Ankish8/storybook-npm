@@ -1,0 +1,24 @@
+{
+  "story": "v2-components-radio--cards",
+  "measured": {
+    "Hovered card (Starter)": {
+      "width": 380,
+      "height": 74,
+      "border-top-color": "rgb(192, 195, 202)",
+      "background-color": "rgb(255, 255, 255)"
+    },
+    "Selected card (Team)": {
+      "width": 380,
+      "height": 74,
+      "border-top-color": "rgb(52, 62, 85)",
+      "background-color": "rgb(235, 236, 238)"
+    }
+  },
+  "popupBox": {
+    "x": 310,
+    "y": 87,
+    "width": 380,
+    "height": 246
+  },
+  "evals": []
+}

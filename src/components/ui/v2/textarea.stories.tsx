@@ -85,6 +85,11 @@ const meta: Meta<typeof Textarea> = {
           summary:
             "A multiline field with labels, validation, character counts and native resizing.",
           changes: [
+            [
+              "Messages",
+              "Pop in",
+              "Glide open (240ms); error is a polite live region",
+            ],
             ["Radius", "4px", "8px"],
             [
               "Typography",

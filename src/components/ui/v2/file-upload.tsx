@@ -32,6 +32,33 @@ function accepts(file: File, accept: string) {
     })
   );
 }
+/**
+ * While dragging only the MIME types are readable (file names and sizes are hidden until drop). An item is
+ * flagged only when every accept rule is a MIME rule and none matches: with an extension rule (.csv) the
+ * type alone cannot prove a mismatch, so those drags stay neutral.
+ */
+function dragWillBeRejected(
+  items: DataTransferItemList | undefined,
+  accept: string
+) {
+  const rules = accept
+    .split(",")
+    .map((rule) => rule.trim().toLowerCase())
+    .filter(Boolean);
+  if (!items || !rules.length || rules.some((rule) => rule.startsWith("."))) {
+    return false;
+  }
+  return Array.from(items).some((item) => {
+    const type = item.type.toLowerCase();
+    return (
+      item.kind === "file" &&
+      type !== "" &&
+      !rules.some((rule) =>
+        rule.endsWith("/*") ? type.startsWith(rule.slice(0, -1)) : type === rule
+      )
+    );
+  });
+}
 const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
   (
     {
@@ -55,6 +82,10 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     const [local, setLocal] = React.useState(defaultValue);
     const [message, setMessage] = React.useState("");
     const [dragging, setDragging] = React.useState(false);
+    const [dragReject, setDragReject] = React.useState(false);
+    // dragenter/dragleave also fire for every child the pointer crosses; the zone is left only when the count
+    // of entered elements is back to zero (a bare onDragLeave made the highlight flicker over the icon and text).
+    const dragDepth = React.useRef(0);
     const input = React.useRef<HTMLInputElement>(null);
     const id = React.useId();
     const files = value ?? local;
@@ -99,14 +130,27 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           "w-full font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)]",
           className
         )}
+        onDragEnter={() => {
+          dragDepth.current += 1;
+        }}
         onDragOver={(e) => {
           e.preventDefault();
-          if (!disabled) setDragging(true);
+          if (disabled) return;
+          setDragging(true);
+          setDragReject(dragWillBeRejected(e.dataTransfer?.items, accept));
         }}
-        onDragLeave={() => setDragging(false)}
+        onDragLeave={() => {
+          dragDepth.current = Math.max(0, dragDepth.current - 1);
+          if (dragDepth.current === 0) {
+            setDragging(false);
+            setDragReject(false);
+          }
+        }}
         onDrop={(e) => {
           e.preventDefault();
+          dragDepth.current = 0;
           setDragging(false);
+          setDragReject(false);
           add(Array.from(e.dataTransfer.files));
         }}
         {...props}
@@ -144,7 +188,9 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-[background-color,border-color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-[background-color,border-color] hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
             dragging &&
               !disabled &&
-              "border-semantic-border-accent bg-semantic-brand-surface motion-safe:scale-[1.01]",
+              (dragReject
+                ? "border-semantic-error-primary bg-semantic-error-surface"
+                : "border-semantic-border-accent bg-semantic-brand-surface motion-safe:scale-[1.01]"),
             (error || message) && "border-semantic-error-primary"
           )}
         >
@@ -171,7 +217,8 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           role={error || message ? "alert" : undefined}
           className={cn(
             "m-0 mt-2 text-xs",
-            (error || message) && "motion-safe:animate-in fade-in-0",
+            (error || message) &&
+              "motion-safe:animate-in motion-safe:fade-in-0",
             error || message
               ? "text-semantic-error-text"
               : "text-[var(--v2-text-muted,#707070)]"
@@ -184,7 +231,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
             {files.map((file, index) => (
               <li
                 key={file.name + file.size + index}
-                className="flex min-w-0 items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 motion-safe:[animation-duration:180ms] motion-safe:[animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]"
+                className="flex min-w-0 items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 motion-safe:[animation-duration:180ms] motion-safe:[animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]"
               >
                 <FileText
                   aria-hidden="true"

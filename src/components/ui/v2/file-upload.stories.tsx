@@ -45,6 +45,11 @@ const meta: Meta<typeof FileUpload> = {
           summary:
             "Native file selection and drag-and-drop with validation and removable file rows.",
           changes: [
+            [
+              "Dragging",
+              "—",
+              "No flicker over child elements; red tint for a type that will be rejected",
+            ],
             ["Typography", "—", "Inter; 14px label and 12px supporting text"],
             ["Drop zone", "—", "12px corners; dashed border; 24px padding"],
             ["File rows", "—", "8px corners; 12px padding"],
@@ -126,6 +131,21 @@ export const MultipleFiles: Story = {
     multiple: true,
     accept: "image/*,.pdf",
     helperText: "Choose images or PDF documents.",
+  },
+};
+export const ImagesOnly: Story = {
+  name: "Images and PDFs only",
+  args: {
+    accept: "image/*,application/pdf",
+    helperText: "Drag a file over the zone: other types turn it red.",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "With MIME-type rules only, the drop zone turns red while a file of another type is dragged over it (the browser exposes the type, not the name, during a drag). Rules that include an extension such as `.csv` cannot be checked until drop, so those drags stay neutral.",
+      },
+    },
   },
 };
 export const Disabled: Story = { args: { disabled: true } };

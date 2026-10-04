@@ -1,0 +1,46 @@
+{
+  "story": "v2-components-phone-input--with-country-selector",
+  "measured": {
+    "Container": {
+      "width": 420,
+      "height": "48px",
+      "border-top-color": "rgb(192, 195, 202)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "background-color": "rgb(255, 255, 255)"
+    },
+    "Country button": {
+      "width": "89.0156px",
+      "height": "46px",
+      "border-radius": "10px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "outline-style": "solid",
+      "outline-width": "2px",
+      "outline-offset": "2px",
+      "outline-color": "rgba(0, 0, 0, 0)",
+      "box-shadow": "none",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "cursor": "pointer"
+    },
+    "Input": {
+      "width": 327.98,
+      "height": "46px",
+      "font-size": "16px",
+      "color": "rgb(94, 94, 94)",
+      "padding": "0px 16px 0px 8px",
+      "background-color": "rgba(0, 0, 0, 0)"
+    },
+    "Validation message": null,
+    "Message wrapper": null
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 350,
+    "width": 420,
+    "height": 100
+  },
+  "evals": []
+}

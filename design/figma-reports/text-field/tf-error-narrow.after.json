@@ -1,0 +1,56 @@
+{
+  "story": "v2-components-textfield--error",
+  "measured": {
+    "Input": {
+      "width": 420,
+      "height": 40,
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(240, 68, 56, 0.4) 0px 0px 4px 0px",
+      "padding": "0px 16px",
+      "font-size": "16px",
+      "line-height": "24px",
+      "transition-duration": "0.15s"
+    },
+    "Label": {
+      "width": 420,
+      "height": 20,
+      "color": "rgb(72, 72, 72)",
+      "font-size": "14px",
+      "line-height": "20px",
+      "font-weight": "500"
+    },
+    "Message row (container)": {
+      "width": 420,
+      "height": 16,
+      "display": "grid",
+      "grid-template-rows": "16px",
+      "margin-top": "0px",
+      "transition-property": "all",
+      "transition-duration": "0s"
+    },
+    "Helper text": null,
+    "Error message": {
+      "width": 420,
+      "height": 16,
+      "color": "rgb(180, 35, 24)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "margin-top": "0px",
+      "display": "block",
+      "grid-template-rows": "none",
+      "opacity": "1",
+      "transform": "none",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "animation-name": "enter",
+      "animation-duration": "0.15s"
+    }
+  },
+  "popupBox": null,
+  "evals": []
+}

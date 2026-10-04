@@ -1,0 +1,50 @@
+{
+  "story": "v2-components-radio--cards",
+  "measured": {
+    "Option wrapper (card)": {
+      "width": 380,
+      "height": 74,
+      "display": "flex",
+      "padding": "16px",
+      "gap": "12px",
+      "border-top-width": "1px",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-style": "solid",
+      "border-radius": "8px",
+      "background-color": "rgb(235, 236, 238)",
+      "cursor": "pointer",
+      "transition-property": "border-color, background-color",
+      "transition-duration": "0.15s"
+    },
+    "Radio": {
+      "width": "16px",
+      "height": "16px",
+      "border-top-color": "rgb(52, 62, 85)",
+      "background-size": "6px 6px",
+      "transform": "none"
+    },
+    "Label text": {
+      "width": 318,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500"
+    },
+    "Description": {
+      "width": 318,
+      "height": 16,
+      "font-size": "12px",
+      "line-height": "16px",
+      "color": "rgb(112, 112, 112)",
+      "margin-top": "4px"
+    }
+  },
+  "popupBox": {
+    "x": 33,
+    "y": 156,
+    "width": 16,
+    "height": 188
+  },
+  "evals": []
+}

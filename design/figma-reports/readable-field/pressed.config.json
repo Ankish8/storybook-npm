@@ -1,0 +1,4 @@
+[
+  { "name": "pressed-copy", "story": "v2-components-readablefield--overview", "press": "button[aria-label=\"Copy to clipboard\"]", "hold": 300,
+    "measure": { "Copy button (pressed)": { "sel": "button[aria-label=\"Copy to clipboard\"]", "props": ["transform", "color"] } } }
+]

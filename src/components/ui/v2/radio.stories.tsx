@@ -34,6 +34,16 @@ const meta: Meta<typeof Radio> = {
           summary:
             "Single-choice selection with native radio semantics and optional labels.",
           changes: [
+            [
+              "Feedback",
+              "—",
+              "Dot grows to 8px while pressed; press scales to 96%; 24 × 24 target",
+            ],
+            [
+              "Cards",
+              "—",
+              'variant="card": whole option is a bordered, clickable card',
+            ],
             ["Control", "—", "16px circle, 1.2px border, 6px selected dot"],
             ["Focus", "—", "2px primary surface highlight"],
             ["Labels", "—", "14px medium Inter; 12px helper"],
@@ -143,6 +153,60 @@ export const States: Story = {
       </div>
     </div>
   ),
+};
+const PLANS = [
+  {
+    value: "starter",
+    label: "Starter",
+    description: "Up to 3 agents and a shared inbox.",
+  },
+  {
+    value: "team",
+    label: "Team",
+    description: "Unlimited agents, routing rules and reports.",
+  },
+  {
+    value: "enterprise",
+    label: "Enterprise",
+    description: "Single sign-on and a dedicated manager.",
+    disabled: true,
+  },
+] as const;
+function PlanCards() {
+  const [value, setValue] = useState("team");
+  return (
+    <RadioGroup
+      name="plan"
+      value={value}
+      onValueChange={setValue}
+      aria-label="Plan"
+      className="w-[380px] max-w-full"
+    >
+      {PLANS.map((plan) => (
+        <Radio
+          key={plan.value}
+          variant="card"
+          value={plan.value}
+          label={plan.label}
+          description={plan.description}
+          disabled={"disabled" in plan ? plan.disabled : undefined}
+        />
+      ))}
+    </RadioGroup>
+  );
+}
+export const Cards: Story = {
+  name: "Selectable cards",
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Pass `variant="card"` to make the whole option a bordered target: 16px padding, 8px radius, a hover border, and a primary border with a tinted surface when selected. The default variant is unchanged.',
+      },
+    },
+  },
+  render: () => <PlanCards />,
 };
 function Preferences(args: Parameters<NonNullable<Story["render"]>>[0]) {
   const [value, setValue] = useState("weekly");

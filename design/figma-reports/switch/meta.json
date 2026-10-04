@@ -1,0 +1,63 @@
+{
+  "title": "Switch",
+  "storybook": "V2/Components/Switch",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2650-18296",
+  "summary": "The switch track squeezes to 96% when pressed, hover only applies on devices that can hover, and the invisible pointer target is now 44 x 28 for the default size (4px of padding on every side). An optional description can sit under the label. The thumb is deliberately not stretched on press.",
+  "why": [
+    "Press feedback on toggles is standard in HeroUI, Mantine and Apple's switch; the thumb stretch was tried and rejected in design/V2-MOTION.md, so only the track scales.",
+    "A 36 x 20 target is under the 44px touch recommendation in height; the 4px ring brings the default to 44 x 28 without shifting layout.",
+    "HeroUI and Untitled UI toggles support supporting text under the label."
+  ],
+  "scenarioLabels": {
+    "gallery-states": "All states and sizes (unchanged at rest)",
+    "off": "Off / default",
+    "off-hover": "Off / hover",
+    "off-focus": "Off / focus-visible",
+    "on": "On / default",
+    "on-hover": "On / hover",
+    "on-focus": "On / focus-visible",
+    "disabled-on": "Disabled / on",
+    "disabled-off": "Disabled / off",
+    "small": "Small (32 x 18)",
+    "large": "Large (44 x 24)",
+    "toggle-on": "Switching on (frame samples: thumb x, track colour)",
+    "pressed-off": "Pressed / off",
+    "pressed-on": "Pressed / on",
+    "with-description": "New: description under the label",
+    "with-description-narrow": "New: description at 220px wide",
+    "narrow-label": "Narrow width"
+  },
+  "motion": [
+    {
+      "what": "Press",
+      "before": "none",
+      "after": "Track scale 1 to .96 in 80ms; back in 200ms, spring. The thumb does not stretch. Disabled switches do not press"
+    },
+    {
+      "what": "Thumb glide, track colour",
+      "before": "240ms spring",
+      "after": "Unchanged"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "Thumb snaps, colour fades",
+      "after": "Also no press scale"
+    }
+  ],
+  "states": [
+    "Switch / pressed (track 96%) for on and off, all sizes (new)",
+    "Switch / hit area: sm 40 x 26, default 44 x 28, lg 52 x 32 (annotation)",
+    "Switch with description (new variant)"
+  ],
+  "figmaSteps": [
+    "Wrap each Switch size in a transparent frame 4px larger on every side (sm 40 x 26, default 44 x 28, lg 52 x 32); the visible track stays 32 x 18 / 36 x 20 / 44 x 24 and layout width is unchanged (ignore auto layout or -4px margins).",
+    "Add 'Pressed' variants (on and off): the TRACK only at scale 96% (thumb scales with it as a child; no width change on the thumb). Smart Animate 80ms ease-out down, 200ms Gentle spring back.",
+    "Add an optional 'Description' to the labelled Switch: Inter 12px / 16px regular --v2-text-muted #707070, 4px under the label; auto layout horizontal, gap 8px, align top; the label row is as tall as the track (sm 18, default 20, lg 24). Label-left mirrors it. Disabled: text block 50% opacity.",
+    "Colours are unchanged: on --semantic-primary #343E55 (hover --semantic-primary-hover #2F384D), off --semantic-primary-surface #EBECEE (hover --semantic-border-layout #E9EAEB), thumb #FFFFFF with the existing shadow."
+  ],
+  "notes": [
+    "Description spacing is 4px (matches Radio's actual code) rather than the 2px quoted in the task.",
+    "Hover colour changes are now `@media (hover: hover)` only, so they no longer stick after a tap on touch screens.",
+    "Hit area implementation: `before:-inset-[6px]`, not `-inset-1`: the offset is measured from the padding box, which excludes the 2px border. Measured with elementFromPoint in Chrome: the ring is 40 x 26 / 44 x 28 / 52 x 32 for sm / default / lg; 3.9px outside hits the switch, 5px outside does not."
+  ]
+}

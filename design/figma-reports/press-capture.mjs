@@ -52,7 +52,9 @@ for (const sc of configs) {
     const evals = [];
     const measured = {};
     for (const [k, m] of Object.entries(sc.measure || {})) measured[k] = await ev(`(() => { const sel = ${JSON.stringify(m.sel)}, i = sel.indexOf("::"); const e = document.querySelector(i < 0 ? sel : sel.slice(0, i)); if (!e) return null; const s = i < 0 ? getComputedStyle(e) : getComputedStyle(e, sel.slice(i)), r = e.getBoundingClientRect(); const o = i < 0 ? { width: +r.width.toFixed(2), height: +r.height.toFixed(2) } : {}; for (const p of ${JSON.stringify(m.props || [])}) o[p] = s.getPropertyValue(p); return o; })()`);
-    const box = await ev(`(() => { const e = document.querySelector(${JSON.stringify(sc.press)}).closest("label, form, [role=radiogroup], #storybook-root > *") || document.querySelector(${JSON.stringify(sc.press)}); const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; })()`);
+    // Crop: the closest label/form/radiogroup (as before); when that has no size, grow from the pressed element to the first ancestor
+    // that is clearly larger than it, so a bare 16px control still gets some context around it.
+    const box = await ev(`(() => { const p = document.querySelector(${JSON.stringify(sc.press)}); const pr = p.getBoundingClientRect(); let e = p.closest("label, form, [role=radiogroup]"); if (!e || e.getBoundingClientRect().width === 0) { e = p; while (e.parentElement && e.id !== "storybook-root") { const r = e.getBoundingClientRect(); if (r.width >= pr.width + 120 && r.height >= pr.height + 20) break; e = e.parentElement; } } const r = e.getBoundingClientRect(); return { x: r.left, y: r.top, width: r.width, height: r.height }; })()`);
     const pad = 28;
     const shot = await send("Page.captureScreenshot", { format: "png", clip: { x: Math.max(0, box.x - pad), y: Math.max(0, box.y - pad), width: box.width + pad * 2, height: box.height + pad * 2, scale: 1 } });
     fs.mkdirSync(out, { recursive: true });

@@ -1,0 +1,252 @@
+{
+  "story": "v2-components-radio--overview",
+  "measured": {
+    "Radio": {
+      "width": 16,
+      "height": 16,
+      "background-color": "rgb(255, 255, 255)",
+      "background-image": "radial-gradient(circle closest-side, rgb(52, 62, 85) 100%, rgba(0, 0, 0, 0) 100%)",
+      "background-size": "6px 6px",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-width": "1px",
+      "border-radius": "9999px",
+      "box-shadow": "none",
+      "transform": "none",
+      "position": "relative",
+      "transition-property": "background-color, background-size, border-color, box-shadow, transform",
+      "transition-duration": "0.24s, 0.24s, 0.24s, 0.24s, 0.2s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "default"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-5px",
+      "right": "-5px",
+      "bottom": "-5px",
+      "left": "-5px",
+      "width": "24px",
+      "height": "24px",
+      "content": "\"\""
+    },
+    "Row (wrapper)": {
+      "width": 187.58,
+      "height": 40,
+      "display": "flex",
+      "gap": "8px",
+      "padding": "0px",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-radius": "0px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "transition-property": "all",
+      "cursor": "auto"
+    },
+    "Label": {
+      "width": 163.58,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500"
+    },
+    "Description": {
+      "width": 163.58,
+      "height": 16,
+      "font-size": "12px",
+      "line-height": "16px",
+      "color": "rgb(112, 112, 112)",
+      "margin-top": "4px"
+    }
+  },
+  "popupBox": {
+    "x": 406.21875,
+    "y": 380,
+    "width": 187.578125,
+    "height": 40
+  },
+  "evals": [
+    true,
+    [
+      {
+        "t": 2,
+        "checked": false,
+        "dot": "0px 0px",
+        "border": "rgb(233, 234, 235)"
+      },
+      {
+        "t": 3,
+        "checked": false,
+        "dot": "0px 0px",
+        "border": "rgb(233, 234, 235)"
+      },
+      {
+        "t": 11,
+        "checked": true,
+        "dot": "0px 0px",
+        "border": "rgb(233, 234, 235)"
+      },
+      {
+        "t": 28,
+        "checked": true,
+        "dot": "0.669555px 0.669555px",
+        "border": "rgb(213, 215, 218)"
+      },
+      {
+        "t": 45,
+        "checked": true,
+        "dot": "1.8251px 1.8251px",
+        "border": "rgb(178, 182, 189)"
+      },
+      {
+        "t": 61,
+        "checked": true,
+        "dot": "2.97834px 2.97834px",
+        "border": "rgb(143, 149, 161)"
+      },
+      {
+        "t": 79,
+        "checked": true,
+        "dot": "3.90257px 3.90257px",
+        "border": "rgb(115, 122, 137)"
+      },
+      {
+        "t": 95,
+        "checked": true,
+        "dot": "4.60034px 4.60034px",
+        "border": "rgb(94, 102, 120)"
+      },
+      {
+        "t": 111,
+        "checked": true,
+        "dot": "5.07688px 5.07688px",
+        "border": "rgb(80, 88, 108)"
+      },
+      {
+        "t": 128,
+        "checked": true,
+        "dot": "5.40886px 5.40886px",
+        "border": "rgb(70, 79, 100)"
+      },
+      {
+        "t": 145,
+        "checked": true,
+        "dot": "5.63035px 5.63035px",
+        "border": "rgb(63, 73, 94)"
+      },
+      {
+        "t": 161,
+        "checked": true,
+        "dot": "5.77093px 5.77093px",
+        "border": "rgb(59, 69, 91)"
+      },
+      {
+        "t": 178,
+        "checked": true,
+        "dot": "5.86442px 5.86442px",
+        "border": "rgb(56, 66, 88)"
+      },
+      {
+        "t": 195,
+        "checked": true,
+        "dot": "5.9221px 5.9221px",
+        "border": "rgb(54, 64, 87)"
+      },
+      {
+        "t": 213,
+        "checked": true,
+        "dot": "5.95846px 5.95846px",
+        "border": "rgb(53, 63, 86)"
+      },
+      {
+        "t": 229,
+        "checked": true,
+        "dot": "5.98189px 5.98189px",
+        "border": "rgb(53, 63, 85)"
+      },
+      {
+        "t": 244,
+        "checked": true,
+        "dot": "5.99568px 5.99568px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 267,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 284,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 296,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 311,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 329,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 345,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 361,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 378,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 394,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 412,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 428,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 446,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 461,
+        "checked": true,
+        "dot": "6px 6px",
+        "border": "rgb(52, 62, 85)"
+      }
+    ]
+  ]
+}

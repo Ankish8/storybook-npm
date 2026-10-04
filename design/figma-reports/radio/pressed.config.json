@@ -1,0 +1,6 @@
+[
+  { "name": "pressed-unselected", "story": "v2-components-radio--overview", "press": "input[type=radio]",
+    "measure": { "Radio (pressed)": { "sel": "input[type=radio]", "props": ["transform", "background-size", "border-top-color", "box-shadow", "transition-duration"] } } },
+  { "name": "pressed-selected", "story": "v2-components-radio--selected", "press": "input[type=radio]",
+    "measure": { "Radio (pressed)": { "sel": "input[type=radio]", "props": ["transform", "background-size", "background-image", "border-top-color", "box-shadow", "transition-duration"] } } }
+]

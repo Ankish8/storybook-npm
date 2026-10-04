@@ -259,6 +259,11 @@ const meta: Meta<Args> = {
             "A numeric phone field with a country-code area, SVG flag, digit guards and accessible validation. The host supplies labels and the country chooser.",
           changes: [
             [
+              "Country button focus",
+              "No ring",
+              "2px inset ring on keyboard focus; validation message glides open",
+            ],
+            [
               "Height and radius",
               "42px / 4px",
               "48px / 8px (recorded October 1 check)",

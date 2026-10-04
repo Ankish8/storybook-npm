@@ -1,0 +1,24 @@
+{
+  "story": "v2-components-radio--cards",
+  "measured": {
+    "Starter card (now selected)": {
+      "width": 380,
+      "height": 40,
+      "border-top-color": "rgb(229, 231, 235)",
+      "background-color": "rgba(0, 0, 0, 0)"
+    },
+    "Team card (deselected)": {
+      "width": 380,
+      "height": 40,
+      "border-top-color": "rgb(229, 231, 235)",
+      "background-color": "rgba(0, 0, 0, 0)"
+    }
+  },
+  "popupBox": {
+    "x": 310,
+    "y": 138,
+    "width": 380,
+    "height": 144
+  },
+  "evals": []
+}

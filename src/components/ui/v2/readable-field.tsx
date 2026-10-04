@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Copy, Check, Eye, EyeOff } from "lucide-react";
+import { Copy, Check, Eye, EyeOff, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ReadableFieldProps extends Omit<
@@ -69,7 +69,12 @@ export const ReadableField = React.forwardRef(
     }: ReadableFieldProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const [copied, setCopied] = React.useState(false);
+    const [copyState, setCopyState] = React.useState<
+      "idle" | "copied" | "failed"
+    >("idle");
+    const copied = copyState === "copied";
+    const failed = copyState === "failed";
+    const valueRef = React.useRef<HTMLSpanElement>(null);
     const [isVisible, setIsVisible] = React.useState(!secret);
     const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -87,20 +92,40 @@ export const ReadableField = React.forwardRef(
       };
     }, []);
 
+    // Leaves the value selected so Cmd/Ctrl+C still works when the Clipboard API refuses (insecure context,
+    // denied permission). A masked secret is not selected: copying the dots would be misleading.
+    const selectValue = () => {
+      const node = valueRef.current;
+      const selection = window.getSelection?.();
+      if (!node || !selection || (secret && !isVisible)) return;
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    };
+
     const handleCopy = async () => {
+      let copiedOk = false;
       try {
         await navigator.clipboard.writeText(value);
-        setCopied(true);
-        onValueCopy?.(value);
-
-        // Clear existing timeout before setting new one
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
-        }
-        timeoutRef.current = setTimeout(() => setCopied(false), 2000);
+        copiedOk = true;
       } catch {
-        // Clipboard API may fail in insecure contexts
+        selectValue();
       }
+      setCopyState(copiedOk ? "copied" : "failed");
+      if (copiedOk) {
+        try {
+          onValueCopy?.(value);
+        } catch {
+          // as before, a throwing consumer callback never undoes the copied state
+        }
+      }
+
+      // Clear existing timeout before setting new one
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => setCopyState("idle"), 2000);
     };
 
     const toggleVisibility = () => {
@@ -160,7 +185,13 @@ export const ReadableField = React.forwardRef(
           )}
         >
           {/* Value Display */}
-          <span className="text-base text-[var(--v2-text-secondary,#5E5E5E)] tracking-[0.08px] truncate">
+          <span
+            ref={valueRef}
+            className={cn(
+              "text-base text-[var(--v2-text-secondary,#5E5E5E)] tracking-[0.08px] truncate",
+              !(secret && !isVisible) && "select-all"
+            )}
+          >
             {displayValue}
           </span>
 
@@ -182,26 +213,59 @@ export const ReadableField = React.forwardRef(
               </button>
             )}
 
-            {/* Copy Button */}
+            {/* Copy Button: a fixed 18px box holding three stacked icons that cross-fade, so the
+                button never changes size and no icon is mounted or unmounted. */}
             <button
               type="button"
               onClick={handleCopy}
               className={cn(
-                "rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary",
+                "relative size-[18px] rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary",
                 copied
                   ? "text-semantic-success-primary"
-                  : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)]"
+                  : failed
+                    ? "text-semantic-error-primary"
+                    : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)]"
               )}
-              aria-label={copied ? "Copied" : "Copy to clipboard"}
+              aria-label={
+                copied ? "Copied" : failed ? "Copy failed" : "Copy to clipboard"
+              }
             >
-              {copied ? (
-                <Check className="size-[18px] motion-safe:animate-in fade-in-0 zoom-in-[0.85] motion-safe:[animation-duration:180ms] motion-safe:[animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
-              ) : (
-                <Copy className="size-[18px]" />
-              )}
+              <Copy
+                aria-hidden="true"
+                className={cn(
+                  "absolute inset-0 size-[18px] transition-[opacity,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:[transition-property:opacity]",
+                  copied || failed
+                    ? "scale-[0.8] opacity-0 motion-reduce:scale-100"
+                    : "scale-100 opacity-100"
+                )}
+              />
+              <Check
+                aria-hidden="true"
+                className={cn(
+                  "absolute inset-0 size-[18px] transition-[opacity,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:[transition-property:opacity]",
+                  copied
+                    ? "scale-100 opacity-100"
+                    : "scale-[0.8] opacity-0 motion-reduce:scale-100"
+                )}
+              />
+              <X
+                aria-hidden="true"
+                className={cn(
+                  "absolute inset-0 size-[18px] transition-[opacity,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:[transition-property:opacity]",
+                  failed
+                    ? "scale-100 opacity-100"
+                    : "scale-[0.8] opacity-0 motion-reduce:scale-100"
+                )}
+              />
             </button>
           </div>
         </div>
+
+        {/* Always rendered so assistive tech sees the change in an existing live region. The button's
+            aria-label already says the same, but label changes on a focused button are not reliably spoken. */}
+        <span role="status" className="sr-only">
+          {copied ? "Copied" : failed ? "Copy failed" : ""}
+        </span>
 
         {/* Helper Text */}
         {helperText && (

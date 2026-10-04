@@ -1,0 +1,59 @@
+{
+  "story": "v2-components-switch--disabled",
+  "measured": {
+    "Track": {
+      "width": 36,
+      "height": 20,
+      "background-color": "rgb(162, 166, 177)",
+      "border-top-width": "2px",
+      "border-radius": "12px",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(94, 94, 94)",
+      "transform": "none",
+      "position": "relative",
+      "transition-property": "color, background-color, border-color, transform",
+      "transition-duration": "0.24s, 0.24s, 0.24s, 0.2s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "not-allowed"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-6px",
+      "right": "-6px",
+      "bottom": "-6px",
+      "left": "-6px",
+      "width": "44px",
+      "height": "28px",
+      "content": "\"\""
+    },
+    "Thumb": {
+      "width": 16,
+      "height": 16,
+      "background-color": "rgb(235, 236, 238)",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(59, 130, 246, 0.5) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 2px 8px 0px",
+      "transform": "matrix(1, 0, 0, 1, 16, 0)",
+      "transition-property": "transform",
+      "transition-duration": "0.24s"
+    },
+    "Label": {
+      "width": 131.88,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "0.5"
+    }
+  },
+  "popupBox": {
+    "x": 412.0625,
+    "y": 388,
+    "width": 175.875,
+    "height": 20
+  },
+  "evals": [
+    true
+  ]
+}

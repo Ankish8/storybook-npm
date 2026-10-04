@@ -1,0 +1,45 @@
+{
+  "story": "v2-components-fileupload--disabled",
+  "measured": {
+    "Drop zone": {
+      "width": "440px",
+      "height": "150px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-style": "dashed",
+      "border-top-width": "1px",
+      "border-radius": "12px",
+      "padding": "24px",
+      "gap": "12px",
+      "transform": "none",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(112, 112, 112)",
+      "transition-property": "background-color, border-color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Icon tile": {
+      "width": "40px",
+      "height": "40px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(233, 234, 235)"
+    },
+    "Message": {
+      "width": 440,
+      "height": 16,
+      "color": "rgb(112, 112, 112)",
+      "font-size": "12px",
+      "role": "",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 280,
+    "y": 275,
+    "width": 440,
+    "height": 250
+  },
+  "evals": []
+}

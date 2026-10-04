@@ -28,6 +28,13 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
 }
 
 /**
+ * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
+ * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
+ * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
+ * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
+ * its own fade.
+ */
+/**
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
@@ -258,6 +265,16 @@ const TextField = React.forwardRef(
     // Determine aria-describedby
     const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
+    // Reveal the message row only when it appears after the field did, never on first render
+    // (a page of fields with helper text must not unfold on load).
+    const hasMessage = Boolean(error || helperText || (showCount && maxLength));
+    const [hadMessage, setHadMessage] = React.useState(hasMessage);
+    const [revealMessage, setRevealMessage] = React.useState(false);
+    if (hasMessage !== hadMessage) {
+      setHadMessage(hasMessage);
+      setRevealMessage(hasMessage);
+    }
+
     // Render the input element
     const inputElement = (
       <input
@@ -390,12 +407,21 @@ const TextField = React.forwardRef(
                 {rightIcon}
               </span>
             )}
-            {showClearButton && (
+            {/* Stays mounted so it can fade out as well as in. While hidden it drops its
+                aria-label (so it is not offered as "Clear input"), is not focusable or
+                clickable (visibility + pointer-events), and its -ml-4 cancels its own
+                16px so the input is exactly as wide as when no button is rendered. */}
+            {clearable && (
               <button
                 type="button"
                 onClick={handleClear}
-                className="ml-2 transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] flex-shrink-0 cursor-pointer"
-                aria-label="Clear input"
+                className={cn(
+                  "relative flex-shrink-0 cursor-pointer text-[var(--v2-text-muted,#707070)] before:absolute before:-inset-2 before:content-[''] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,opacity,transform,margin-left,visibility] [transition-duration:150ms] [transition-timing-function:ease-out] motion-reduce:[transition-property:color,opacity,visibility]",
+                  showClearButton
+                    ? "visible ml-2 scale-100 opacity-100"
+                    : "pointer-events-none invisible -ml-4 scale-[0.8] opacity-0 motion-reduce:scale-100"
+                )}
+                aria-label={showClearButton ? "Clear input" : undefined}
                 tabIndex={-1}
               >
                 <X className="size-4" />
@@ -412,29 +438,39 @@ const TextField = React.forwardRef(
         )}
 
         {/* Helper text / Error message / Character count */}
-        {(error || helperText || (showCount && maxLength)) && (
-          <div className="flex justify-between items-start gap-2">
+        {hasMessage && (
+          <div
+            className={cn(
+              "grid items-start",
+              showCount && maxLength
+                ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
+                : "grid-cols-[minmax(0,1fr)]",
+              revealMessage &&
+                "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+            )}
+          >
             {error ? (
               <span
                 id={errorId}
-                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
+                aria-live="polite"
+                className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
               >
                 {error}
               </span>
             ) : helperText ? (
               <span
                 id={helperId}
-                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-[var(--v2-text-muted,#707070)]"
+                className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 {helperText}
               </span>
             ) : (
-              <span />
+              <span className="min-h-0 overflow-hidden" />
             )}
             {showCount && maxLength && (
               <span
                 className={cn(
-                  "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs",
+                  "min-h-0 overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs",
                   charCount > maxLength
                     ? "text-semantic-error-text"
                     : "text-[var(--v2-text-muted,#707070)]"

@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-checkbox--checked",
+  "measured": {
+    "Box (pressed)": {
+      "width": 19.2,
+      "height": 19.2,
+      "transform": "matrix(0.96, 0, 0, 0.96, 0, 0)",
+      "background-color": "rgb(47, 56, 77)",
+      "border-top-color": "rgb(47, 56, 77)",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(235, 236, 238) 0px 0px 0px 2px",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.08s"
+    }
+  },
+  "popupBox": {
+    "x": 419.796875,
+    "y": 389,
+    "width": 160.40625,
+    "height": 20
+  },
+  "evals": []
+}

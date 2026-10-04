@@ -34,6 +34,7 @@ const meta: Meta<typeof Switch> = {
         "checked",
         "size",
         "label",
+        "description",
         "labelPosition",
         "disabled",
         "onCheckedChange",
@@ -50,6 +51,16 @@ const meta: Meta<typeof Switch> = {
           summary:
             "A compact toggle for a setting that has on and off states. Built on Radix Switch, with the same controlled and uncontrolled behavior as v1.",
           changes: [
+            [
+              "Press and target",
+              "—",
+              "Track scales to 96% on press; invisible 44 × 28 target for the default size",
+            ],
+            [
+              "Description",
+              "—",
+              "Optional 12px supporting text under the label",
+            ],
             [
               "Track sizes (w × h)",
               "sm 36 × 20 / default 44 × 24 / lg 56 × 28",
@@ -140,6 +151,11 @@ const meta: Meta<typeof Switch> = {
       description: "Small 32 × 18, default 36 × 20 or large 44 × 24px track.",
     },
     label: { control: "text", description: "Visible, clickable label." },
+    description: {
+      control: "text",
+      description:
+        "Optional supporting text under the label (12px, muted). Linked to the switch with aria-describedby.",
+    },
     labelPosition: {
       control: "radio",
       options: ["left", "right"],
@@ -170,6 +186,13 @@ export const Large: Story = { args: { size: "lg" } };
 export const WithLabel: Story = {
   name: "With a label",
   args: { label: "Enable notifications" },
+};
+export const WithDescription: Story = {
+  name: "With a description",
+  args: {
+    label: "Desktop notifications",
+    description: "Show a banner when a new conversation is assigned to you.",
+  },
 };
 export const LabelLeft: Story = {
   name: "Label on the left",

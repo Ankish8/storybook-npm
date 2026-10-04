@@ -1,0 +1,295 @@
+{
+  "story": "v2-components-textfield--usage&args=helperText:!undefined;showCount:!false",
+  "measured": {
+    "Input": {
+      "width": 336,
+      "height": 38,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-color": "rgb(94, 94, 94)",
+      "border-top-width": "0px",
+      "border-radius": "0px",
+      "box-shadow": "none",
+      "padding": "0px",
+      "font-size": "16px",
+      "line-height": "24px",
+      "transition-duration": "0s"
+    },
+    "Label": {
+      "width": 370,
+      "height": 20,
+      "color": "rgb(72, 72, 72)",
+      "font-size": "14px",
+      "line-height": "20px",
+      "font-weight": "500"
+    },
+    "Message row (container)": {
+      "width": 370,
+      "height": 16,
+      "display": "grid",
+      "grid-template-rows": "16px",
+      "margin-top": "0px",
+      "transition-property": "grid-template-rows, margin-top",
+      "transition-duration": "0.24s"
+    },
+    "Helper text": null,
+    "Error message": {
+      "width": 370,
+      "height": 16,
+      "color": "rgb(180, 35, 24)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "margin-top": "0px",
+      "display": "block",
+      "grid-template-rows": "none",
+      "opacity": "1",
+      "transform": "none",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "animation-name": "enter",
+      "animation-duration": "0.15s"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 420,
+    "height": 267
+  },
+  "evals": [
+    [
+      {
+        "t": 1,
+        "shift": 0,
+        "msgH": null,
+        "opacity": null,
+        "transform": null
+      },
+      {
+        "t": 3,
+        "shift": 0,
+        "msgH": 16,
+        "opacity": 0,
+        "transform": "matrix(1, 0, 0, 1, 0, -2)"
+      },
+      {
+        "t": 11,
+        "shift": 2.3,
+        "msgH": 16,
+        "opacity": 0.33,
+        "transform": "matrix(1, 0, 0, 1, 0, -1.34106)"
+      },
+      {
+        "t": 26,
+        "shift": 6.1,
+        "msgH": 16,
+        "opacity": 0.54,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.929149)"
+      },
+      {
+        "t": 43,
+        "shift": 9.9,
+        "msgH": 16,
+        "opacity": 0.69,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.629936)"
+      },
+      {
+        "t": 60,
+        "shift": 13,
+        "msgH": 16,
+        "opacity": 0.8,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.409896)"
+      },
+      {
+        "t": 77,
+        "shift": 15.3,
+        "msgH": 16,
+        "opacity": 0.88,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.24729)"
+      },
+      {
+        "t": 93,
+        "shift": 16.9,
+        "msgH": 16,
+        "opacity": 0.93,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.13191)"
+      },
+      {
+        "t": 109,
+        "shift": 18,
+        "msgH": 16,
+        "opacity": 0.97,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.0558177)"
+      },
+      {
+        "t": 127,
+        "shift": 18.8,
+        "msgH": 16,
+        "opacity": 0.99,
+        "transform": "matrix(1, 0, 0, 1, 0, -0.013453)"
+      },
+      {
+        "t": 142,
+        "shift": 19.3,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, -2.96295e-09)"
+      },
+      {
+        "t": 161,
+        "shift": 19.5,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 177,
+        "shift": 19.7,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 192,
+        "shift": 19.9,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 210,
+        "shift": 19.9,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 226,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 243,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 259,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 277,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 294,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 310,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 327,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 344,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 360,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 377,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 392,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 409,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 426,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 442,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 459,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 476,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 493,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      },
+      {
+        "t": 509,
+        "shift": 20,
+        "msgH": 16,
+        "opacity": 1,
+        "transform": "none"
+      }
+    ]
+  ]
+}

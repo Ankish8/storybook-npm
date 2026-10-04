@@ -1,0 +1,61 @@
+{
+  "story": "v2-components-phone-input--error",
+  "measured": {
+    "Container": {
+      "width": 420,
+      "height": "48px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(240, 68, 56, 0.4) 0px 0px 4px 0px",
+      "background-color": "rgb(255, 255, 255)"
+    },
+    "Country button": {
+      "width": "89.0156px",
+      "height": "46px",
+      "border-radius": "10px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "outline-style": "solid",
+      "outline-width": "2px",
+      "outline-offset": "2px",
+      "outline-color": "rgba(0, 0, 0, 0)",
+      "box-shadow": "none",
+      "transition-property": "all",
+      "transition-duration": "0s",
+      "cursor": "pointer"
+    },
+    "Input": {
+      "width": 327.98,
+      "height": "46px",
+      "font-size": "16px",
+      "color": "rgb(94, 94, 94)",
+      "padding": "0px 16px 0px 8px",
+      "background-color": "rgba(0, 0, 0, 0)"
+    },
+    "Validation message": {
+      "width": 420,
+      "height": 16,
+      "color": "rgb(180, 35, 24)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "margin-top": "0px",
+      "opacity": "1",
+      "transform": "none"
+    },
+    "Message wrapper": {
+      "width": 420,
+      "height": 68,
+      "display": "flex",
+      "gap": "4px",
+      "row-gap": "4px"
+    }
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 351,
+    "width": 420,
+    "height": 98
+  },
+  "evals": []
+}

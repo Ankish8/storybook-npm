@@ -25,6 +25,13 @@ const phoneInputContainerVariants = cva(
 );
 
 /**
+ * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
+ * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
+ * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
+ * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
+ * its own fade.
+ */
+/**
  * A phone number input with a country code prefix area.
  *
  * @example
@@ -98,6 +105,15 @@ const PhoneInput = React.forwardRef(
       .join(" ");
     const CountryArea = onCountryClick ? "button" : "div";
 
+    // Reveal the message only when it appears after the field did, never on first render.
+    const hasMessage = Boolean(validation);
+    const [hadMessage, setHadMessage] = React.useState(hasMessage);
+    const [revealMessage, setRevealMessage] = React.useState(false);
+    if (hasMessage !== hadMessage) {
+      setHadMessage(hasMessage);
+      setRevealMessage(hasMessage);
+    }
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       onKeyDown?.(event);
       if (
@@ -163,7 +179,7 @@ const PhoneInput = React.forwardRef(
           className={cn(
             "flex h-full items-center gap-1.5 pl-2.5 pr-2 shrink-0",
             onCountryClick &&
-              "border-0 bg-transparent text-left font-normal outline-none cursor-pointer disabled:cursor-not-allowed"
+              "rounded-[10px] border-0 bg-transparent text-left font-normal outline-none cursor-pointer focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
           )}
           onClick={onCountryClick}
           data-testid="phone-input-country"
@@ -212,14 +228,26 @@ const PhoneInput = React.forwardRef(
     }
 
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         {phoneInput}
-        <p
-          id={validationId}
-          className="m-0 text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
+        {/* keyed so React mounts a fresh node: it would otherwise reuse the old divider
+            <div> at this position, and @starting-style only plays on a new element */}
+        <div
+          key="message"
+          className={cn(
+            "grid",
+            revealMessage &&
+              "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+          )}
         >
-          {validation}
-        </p>
+          <p
+            id={validationId}
+            aria-live="polite"
+            className="m-0 min-h-0 overflow-hidden break-words text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+          >
+            {validation}
+          </p>
+        </div>
       </div>
     );
   }

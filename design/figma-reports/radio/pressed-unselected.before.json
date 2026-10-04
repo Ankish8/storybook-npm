@@ -1,0 +1,21 @@
+{
+  "story": "zz-beforepressed--radio-unselected",
+  "measured": {
+    "Radio (pressed)": {
+      "width": 16,
+      "height": 16,
+      "transform": "none",
+      "background-size": "0% 0%",
+      "border-top-color": "rgb(192, 195, 202)",
+      "box-shadow": "none",
+      "transition-duration": "0.24s"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 968,
+    "height": 40
+  },
+  "evals": []
+}

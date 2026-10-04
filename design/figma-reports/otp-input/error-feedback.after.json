@@ -1,0 +1,300 @@
+{
+  "story": "v2-components-otpinput--error-feedback",
+  "measured": {
+    "Slot 1": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot 4": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot row": {
+      "width": 288,
+      "height": 60,
+      "gap": "24px",
+      "column-gap": "24px",
+      "transform": "none",
+      "animation-name": "v2-otp-shake",
+      "animation-duration": "0.3s"
+    },
+    "Helper text": {
+      "width": 255.75,
+      "height": 16,
+      "color": "rgb(180, 35, 24)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "opacity": "1",
+      "transition-property": "all"
+    }
+  },
+  "popupBox": {
+    "x": 336,
+    "y": 306,
+    "width": 328,
+    "height": 188
+  },
+  "evals": [
+    true,
+    [
+      {
+        "t": 1,
+        "dx": 0,
+        "border": "rgb(233, 234, 235)",
+        "animations": 0
+      },
+      {
+        "t": 3,
+        "dx": 0,
+        "border": "rgb(233, 234, 235)",
+        "animations": 17
+      },
+      {
+        "t": 17,
+        "dx": -1.26,
+        "border": "rgb(234, 204, 203)",
+        "animations": 17
+      },
+      {
+        "t": 34,
+        "dx": -3.6,
+        "border": "rgb(235, 178, 174)",
+        "animations": 17
+      },
+      {
+        "t": 50,
+        "dx": -3.55,
+        "border": "rgb(236, 153, 148)",
+        "animations": 17
+      },
+      {
+        "t": 66,
+        "dx": 0.77,
+        "border": "rgb(237, 131, 123)",
+        "animations": 17
+      },
+      {
+        "t": 83,
+        "dx": 3.95,
+        "border": "rgb(238, 111, 102)",
+        "animations": 17
+      },
+      {
+        "t": 100,
+        "dx": 2.15,
+        "border": "rgb(239, 94, 84)",
+        "animations": 17
+      },
+      {
+        "t": 116,
+        "dx": -2.7,
+        "border": "rgb(239, 81, 70)",
+        "animations": 17
+      },
+      {
+        "t": 133,
+        "dx": -3.81,
+        "border": "rgb(240, 71, 60)",
+        "animations": 17
+      },
+      {
+        "t": 151,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 166,
+        "dx": 3.81,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 183,
+        "dx": 2.72,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 199,
+        "dx": -2.15,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 216,
+        "dx": -3.95,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 234,
+        "dx": -0.77,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 250,
+        "dx": 3.55,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 267,
+        "dx": 3.59,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 284,
+        "dx": 1.26,
+        "border": "rgb(240, 68, 56)",
+        "animations": 1
+      },
+      {
+        "t": 301,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 316,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 334,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 351,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 366,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 383,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 399,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 416,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 433,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 451,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 468,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 483,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 501,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 518,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 533,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 551,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 566,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 584,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 600,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      }
+    ]
+  ]
+}

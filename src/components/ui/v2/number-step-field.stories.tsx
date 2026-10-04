@@ -38,6 +38,11 @@ const meta: Meta<typeof NumberStepField> = {
           summary:
             "A constrained numeric field with custom step controls and a unit suffix.",
           changes: [
+            [
+              "Steppers",
+              "12px targets",
+              "24 × 19 hover tiles; hold to repeat (400ms, then every 60ms)",
+            ],
             ["Field", "4px corners", "8px corners; 40px height"],
             ["Focus", "1px halo", "Teal border and 4px glow"],
             ["Typography", "Inherited", "Inter; 16px numeric value"],

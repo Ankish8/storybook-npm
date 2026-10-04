@@ -1,0 +1,189 @@
+{
+  "story": "v2-components-textfield--clearable",
+  "measured": {
+    "Clear button": {
+      "width": "16px",
+      "height": "16px",
+      "opacity": "1",
+      "transform": "matrix(1, 0, 0, 1, 0, 0)",
+      "visibility": "visible",
+      "margin-left": "8px",
+      "color": "rgb(112, 112, 112)",
+      "transition-property": "color, opacity, transform, margin-left, visibility",
+      "transition-duration": "0.15s",
+      "cursor": "pointer"
+    }
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 358,
+    "width": 420,
+    "height": 84
+  },
+  "evals": [
+    [
+      {
+        "t": 2,
+        "opacity": 0,
+        "transform": "matrix(0.8, 0, 0, 0.8, 0, 0)",
+        "inputW": 386
+      },
+      {
+        "t": 3,
+        "opacity": 0,
+        "transform": "matrix(0.8, 0, 0, 0.8, 0, 0)",
+        "inputW": 386
+      },
+      {
+        "t": 12,
+        "opacity": 0,
+        "transform": "matrix(0.8, 0, 0, 0.8, 0, 0)",
+        "inputW": 386
+      },
+      {
+        "t": 29,
+        "opacity": 0.18,
+        "transform": "matrix(0.835579, 0, 0, 0.835579, 0, 0)",
+        "inputW": 381.7
+      },
+      {
+        "t": 45,
+        "opacity": 0.34,
+        "transform": "matrix(0.868066, 0, 0, 0.868066, 0, 0)",
+        "inputW": 377.8
+      },
+      {
+        "t": 63,
+        "opacity": 0.49,
+        "transform": "matrix(0.89767, 0, 0, 0.89767, 0, 0)",
+        "inputW": 374.3
+      },
+      {
+        "t": 79,
+        "opacity": 0.62,
+        "transform": "matrix(0.924647, 0, 0, 0.924647, 0, 0)",
+        "inputW": 371
+      },
+      {
+        "t": 96,
+        "opacity": 0.74,
+        "transform": "matrix(0.9484, 0, 0, 0.9484, 0, 0)",
+        "inputW": 368.2
+      },
+      {
+        "t": 112,
+        "opacity": 0.84,
+        "transform": "matrix(0.968767, 0, 0, 0.968767, 0, 0)",
+        "inputW": 365.8
+      },
+      {
+        "t": 128,
+        "opacity": 0.92,
+        "transform": "matrix(0.984928, 0, 0, 0.984928, 0, 0)",
+        "inputW": 363.8
+      },
+      {
+        "t": 145,
+        "opacity": 0.98,
+        "transform": "matrix(0.995824, 0, 0, 0.995824, 0, 0)",
+        "inputW": 362.5
+      },
+      {
+        "t": 168,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 188,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 195,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 211,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 229,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 245,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 263,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 279,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 294,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 312,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 329,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 344,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 362,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 379,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 396,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      },
+      {
+        "t": 412,
+        "opacity": 1,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "inputW": 362
+      }
+    ]
+  ]
+}

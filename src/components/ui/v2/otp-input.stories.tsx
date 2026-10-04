@@ -32,6 +32,11 @@ const meta: Meta<typeof OtpInput> = {
           summary:
             "Digit-by-digit verification code entry with paste and keyboard navigation.",
           changes: [
+            [
+              "Feedback",
+              "—",
+              "Digits ease in (180ms); error shakes once (4px, 300ms)",
+            ],
             ["Cells", "—", "54 × 60px; 8px radius; 24px gap"],
             ["Typography", "—", "Inter 16px; supporting text 12px"],
             [
@@ -204,6 +209,45 @@ export const States: Story = {
       </div>
     </div>
   ),
+};
+function ErrorFeedbackDemo(args: OtpInputProps) {
+  const [value, setValue] = useState("1234");
+  const [failed, setFailed] = useState(false);
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <OtpInput
+        {...args}
+        value={value}
+        error={failed}
+        helperText={
+          failed
+            ? "That code is not valid. Check it and try again."
+            : "Enter the code sent to your phone"
+        }
+        onValueChange={(next) => {
+          setValue(next);
+          setFailed(false);
+          args.onValueChange?.(next);
+        }}
+      />
+      <Button type="button" onClick={() => setFailed(true)}>
+        Verify a wrong code
+      </Button>
+    </div>
+  );
+}
+export const ErrorFeedback: Story = {
+  name: "Error feedback",
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          "Verify a wrong code: the slots turn red and shake once (300ms, 4px). Editing any digit clears the error. Reduced motion skips the shake and keeps the red border.",
+      },
+    },
+  },
+  render: (args) => <ErrorFeedbackDemo {...args} />,
 };
 function Verification(args: OtpInputProps) {
   const value = args.value || "";

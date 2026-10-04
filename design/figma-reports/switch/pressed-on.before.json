@@ -1,0 +1,24 @@
+{
+  "story": "v2-components-switch--on",
+  "measured": {
+    "Track (pressed)": {
+      "width": 36,
+      "height": 20,
+      "transform": "none",
+      "background-color": "rgb(47, 56, 77)",
+      "transition-duration": "0.24s"
+    },
+    "Thumb (pressed)": {
+      "width": "16px",
+      "height": "16px",
+      "transform": "matrix(1, 0, 0, 1, 16, 0)"
+    }
+  },
+  "popupBox": {
+    "x": 412.0625,
+    "y": 388,
+    "width": 175.875,
+    "height": 20
+  },
+  "evals": []
+}

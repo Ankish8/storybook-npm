@@ -304,3 +304,137 @@ describe("ReadableField", () => {
     expect(inputContainer).toHaveClass("bg-semantic-bg-ui");
   });
 });
+
+describe("ReadableField copy feedback", () => {
+  const props = { label: "Base URL", value: "https://api.example.com/v3" };
+
+  it("stacks the Copy, Check and failure icons in one fixed 18px button and cross-fades them", () => {
+    render(<ReadableField {...props} />);
+    const button = screen.getByRole("button", { name: "Copy to clipboard" });
+    expect(button).toHaveClass("relative", "size-[18px]");
+    const icons = Array.from(button.querySelectorAll("svg"));
+    expect(icons).toHaveLength(3);
+    const [copy, check, fail] = icons;
+    expect(copy).toHaveClass("opacity-100", "scale-100");
+    expect(check).toHaveClass("opacity-0", "scale-[0.8]");
+    expect(fail).toHaveClass("opacity-0", "scale-[0.8]");
+    for (const icon of icons) {
+      expect(icon).toHaveClass(
+        "absolute",
+        "inset-0",
+        "size-[18px]",
+        "[transition-duration:180ms]"
+      );
+      expect(icon).toHaveAttribute("aria-hidden", "true");
+    }
+  });
+
+  it("always renders an empty polite status region and says Copied while copied", async () => {
+    render(<ReadableField {...props} />);
+    const status = screen.getByRole("status");
+    expect(status).toHaveClass("sr-only");
+    expect(status).toBeEmptyDOMElement();
+    fireEvent.click(screen.getByRole("button", { name: "Copy to clipboard" }));
+    await waitFor(() => expect(status).toHaveTextContent("Copied"));
+    const [copy, check] = Array.from(
+      screen.getByRole("button", { name: "Copied" }).querySelectorAll("svg")
+    );
+    expect(copy).toHaveClass("opacity-0");
+    expect(check).toHaveClass("opacity-100", "scale-100");
+  });
+
+  it("does not duplicate visible text: the value and label are still found once", async () => {
+    render(<ReadableField {...props} />);
+    fireEvent.click(screen.getByRole("button", { name: "Copy to clipboard" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("Copied")
+    );
+    expect(screen.getAllByText(props.value)).toHaveLength(1);
+    expect(screen.getAllByText("Base URL")).toHaveLength(1);
+  });
+
+  it("makes the value select-all with a single click", () => {
+    render(<ReadableField {...props} />);
+    expect(screen.getByText(props.value)).toHaveClass("select-all");
+  });
+
+  it("holds the copied state for 2000ms, then returns to Copy", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<ReadableField {...props} />);
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole("button", { name: "Copy to clipboard" })
+        );
+      });
+      expect(
+        screen.getByRole("button", { name: "Copied" })
+      ).toBeInTheDocument();
+      act(() => {
+        vi.advanceTimersByTime(1999);
+      });
+      expect(
+        screen.getByRole("button", { name: "Copied" })
+      ).toBeInTheDocument();
+      act(() => {
+        vi.advanceTimersByTime(1);
+      });
+      expect(
+        screen.getByRole("button", { name: "Copy to clipboard" })
+      ).toBeInTheDocument();
+      expect(screen.getByRole("status")).toBeEmptyDOMElement();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("shows a brief failed state, selects the value for Cmd+C and does not report a copy", async () => {
+    vi.useFakeTimers();
+    try {
+      mockClipboard.writeText.mockRejectedValueOnce(new Error("denied"));
+      const onValueCopy = vi.fn();
+      render(<ReadableField {...props} onValueCopy={onValueCopy} />);
+      await act(async () => {
+        fireEvent.click(
+          screen.getByRole("button", { name: "Copy to clipboard" })
+        );
+      });
+      const button = screen.getByRole("button", { name: "Copy failed" });
+      expect(button).toHaveClass("text-semantic-error-primary");
+      expect(screen.getByRole("status")).toHaveTextContent("Copy failed");
+      expect(window.getSelection()?.toString()).toBe(props.value);
+      expect(onValueCopy).not.toHaveBeenCalled();
+      act(() => {
+        vi.advanceTimersByTime(2000);
+      });
+      expect(
+        screen.getByRole("button", { name: "Copy to clipboard" })
+      ).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("does not select a masked secret when the copy fails", async () => {
+    mockClipboard.writeText.mockRejectedValueOnce(new Error("denied"));
+    window.getSelection()?.removeAllRanges();
+    render(<ReadableField {...props} secret />);
+    fireEvent.click(screen.getByRole("button", { name: "Copy to clipboard" }));
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("Copy failed")
+    );
+    expect(window.getSelection()?.toString()).toBe("");
+  });
+
+  it("keeps onValueCopy and a throwing callback does not undo the copied state", async () => {
+    const onValueCopy = vi.fn(() => {
+      throw new Error("consumer bug");
+    });
+    render(<ReadableField {...props} onValueCopy={onValueCopy} />);
+    fireEvent.click(screen.getByRole("button", { name: "Copy to clipboard" }));
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Copied" })).toBeInTheDocument()
+    );
+    expect(onValueCopy).toHaveBeenCalledWith(props.value);
+  });
+});

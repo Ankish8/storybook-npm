@@ -1,0 +1,423 @@
+{
+  "story": "v2-components-readablefield--overview",
+  "measured": {
+    "Field container": {
+      "width": 420,
+      "height": "40px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "padding": "0px 16px",
+      "gap": "12px"
+    },
+    "Value": {
+      "width": 188.52,
+      "height": 24,
+      "color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "letter-spacing": "0.08px",
+      "user-select": "auto",
+      "-webkit-user-select": "auto"
+    },
+    "Copy button": {
+      "width": "18px",
+      "height": "18px",
+      "color": "rgb(112, 112, 112)",
+      "border-radius": "4px",
+      "transform": "none",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(112, 112, 112)",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer",
+      "position": "static"
+    },
+    "Copy icon box": {
+      "width": "18px",
+      "height": "18px",
+      "opacity": "1",
+      "transform": "none",
+      "color": "rgb(112, 112, 112)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Status (sr-only)": null
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 354,
+    "width": 420,
+    "height": 92
+  },
+  "evals": [
+    {},
+    [
+      {
+        "t": 1,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:none"
+        ]
+      },
+      {
+        "t": 1,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:none"
+        ]
+      },
+      {
+        "t": 5,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 21,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 38,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 55,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 72,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 88,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 105,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 121,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 138,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 155,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 171,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)"
+        ]
+      },
+      {
+        "t": 188,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 204,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 221,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 238,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 255,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 271,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 288,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 305,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 321,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 338,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 354,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 371,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 388,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 404,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 421,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 438,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 455,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 471,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 488,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 505,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 521,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 538,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 554,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 571,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 588,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 604,
+        "label": "Copied",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-check:1.00:none"
+        ]
+      },
+      {
+        "t": 2907,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:none"
+        ]
+      }
+    ]
+  ]
+}

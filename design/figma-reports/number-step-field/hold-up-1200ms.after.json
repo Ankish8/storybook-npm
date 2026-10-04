@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-numberstepfield--overview",
+  "measured": {
+    "Increase tile (held)": {
+      "width": 23.04,
+      "height": 18.24,
+      "transform": "matrix(0.96, 0, 0, 0.96, 0, 0)",
+      "background-color": "rgb(245, 245, 245)"
+    }
+  },
+  "popupBox": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
+  "evals": [
+    "16",
+    "16",
+    "16"
+  ]
+}

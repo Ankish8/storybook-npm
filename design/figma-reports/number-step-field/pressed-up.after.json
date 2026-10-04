@@ -1,0 +1,23 @@
+{
+  "story": "v2-components-numberstepfield--overview",
+  "measured": {
+    "Increase button (pressed)": {
+      "width": "24px",
+      "height": "19px",
+      "transform": "matrix(0.96, 0, 0, 0.96, 0, 0)",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)"
+    },
+    "Input": {
+      "width": 188.38,
+      "height": 38
+    }
+  },
+  "popupBox": {
+    "x": 356,
+    "y": 380,
+    "width": 288,
+    "height": 40
+  },
+  "evals": []
+}

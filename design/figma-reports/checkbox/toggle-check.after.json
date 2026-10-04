@@ -1,0 +1,374 @@
+{
+  "story": "v2-components-checkbox--with-label",
+  "measured": {
+    "Box": {
+      "width": 20,
+      "height": 20,
+      "background-color": "rgb(52, 62, 85)",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-width": "1px",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "transform": "none",
+      "outline-style": "none",
+      "transition-property": "background-color, border-color, box-shadow, transform",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.2s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-5px",
+      "right": "-5px",
+      "bottom": "-5px",
+      "left": "-5px",
+      "width": "28px",
+      "height": "28px",
+      "content": "\"\""
+    },
+    "Tick wrapper": {
+      "width": 14,
+      "height": 14,
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-delay": "0s",
+      "animation-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "opacity": "1",
+      "transform": "none"
+    },
+    "Tick path": {
+      "width": 9.33,
+      "height": 6.42,
+      "stroke": "rgb(255, 255, 255)",
+      "stroke-width": "3px",
+      "stroke-dasharray": "24px, 30px",
+      "stroke-dashoffset": "0px",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-delay": "0s",
+      "animation-timing-function": "ease",
+      "transition-property": "stroke-dashoffset",
+      "transition-duration": "0.15s"
+    },
+    "Label": {
+      "width": 208.59,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 381.703125,
+    "y": 389,
+    "width": 236.59375,
+    "height": 20
+  },
+  "evals": [
+    true,
+    [
+      {
+        "t": 3,
+        "state": "unchecked",
+        "boxScale": 1,
+        "boxBg": "rgb(255, 255, 255)",
+        "wrapOpacity": null,
+        "wrapScale": null,
+        "tickOffset": null,
+        "tickDash": null
+      },
+      {
+        "t": 3,
+        "state": "unchecked",
+        "boxScale": 1,
+        "boxBg": "rgb(255, 255, 255)",
+        "wrapOpacity": null,
+        "wrapScale": null,
+        "tickOffset": null,
+        "tickDash": null
+      },
+      {
+        "t": 13,
+        "state": "checked",
+        "boxScale": 0.7,
+        "boxBg": "rgb(255, 255, 255)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "26px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 28,
+        "state": "checked",
+        "boxScale": 0.745,
+        "boxBg": "rgb(219, 221, 225)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "25.7107px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 45,
+        "state": "checked",
+        "boxScale": 0.815,
+        "boxBg": "rgb(186, 189, 197)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "22.816px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 61,
+        "state": "checked",
+        "boxScale": 0.879,
+        "boxBg": "rgb(156, 161, 172)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "19.9387px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 78,
+        "state": "checked",
+        "boxScale": 0.924,
+        "boxBg": "rgb(129, 135, 149)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "17.044px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 94,
+        "state": "checked",
+        "boxScale": 0.954,
+        "boxBg": "rgb(104, 112, 129)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "14.1494px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 111,
+        "state": "checked",
+        "boxScale": 0.973,
+        "boxBg": "rgb(84, 92, 112)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "11.272px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 128,
+        "state": "checked",
+        "boxScale": 0.985,
+        "boxBg": "rgb(67, 77, 98)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "8.37737px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 144,
+        "state": "checked",
+        "boxScale": 0.992,
+        "boxBg": "rgb(56, 66, 89)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "5.48271px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 161,
+        "state": "checked",
+        "boxScale": 0.996,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "2.60537px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 178,
+        "state": "checked",
+        "boxScale": 0.998,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 195,
+        "state": "checked",
+        "boxScale": 0.999,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 223,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 241,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 245,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 261,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 278,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 294,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 311,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 328,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 344,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 361,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 378,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 395,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 411,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 428,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 445,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      },
+      {
+        "t": 461,
+        "state": "checked",
+        "boxScale": 1,
+        "boxBg": "rgb(52, 62, 85)",
+        "wrapOpacity": 1,
+        "wrapScale": 1,
+        "tickOffset": "0px",
+        "tickDash": "24px, 30px"
+      }
+    ]
+  ]
+}

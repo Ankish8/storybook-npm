@@ -1,0 +1,50 @@
+{
+  "story": "v2-components-checkbox--with-label",
+  "measured": {
+    "Box": {
+      "width": 20,
+      "height": 20,
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "transform": "none",
+      "outline-style": "none",
+      "transition-property": "background-color, border-color, box-shadow",
+      "transition-duration": "0.15s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "auto",
+      "height": "auto",
+      "content": "none"
+    },
+    "Tick wrapper": null,
+    "Tick path": null,
+    "Label": {
+      "width": 120,
+      "height": 40,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 380,
+    "width": 148,
+    "height": 40
+  },
+  "evals": [
+    true
+  ]
+}

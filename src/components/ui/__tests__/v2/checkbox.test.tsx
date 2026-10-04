@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Checkbox } from "../../v2/checkbox";
 
 describe("Checkbox v2", () => {
@@ -253,5 +254,133 @@ describe("Checkbox v2", () => {
       const wrapper = container.firstChild;
       expect(wrapper?.firstChild?.textContent).toBe("Left Label");
     });
+  });
+});
+
+describe("Checkbox v2 tactile feedback and description", () => {
+  it("draws the check with a stroke-dashoffset transition that starts from a mount-time @starting-style", () => {
+    render(<Checkbox checked aria-label="Select" />);
+    const box = screen.getByRole("checkbox");
+    const tick = box.querySelector("svg")!;
+    const tickClass = tick.getAttribute("class")!;
+    expect(tickClass).toContain("[&>path]:[stroke-dasharray:24_30]");
+    expect(tickClass).toContain(
+      "[@starting-style]:[&>path]:[stroke-dashoffset:26]"
+    );
+    expect(tickClass).toContain(
+      "[&>path]:[transition:stroke-dashoffset_150ms_linear_15ms]"
+    );
+    expect(tickClass).toContain("motion-reduce:[&>path]:[transition:none]");
+    expect(box).toHaveAttribute("data-state", "checked");
+  });
+
+  it("draws the minus with its own dash length", () => {
+    render(<Checkbox checked="indeterminate" aria-label="Select all" />);
+    const tickClass = screen
+      .getByRole("checkbox")
+      .querySelector("svg")!
+      .getAttribute("class")!;
+    expect(tickClass).toContain("[&>path]:[stroke-dasharray:15_20]");
+    expect(tickClass).toContain(
+      "[@starting-style]:[&>path]:[stroke-dashoffset:17]"
+    );
+  });
+
+  it("pops the box in from 70% when it becomes selected, only with motion allowed", () => {
+    render(<Checkbox aria-label="Select" />);
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "data-[state=checked]:motion-safe:animate-in",
+      "data-[state=checked]:motion-safe:zoom-in-[0.7]",
+      "data-[state=indeterminate]:motion-safe:zoom-in-[0.7]",
+      "data-[state=checked]:motion-safe:[animation-duration:200ms]"
+    );
+  });
+
+  it("adds an invisible 4px hit ring (box 20px -> 28px target) and a 0.96 press scale", () => {
+    render(<Checkbox aria-label="Select" />);
+    const box = screen.getByRole("checkbox");
+    expect(box).toHaveClass(
+      "relative",
+      "before:absolute",
+      "before:-inset-[5px]"
+    );
+    expect(box).toHaveClass(
+      "enabled:active:scale-[0.96]",
+      "motion-reduce:enabled:active:scale-100"
+    );
+    expect(box.className).toContain(
+      "[transition-duration:150ms,150ms,150ms,200ms]"
+    );
+    expect(box.className).toContain(
+      "enabled:active:[transition-duration:150ms,150ms,150ms,80ms]"
+    );
+  });
+
+  it("gates hover styling to devices that can hover", () => {
+    render(<Checkbox aria-label="Select" />);
+    const classes = screen.getByRole("checkbox").className.split(/\s+/);
+    expect(
+      classes.some((c) => c.includes("[@media(hover:hover)]:hover:"))
+    ).toBe(true);
+    expect(classes.some((c) => /(^|:)enabled:hover:/.test(c))).toBe(false);
+  });
+
+  it("links an optional description with aria-describedby and keeps the label as the name", () => {
+    render(
+      <Checkbox label="Marketing emails" description="Twice a month at most" />
+    );
+    const box = screen.getByRole("checkbox", { name: "Marketing emails" });
+    expect(box).toHaveAccessibleDescription("Twice a month at most");
+    const description = screen.getByText("Twice a month at most");
+    expect(description.id).toBe(box.id + "-description");
+    expect(description).toHaveClass("text-xs", "leading-4", "mt-1");
+  });
+
+  it("merges the description id into an existing aria-describedby", () => {
+    render(
+      <>
+        <span id="extra">Extra</span>
+        <Checkbox label="A" description="B" aria-describedby="extra" />
+      </>
+    );
+    const box = screen.getByRole("checkbox");
+    expect(box.getAttribute("aria-describedby")).toMatch(
+      /^extra .+-description$/
+    );
+  });
+
+  it("toggles from the label text of a described checkbox", async () => {
+    const onCheckedChange = vi.fn();
+    render(
+      <Checkbox
+        label="Updates"
+        description="Weekly"
+        onCheckedChange={onCheckedChange}
+      />
+    );
+    await userEvent.click(screen.getByText("Updates"));
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+  });
+
+  it("places a described label on the left when asked", () => {
+    const { container } = render(
+      <Checkbox label="L" description="D" labelPosition="left" />
+    );
+    const row = container.firstElementChild!;
+    expect(row.firstElementChild).toContainElement(screen.getByText("L"));
+  });
+
+  it("renders no id or aria-describedby without a description (default markup unchanged)", () => {
+    render(<Checkbox label="Plain" />);
+    const box = screen.getByRole("checkbox");
+    expect(box).not.toHaveAttribute("id");
+    expect(box).not.toHaveAttribute("aria-describedby");
+  });
+
+  it("falls back to a generated id when an empty id is passed together with a description", () => {
+    render(<Checkbox id="" label="A" description="B" />);
+    const control = screen.getByRole("checkbox");
+    expect(control.id).not.toBe("");
+    expect(control).toHaveAccessibleDescription("B");
   });
 });

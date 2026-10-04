@@ -526,3 +526,111 @@ describe("TextField", () => {
     );
   });
 });
+
+describe("TextField message reveal and clear button", () => {
+  it("keeps the error element, its id and the aria-describedby link, and adds a polite live region", () => {
+    render(<TextField id="email" label="Email" error="Required" />);
+    const message = screen.getByText("Required");
+    expect(message).toHaveAttribute("id", "email-error");
+    expect(message).toHaveAttribute("aria-live", "polite");
+    expect(message).not.toHaveAttribute("role");
+    expect(screen.getByLabelText("Email")).toHaveAttribute(
+      "aria-describedby",
+      "email-error"
+    );
+  });
+
+  it("keeps the helper id and link without a live region", () => {
+    render(
+      <TextField id="name" label="Name" helperText="Shown to your team" />
+    );
+    const helper = screen.getByText("Shown to your team");
+    expect(helper).toHaveAttribute("id", "name-helper");
+    expect(helper).not.toHaveAttribute("aria-live");
+    expect(screen.getByLabelText("Name")).toHaveAttribute(
+      "aria-describedby",
+      "name-helper"
+    );
+  });
+
+  it("does not reveal a message that is already there on first render", () => {
+    render(<TextField helperText="Hint" />);
+    expect(screen.getByText("Hint").parentElement!.className).not.toContain(
+      "@starting-style"
+    );
+  });
+
+  it("reveals a message that appears after the field (height 0fr to 1fr over 240ms, spring)", () => {
+    const { rerender } = render(<TextField label="Name" />);
+    rerender(<TextField label="Name" error="Too short" />);
+    const row = screen.getByText("Too short").parentElement!;
+    expect(row).toHaveClass("grid-rows-[1fr]");
+    expect(row.className).toContain("[@starting-style]:grid-rows-[0fr]");
+    expect(row.className).toContain("[@starting-style]:-mt-1");
+    expect(row.className).toContain("[transition-duration:240ms]");
+    expect(row.className).toContain("var(--v2-ease-spring");
+    expect(row).toHaveClass("motion-reduce:transition-none");
+  });
+
+  it("fades the error text (150ms, 2px slide) and keeps a fade under reduced motion", () => {
+    render(<TextField error="Bad" />);
+    const message = screen.getByText("Bad");
+    expect(message).toHaveClass(
+      "motion-safe:animate-in",
+      "motion-safe:fade-in-0",
+      "motion-safe:slide-in-from-top-0.5",
+      "[animation-duration:150ms]",
+      "motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+    );
+  });
+
+  it("keeps the clear button mounted but hidden and unlabeled while the field is empty", () => {
+    const { container } = render(<TextField clearable defaultValue="" />);
+    const button = container.querySelector("button")!;
+    expect(button).toBeInTheDocument();
+    expect(button).not.toHaveAttribute("aria-label");
+    expect(button).toHaveAttribute("tabindex", "-1");
+    expect(button).toHaveClass(
+      "invisible",
+      "opacity-0",
+      "scale-[0.8]",
+      "pointer-events-none",
+      "-ml-4"
+    );
+  });
+
+  it("shows the clear button with a fade and scale transition when there is text", () => {
+    render(<TextField clearable defaultValue="hello" />);
+    const button = screen.getByLabelText("Clear input");
+    expect(button).toHaveClass("visible", "opacity-100", "scale-100", "ml-2");
+    expect(button).toHaveClass(
+      "[transition-property:color,opacity,transform,margin-left,visibility]",
+      "[transition-duration:150ms]"
+    );
+  });
+
+  it("gives the clear button a 32px hit area around the 16px icon", () => {
+    render(<TextField clearable defaultValue="hello" />);
+    const button = screen.getByLabelText("Clear input");
+    expect(button).toHaveClass(
+      "relative",
+      "before:absolute",
+      "before:-inset-2"
+    );
+  });
+
+  it("fades the clear button in when the first character is typed", async () => {
+    const user = userEvent.setup();
+    const { container } = render(<TextField clearable data-testid="in" />);
+    expect(container.querySelector("button")).toHaveClass("opacity-0");
+    await user.type(screen.getByTestId("in"), "a");
+    expect(screen.getByLabelText("Clear input")).toHaveClass("opacity-100");
+  });
+
+  it("does not move focus when the clear button is used (behaviour unchanged)", async () => {
+    const user = userEvent.setup();
+    render(<TextField clearable defaultValue="x" data-testid="in" />);
+    await user.click(screen.getByLabelText("Clear input"));
+    expect(screen.getByTestId("in")).not.toHaveFocus();
+  });
+});

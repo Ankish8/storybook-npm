@@ -1,0 +1,521 @@
+{
+  "story": "v2-components-readablefield--overview",
+  "measured": {
+    "Field container": {
+      "width": 420,
+      "height": "40px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "padding": "0px 16px",
+      "gap": "12px"
+    },
+    "Value": {
+      "width": 188.52,
+      "height": 24,
+      "color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "letter-spacing": "0.08px",
+      "user-select": "all",
+      "-webkit-user-select": "all"
+    },
+    "Copy button": {
+      "width": "18px",
+      "height": "18px",
+      "color": "rgb(112, 112, 112)",
+      "border-radius": "4px",
+      "transform": "none",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(112, 112, 112)",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer",
+      "position": "relative"
+    },
+    "Copy icon box": {
+      "width": "18px",
+      "height": "18px",
+      "opacity": "1",
+      "transform": "none",
+      "color": "rgb(112, 112, 112)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Check icon (always mounted after)": {
+      "width": "18px",
+      "height": "18px",
+      "opacity": "1",
+      "transform": "none",
+      "color": "rgb(112, 112, 112)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Failure X icon (always mounted after)": {
+      "width": "18px",
+      "height": "18px",
+      "opacity": "1",
+      "transform": "none",
+      "color": "rgb(112, 112, 112)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Status (sr-only)": {
+      "width": "1px",
+      "height": "1px",
+      "position": "absolute",
+      "overflow": "hidden",
+      "clip": "rect(0px, 0px, 0px, 0px)",
+      "clip-path": "none"
+    }
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 354,
+    "width": 420,
+    "height": 92
+  },
+  "evals": [
+    {},
+    [
+      {
+        "t": 1,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-check:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 1,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-check:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 18,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-check:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 34,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.83:m(0.965688, 0, 0, 0.965688, 0, 0)",
+          "lucide-check:0.17:m(0.834312, 0, 0, 0.834312, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 51,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.56:m(0.912985, 0, 0, 0.912985, 0, 0)",
+          "lucide-check:0.44:m(0.887015, 0, 0, 0.887015, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 67,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.35:m(0.870186, 0, 0, 0.870186, 0, 0)",
+          "lucide-check:0.65:m(0.929814, 0, 0, 0.929814, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 84,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.20:m(0.840945, 0, 0, 0.840945, 0, 0)",
+          "lucide-check:0.80:m(0.959055, 0, 0, 0.959055, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 101,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.11:m(0.822859, 0, 0, 0.822859, 0, 0)",
+          "lucide-check:0.89:m(0.97714, 0, 0, 0.97714, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 117,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.06:m(0.81228, 0, 0, 0.81228, 0, 0)",
+          "lucide-check:0.94:m(0.98772, 0, 0, 0.98772, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 134,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.03:m(0.806346, 0, 0, 0.806346, 0, 0)",
+          "lucide-check:0.97:m(0.993654, 0, 0, 0.993654, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 150,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.02:m(0.803143, 0, 0, 0.803143, 0, 0)",
+          "lucide-check:0.98:m(0.996857, 0, 0, 0.996857, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 168,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.01:m(0.801387, 0, 0, 0.801387, 0, 0)",
+          "lucide-check:0.99:m(0.998613, 0, 0, 0.998613, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 184,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.800436, 0, 0, 0.800436, 0, 0)",
+          "lucide-check:1.00:m(0.999564, 0, 0, 0.999564, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 200,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 217,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 234,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 251,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 267,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 284,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 301,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 317,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 334,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 350,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 367,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 384,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 401,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 417,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 434,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 451,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 467,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 484,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 501,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 518,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 534,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 551,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 568,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 584,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 601,
+        "label": "Copied",
+        "status": "Copied",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-check:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      },
+      {
+        "t": 2903,
+        "label": "Copy to clipboard",
+        "status": "",
+        "icons": 1,
+        "svgs": [
+          "lucide-copy:1.00:m(1, 0, 0, 1, 0, 0)",
+          "lucide-check:0.00:m(0.8, 0, 0, 0.8, 0, 0)",
+          "lucide-x:0.00:m(0.8, 0, 0, 0.8, 0, 0)"
+        ]
+      }
+    ]
+  ]
+}

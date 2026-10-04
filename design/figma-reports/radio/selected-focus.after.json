@@ -1,0 +1,70 @@
+{
+  "story": "v2-components-radio--selected",
+  "measured": {
+    "Radio": {
+      "width": 16,
+      "height": 16,
+      "background-color": "rgb(245, 245, 245)",
+      "background-image": "radial-gradient(circle closest-side, rgb(52, 62, 85) 100%, rgba(0, 0, 0, 0) 100%)",
+      "background-size": "6px 6px",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-width": "1px",
+      "border-radius": "9999px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(235, 236, 238) 0px 0px 0px 2px",
+      "transform": "none",
+      "position": "relative",
+      "transition-property": "background-color, background-size, border-color, box-shadow, transform",
+      "transition-duration": "0.24s, 0.24s, 0.24s, 0.24s, 0.2s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "default"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-5px",
+      "right": "-5px",
+      "bottom": "-5px",
+      "left": "-5px",
+      "width": "24px",
+      "height": "24px",
+      "content": "\"\""
+    },
+    "Row (wrapper)": {
+      "width": 187.58,
+      "height": 40,
+      "display": "flex",
+      "gap": "8px",
+      "padding": "0px",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-radius": "0px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "transition-property": "all",
+      "cursor": "auto"
+    },
+    "Label": {
+      "width": 163.58,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500"
+    },
+    "Description": {
+      "width": 163.58,
+      "height": 16,
+      "font-size": "12px",
+      "line-height": "16px",
+      "color": "rgb(112, 112, 112)",
+      "margin-top": "4px"
+    }
+  },
+  "popupBox": {
+    "x": 406.21875,
+    "y": 380,
+    "width": 187.578125,
+    "height": 40
+  },
+  "evals": [
+    true
+  ]
+}

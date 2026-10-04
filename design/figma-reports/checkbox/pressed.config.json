@@ -1,0 +1,6 @@
+[
+  { "name": "pressed-unchecked", "story": "v2-components-checkbox--with-label", "press": "button[role=checkbox]",
+    "measure": { "Box (pressed)": { "sel": "button[role=checkbox]", "props": ["transform", "background-color", "border-top-color", "box-shadow", "transition-duration"] } } },
+  { "name": "pressed-checked", "story": "v2-components-checkbox--checked", "press": "button[role=checkbox]",
+    "measure": { "Box (pressed)": { "sel": "button[role=checkbox]", "props": ["transform", "background-color", "border-top-color", "box-shadow", "transition-duration"] } } }
+]

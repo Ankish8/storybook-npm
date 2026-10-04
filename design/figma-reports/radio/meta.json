@@ -1,0 +1,80 @@
+{
+  "title": "Radio",
+  "storybook": "V2/Components/Radio",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2650-18296",
+  "summary": "The radio gets the same tactile treatment as the checkbox: the dot grows from the centre (6px, or 8px while pressed), the circle squeezes to 96% on press, and the pointer target is 24 x 24. A new optional `variant=\"card\"` turns each option into a bordered, fully clickable card with a hover border and a tinted selected state.",
+  "why": [
+    "Selectable option cards (HeroUI RadioGroup custom cards, Untitled UI 'radio card', Mantine Radio.Card) are the most requested radio pattern for plan and channel pickers: the whole card is the target.",
+    "A 16px circle is below the 24px minimum pointer target in WCAG 2.5.8; a 4px invisible ring brings it to 24px without changing layout."
+  ],
+  "scenarioLabels": {
+    "gallery-states": "All states (unchanged at rest)",
+    "unselected": "Unselected / default",
+    "unselected-hover": "Unselected / hover",
+    "unselected-focus": "Unselected / focus-visible",
+    "selected": "Selected / default",
+    "selected-hover": "Selected / hover",
+    "selected-focus": "Selected / focus-visible",
+    "disabled-selected": "Disabled",
+    "select-click": "Selecting (frame samples: dot size)",
+    "pressed-unselected": "Pressed / unselected",
+    "pressed-selected": "Pressed / selected (dot 8px)",
+    "cards": "New: card variant, Team selected, Enterprise disabled",
+    "cards-hover": "Card / hover on an unselected card",
+    "cards-focus": "Card / keyboard focus",
+    "cards-select": "Card / after selecting Starter",
+    "cards-disabled": "Card / disabled",
+    "cards-narrow": "Card / 260px wide",
+    "narrow": "Narrow width (unchanged)"
+  },
+  "motion": [
+    {
+      "what": "Selected dot",
+      "before": "Grows from the centre 0 to 6px (background-size 0 to 100%, 240ms spring)",
+      "after": "Same visual: 0 to 6px, 240ms spring (now sized in px so a pressed dot can be 8px)"
+    },
+    {
+      "what": "Press on a selected radio",
+      "before": "none",
+      "after": "Dot 6px to 8px in 100ms; back with the 240ms spring"
+    },
+    {
+      "what": "Press (any radio)",
+      "before": "none",
+      "after": "Circle scale .96: 80ms down, 200ms back (spring); disabled does not press"
+    },
+    {
+      "what": "Card variant colours",
+      "before": "n/a",
+      "after": "border-color and background-color 150ms ease-out"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "Dot grew without movement",
+      "after": "No dot growth, no press scale; colour changes still fade"
+    }
+  ],
+  "states": [
+    "Radio / pressed (selected): dot 8px; (unselected): scale 96%",
+    "Radio / hit area 24 x 24 (annotation)",
+    "Radio card (new variant) / default, hover, selected, selected + hover, focus-visible, disabled, disabled + selected"
+  ],
+  "figmaSteps": [
+    "Radio circle stays 16 x 16, border 1.2px --semantic-border-layout #E9EAEB, selected border --semantic-primary #343E55, dot 6px --semantic-primary (disabled: --semantic-disabled-primary #A2A6B1). Wrap it in a transparent 24 x 24 frame (4px each side) as the pointer target.",
+    "Add 'Pressed' variants: unselected circle at scale 96%; selected circle at scale 96% with the dot 8px. Prototype default to pressed Smart Animate 80ms ease-out, back 200ms Gentle spring (dot 100ms down).",
+    "Create the new component variant 'Radio card': auto layout horizontal, padding 16px all sides, gap 12px, align top; corner radius 8px; fill --semantic-bg-primary #FFFFFF; stroke 1px inside --semantic-border-layout #E9EAEB. Contents: the 16px radio (2px top margin) and a text column (fill width): label Inter 14px / 20px medium --v2-text-primary #484848, then description Inter 12px muted #707070 with 4px between.",
+    "Card states: Hover = stroke --color-primary-100 #C0C3CA. Selected = stroke 1px --semantic-primary #343E55, fill --semantic-primary-surface #EBECEE. Selected + hover keeps the selected stroke. Focus-visible = stroke --semantic-primary plus the radio's focus ring (2px --semantic-primary-surface). Disabled = fill --semantic-bg-ui #F5F5F5, label colour muted #707070, radio disabled style; no hover.",
+    "Prototype card border and fill changes as Smart Animate 150ms ease out.",
+    "Radio group of cards: vertical auto layout, gap 12px (the existing RadioGroup gap), cards fill the group width."
+  ],
+  "notes": [
+    "Default markup is unchanged when `variant` is omitted or `\"default\"` (unit test compares the HTML), apart from the new control classes listed above.",
+    "Card variant accessibility: the whole card is the <label>; the radio takes its name from the label text through aria-labelledby so the description is not read as part of the name, and the description stays linked with aria-describedby.",
+    "Card hover is skipped for selected and disabled cards by a :not(:has(:checked, :disabled)) condition; browsers without :has() support (very old) lose that exclusion only.",
+    "Card variant for Checkbox was not added; see the Checkbox report.",
+    "Radio has no v1 component, so there is no v1 contract to compare against; the existing tests still pass unchanged.",
+    "Pressing an unselected radio shows no dot preview (the dot appears on release, 0 to 6px); only an already selected radio shows the 8px pressed dot.",
+    "Hit area implementation: `before:-inset-[5px]` (the 1.2px border is drawn as 1px, so the padding box is 14px and the ring reaches 24 x 24). Measured with elementFromPoint in Chrome: 3.9px outside the circle hits the radio, 5px outside does not.",
+    "The 'pressed' before images were recorded from a temporary copy of the previous component (the capture crop of the shared tool returned nothing for these controls), so their page layout is not centred like the after images."
+  ]
+}

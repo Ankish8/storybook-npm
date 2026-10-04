@@ -39,6 +39,7 @@ const meta: Meta<typeof Checkbox> = {
         "checked",
         "size",
         "label",
+        "description",
         "labelPosition",
         "disabled",
         "separateLabel",
@@ -59,6 +60,21 @@ const meta: Meta<typeof Checkbox> = {
           summary:
             "A selection control for one or more choices, with checked, unchecked and indeterminate states. Built on Radix Checkbox.",
           changes: [
+            [
+              "Feedback",
+              "Tick appears",
+              "Tick draws in (150ms), box pops from 70% (200ms), press scales to 96%",
+            ],
+            [
+              "Pointer target",
+              "20px box",
+              "28 × 28 invisible target (4px on each side)",
+            ],
+            [
+              "Description",
+              "—",
+              "Optional 12px supporting text under the label",
+            ],
             [
               "Box sizes",
               "16 / 20 / 24px",
@@ -174,6 +190,11 @@ const meta: Meta<typeof Checkbox> = {
       description: "Small 16px, default 20px or large 24px box.",
     },
     label: { control: "text", description: "Visible, clickable label." },
+    description: {
+      control: "text",
+      description:
+        "Optional supporting text under the label (12px, muted). Linked to the box with aria-describedby.",
+    },
     labelPosition: {
       control: "radio",
       options: ["left", "right"],
@@ -223,6 +244,13 @@ export const Large: Story = { args: { size: "lg" } };
 export const WithLabel: Story = {
   name: "With a label",
   args: { label: "Include resolved conversations" },
+};
+export const WithDescription: Story = {
+  name: "With a description",
+  args: {
+    label: "Marketing emails",
+    description: "Product updates and tips, at most twice a month.",
+  },
 };
 export const LabelLeft: Story = {
   name: "Label on the left",

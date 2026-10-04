@@ -1,0 +1,68 @@
+{
+  "story": "v2-components-otpinput--disabled",
+  "measured": {
+    "Slot 1": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot 4": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color, font-size",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.18s, 0.18s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Slot row": {
+      "width": 288,
+      "height": 60,
+      "gap": "24px",
+      "column-gap": "24px",
+      "transform": "none",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Helper text": {
+      "width": 192.69,
+      "height": 16,
+      "color": "rgb(112, 112, 112)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "opacity": "1",
+      "transition-property": "all"
+    }
+  },
+  "popupBox": {
+    "x": 336,
+    "y": 337,
+    "width": 328,
+    "height": 126
+  },
+  "evals": []
+}

@@ -1,0 +1,78 @@
+{
+  "title": "Checkbox",
+  "storybook": "V2/Components/Checkbox",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2650-18296",
+  "summary": "Checking a box now feels physical: the tick is drawn in, the box pops from 70% to full size, and pressing squeezes it to 96%. The pointer target grows by 4px on every side (28 x 28 for the default 20px box) without moving anything, hover only applies on devices that can hover, and an optional description line can sit under the label.",
+  "why": [
+    "Untitled UI and HeroUI draw the tick with a stroke animation and scale the filled box in; our tick only faded.",
+    "Material and Apple HIG minimum targets are 44-48px; 20px boxes are far below WCAG 2.5.8's 24px minimum. Radix Themes and Mantine extend the clickable area with the label; here a 4px invisible ring is added around the box itself.",
+    "HeroUI and Untitled UI support a supporting-text line under the label; Radio in this system already had one."
+  ],
+  "scenarioLabels": {
+    "gallery-states": "All states and sizes (unchanged at rest)",
+    "unchecked": "Unchecked / default",
+    "unchecked-hover": "Unchecked / hover",
+    "unchecked-focus": "Unchecked / focus-visible",
+    "checked": "Checked / default",
+    "checked-hover": "Checked / hover",
+    "checked-focus": "Checked / focus-visible",
+    "indeterminate": "Indeterminate",
+    "disabled-checked": "Disabled / checked",
+    "disabled-unchecked": "Disabled / unchecked",
+    "toggle-check": "Checking (frame samples: stroke offset 26px to 0, box scale .7 to 1)",
+    "pressed-unchecked": "Pressed / unchecked (mouse down held)",
+    "pressed-checked": "Pressed / checked",
+    "with-description": "New: description under the label",
+    "with-description-narrow": "New: description at 220px wide",
+    "narrow-label": "Narrow width, long label"
+  },
+  "motion": [
+    {
+      "what": "Tick draws in",
+      "before": "Fade/zoom keyframe that never ran (values reset, see notes): the tick appeared instantly",
+      "after": "Stroke draws from the start of the path: stroke-dashoffset 26 to 0, 150ms linear, 15ms delay (check: dash 24 gap 30; minus: dash 15 gap 20, offset 17 to 0). Stroke width stays 3."
+    },
+    {
+      "what": "Box pops on check / indeterminate",
+      "before": "none",
+      "after": "Scale .7 to 1 over 200ms, --v2-ease-spring (a sampled critically damped spring; in Figma use a custom spring or Smart Animate 'Gentle' / bezier 0.22, 1, 0.36, 1) (fill and border are one solid shape so the whole box scales)"
+    },
+    {
+      "what": "Press",
+      "before": "none",
+      "after": "Scale 1 to .96 in 80ms; back in 200ms, spring. Disabled boxes do not press"
+    },
+    {
+      "what": "Tick leaves (uncheck)",
+      "before": "120ms fade/zoom (values reset, so no visible effect)",
+      "after": "120ms fade and shrink to 85% (now actually runs)"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "none",
+      "after": "No pop, no scale, no stroke draw: the tick fades in over 150ms; colours still transition 150ms"
+    }
+  ],
+  "states": [
+    "Checkbox / every size (sm 16, default 20, lg 24) x unchecked / checked / indeterminate x default / hover / focus / disabled: unchanged at rest",
+    "Checkbox / pressed: scale 96% (new)",
+    "Checkbox / hit area: 4px invisible padding on each side (new annotation, not visible)",
+    "Checkbox with description (new variant)"
+  ],
+  "figmaSteps": [
+    "On every Checkbox size, wrap the box in a transparent frame 4px larger on each side: sm 24 x 24, default 28 x 28, lg 32 x 32 (box centred, no fill, no stroke). The frame is the clickable area; component width in layouts stays the box width (use negative margin -4px or 'ignore auto layout').",
+    "Add a 'Pressed' variant to every checked state: box scale 96%. Prototype default to pressed with Smart Animate 80ms ease-out, pressed to default 200ms Gentle spring.",
+    "Add the check animation as an interaction: unchecked to checked, Smart Animate 200ms Gentle spring, box scale 70% to 100%. Inside, the tick path: stroke dash offset (set the stroke 'dash' to 24 / gap 30 and animate the offset 26 to 0, or reveal the path with a 150ms linear wipe from the first point), delay 15ms. Same for indeterminate, dash 15 / gap 20.",
+    "Add an optional 'Description' text layer to the labelled Checkbox: Inter 12px / 16px regular, colour --v2-text-muted #707070, 4px below the label (same offset as Radio), left-aligned with the label. Auto layout: horizontal, gap 8px, align top; the label row is as tall as the box (sm 16, default 20, lg 24) so the box lines up with the first line of the label. Left-label placement mirrors it. Disabled: whole text block at 50% opacity.",
+    "Hover fills stay as they are (unchecked hover --semantic-bg-ui #F5F5F5 with border --color-primary-100 #C0C3CA; checked hover --semantic-primary-hover #2F384D). Note in the component description that hover only applies on pointer devices."
+  ],
+  "notes": [
+    "The brief expected a keyframe on mount for the tick; keyframes cannot be added from this file, so the tick uses a stroke-dashoffset transition with `@starting-style` supplying the 'from' value when the Radix indicator mounts already checked. Browsers without @starting-style (Chrome < 117, Safari < 17.5, Firefox < 129) show the tick instantly; everything else still works.",
+    "Pre-checked boxes also animate once when they first mount (the tick draws and the box pops), the same as the previous tick pop did on mount. A page full of pre-checked boxes will animate at load; say if this should be suppressed (needs an 'interacted' flag).",
+    "FOUND: the previous tick pop (`motion-safe:animate-in fade-in-0 zoom-in-[0.85]`) was a silent no-op: tailwindcss-animate's `.animate-in` resets the enter variables and its motion-safe copy is emitted after the plain zoom/fade utilities. The new box pop and exit use `motion-safe:zoom-in-[0.7]`, `motion-safe:fade-out-0` etc. so they actually run (verified: scale 0.7 at the first frame).",
+    "Description spacing is 4px (Radio's actual `mt-1`), not the 2px quoted in the task; one class (`mt-1` to `mt-0.5`) changes both if 2px is wanted.",
+    "Selectable-card variant for Checkbox was not added (Radio only): the checkbox label markup (wrapping label / separateLabel) does not fit a whole-card target without duplicating it.",
+    "The 4px hit ring can overlap an adjacent control that sits closer than 4px; none of the stories do.",
+    "Hit area implementation: `before:-inset-[5px]`, not `-inset-1`. An absolutely positioned pseudo-element is offset from the padding box, which excludes the 1px border, so -4px would only reach 3px past the visible edge (26 x 26). Measured with elementFromPoint in Chrome: the target is 24 / 28 / 32px for sm / default / lg, a point 3.9px outside the box hits the checkbox and a point 5px outside does not."
+  ]
+}

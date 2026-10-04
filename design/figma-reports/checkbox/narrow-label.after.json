@@ -1,0 +1,50 @@
+{
+  "story": "v2-components-checkbox--with-label",
+  "measured": {
+    "Box": {
+      "width": 20,
+      "height": 20,
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-top-width": "1px",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "transform": "none",
+      "outline-style": "none",
+      "transition-property": "background-color, border-color, box-shadow, transform",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.2s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-5px",
+      "right": "-5px",
+      "bottom": "-5px",
+      "left": "-5px",
+      "width": "28px",
+      "height": "28px",
+      "content": "\"\""
+    },
+    "Tick wrapper": null,
+    "Tick path": null,
+    "Label": {
+      "width": 120,
+      "height": 40,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 380,
+    "width": 148,
+    "height": 40
+  },
+  "evals": [
+    true
+  ]
+}

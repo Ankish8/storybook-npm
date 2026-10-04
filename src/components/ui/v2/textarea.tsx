@@ -22,6 +22,13 @@ const countNonWhitespaceChars = (value: string): number =>
   normalizeTextareaSpaces(value).length;
 
 /**
+ * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
+ * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
+ * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
+ * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
+ * its own fade.
+ */
+/**
  * Textarea variants for different visual states
  */
 const textareaVariants = cva(
@@ -220,6 +227,16 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     // Determine aria-describedby
     const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
+    // Reveal the message row only when it appears after the field did, never on first render
+    // (a page of fields with helper text must not unfold on load).
+    const hasMessage = Boolean(error || helperText || (showCount && maxLength));
+    const [hadMessage, setHadMessage] = React.useState(hasMessage);
+    const [revealMessage, setRevealMessage] = React.useState(false);
+    if (hasMessage !== hadMessage) {
+      setHadMessage(hasMessage);
+      setRevealMessage(hasMessage);
+    }
+
     // Resize class map
     const resizeClasses: Record<string, string> = {
       none: "resize-none",
@@ -275,14 +292,23 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         />
 
         {/* Helper text / Error message / Character count */}
-        {(error || helperText || (showCount && maxLength)) && (
-          <div className="flex justify-between items-start gap-2">
+        {hasMessage && (
+          <div
+            className={cn(
+              "grid items-start",
+              showCount && maxLength
+                ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
+                : "grid-cols-[minmax(0,1fr)]",
+              revealMessage &&
+                "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+            )}
+          >
             {error ? (
               errorIcon ? (
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
+                  className="flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
                 >
                   <CircleAlert
                     className="size-3.5 shrink-0 text-semantic-error-text"
@@ -295,7 +321,8 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               ) : (
                 <span
                   id={errorId}
-                  className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
+                  aria-live="polite"
+                  className="min-h-0 overflow-hidden break-words text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
                 >
                   {error}
                 </span>
@@ -303,17 +330,17 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             ) : helperText ? (
               <span
                 id={helperId}
-                className="text-xs text-[var(--v2-text-muted,#707070)]"
+                className="min-h-0 overflow-hidden break-words text-xs text-[var(--v2-text-muted,#707070)]"
               >
                 {helperText}
               </span>
             ) : (
-              <span />
+              <span className="min-h-0 overflow-hidden" />
             )}
             {showCount && maxLength && (
               <span
                 className={cn(
-                  "text-xs",
+                  "min-h-0 overflow-hidden text-xs",
                   charCount > maxLength
                     ? "text-semantic-error-text"
                     : "text-[var(--v2-text-muted,#707070)]"

@@ -1,0 +1,56 @@
+{
+  "title": "OtpInput",
+  "storybook": "V2/Components/OtpInput",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2000-11973",
+  "summary": "Typing a digit now fades and grows it into its slot (180ms) instead of appearing, and when a code is rejected the slots turn red and shake sideways once (4px, 3 cycles, 300ms). Reduced motion keeps the red border and skips the shake and the grow. Slot size (54 x 60), the 24px gap and all keyboard behaviour are unchanged.",
+  "why": [
+    "Apple's one-time-code fields and shadcn/input-otp (via Vercel's examples) shake the row on a wrong code, the clearest non-colour error cue; the red border alone is easy to miss.",
+    "A digit that eases in confirms each keypress without adding a cursor animation."
+  ],
+  "scenarioLabels": {
+    "empty": "Empty",
+    "empty-hover": "Hover on a slot",
+    "empty-focus": "First slot focused",
+    "filled": "Filled",
+    "error": "Error state at rest",
+    "disabled": "Disabled",
+    "six-digits": "Six digits",
+    "type-digit": "Typing 7 (frame samples: colour alpha 0 to 1, font size 14.4 to 16px)",
+    "error-feedback": "New story: verify a wrong code (frame samples: row x offset)",
+    "narrow": "Narrow width"
+  },
+  "motion": [
+    {
+      "what": "Digit enters a slot",
+      "before": "Appears instantly",
+      "after": "Digit colour alpha 0 to 1 and size 14.4 to 16px over 180ms, --v2-ease-spring (sampled critically damped spring; Figma: Gentle spring or bezier 0.22, 1, 0.36, 1). The digit is the input's own text, so 'scale .9 to 1' is a font-size change; slot size is untouched"
+    },
+    {
+      "what": "Error turns on",
+      "before": "Border turns red (150ms)",
+      "after": "Red border (150ms, unchanged) plus the slot row shakes: translateX 0, -4, +4, -4, +4, -4, +4, 0 px at equal steps over 300ms ease-in-out (3 full cycles), measured -3.95 to +3.95px, back to 0"
+    },
+    {
+      "what": "Reduced motion",
+      "before": "n/a",
+      "after": "No shake, no size change; the digit still fades in (180ms); border colour unchanged"
+    }
+  ],
+  "states": [
+    "Slot / empty: text colour transparent, caret --v2-text-secondary #5E5E5E (visible)",
+    "Slot / filled: digit --v2-text-secondary #5E5E5E, 16px",
+    "Row / error: slots border --semantic-error-primary #F04438; row translateX keyframes (animation only)"
+  ],
+  "figmaSteps": [
+    "Slot: 54 x 60, radius 8px, gap between slots 24px, digit Inter 16px #5E5E5E (unchanged).",
+    "Add the digit enter as an interaction: empty slot variant (no digit) to filled variant, Smart Animate 180ms Gentle spring; digit layer opacity 0% to 100% and scale 90% to 100%.",
+    "Add an 'Error / shake' prototype on the slot row frame: five Smart Animate steps x offset 0, -4, +4, -4, +4, -4, +4, 0 px, total 300ms, ease in-out. Border --semantic-error-primary #F04438 on all slots.",
+    "Annotate reduced motion: no shake, no scale; digits fade only."
+  ],
+  "notes": [
+    "NEEDS ORCHESTRATOR: the shake class is `motion-safe:animate-[v2-otp-shake_300ms_ease-in-out]` but the keyframes cannot be defined from this task's files (src/index.css and the CLI theme are out of scope). Until they are added the shake does nothing (the red border still shows). Add next to v2-fade-in in src/index.css and in the CLI init theme (packages/cli/src/commands/init.ts):\n@keyframes v2-otp-shake { 0%, 100% { transform: translateX(0); } 14.28% { transform: translateX(-4px); } 28.57% { transform: translateX(4px); } 42.86% { transform: translateX(-4px); } 57.14% { transform: translateX(4px); } 71.43% { transform: translateX(-4px); } 85.71% { transform: translateX(4px); } }\nThe `error-feedback` after-capture injects exactly these keyframes into the page before clicking, so the recorded 300ms / +-4px shake is what the real component produces once they exist. (A Web Animations API call was rejected because the brief says CSS only.)",
+    "The shake runs when `error` turns on after the first render; an error that is already showing on load does not shake, and a second wrong attempt only shakes again if the app turns error off and on.",
+    "The empty slot's text is transparent with an explicit caret colour so the caret stays visible; digits keep selecting on focus as before.",
+    "A new story 'Error feedback' (Verify a wrong code) demonstrates the shake; OtpInput has no v1 so there is no contract to compare."
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "story": "v2-components-checkbox--checked",
+  "measured": {
+    "Box": {
+      "width": 20,
+      "height": 20,
+      "background-color": "rgb(52, 62, 85)",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-width": "1px",
+      "border-radius": "4px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(235, 236, 238) 0px 0px 0px 2px",
+      "transform": "none",
+      "outline-style": "solid",
+      "transition-property": "background-color, border-color, box-shadow, transform",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.2s",
+      "transition-timing-function": "ease-out, ease-out, ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "absolute",
+      "top": "-5px",
+      "right": "-5px",
+      "bottom": "-5px",
+      "left": "-5px",
+      "width": "28px",
+      "height": "28px",
+      "content": "\"\""
+    },
+    "Tick wrapper": {
+      "width": 14,
+      "height": 14,
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-delay": "0s",
+      "animation-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "opacity": "1",
+      "transform": "none"
+    },
+    "Tick path": {
+      "width": 9.33,
+      "height": 6.42,
+      "stroke": "rgb(255, 255, 255)",
+      "stroke-width": "3px",
+      "stroke-dasharray": "24px, 30px",
+      "stroke-dashoffset": "0px",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-delay": "0s",
+      "animation-timing-function": "ease",
+      "transition-property": "stroke-dashoffset",
+      "transition-duration": "0.15s"
+    },
+    "Label": {
+      "width": 132.41,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 419.796875,
+    "y": 389,
+    "width": 160.40625,
+    "height": 20
+  },
+  "evals": [
+    true
+  ]
+}

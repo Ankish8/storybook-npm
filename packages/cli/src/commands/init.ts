@@ -283,6 +283,15 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   from { opacity: 1; }
   to { opacity: 0; }
 }
+@keyframes v2-otp-shake {
+  0%, 100% { transform: translateX(0); }
+  14.28% { transform: translateX(-4px); }
+  28.57% { transform: translateX(4px); }
+  42.86% { transform: translateX(-4px); }
+  57.14% { transform: translateX(4px); }
+  71.43% { transform: translateX(-4px); }
+  85.71% { transform: translateX(4px); }
+}
 
 `
 

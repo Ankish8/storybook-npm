@@ -1,0 +1,72 @@
+{
+  "story": "v2-components-checkbox--indeterminate",
+  "measured": {
+    "Box": {
+      "width": 20,
+      "height": 20,
+      "background-color": "rgb(52, 62, 85)",
+      "border-top-color": "rgb(52, 62, 85)",
+      "border-top-width": "1px",
+      "border-radius": "4px",
+      "box-shadow": "none",
+      "transform": "none",
+      "outline-style": "none",
+      "transition-property": "background-color, border-color, box-shadow",
+      "transition-duration": "0.15s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "auto",
+      "height": "auto",
+      "content": "none"
+    },
+    "Tick wrapper": {
+      "width": 14,
+      "height": 14,
+      "animation-name": "enter",
+      "animation-duration": "0.18s",
+      "animation-delay": "0s",
+      "animation-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "opacity": "1",
+      "transform": "none"
+    },
+    "Tick path": {
+      "width": 8.17,
+      "height": 0,
+      "stroke": "rgb(255, 255, 255)",
+      "stroke-width": "3px",
+      "stroke-dasharray": "none",
+      "stroke-dashoffset": "0px",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-delay": "0s",
+      "animation-timing-function": "ease",
+      "transition-property": "all",
+      "transition-duration": "0s"
+    },
+    "Label": {
+      "width": 158.67,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 406.671875,
+    "y": 389,
+    "width": 186.671875,
+    "height": 20
+  },
+  "evals": [
+    true
+  ]
+}

@@ -19,6 +19,10 @@ const numberStepFieldVariants = cva(
   }
 );
 
+/** Holding a stepper: first repeat after 400ms, then every 60ms, until release, leave or a bound. */
+const REPEAT_DELAY_MS = 400;
+const REPEAT_INTERVAL_MS = 60;
+
 function clampInt(n: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, Math.floor(n)));
 }
@@ -83,12 +87,84 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
       onValueChange(clampInt(value - step, min, max));
     };
 
-    /** Keeps focus on the input (not the button) so stepping after typing does not drop focus; also focuses the field when only the steppers are used so blur handlers run on leave. */
-    const handleStepperPointerDown = (e: React.PointerEvent) => {
-      if (disabled) return;
-      e.preventDefault();
-      inputRef.current?.focus();
+    // Hold to repeat. The timers read the latest props through a ref so a controlled parent that re-renders
+    // between ticks is respected (and stepping stops at the bounds like a single click would).
+    const latest = React.useRef({ value, min, max, step, onValueChange });
+    React.useEffect(() => {
+      latest.current = { value, min, max, step, onValueChange };
+    });
+    const delayTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const repeatTimer = React.useRef<ReturnType<typeof setInterval> | null>(
+      null
+    );
+    // True once a hold has produced repeats: the click that follows the release must not step again.
+    // `releasedAt` lets a stale flag (a hold that left the button, so no click came) expire instead of
+    // swallowing a later keyboard click.
+    const heldRepeat = React.useRef(false);
+    const releasedAt = React.useRef(0);
+
+    const stopRepeat = React.useCallback(() => {
+      if (delayTimer.current) clearTimeout(delayTimer.current);
+      if (repeatTimer.current) clearInterval(repeatTimer.current);
+      delayTimer.current = null;
+      repeatTimer.current = null;
+    }, []);
+    React.useEffect(() => stopRepeat, [stopRepeat]);
+
+    const startRepeat = (direction: 1 | -1) => {
+      stopRepeat();
+      heldRepeat.current = false;
+      releasedAt.current = 0;
+      const tick = () => {
+        const current = latest.current;
+        const next = clampInt(
+          current.value + direction * current.step,
+          current.min,
+          current.max
+        );
+        if (next === current.value) {
+          stopRepeat();
+          return;
+        }
+        heldRepeat.current = true;
+        // Advance our own copy too: ticks can run before the parent has re-rendered, and without this they
+        // would all compute the same next value.
+        current.value = next;
+        current.onValueChange(next);
+      };
+      delayTimer.current = setTimeout(() => {
+        tick();
+        repeatTimer.current = setInterval(tick, REPEAT_INTERVAL_MS);
+      }, REPEAT_DELAY_MS);
     };
+
+    const endRepeat = () => {
+      stopRepeat();
+      if (heldRepeat.current && releasedAt.current === 0) {
+        releasedAt.current = Date.now();
+      }
+    };
+
+    /** Click path: keyboard activation, tests and short presses. A press that already repeated is not stepped again. */
+    const handleStepClick = (step: () => void) => () => {
+      if (heldRepeat.current) {
+        const fresh =
+          releasedAt.current === 0 || Date.now() - releasedAt.current < 600;
+        heldRepeat.current = false;
+        releasedAt.current = 0;
+        if (fresh) return;
+      }
+      step();
+    };
+
+    /** Keeps focus on the input (not the button) so stepping after typing does not drop focus; also focuses the field when only the steppers are used so blur handlers run on leave. */
+    const handleStepperPointerDown =
+      (direction: 1 | -1) => (e: React.PointerEvent) => {
+        if (disabled) return;
+        e.preventDefault();
+        inputRef.current?.focus();
+        if ((e.button ?? 0) === 0) startRepeat(direction);
+      };
 
     const atMax = value >= max;
     const atMin = value <= min;
@@ -123,25 +199,33 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
             hideNumberSpinners
             className="rounded-none border-0 h-full min-w-0 flex-1 bg-semantic-bg-primary px-4 py-2.5 leading-[normal] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none"
           />
-          {/* Steppers — markup matches Advanced Settings `ValidatedNumberSpinner` (advanced-settings-card.tsx) */}
-          <div className="flex h-full flex-col items-center justify-center shrink-0 gap-0.5 bg-semantic-bg-primary pl-0.5 pr-1.5">
+          {/* Steppers: each chevron is a half-height tile (24 x 19 in the 38px field) so the pointer target is
+              about 4x the 12px icon; markup otherwise matches Advanced Settings `ValidatedNumberSpinner`
+              (advanced-settings-card.tsx). The tile fill only shows on hover, so at rest it looks like bare chevrons. */}
+          <div className="flex h-full w-7 shrink-0 flex-col bg-semantic-bg-primary px-0.5">
             <button
               type="button"
               disabled={disabled || atMax}
-              onPointerDown={handleStepperPointerDown}
-              onClick={stepUp}
+              onPointerDown={handleStepperPointerDown(1)}
+              onPointerUp={endRepeat}
+              onPointerLeave={endRepeat}
+              onPointerCancel={endRepeat}
+              onClick={handleStepClick(stepUp)}
               aria-label={incrementAriaLabel ?? "Increase value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color,transform] [transition-duration:180ms,150ms,180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),ease-out,var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:[transition-duration:80ms,150ms,80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronUp className="size-3" />
             </button>
             <button
               type="button"
               disabled={disabled || atMin}
-              onPointerDown={handleStepperPointerDown}
-              onClick={stepDown}
+              onPointerDown={handleStepperPointerDown(-1)}
+              onPointerUp={endRepeat}
+              onPointerLeave={endRepeat}
+              onPointerCancel={endRepeat}
+              onClick={handleStepClick(stepDown)}
               aria-label={decrementAriaLabel ?? "Decrease value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color,transform] [transition-duration:180ms,150ms,180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),ease-out,var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:[transition-duration:80ms,150ms,80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronDown className="size-3" />
             </button>

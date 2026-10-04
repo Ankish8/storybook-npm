@@ -1,0 +1,305 @@
+{
+  "story": "v2-components-otpinput--error-feedback",
+  "measured": {
+    "Slot 1": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color",
+      "transition-duration": "0.15s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "animation-name": "none",
+      "animation-duration": "0.15s"
+    },
+    "Slot 4": {
+      "width": "54px",
+      "height": "60px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "border-top-width": "1px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)",
+      "caret-color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "box-shadow": "none",
+      "transform": "none",
+      "opacity": "1",
+      "transition-property": "border-color, box-shadow, background-color, color",
+      "transition-duration": "0.15s",
+      "transition-timing-function": "cubic-bezier(0, 0, 0.2, 1)",
+      "animation-name": "none",
+      "animation-duration": "0.15s"
+    },
+    "Slot row": {
+      "width": 288,
+      "height": 60,
+      "gap": "24px",
+      "column-gap": "24px",
+      "transform": "none",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Helper text": {
+      "width": 255.75,
+      "height": 16,
+      "color": "rgb(180, 35, 24)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "opacity": "1",
+      "transition-property": "all"
+    }
+  },
+  "popupBox": {
+    "x": 336,
+    "y": 306,
+    "width": 328,
+    "height": 188
+  },
+  "evals": [
+    [
+      {
+        "t": 4,
+        "dx": 0,
+        "border": "rgb(233, 234, 235)",
+        "animations": 0
+      },
+      {
+        "t": 9,
+        "dx": 0,
+        "border": "rgb(233, 234, 235)",
+        "animations": 16
+      },
+      {
+        "t": 13,
+        "dx": 0,
+        "border": "rgb(235, 180, 176)",
+        "animations": 16
+      },
+      {
+        "t": 25,
+        "dx": 0,
+        "border": "rgb(237, 145, 139)",
+        "animations": 16
+      },
+      {
+        "t": 42,
+        "dx": 0,
+        "border": "rgb(238, 120, 113)",
+        "animations": 16
+      },
+      {
+        "t": 58,
+        "dx": 0,
+        "border": "rgb(239, 102, 93)",
+        "animations": 16
+      },
+      {
+        "t": 75,
+        "dx": 0,
+        "border": "rgb(239, 89, 78)",
+        "animations": 16
+      },
+      {
+        "t": 92,
+        "dx": 0,
+        "border": "rgb(240, 79, 68)",
+        "animations": 16
+      },
+      {
+        "t": 108,
+        "dx": 0,
+        "border": "rgb(240, 73, 61)",
+        "animations": 16
+      },
+      {
+        "t": 125,
+        "dx": 0,
+        "border": "rgb(240, 69, 57)",
+        "animations": 16
+      },
+      {
+        "t": 142,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 16
+      },
+      {
+        "t": 159,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 175,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 192,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 208,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 225,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 242,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 258,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 275,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 292,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 308,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 325,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 342,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 358,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 375,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 392,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 408,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 425,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 442,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 458,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 476,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 492,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 508,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 525,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 542,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 558,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 575,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 592,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      },
+      {
+        "t": 608,
+        "dx": 0,
+        "border": "rgb(240, 68, 56)",
+        "animations": 0
+      }
+    ]
+  ]
+}

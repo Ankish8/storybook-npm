@@ -1,0 +1,65 @@
+{
+  "story": "v2-components-numberstepfield--overview",
+  "measured": {
+    "Increase button": {
+      "width": "24px",
+      "height": "19px",
+      "display": "flex",
+      "color": "rgb(112, 112, 112)",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "4px",
+      "transform": "none",
+      "opacity": "1",
+      "cursor": "pointer",
+      "transition-property": "color, background-color, transform",
+      "transition-duration": "0.18s, 0.15s, 0.18s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)"
+    },
+    "Decrease button": {
+      "width": "24px",
+      "height": "19px",
+      "display": "flex",
+      "color": "rgb(112, 112, 112)",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "4px",
+      "transform": "none",
+      "opacity": "1",
+      "cursor": "pointer",
+      "transition-property": "color, background-color, transform",
+      "transition-duration": "0.18s, 0.15s, 0.18s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%), ease-out, linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)"
+    },
+    "Chevron up icon": {
+      "width": "12px",
+      "height": "12px"
+    },
+    "Stepper column": {
+      "width": "28px",
+      "height": "38px",
+      "gap": "normal",
+      "padding": "0px 2px",
+      "background-color": "rgb(255, 255, 255)"
+    },
+    "Field": {
+      "width": 288,
+      "height": "40px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-radius": "8px",
+      "box-shadow": "none"
+    },
+    "Input": {
+      "width": "188.375px",
+      "height": 38,
+      "font-size": "16px",
+      "color": "rgb(94, 94, 94)",
+      "padding": "10px 16px"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 381,
+    "width": 286,
+    "height": 38
+  },
+  "evals": []
+}

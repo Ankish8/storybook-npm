@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-radio--selected",
+  "measured": {
+    "Radio (pressed)": {
+      "width": 15.36,
+      "height": 15.36,
+      "transform": "matrix(0.96, 0, 0, 0.96, 0, 0)",
+      "background-size": "8px 8px",
+      "background-image": "radial-gradient(circle closest-side, rgb(52, 62, 85) 100%, rgba(0, 0, 0, 0) 100%)",
+      "border-top-color": "rgb(24, 29, 39)",
+      "box-shadow": "none",
+      "transition-duration": "0.24s, 0.1s, 0.24s, 0.24s, 0.08s"
+    }
+  },
+  "popupBox": {
+    "x": 406.21875,
+    "y": 380,
+    "width": 187.578125,
+    "height": 40
+  },
+  "evals": []
+}

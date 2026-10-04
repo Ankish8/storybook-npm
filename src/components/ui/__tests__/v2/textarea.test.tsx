@@ -339,3 +339,46 @@ describe("Textarea", () => {
     expect(label).toHaveClass("font-medium");
   });
 });
+
+describe("Textarea message reveal", () => {
+  it("keeps the error id and describedby link and adds a polite live region", () => {
+    render(<Textarea id="notes" error="Too short" />);
+    const message = screen.getByText("Too short");
+    expect(message).toHaveAttribute("id", "notes-error");
+    expect(message).toHaveAttribute("aria-live", "polite");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "aria-describedby",
+      "notes-error"
+    );
+  });
+
+  it("keeps role=alert on the icon variant and does not add a second live region", () => {
+    render(<Textarea id="notes" error="Invalid" errorIcon />);
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveAttribute("id", "notes-error");
+    expect(alert).not.toHaveAttribute("aria-live");
+  });
+
+  it("does not reveal helper text present on first render", () => {
+    render(<Textarea helperText="Hint" />);
+    expect(screen.getByText("Hint").parentElement!.className).not.toContain(
+      "@starting-style"
+    );
+  });
+
+  it("reveals an error that appears after the field", () => {
+    const { rerender } = render(<Textarea />);
+    rerender(<Textarea error="Required" />);
+    const row = screen.getByText("Required").parentElement!;
+    expect(row).toHaveClass("grid-rows-[1fr]");
+    expect(row.className).toContain("[@starting-style]:grid-rows-[0fr]");
+    expect(row.className).toContain("[transition-duration:240ms]");
+  });
+
+  it("keeps the counter on the right of the message row", () => {
+    render(<Textarea showCount maxLength={50} helperText="Hint" />);
+    const row = screen.getByText("Hint").parentElement!;
+    expect(row).toHaveClass("grid-cols-[minmax(0,1fr)_auto]");
+    expect(screen.getByText("0/50")).toBeInTheDocument();
+  });
+});

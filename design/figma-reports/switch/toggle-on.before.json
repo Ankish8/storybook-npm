@@ -1,0 +1,264 @@
+{
+  "story": "v2-components-switch--with-label",
+  "measured": {
+    "Track": {
+      "width": 36,
+      "height": 20,
+      "background-color": "rgb(52, 62, 85)",
+      "border-top-width": "2px",
+      "border-radius": "12px",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(94, 94, 94)",
+      "transform": "none",
+      "position": "static",
+      "transition-property": "color, background-color, border-color, text-decoration-color, fill, stroke",
+      "transition-duration": "0.24s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer"
+    },
+    "Hit area (::before)": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "auto",
+      "height": "auto",
+      "content": "none"
+    },
+    "Thumb": {
+      "width": 16,
+      "height": 16,
+      "background-color": "rgb(255, 255, 255)",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(59, 130, 246, 0.5) 0px 0px 0px 0px, rgba(0, 0, 0, 0.06) 0px 2px 8px 0px",
+      "transform": "matrix(1, 0, 0, 1, 16, 0)",
+      "transition-property": "transform",
+      "transition-duration": "0.24s"
+    },
+    "Label": {
+      "width": 131.88,
+      "height": 20,
+      "font-size": "14px",
+      "line-height": "20px",
+      "color": "rgb(72, 72, 72)",
+      "font-weight": "500",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 412.0625,
+    "y": 388,
+    "width": 175.875,
+    "height": 20
+  },
+  "evals": [
+    true,
+    [
+      {
+        "t": 2,
+        "state": "unchecked",
+        "thumbX": 0,
+        "thumbScaleX": 1,
+        "track": "rgb(235, 236, 238)"
+      },
+      {
+        "t": 2,
+        "state": "unchecked",
+        "thumbX": 0,
+        "thumbScaleX": 1,
+        "track": "rgb(235, 236, 238)"
+      },
+      {
+        "t": 19,
+        "state": "checked",
+        "thumbX": 0,
+        "thumbScaleX": 1,
+        "track": "rgb(235, 236, 238)"
+      },
+      {
+        "t": 36,
+        "state": "checked",
+        "thumbX": 1.8,
+        "thumbScaleX": 1,
+        "track": "rgb(214, 216, 221)"
+      },
+      {
+        "t": 52,
+        "state": "checked",
+        "thumbX": 4.89,
+        "thumbScaleX": 1,
+        "track": "rgb(179, 183, 191)"
+      },
+      {
+        "t": 69,
+        "state": "checked",
+        "thumbX": 7.94,
+        "thumbScaleX": 1,
+        "track": "rgb(144, 150, 162)"
+      },
+      {
+        "t": 86,
+        "state": "checked",
+        "thumbX": 10.41,
+        "thumbScaleX": 1,
+        "track": "rgb(116, 123, 138)"
+      },
+      {
+        "t": 102,
+        "state": "checked",
+        "thumbX": 12.27,
+        "thumbScaleX": 1,
+        "track": "rgb(95, 103, 121)"
+      },
+      {
+        "t": 119,
+        "state": "checked",
+        "thumbX": 13.54,
+        "thumbScaleX": 1,
+        "track": "rgb(80, 89, 108)"
+      },
+      {
+        "t": 136,
+        "state": "checked",
+        "thumbX": 14.43,
+        "thumbScaleX": 1,
+        "track": "rgb(70, 79, 100)"
+      },
+      {
+        "t": 152,
+        "state": "checked",
+        "thumbX": 15.02,
+        "thumbScaleX": 1,
+        "track": "rgb(63, 73, 94)"
+      },
+      {
+        "t": 169,
+        "state": "checked",
+        "thumbX": 15.39,
+        "thumbScaleX": 1,
+        "track": "rgb(59, 69, 91)"
+      },
+      {
+        "t": 186,
+        "state": "checked",
+        "thumbX": 15.64,
+        "thumbScaleX": 1,
+        "track": "rgb(56, 66, 88)"
+      },
+      {
+        "t": 202,
+        "state": "checked",
+        "thumbX": 15.79,
+        "thumbScaleX": 1,
+        "track": "rgb(54, 64, 87)"
+      },
+      {
+        "t": 219,
+        "state": "checked",
+        "thumbX": 15.89,
+        "thumbScaleX": 1,
+        "track": "rgb(53, 63, 86)"
+      },
+      {
+        "t": 236,
+        "state": "checked",
+        "thumbX": 15.95,
+        "thumbScaleX": 1,
+        "track": "rgb(53, 63, 85)"
+      },
+      {
+        "t": 252,
+        "state": "checked",
+        "thumbX": 15.99,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 279,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 299,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 303,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 319,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 335,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 352,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 369,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 386,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 402,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 419,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 435,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      },
+      {
+        "t": 452,
+        "state": "checked",
+        "thumbX": 16,
+        "thumbScaleX": 1,
+        "track": "rgb(52, 62, 85)"
+      }
+    ]
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "story": "v2-components-readablefield--base-url",
+  "measured": {
+    "Field container": {
+      "width": 420,
+      "height": "40px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "border-radius": "8px",
+      "box-shadow": "none",
+      "padding": "0px 16px",
+      "gap": "12px"
+    },
+    "Value": {
+      "width": 251.64,
+      "height": 24,
+      "color": "rgb(94, 94, 94)",
+      "font-size": "16px",
+      "letter-spacing": "0.08px",
+      "user-select": "auto",
+      "-webkit-user-select": "auto"
+    },
+    "Copy button": {
+      "width": "18px",
+      "height": "18px",
+      "color": "rgb(112, 112, 112)",
+      "border-radius": "4px",
+      "transform": "none",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(112, 112, 112)",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s",
+      "transition-timing-function": "linear(0 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.9907 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1 100%)",
+      "cursor": "pointer",
+      "position": "static"
+    },
+    "Copy icon box": {
+      "width": "18px",
+      "height": "18px",
+      "opacity": "1",
+      "transform": "none",
+      "color": "rgb(112, 112, 112)",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "transition-property": "color, transform",
+      "transition-duration": "0.18s"
+    },
+    "Status (sr-only)": null
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 354,
+    "width": 403,
+    "height": 60
+  },
+  "evals": []
+}

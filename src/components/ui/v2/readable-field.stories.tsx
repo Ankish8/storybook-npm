@@ -27,6 +27,11 @@ const meta: Meta<typeof ReadableField> = {
           summary:
             "Read-only values with copy, secret masking and an optional header action.",
           changes: [
+            [
+              "Copy feedback",
+              "Icon swap",
+              "Cross-fade in a fixed 18px box; failed state; polite status for screen readers",
+            ],
             ["Container", "42px high, 4px corners", "40px high, 8px corners"],
             ["Typography", "Inherited font", "Inter with 14px medium label"],
             ["Helper", "14px", "12px"],

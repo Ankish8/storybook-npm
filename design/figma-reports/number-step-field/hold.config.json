@@ -1,0 +1,8 @@
+[
+  { "name": "hold-up-1200ms", "story": "v2-components-numberstepfield--overview", "press": "button[aria-label=\"Increase value\"]", "hold": 1200,
+    "probe": "document.querySelector('input[type=number]').value", "probeAfter": "document.querySelector('input[type=number]').value",
+    "measure": { "Increase tile (held)": { "sel": "button[aria-label=\"Increase value\"]", "props": ["transform", "background-color"] } } },
+  { "name": "hold-down-to-minimum", "story": "v2-components-numberstepfield--overview", "press": "button[aria-label=\"Decrease value\"]", "hold": 1500,
+    "probe": "document.querySelector('input[type=number]').value", "probeAfter": "document.querySelector('input[type=number]').value",
+    "measure": { "Decrease tile (held, at bound)": { "sel": "button[aria-label=\"Decrease value\"]", "props": ["opacity", "cursor"] } } }
+]

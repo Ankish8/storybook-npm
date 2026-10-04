@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-checkbox--with-label",
+  "measured": {
+    "Box (pressed)": {
+      "width": 19.2,
+      "height": 19.2,
+      "transform": "matrix(0.96, 0, 0, 0.96, 0, 0)",
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(192, 195, 202)",
+      "box-shadow": "none",
+      "transition-duration": "0.15s, 0.15s, 0.15s, 0.08s"
+    }
+  },
+  "popupBox": {
+    "x": 381.703125,
+    "y": 387,
+    "width": 236.59375,
+    "height": 20
+  },
+  "evals": []
+}

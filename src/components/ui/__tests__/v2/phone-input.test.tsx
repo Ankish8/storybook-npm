@@ -241,3 +241,45 @@ describe("PhoneInput", () => {
     expect(screen.getByTestId("phone")).toHaveValue("9876543210");
   });
 });
+
+describe("PhoneInput message reveal and country focus", () => {
+  it("keeps the validation id, describedby link and adds a polite live region", () => {
+    render(<PhoneInput id="phone" validation="Enter a valid number" />);
+    const message = screen.getByText("Enter a valid number");
+    expect(message).toHaveAttribute("id", "phone-validation");
+    expect(message).toHaveAttribute("aria-live", "polite");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "aria-describedby",
+      expect.stringContaining("phone-validation")
+    );
+  });
+
+  it("does not reveal a validation message present on first render", () => {
+    render(<PhoneInput validation="Bad" />);
+    expect(screen.getByText("Bad").parentElement!.className).not.toContain(
+      "@starting-style"
+    );
+  });
+
+  it("reveals a validation message that appears later, with a 4px gap", () => {
+    const { rerender } = render(<PhoneInput />);
+    rerender(<PhoneInput validation="Bad" />);
+    const message = screen.getByText("Bad");
+    const reveal = message.parentElement!;
+    expect(reveal.className).toContain("[@starting-style]:grid-rows-[0fr]");
+    expect(reveal.className).toContain("[transition-duration:240ms]");
+    expect(reveal.parentElement).toHaveClass("gap-1");
+  });
+
+  it("gives the country button a visible focus-visible ring", () => {
+    render(<PhoneInput onCountryClick={() => {}} />);
+    const button = screen.getByTestId("phone-input-country");
+    expect(button).toHaveClass(
+      "focus-visible:outline",
+      "focus-visible:[outline-width:2px]",
+      "focus-visible:-outline-offset-4",
+      "focus-visible:outline-semantic-primary",
+      "rounded-[10px]"
+    );
+  });
+});

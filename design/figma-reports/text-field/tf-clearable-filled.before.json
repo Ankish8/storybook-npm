@@ -1,0 +1,40 @@
+{
+  "story": "v2-components-textfield--clearable",
+  "measured": {
+    "Clear button": {
+      "width": "16px",
+      "height": "16px",
+      "opacity": "1",
+      "transform": "none",
+      "visibility": "visible",
+      "margin-left": "8px",
+      "color": "rgb(112, 112, 112)",
+      "transition-property": "color, background-color, border-color, text-decoration-color, fill, stroke",
+      "transition-duration": "0.15s",
+      "cursor": "pointer"
+    },
+    "Clear button hit area (::before)": {
+      "position": "static",
+      "top": "auto",
+      "right": "auto",
+      "bottom": "auto",
+      "left": "auto",
+      "width": "auto",
+      "height": "auto",
+      "content": "none"
+    },
+    "Input": {
+      "width": "362px",
+      "height": 38
+    }
+  },
+  "popupBox": {
+    "x": 290,
+    "y": 358,
+    "width": 420,
+    "height": 84
+  },
+  "evals": [
+    true
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-numberstepfield--overview",
+  "measured": {
+    "Decrease tile (held, at bound)": {
+      "width": 23.04,
+      "height": 18.24,
+      "opacity": "0.4",
+      "cursor": "not-allowed"
+    }
+  },
+  "popupBox": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
+  "evals": [
+    "0",
+    "0",
+    "0"
+  ]
+}
