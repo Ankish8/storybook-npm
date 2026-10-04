@@ -111,4 +111,71 @@ describe("Tag (v2)", () => {
       "bg-semantic-brand-surface"
     );
   });
+  describe("dismiss button target", () => {
+    const renderRemovable = (
+      props: Partial<React.ComponentProps<typeof Tag>> = {}
+    ) => {
+      render(
+        <Tag onRemove={vi.fn()} removeAriaLabel="Remove event" {...props}>
+          Event
+        </Tag>
+      );
+      return screen.getByRole("button", { name: "Remove event" });
+    };
+    it("has a 24px hit area around an unchanged 12px icon", () => {
+      const button = renderRemovable();
+      expect(button).toHaveClass("size-6");
+      expect(button.querySelector("svg")).toHaveClass("size-3");
+    });
+    it("keeps the old 12px layout footprint so the tag does not grow", () => {
+      const button = renderRemovable();
+      // -6px on every side cancels the extra 12px of hit area (24 - 12).
+      expect(button).toHaveClass("-m-1.5");
+    });
+    it("keeps its accessible name, type and click contract", async () => {
+      const onRemove = vi.fn();
+      render(
+        <Tag onRemove={onRemove} removeAriaLabel="Remove event">
+          Event
+        </Tag>
+      );
+      const button = screen.getByRole("button", { name: "Remove event" });
+      expect(button).toHaveAttribute("type", "button");
+      await userEvent.setup().click(button);
+      expect(onRemove).toHaveBeenCalledOnce();
+    });
+    it("shows a neutral black 8% hover plate only on hover-capable, enabled buttons", () => {
+      const button = renderRemovable();
+      expect(button).toHaveClass(
+        "before:bg-[var(--color-black)]",
+        "before:opacity-0",
+        "enabled:[@media(hover:hover)]:hover:before:opacity-[0.08]"
+      );
+      expect(button).not.toHaveClass("hover:scale-[1.03]");
+      expect(button).toHaveClass("[@media(hover:hover)]:hover:scale-[1.03]");
+    });
+    it("draws its own focus ring instead of the browser default", () => {
+      const button = renderRemovable();
+      expect(button).toHaveClass(
+        "focus-visible:outline-none",
+        "focus-visible:after:outline",
+        "focus-visible:after:outline-semantic-primary"
+      );
+    });
+    it("stays inert and flat when disabled", () => {
+      const button = renderRemovable({ removeDisabled: true });
+      expect(button).toBeDisabled();
+      expect(button).toHaveClass(
+        "cursor-not-allowed",
+        "opacity-50",
+        "[@media(hover:hover)]:hover:scale-100"
+      );
+      expect(button).toHaveClass("size-6");
+    });
+    it("does not add elements for the plate or hit area", () => {
+      const button = renderRemovable();
+      expect(button.children).toHaveLength(1);
+      expect(button.firstElementChild?.tagName.toLowerCase()).toBe("svg");
+    });
+  });
 });

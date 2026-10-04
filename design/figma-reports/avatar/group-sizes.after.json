@@ -1,0 +1,184 @@
+{
+  "story": "v2-components-avatar--group-sizes",
+  "measured": {},
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 284,
+    "height": 270
+  },
+  "evals": [
+    [
+      [
+        {
+          "w": 24,
+          "h": 24,
+          "left": 68,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "AK",
+          "overlapWithPrev": null
+        },
+        {
+          "w": 24,
+          "h": 24,
+          "left": 88,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "",
+          "overlapWithPrev": 4
+        },
+        {
+          "w": 24,
+          "h": 24,
+          "left": 108,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "MI",
+          "overlapWithPrev": 4
+        },
+        {
+          "w": 24,
+          "h": 24,
+          "left": 128,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "+3",
+          "overlapWithPrev": 4
+        }
+      ],
+      [
+        {
+          "w": 30,
+          "h": 30,
+          "left": 68,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "AK",
+          "overlapWithPrev": null
+        },
+        {
+          "w": 30,
+          "h": 30,
+          "left": 94,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "",
+          "overlapWithPrev": 4
+        },
+        {
+          "w": 30,
+          "h": 30,
+          "left": 120,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "MI",
+          "overlapWithPrev": 4
+        },
+        {
+          "w": 30,
+          "h": 30,
+          "left": 146,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "+3",
+          "overlapWithPrev": 4
+        }
+      ],
+      [
+        {
+          "w": 40,
+          "h": 40,
+          "left": 68,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "AK",
+          "overlapWithPrev": null
+        },
+        {
+          "w": 40,
+          "h": 40,
+          "left": 100,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 40,
+          "h": 40,
+          "left": 132,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "MI",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 40,
+          "h": 40,
+          "left": 164,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "+3",
+          "overlapWithPrev": 8
+        }
+      ],
+      [
+        {
+          "w": 48,
+          "h": 48,
+          "left": 68,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "AK",
+          "overlapWithPrev": null
+        },
+        {
+          "w": 48,
+          "h": 48,
+          "left": 108,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 48,
+          "h": 48,
+          "left": 148,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "MI",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 48,
+          "h": 48,
+          "left": 188,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "+3",
+          "overlapWithPrev": 8
+        }
+      ],
+      [
+        {
+          "w": 64,
+          "h": 64,
+          "left": 68,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "AK",
+          "overlapWithPrev": null
+        },
+        {
+          "w": 64,
+          "h": 64,
+          "left": 124,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 64,
+          "h": 64,
+          "left": 180,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "MI",
+          "overlapWithPrev": 8
+        },
+        {
+          "w": 64,
+          "h": 64,
+          "left": 236,
+          "shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+          "text": "+3",
+          "overlapWithPrev": 8
+        }
+      ]
+    ]
+  ]
+}

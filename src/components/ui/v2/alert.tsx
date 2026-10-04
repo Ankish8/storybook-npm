@@ -115,9 +115,11 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         type="button"
         onClick={handleClose}
         aria-label="Close alert"
-        className="inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+        // 24px target around a 16px icon. The -2px margin keeps the layout footprint of the old 20px box, so the
+        // row height and the icon's centre do not move; only the clickable area grows.
+        className="-m-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
       >
-        <X className="size-5" />
+        <X className="size-4" />
       </button>
     );
     const actions = (action || secondaryAction) && (

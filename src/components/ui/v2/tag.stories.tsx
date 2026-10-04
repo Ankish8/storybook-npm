@@ -102,6 +102,11 @@ const meta: Meta<TagStoryArgs> = {
               "Darker success, warning and error text",
             ],
             [
+              "Dismiss target",
+              "12px icon is the whole target",
+              "24px target, neutral hover plate and own focus ring; icon stays 12px and the tag does not grow",
+            ],
+            [
               "Dismissal and overflow",
               "onRemove, removeDisabled, TagGroup",
               "Same props and behavior",
@@ -129,6 +134,8 @@ const meta: Meta<TagStoryArgs> = {
             ["Success text", "--semantic-success-text", "#067647", "#067647"],
             ["Warning text", "--semantic-warning-text", "#B54708", "#B54708"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
+            ["Dismiss hover plate", "--color-black", "#000000 at 8%"],
+            ["Dismiss focus ring", "--semantic-primary", "#343E55", "#343E55"],
             ["Font", "--font-v2", "Inter 400 / 600"],
             ["Radius", "--radius", "8px"],
           ],

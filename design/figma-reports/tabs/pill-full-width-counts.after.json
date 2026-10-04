@@ -1,0 +1,99 @@
+{
+  "story": "v2-components-tabs--full-width-with-badges&args=variant:pill",
+  "measured": {
+    "Tab list": {
+      "width": 728,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "border-radius": "8px",
+      "border-bottom-width": "0px",
+      "border-bottom-color": "rgb(229, 231, 235)",
+      "padding-top": "4px",
+      "padding-left": "4px",
+      "isolation": "isolate",
+      "display": "inline-flex"
+    },
+    "Tab (active)": {
+      "width": 240,
+      "height": 32,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "6px",
+      "border-bottom-width": "1px",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-left-width": "1px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "padding-top": "0px",
+      "padding-left": "12px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "letter-spacing": "0.014px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "outline-width": "3px",
+      "outline-style": "none",
+      "outline-color": "rgb(72, 72, 72)",
+      "outline-offset": "0px",
+      "transition-duration": "0.15s"
+    },
+    "Tab (inactive)": {
+      "width": 240,
+      "height": 32,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(112, 112, 112)",
+      "border-radius": "6px",
+      "border-bottom-width": "1px",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-left-width": "1px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "padding-top": "0px",
+      "padding-left": "12px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "letter-spacing": "0.014px",
+      "box-shadow": "none",
+      "outline-width": "3px",
+      "outline-style": "none",
+      "outline-color": "rgb(112, 112, 112)",
+      "outline-offset": "0px",
+      "transition-duration": "0.15s"
+    }
+  },
+  "popupBox": {
+    "x": 20,
+    "y": 20,
+    "width": 720,
+    "height": 145
+  },
+  "evals": [
+    {
+      "cursor": {
+        "position": "absolute",
+        "left": "0px",
+        "top": "0px",
+        "bottom": "8px",
+        "width": "240px",
+        "height": "32px",
+        "background-color": "rgb(255, 255, 255)",
+        "border-top-width": "1px",
+        "border-top-style": "solid",
+        "border-top-color": "rgb(233, 234, 235)",
+        "border-radius": "6px",
+        "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.05) 0px 1px 2px 0px",
+        "transform": "matrix(1, 0, 0, 1, 4, 4)",
+        "opacity": "1",
+        "z-index": "-10"
+      },
+      "vars": [
+        "4px",
+        "4px",
+        "240px",
+        "32px"
+      ],
+      "markup": "<div role=\"tablist\" aria-orientation=\"horizontal\" data-variant=\"pill\" class=\"relative isolate inline-flex max-w-full items-center rounded-lg bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-semantic-border-layout after:bg-semantic-bg-primary after:shadow-xs after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100 [&amp;[data-motion-indicator=true]&gt;[role=tab][data-state=active]]:border-transparent [&amp;[data-motion-indicator=true]&gt;[role=tab][data-state=active]]:bg-transparent [&amp;[data-motion-indicator=true]&gt;[role=tab][data-state=active]]:shadow-none w-full [&amp;&gt;*]:flex-1\" aria-label=\"Conversation status\" tabindex=\"0\" data-orientation=\"horizontal\" data-motion-indicator=\"true\" style=\"outline: none; --v2-tab-x: 4px; --v2-tab-y: 4px; --v2-tab-width: 240px; --v2-tab-height: 32px;\"><button type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"radix-_r_0_-content-open\" data-state=\"active\" id=\"radix-_r_0_-trigger-open\" class=\"inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-0 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:justify-start\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collection-item=\"\">Open<span class=\"inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,#5E5E5E)]\">12</span></button><button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_0_-content-assigned\" data-state=\"inactive\" id=\"radix-_r_0_-trigger-assigned\" class=\"inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-0 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:justify-start\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collection-item=\"\">Assigned<span class=\"inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,#5E5E5E)]\">10</span></button><button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_0_-content-resolved\" data-state=\"inactive\" id=\"radix-_r_0_-trigger-resolved\" class=\"inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-0 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:justify-start\" tabindex=\"-1\" data-orientation=\"horizontal\" data-radix-collection-item=\"\">Resolved<span class=\"inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,#5E5E5E)]\">8</span></button></div>"
+    }
+  ]
+}

@@ -95,4 +95,64 @@ describe("Badge (v2)", () => {
     expect(screen.getByRole("link")).toHaveAttribute("href", "#status");
     expect(onClick).toHaveBeenCalledOnce();
   });
+  describe("dot", () => {
+    it("renders nothing extra by default", () => {
+      render(<Badge data-testid="badge">Active</Badge>);
+      const badge = screen.getByTestId("badge");
+      expect(badge.querySelector("span")).toBeNull();
+      expect(badge.children).toHaveLength(0);
+    });
+    it("renders a decorative 7px dot that follows the variant's text colour", () => {
+      render(
+        <Badge variant="active" dot data-testid="badge">
+          Online
+        </Badge>
+      );
+      const badge = screen.getByTestId("badge");
+      const dot = badge.querySelector("span");
+      expect(dot).toHaveAttribute("aria-hidden", "true");
+      expect(dot).toHaveClass(
+        "size-[7px]",
+        "rounded-full",
+        "bg-current",
+        "shrink-0"
+      );
+      // currentColor resolves to the variant text colour, so the dot cannot drift from the label.
+      expect(badge).toHaveClass("text-semantic-success-text");
+      expect(dot).toBeEmptyDOMElement();
+      expect(screen.getByText("Online")).toBe(badge);
+    });
+    it("leads the label and sits before an icon", () => {
+      render(
+        <Badge dot leftIcon={<i data-testid="icon" />} data-testid="badge">
+          Online
+        </Badge>
+      );
+      const [first, second] = Array.from(screen.getByTestId("badge").children);
+      expect(first).toHaveAttribute("aria-hidden", "true");
+      expect(second).toContainElement(screen.getByTestId("icon"));
+    });
+    it.each(variants)("does not leak dot onto the DOM for %s", (variant) => {
+      render(
+        <Badge variant={variant} dot data-testid="badge">
+          Status
+        </Badge>
+      );
+      expect(screen.getByTestId("badge")).not.toHaveAttribute("dot");
+    });
+    it("does not alter the label's accessible text", () => {
+      render(<Badge dot>Online</Badge>);
+      expect(screen.getByText("Online")).toHaveTextContent(/^Online$/);
+    });
+    it("is ignored with asChild because a slotted child cannot gain elements", () => {
+      render(
+        <Badge asChild dot>
+          <a href="#status">View status</a>
+        </Badge>
+      );
+      const link = screen.getByRole("link");
+      expect(link.querySelector("span")).toBeNull();
+      expect(link).not.toHaveAttribute("dot");
+    });
+  });
 });

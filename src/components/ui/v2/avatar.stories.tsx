@@ -2,7 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
 import { Phone, UserRound } from "lucide-react";
-import { Avatar, type AvatarProps } from "./avatar";
+import { Avatar, AvatarGroup, type AvatarProps } from "./avatar";
 import { Avatar as AvatarV1 } from "../avatar";
 import { Input } from "./input";
 import {
@@ -15,7 +15,11 @@ import {
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
-type Args = AvatarProps & { customContent: "none" | "person" | "phone" };
+type Args = AvatarProps & {
+  customContent: "none" | "person" | "phone";
+  /** AvatarGroup only */
+  max?: number;
+};
 const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
 const variants = ["soft", "outline", "filled"] as const;
 const statuses = [undefined, "online", "offline", "busy", "away"] as const;
@@ -31,7 +35,7 @@ function Sample({
   args: Args;
   version?: "v1" | "v2";
 }) {
-  const { customContent, ...props } = args;
+  const { customContent, max: _max, ...props } = args;
   const content =
     customContent === "person" ? (
       <UserRound className="size-4" />
@@ -84,6 +88,16 @@ const meta: Meta<Args> = {
             ["Type", "Semibold inherited font", "Medium Inter"],
             ["Outline", "Custom styling", "Named outline variant"],
             [
+              "Broken image",
+              "Browser broken-image glyph",
+              "Falls back to custom content, then initials, as if there were no src",
+            ],
+            [
+              "AvatarGroup",
+              "—",
+              "New export: -8px overlap, 2px surface ring, max with a same-size +N tile",
+            ],
+            [
               "Props",
               "Identity and presence props",
               "Existing name/src/alt/initials/status/children retained",
@@ -93,12 +107,14 @@ const meta: Meta<Args> = {
             ["Soft surface", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Filled surface", "--semantic-primary", "#343E55", "#343E55"],
             ["Outline", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
+            ["Group ring", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
+            ["+N tile", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Online", "--semantic-success-primary", "#17B26A", "#17B26A"],
             ["Busy", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Away", "--semantic-warning-primary", "#FDB022", "#FDB022"],
           ],
           guidance:
-            "Provide name for generated initials and the accessible label. src takes precedence over custom children and initials. Supply a usable image URL; image-error fallback is unchanged from v1. Presence is a visual dot, so add a text status in the surrounding UI where users need that information. customContent composes children in this example and is not an Avatar prop.",
+            "Provide name for generated initials and the accessible label. src takes precedence over custom children and initials. If the image fails to load, the avatar shows its custom content or initials exactly as it does without src (v1 left the broken image visible), so still pass name or initials. Presence is a visual dot, so add a text status in the surrounding UI where users need that information. AvatarGroup overlaps its children; max collapses the rest into a +N tile and size sets that tile (and any child without its own size). customContent composes children in this example and is not an Avatar prop.",
         }),
       },
     },
@@ -245,7 +261,7 @@ export const WithStatus: Story = {
 export const States: Story = {
   parameters: gallery(
     ["src", "initials", "customContent"],
-    "Generated initials, explicit initials, image and custom children are fixed. There are no interactive states in Avatar; the presence gallery is separate."
+    "Generated initials, explicit initials, image, custom children and a failing image URL are fixed. There are no interactive states in Avatar; the presence gallery is separate."
   ),
   render: (args) => (
     <div className="grid max-w-full grid-cols-2 gap-4">
@@ -269,6 +285,14 @@ export const States: Story = {
         {
           title: "Custom children",
           props: { src: "", customContent: "person" as const },
+        },
+        {
+          // A URL that 404s: the avatar falls back to initials instead of showing a broken image.
+          title: "Image fails to load",
+          props: {
+            src: "/avatar-image-that-does-not-exist.png",
+            customContent: "none" as const,
+          },
         },
       ].map(({ title, props }) => (
         <Card key={title} title={title}>
@@ -310,6 +334,85 @@ export const V1VsV2: Story = {
           ))
         )}
       </div>
+    </div>
+  ),
+};
+const PEOPLE = [
+  "Aditi Kumar",
+  "Ravi Shah",
+  "Meera Iyer",
+  "Karan Mehta",
+  "Sana Qureshi",
+  "Dev Patel",
+];
+function GroupSample({ args, max }: { args: Args; max?: number }) {
+  return (
+    <AvatarGroup aria-label="Assigned to" size={args.size} max={max}>
+      {PEOPLE.map((name, index) => (
+        <Avatar
+          key={name}
+          name={name}
+          variant={args.variant}
+          // One photo among initials shows both fills overlapping cleanly.
+          src={index === 1 ? portrait : undefined}
+        />
+      ))}
+    </AvatarGroup>
+  );
+}
+export const Group: Story = {
+  args: { size: "md", max: 3 },
+  argTypes: {
+    max: {
+      control: { type: "number", min: 0, max: 6, step: 1 },
+      description:
+        "Avatars shown before the +N tile. Applies to AvatarGroup only; leave empty to show all.",
+      table: { category: "AvatarGroup" },
+    },
+  },
+  parameters: {
+    controls: { include: ["size", "variant", "max"] },
+    docs: {
+      description: {
+        story:
+          "AvatarGroup overlaps its avatars by 8px with a 2px ring in the surface colour. Past max, the rest collapse into a +N tile of the same size.",
+      },
+    },
+  },
+  render: (args) => (
+    <div className="flex flex-col gap-6">
+      <GroupSample args={args} max={args.max} />
+      <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
+        {args.max === undefined
+          ? "All six avatars shown."
+          : `${Math.min(args.max, PEOPLE.length)} shown, ${Math.max(0, PEOPLE.length - args.max)} hidden in the +N tile.`}
+      </p>
+    </div>
+  ),
+};
+export const GroupSizes: Story = {
+  name: "Group sizes",
+  parameters: {
+    layout: "padded",
+    // Identity, image and presence controls do not apply to the fixed sample people.
+    controls: { include: ["variant"] },
+    docs: {
+      description: {
+        story:
+          "All five sizes with max 3. The +N tile always matches the avatars beside it. Variant stays editable.",
+      },
+    },
+  },
+  render: (args) => (
+    <div className="grid max-w-full gap-4">
+      {sizes.map((size) => (
+        <div key={size} className="flex items-center gap-5">
+          <span className="w-8 text-xs text-[var(--v2-text-muted,#707070)]">
+            {size}
+          </span>
+          <GroupSample args={{ ...args, size }} max={3} />
+        </div>
+      ))}
     </div>
   ),
 };

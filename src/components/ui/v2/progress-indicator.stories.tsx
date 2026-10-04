@@ -28,7 +28,16 @@ const meta: Meta<ProgressIndicatorProps> = {
             ["Linear track", "—", "8px high; 8px corners; 320px default width"],
             ["Circular", "—", "54px diameter; 5.13488px ring"],
             ["Semicircular", "—", "54 × 27px"],
-            ["Labels", "—", "12px text; right, bottom or hidden"],
+            [
+              "Labels",
+              "—",
+              "12px text with tabular figures so digits do not jitter; right, bottom or hidden",
+            ],
+            [
+              "Indeterminate bar",
+              "—",
+              "30% bar slides across the track, 1.5s, cubic-bezier(0.65, 0, 0.35, 1); static 30% fill with reduced motion",
+            ],
           ],
           tokens: [
             ["Progress", "--semantic-info-primary", "#4275D6", "#4275D6"],
@@ -36,7 +45,7 @@ const meta: Meta<ProgressIndicatorProps> = {
             ["Text", "--semantic-text-primary", "#181D27", "#181D27"],
           ],
           guidance:
-            "Give every indicator a meaningful accessible label. Values are clamped to 0–100. Indeterminate progress omits aria-valuenow and respects reduced motion.",
+            "Give every indicator a meaningful accessible label. Values are clamped to 0–100. Indeterminate progress omits aria-valuenow, slides a bar across the track, and holds a static partial fill under reduced motion.",
         }),
       },
     },

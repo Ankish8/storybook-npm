@@ -1,0 +1,41 @@
+{
+  "story": "v2-components-progressindicator--overview&args=value:100",
+  "measured": {
+    "Progress track": {
+      "width": "276.172px",
+      "height": "8px",
+      "border-radius": "8px",
+      "background-color": "rgb(233, 234, 235)",
+      "overflow": "hidden"
+    },
+    "Progress fill": {
+      "width": "274.172px",
+      "height": "6px",
+      "border-radius": "8px",
+      "background-color": "rgb(66, 117, 214)",
+      "opacity": "1",
+      "transform": "none",
+      "animation-name": "none",
+      "animation-duration": "0s",
+      "animation-timing-function": "ease",
+      "animation-iteration-count": "1",
+      "transition-duration": "0.24s"
+    },
+    "Percentage": {
+      "width": 31.83,
+      "height": 15,
+      "font-variant-numeric": "normal",
+      "font-size": "12px",
+      "line-height": "15px",
+      "font-weight": "400",
+      "letter-spacing": "normal"
+    }
+  },
+  "popupBox": {
+    "x": 160,
+    "y": 151.5,
+    "width": 320,
+    "height": 17
+  },
+  "evals": []
+}

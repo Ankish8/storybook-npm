@@ -65,6 +65,7 @@ const badgeVariants = cva(
  * <Badge variant="secondary">Secondary</Badge>
  * <Badge variant="destructive">Destructive</Badge>
  * <Badge variant="active" leftIcon={<CheckIcon />}>Active</Badge>
+ * <Badge variant="active" dot>Online</Badge>
  * <Badge asChild><a href="/status">View Status</a></Badge>
  * ```
  */
@@ -76,6 +77,8 @@ export interface BadgeProps
   leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the badge text */
   rightIcon?: React.ReactNode;
+  /** Leading 7px status dot in the variant's text colour. Not rendered with `asChild`, which cannot add elements. */
+  dot?: boolean;
   /** Render as child element using Radix Slot */
   asChild?: boolean;
 }
@@ -88,6 +91,7 @@ const Badge = React.forwardRef(
       size,
       leftIcon,
       rightIcon,
+      dot = false,
       asChild = false,
       children,
       ...props
@@ -116,6 +120,13 @@ const Badge = React.forwardRef(
         ref={ref}
         {...props}
       >
+        {/* currentColor keeps the dot in step with the variant's text colour (and the disabled/outline greys). */}
+        {dot && (
+          <span
+            aria-hidden="true"
+            className="size-[7px] shrink-0 rounded-full bg-current"
+          />
+        )}
         {leftIcon && <span className="[&_svg]:size-3">{leftIcon}</span>}
         {children}
         {rightIcon && <span className="[&_svg]:size-3">{rightIcon}</span>}

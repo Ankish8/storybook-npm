@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-progressindicator--circle&args=indeterminate:!true",
+  "measured": {},
+  "popupBox": {
+    "x": 293,
+    "y": 130,
+    "width": 54,
+    "height": 54
+  },
+  "evals": [
+    [
+      {
+        "name": "spin",
+        "duration": 1000,
+        "easing": "linear",
+        "iterations": null,
+        "target": "[object SVGAnimatedString]"
+      }
+    ]
+  ]
+}

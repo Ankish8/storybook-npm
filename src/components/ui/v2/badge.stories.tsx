@@ -37,7 +37,7 @@ const meta: Meta<typeof Badge> = {
   parameters: {
     layout: "centered",
     controls: {
-      include: ["variant", "size", "children", "leftIcon", "rightIcon"],
+      include: ["variant", "size", "children", "dot", "leftIcon", "rightIcon"],
     },
     design: {
       type: "figma",
@@ -62,6 +62,11 @@ const meta: Meta<typeof Badge> = {
               "Inter regular, 12px (14px lg)",
             ],
             ["Icon gap", "4px", "8px"],
+            [
+              "Status dot",
+              "—",
+              "Optional dot: 7px circle before the label in the variant's text colour",
+            ],
             [
               "Borders",
               "Only outline has a border",
@@ -125,10 +130,11 @@ const meta: Meta<typeof Badge> = {
               "#27ABB8",
               "#27ABB8",
             ],
+            ["Status dot", "currentColor", "The variant's text colour"],
             ["Font", "--font-v2", "Inter 400"],
           ],
           guidance:
-            "Use a status word as well as color. Badges are informational by default; use a Button for actions. The `information` API name is unchanged. Use `asChild` only when the badge wraps an existing link.",
+            "Use a status word as well as color. The optional dot is decorative (aria-hidden): it never replaces the word. Badges are informational by default; use a Button for actions. The `information` API name is unchanged. Use `asChild` only when the badge wraps an existing link.",
         }),
       },
     },
@@ -138,6 +144,7 @@ const meta: Meta<typeof Badge> = {
     variant: "default",
     size: "default",
     children: "Badge",
+    dot: false,
     leftIcon: false,
     rightIcon: false,
   },
@@ -154,6 +161,11 @@ const meta: Meta<typeof Badge> = {
       description: "Small 20px, default 24px, or large 30px.",
     },
     children: { control: "text", description: "Short status label." },
+    dot: {
+      control: "boolean",
+      description:
+        "Leading 7px status dot in the variant's text colour. Not rendered with asChild.",
+    },
     leftIcon: {
       control: "boolean",
       description: "Optional icon before the label.",
@@ -244,6 +256,28 @@ export const AllSizes: Story = {
     </div>
   ),
 };
+export const WithDot: Story = {
+  name: "With dot",
+  args: { variant: "active", children: "Online", dot: true },
+};
+export const Dot: Story = {
+  parameters: gallery(
+    ["variant", "dot"],
+    "Every palette with the 7px dot. The dot always matches the variant's text colour. Size and label stay editable."
+  ),
+  render: (args) => (
+    <div className="flex max-w-full flex-wrap items-start gap-6">
+      {VARIANTS.map((variant) => (
+        <div key={variant} className="flex flex-col items-start gap-2">
+          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+            {LABELS[variant]}
+          </span>
+          <Badge {...args} variant={variant} dot />
+        </div>
+      ))}
+    </div>
+  ),
+};
 export const WithIcons: Story = {
   name: "With icons",
   args: { variant: "active", children: "Published", leftIcon: true },
@@ -302,37 +336,47 @@ export const V1VsV2: Story = {
     ),
     layout: "padded",
   },
-  render: (args) => (
-    <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[820px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
-        <div />
-        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-          v1 (ui/badge)
+  render: function Render(args) {
+    // `dot` is v2-only: v1 would write it to the DOM as an unknown attribute.
+    const { dot: _dot, ...v1Args } = args;
+    return (
+      <div className="max-w-full overflow-x-auto">
+        <div className="grid min-w-[820px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
+          <div />
+          <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
+            v1 (ui/badge)
+          </div>
+          <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
+            v2 (ui/v2/badge)
+          </div>
+          {VARIANTS.map((variant) => (
+            <React.Fragment key={variant}>
+              <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
+                {LABELS[variant]}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {SIZES.map((size) => (
+                  <BadgeV1
+                    {...v1Args}
+                    key={size}
+                    variant={variant}
+                    size={size}
+                  />
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {SIZES.map((size) => (
+                  <Badge {...args} key={size} variant={variant} size={size} />
+                ))}
+              </div>
+            </React.Fragment>
+          ))}
         </div>
-        <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-          v2 (ui/v2/badge)
-        </div>
-        {VARIANTS.map((variant) => (
-          <React.Fragment key={variant}>
-            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
-              {LABELS[variant]}
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {SIZES.map((size) => (
-                <BadgeV1 {...args} key={size} variant={variant} size={size} />
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              {SIZES.map((size) => (
-                <Badge {...args} key={size} variant={variant} size={size} />
-              ))}
-            </div>
-          </React.Fragment>
-        ))}
       </div>
-    </div>
-  ),
+    );
+  },
 };
+
 export const Usage: Story = {
   parameters: gallery(
     ["variant", "children"],
@@ -392,10 +436,16 @@ export const AsLink: Story = {
   name: "As a link",
   args: { variant: "outline", children: "View status" },
   parameters: gallery(
-    ["leftIcon", "rightIcon"],
+    ["leftIcon", "rightIcon", "dot"],
     "Radix Slot applies the badge styles to the link. Edit its label, palette and size."
   ),
-  render: ({ children, leftIcon: _left, rightIcon: _right, ...args }) => (
+  render: ({
+    children,
+    leftIcon: _left,
+    rightIcon: _right,
+    dot: _dot,
+    ...args
+  }) => (
     <Badge {...args} asChild>
       <a href="#storybook-root">{children}</a>
     </Badge>

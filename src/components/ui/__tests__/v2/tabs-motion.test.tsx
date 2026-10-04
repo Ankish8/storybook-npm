@@ -25,6 +25,7 @@ function rect(box: Box): DOMRect {
 }
 
 function Example({
+  variant,
   value,
   orientation = "horizontal",
   activationMode = "automatic",
@@ -32,6 +33,7 @@ function Example({
   secondDisabled = false,
   onValueChange,
 }: {
+  variant?: "underline" | "pill";
   value?: string;
   orientation?: "horizontal" | "vertical";
   activationMode?: "automatic" | "manual";
@@ -48,7 +50,7 @@ function Example({
       activationMode={activationMode}
       dir={dir}
     >
-      <TabsList aria-label="Status">
+      <TabsList aria-label="Status" variant={variant}>
         <TabsTrigger value="first">First</TabsTrigger>
         <TabsTrigger value="second" disabled={secondDisabled}>
           Second
@@ -212,6 +214,35 @@ describe("Tabs indicator motion", () => {
     expect(list).toHaveAttribute("data-motion-indicator", "true");
     expect(indicator()).toEqual({ x: 0, y: 0, width: 110, height: 52 });
     expect(list.children).toHaveLength(3);
+    expect(pendingFrames.size).toBe(0);
+  });
+
+  it("drives the pill cursor with the same measured spring and no extra element", async () => {
+    const view = render(<Example variant="pill" value="first" />);
+    await advance();
+    const list = screen.getByRole("tablist");
+    expect(list).toHaveAttribute("data-variant", "pill");
+    // The cursor is live (it is the list's ::after), so the tabs stop painting their own fallback pill.
+    expect(list).toHaveAttribute("data-motion-indicator", "true");
+    expect(list.children).toHaveLength(3);
+    expect(indicator()).toEqual({ x: 0, y: 0, width: 110, height: 52 });
+    view.rerender(<Example variant="pill" value="third" />);
+    await advance(4);
+    expect(indicator().x).toBeGreaterThan(0);
+    expect(indicator().x).toBeLessThan(250);
+    await advance(60);
+    expect(indicator()).toEqual({ x: 250, y: 0, width: 130, height: 52 });
+    expect(pendingFrames.size).toBe(0);
+  });
+
+  it("snaps the pill cursor under reduced motion", async () => {
+    reduced = true;
+    const view = render(<Example variant="pill" value="first" />);
+    view.rerender(<Example variant="pill" value="third" />);
+    await flushMutations();
+    expect(indicator()).toEqual({ x: 250, y: 0, width: 130, height: 52 });
+    // Let Radix's one-frame panel mount guard run; the pill cursor itself schedules nothing.
+    await advance();
     expect(pendingFrames.size).toBe(0);
   });
 

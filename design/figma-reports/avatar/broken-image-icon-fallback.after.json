@@ -1,0 +1,25 @@
+{
+  "story": "v2-components-avatar--custom-content&args=src:broken-image",
+  "measured": {
+    "Avatar": {
+      "width": "40px",
+      "height": "40px",
+      "border-radius": "9999px",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(112, 112, 112)",
+      "font-size": "14px",
+      "font-weight": "500",
+      "box-shadow": "none",
+      "margin-left": "0px",
+      "margin-inline-start": "0px"
+    },
+    "Image": null
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 468,
+    "height": 40
+  },
+  "evals": []
+}

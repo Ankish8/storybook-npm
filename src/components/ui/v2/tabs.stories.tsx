@@ -18,6 +18,7 @@ import { v2ComponentDocs } from "./story-docs";
 
 type ExampleArgs = Omit<React.ComponentProps<typeof V2.Tabs>, "children"> & {
   value: string;
+  variant: "underline" | "pill";
   fullWidth: boolean;
   showCounts: boolean;
   count: number;
@@ -65,6 +66,8 @@ function TabsExample({
     >
       <UI.TabsList
         fullWidth={args.fullWidth}
+        // v1 has no variant: only the v2 list receives it.
+        {...(version === "v2" ? { variant: args.variant } : {})}
         aria-label="Conversation status"
         className={
           args.orientation === "vertical" ? "w-[200px] shrink-0" : undefined
@@ -152,6 +155,7 @@ const meta: Meta<ExampleArgs> = {
     controls: {
       include: [
         "value",
+        "variant",
         "orientation",
         "activationMode",
         "dir",
@@ -197,6 +201,11 @@ const meta: Meta<ExampleArgs> = {
               "Optional TabsCount: 18px circle with a subtle 0.4px border",
             ],
             [
+              "Pill style",
+              "—",
+              'Optional TabsList variant="pill": 4px padded grey track, 32px tabs, white cursor with a 1px border and a faint shadow',
+            ],
+            [
               "Keyboard and selection",
               "Radix Tabs",
               "Same controlled / uncontrolled API and keyboard behavior",
@@ -223,13 +232,26 @@ const meta: Meta<ExampleArgs> = {
               "#EBECEE",
             ],
             ["Divider", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
+            ["Pill track", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
+            ["Pill cursor", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
+            [
+              "Pill cursor border",
+              "--semantic-border-layout",
+              "#E9EAEB",
+              "#E9EAEB",
+            ],
+            [
+              "Pill cursor shadow",
+              "--shadow-xs",
+              "0 1px 2px rgba(16,24,40,0.05)",
+            ],
             ["Font", "--font-v2", "Inter 14 / 500 selected and inactive"],
             ["Selected label", "--v2-text-primary", "#484848", "#484848"],
             ["Inactive label", "--v2-text-muted", "#707070", "#707070"],
             ["Panel body / count", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
           ],
           guidance:
-            "Match each trigger value to its content. Set orientation on Tabs; vertical styles then follow automatically. Use activationMode=manual when focusing a tab should not load its panel immediately. fullWidth belongs to TabsList. Disabled and count controls below configure the composed example, not the Tabs root API.",
+            "Match each trigger value to its content. Set orientation on Tabs; vertical styles then follow automatically. Use activationMode=manual when focusing a tab should not load its panel immediately. fullWidth and variant belong to TabsList; pill is a drop-in for underline and keeps the same keyboard behaviour. Disabled and count controls below configure the composed example, not the Tabs root API.",
         }),
       },
     },
@@ -243,6 +265,7 @@ const meta: Meta<ExampleArgs> = {
   ],
   args: {
     value: "open",
+    variant: "underline",
     orientation: "horizontal",
     activationMode: "automatic",
     dir: "ltr",
@@ -265,6 +288,13 @@ const meta: Meta<ExampleArgs> = {
       control: false,
       description:
         "Initial uncontrolled selection. These playgrounds use the live value argument.",
+    },
+    variant: {
+      control: "inline-radio",
+      options: ["underline", "pill"],
+      table: { category: "TabsList", defaultValue: { summary: "underline" } },
+      description:
+        "Underline is the original rail. Pill is a segmented control: grey track, white cursor that glides to the selected tab.",
     },
     orientation: {
       control: "select",
@@ -330,6 +360,11 @@ export const FullWidthWithBadges: Story = {
 export const AutoWidth: Story = { args: { fullWidth: false } };
 export const Controlled: Story = { args: { value: "assigned" } };
 export const WithCounts: Story = { args: { showCounts: true } };
+export const Pill: Story = { args: { variant: "pill" } };
+export const PillWithCounts: Story = {
+  name: "Pill with counts",
+  args: { variant: "pill", showCounts: true },
+};
 export const ManualActivation: Story = { args: { activationMode: "manual" } };
 
 function GalleryCard({
@@ -351,24 +386,30 @@ function GalleryCard({
 export const AllVariants: Story = {
   name: "All variants",
   parameters: gallery(
-    ["orientation"],
-    "Each card fixes its orientation. Selection, activation mode, direction, counts, disabled and full-width controls apply to both. Selections stay independent."
+    ["orientation", "variant"],
+    "Each card fixes its style and orientation. Selection, activation mode, direction, counts, disabled and full-width controls apply to all of them. Selections stay independent."
   ),
   render: (args) => (
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[1050px] grid-cols-2 gap-5">
-        {(["horizontal", "vertical"] as const).map((orientation) => (
-          <GalleryCard
-            key={orientation}
-            title={
-              orientation === "horizontal"
-                ? "Horizontal · 2px underline"
-                : "Vertical · 4px side indicator"
-            }
-          >
-            <TabsExample args={{ ...args, orientation }} />
-          </GalleryCard>
-        ))}
+        {(["underline", "pill"] as const).flatMap((variant) =>
+          (["horizontal", "vertical"] as const).map((orientation) => (
+            <GalleryCard
+              key={variant + orientation}
+              title={
+                variant === "underline"
+                  ? orientation === "horizontal"
+                    ? "Underline · horizontal · 2px rail"
+                    : "Underline · vertical · 4px side indicator"
+                  : orientation === "horizontal"
+                    ? "Pill · horizontal · segmented control"
+                    : "Pill · vertical · segmented control"
+              }
+            >
+              <TabsExample args={{ ...args, variant, orientation }} />
+            </GalleryCard>
+          ))
+        )}
       </div>
     </div>
   ),

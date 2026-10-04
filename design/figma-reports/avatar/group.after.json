@@ -1,0 +1,41 @@
+{
+  "story": "v2-components-avatar--group",
+  "measured": {
+    "Group": {
+      "width": "868px",
+      "height": "40px",
+      "display": "flex"
+    },
+    "Avatar (second)": {
+      "width": "40px",
+      "height": "40px",
+      "border-radius": "9999px",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(112, 112, 112)",
+      "font-size": "14px",
+      "font-weight": "500",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "margin-left": "-8px",
+      "margin-inline-start": "-8px"
+    },
+    "Overflow tile": {
+      "width": "40px",
+      "height": "40px",
+      "border-radius": "9999px",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(94, 94, 94)",
+      "font-size": "14px",
+      "font-weight": "500",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgb(255, 255, 255) 0px 0px 0px 2px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "margin-left": "-8px",
+      "margin-inline-start": "-8px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 136,
+    "height": 40
+  },
+  "evals": []
+}

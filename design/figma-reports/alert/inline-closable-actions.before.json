@@ -1,0 +1,43 @@
+{
+  "story": "v2-components-alert--complex-example",
+  "measured": {
+    "Alert": {
+      "width": 868,
+      "height": "73px",
+      "padding-top": "16px",
+      "padding-left": "16px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 250, 235)",
+      "border-top-color": "rgb(254, 223, 137)"
+    },
+    "Close button": {
+      "width": "20px",
+      "height": "20px",
+      "margin-top": "0px",
+      "margin-left": "0px",
+      "border-radius": "4px",
+      "color": "rgb(112, 112, 112)",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "outline-width": "3px",
+      "outline-style": "none",
+      "outline-color": "rgb(112, 112, 112)",
+      "outline-offset": "0px",
+      "transition-duration": "0.15s"
+    },
+    "Close icon": {
+      "width": "20px",
+      "height": "20px"
+    },
+    "Status icon": {
+      "width": "20px",
+      "height": "20px"
+    }
+  },
+  "popupBox": {
+    "x": 33,
+    "y": 33,
+    "width": 834,
+    "height": 39
+  },
+  "evals": []
+}

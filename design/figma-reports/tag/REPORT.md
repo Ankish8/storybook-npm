@@ -1,0 +1,198 @@
+# Tag: UI change report for Figma
+
+Figma source: [https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9132](https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-9132)  
+Storybook: `V2/Components/Tag`  
+Date: 2026-10-04
+
+## Summary
+
+The dismiss (x) button now has a 24px hit area around the unchanged 12px icon, a neutral 18px hover plate, and its own focus ring instead of the browser default. The tag itself does not grow: a -6px margin keeps the old 12px footprint (tag stays 24px high and, for the sample, 88.875px wide).
+
+### Why (what the research found)
+
+- WCAG 2.2 success criterion 2.5.8 asks for 24 x 24 CSS px targets; a bare 12px icon is hard to hit, especially inside dense chip lists. The brief's research points the same way for comparable chip/pill components.
+- A soft neutral plate on hover/focus shows the real target without recolouring the tag; black at 8% works on every status surface (grey, teal, blue, green, amber, red) where a fixed grey would not.
+- The remove button had no styled focus state: keyboard users saw the browser's default blue ring (see the BEFORE capture).
+- Research references (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria) come from the task brief's research conclusions; they were not re-verified source by source while implementing.
+
+### API / compatibility
+
+No prop, aria-label (default "Remove", or removeAriaLabel), type or onClick change. Both visuals are pseudo-elements, so the DOM is unchanged and the v1 markup parity test still passes.
+
+## Before and after
+
+### Dismissible example (remove and restore)
+
+| Before | After |
+| --- | --- |
+| ![before](dismissible.before.png) | ![after](dismissible.after.png) |
+
+### Removable tag, rest
+
+| Before | After |
+| --- | --- |
+| ![before](removable.before.png) | ![after](removable.after.png) |
+
+### Removable, small / default / large
+
+| Before | After |
+| --- | --- |
+| ![before](removable-all-sizes.before.png) | ![after](removable-all-sizes.after.png) |
+
+### Removable, all nine variants
+
+| Before | After |
+| --- | --- |
+| ![before](removable-all-variants.before.png) | ![after](removable-all-variants.after.png) |
+
+### Dismiss disabled, hover (no plate, no scale)
+
+| Before | After |
+| --- | --- |
+| ![before](removable-disabled.before.png) | ![after](removable-disabled.after.png) |
+
+### Removable tag, keyboard focus on the x
+
+| Before | After |
+| --- | --- |
+| ![before](removable-focus.before.png) | ![after](removable-focus.after.png) |
+
+### Removable tag, hover on the x
+
+| Before | After |
+| --- | --- |
+| ![before](removable-hover.before.png) | ![after](removable-hover.after.png) |
+
+### Removable with a bold label
+
+| Before | After |
+| --- | --- |
+| ![before](removable-with-label.before.png) | ![after](removable-with-label.after.png) |
+
+## Measured changes (copy these into Figma)
+
+_Source: computed styles of the rendered component; px, hex colours, ms. Only properties that changed are listed._
+
+### Dismissible example (remove and restore)
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Removable tag, rest
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Removable, small / default / large
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Removable, all nine variants
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Dismiss disabled, hover (no plate, no scale)
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Removable tag, keyboard focus on the x
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+| Remove button | outline-width | 1px | **2px** |
+| Remove button | outline-style | auto | **solid** |
+| Remove button | outline-color | #005FCC | **transparent** |
+| Remove button | outline-offset | 0px | **2px** |
+
+### Removable tag, hover on the x
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+### Removable with a bold label
+
+| Element | Property | Before | After |
+| --- | --- | --- | --- |
+| Remove button | width | 12px | **24px** |
+| Remove button | height | 12px | **24px** |
+| Remove button | margin-top | 0px | **-6px** |
+| Remove button | margin-left | 0px | **-6px** |
+| Remove button | margin-right | 0px | **-6px** |
+| Remove button | border-radius | 0px | **9999px** |
+
+## Motion
+
+| What | Before | After |
+| --- | --- | --- |
+| Hover plate | none | **Opacity 0 -> 8% in 150ms ease-out; on hover-capable pointers and on keyboard focus; never on a disabled button** |
+| Press / hover scale | Hover 1.03 (also on touch), press 0.96, 80ms down / 200ms spring return | **Unchanged values; hover scale only on hover-capable pointers; none under reduced motion** |
+
+## States to update in Figma
+
+- Tag / Remove button: Rest, Hover, Focus (keyboard), Pressed, Disabled, for all 9 variants x 3 sizes
+- Tag / Remove button / Hover and Focus: neutral plate 18 x 18
+- Tag / Remove button / Focus: ring replaces the browser default
+
+## How to apply in Figma
+
+1. Remove button layer: keep the X icon at 12 x 12 (unchanged), colour inherited from the tag text. Wrap it in a 24 x 24 transparent frame (the hit area), corner radius 9999, icon centred.
+2. Layout footprint stays 12 x 12 so the tag does not grow: place the 24 x 24 frame with "Ignore auto layout" at X -6, Y -6 relative to the icon, or keep the 12 x 12 slot and overlay the larger frame (code uses margin -6 on every side). Tag heights stay 20 / 24 / 30 and paddings stay sm 6, default 8, lg 12; gap between label, value and button stays 6.
+3. Hover plate (new layer "Hover plate" behind the icon, inside the 24 x 24 frame): ellipse 18 x 18 centred (3px inset on each side), fill #000000 (--color-black) at 8% opacity, no stroke. Visible in the Hover and Focus states, hidden at rest and when disabled. Fade 150ms ease-out.
+4. Focus state: plate visible (8%) plus a ring ellipse 18 x 18 with an OUTSIDE stroke 1px #343E55 (semantic-primary) and offset 1 (22 x 22 outer circle); this replaces the browser default ring. On the 20px small tag the 18px plate fits with a 1px margin top and bottom.
+5. Pressed: scale 0.96 (80ms), released with a 200ms spring; hover scale is 1.03. Unchanged from before.
+6. Disabled: whole button at 50% opacity, no plate, no scale (unchanged apart from the plate).
+
+## Notes
+
+- The hit area extends 6px beyond the icon on each side and 2px above/below the 20px small tag; it is invisible and does not change layout, but it overlaps the 6px gap to the label up to the label's edge.
+- The focus ring is an ::after pseudo-element: opacity on the plate (::before) would otherwise fade the ring to 8% as well (found and fixed during capture).
+- Replaying the v1 tag tests on v2 fails 14 tests, all v1 utility-class assertions.
+- The measured tables cannot read pseudo-elements: the hover plate (::before) and focus ring (::after) are in the `evals` of removable*.after.json. Plate: absolute 18 x 18, radius 9999px, background #000000, opacity 0 at rest / 0.08 on hover and focus, transition opacity 150ms. Hit area measured 24 x 24 (24.72 while hover-scaled 1.03).
+- In the keyboard-focus table, the Remove button outline change (browser auto ring #005FCC -> a transparent 2px outline) is the browser default being removed; the visible ring is the ::after (1px #343E55, offset 1px, 22 x 22 outer).
+- The Tag element itself has no rows in any table: its width (88.875px in the sample), height (24px), padding (8px) and gap (6px) are identical before and after, which is the point of the -6px margin.
+- Research references (HeroUI, Mantine, shadcn/ui, Untitled UI, React Aria) come from the task brief's research conclusions; they were not re-verified source by source while implementing.

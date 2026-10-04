@@ -104,6 +104,10 @@ const Avatar = React.forwardRef(
   ) => {
     const resolvedSize = size ?? "md";
     const displayInitials = initials ?? (name ? getInitials(name) : undefined);
+    // A dead URL falls back exactly as if there were no src. Keyed by the failing URL so a new src gets a fresh
+    // attempt, and nothing changes while the image loads (no fade or placeholder: avatars stay static).
+    const [failedSrc, setFailedSrc] = React.useState<string | undefined>();
+    const showImage = Boolean(src) && failedSrc !== src;
 
     return (
       <div
@@ -113,11 +117,12 @@ const Avatar = React.forwardRef(
         role="img"
         {...props}
       >
-        {src ? (
+        {showImage ? (
           <img
             src={src}
             alt={alt ?? name ?? "Avatar"}
             className="size-full rounded-full object-cover"
+            onError={() => setFailedSrc(src)}
           />
         ) : children ? (
           children
@@ -141,4 +146,80 @@ const Avatar = React.forwardRef(
 );
 Avatar.displayName = "Avatar";
 
-export { Avatar, avatarVariants, getInitials };
+export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Show at most this many avatars; the rest collapse into one "+N" tile. Omit to show all. */
+  max?: number;
+  /** Size of the "+N" tile, and of any child Avatar that does not set its own size */
+  size?: AvatarProps["size"];
+}
+
+/**
+ * Overlapping stack of avatars (-8px) separated by a 2px ring in the surface colour.
+ * With `max`, the avatars past the limit become a "+N" tile of the same size.
+ * The ring colour follows the surface: on a tinted background override it with
+ * `className="[&>*]:ring-semantic-bg-ui"`.
+ *
+ * @example
+ * ```tsx
+ * <AvatarGroup max={3} size="sm">
+ *   <Avatar name="Aditi Kumar" />
+ *   <Avatar name="Ravi Shah" />
+ *   <Avatar name="Meera Iyer" />
+ *   <Avatar name="Karan Mehta" />
+ * </AvatarGroup>
+ * ```
+ */
+const AvatarGroup = React.forwardRef(
+  (
+    { className, max, size, children, ...props }: AvatarGroupProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => {
+    const items = React.Children.toArray(children);
+    const limit =
+      max !== undefined && Number.isFinite(max)
+        ? Math.max(0, Math.floor(max))
+        : items.length;
+    const visible = items.slice(0, limit);
+    const hidden = items.length - visible.length;
+    const isAvatar = (
+      child: React.ReactNode
+    ): child is React.ReactElement<AvatarProps> =>
+      React.isValidElement(child) && child.type === Avatar;
+    // The tile must match the avatars beside it: explicit group size, else the first avatar's own size.
+    const tileSize = size ?? items.find(isAvatar)?.props.size ?? "md";
+
+    return (
+      <div
+        ref={ref}
+        role="group"
+        className={cn(
+          "inline-flex items-center [&>*]:ring-2 [&>*]:ring-semantic-bg-primary",
+          // 8px swallows the initials of 24px/30px avatars, so the small sizes overlap by 4px.
+          tileSize === "xs" || tileSize === "sm"
+            ? "[&>*:not(:first-child)]:-ms-1"
+            : "[&>*:not(:first-child)]:-ms-2",
+          className
+        )}
+        {...props}
+      >
+        {visible.map((child) =>
+          size && isAvatar(child) && child.props.size === undefined
+            ? React.cloneElement(child, { size })
+            : child
+        )}
+        {hidden > 0 && (
+          <Avatar
+            size={tileSize}
+            aria-label={`${hidden} more`}
+            className="bg-semantic-bg-ui text-[var(--v2-text-secondary,#5E5E5E)]"
+          >
+            +{hidden}
+          </Avatar>
+        )}
+      </div>
+    );
+  }
+);
+AvatarGroup.displayName = "AvatarGroup";
+
+export { Avatar, AvatarGroup, avatarVariants, getInitials };

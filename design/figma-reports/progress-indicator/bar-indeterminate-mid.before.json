@@ -1,0 +1,43 @@
+{
+  "story": "v2-components-progressindicator--indeterminate",
+  "measured": {
+    "Progress track": {
+      "width": "320px",
+      "height": "8px",
+      "border-radius": "8px",
+      "background-color": "rgb(233, 234, 235)",
+      "overflow": "hidden"
+    },
+    "Progress fill": {
+      "width": "95.3906px",
+      "height": "6px",
+      "border-radius": "8px",
+      "background-color": "rgb(66, 117, 214)",
+      "opacity": "0.995277",
+      "transform": "none",
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-timing-function": "cubic-bezier(0.4, 0, 0.6, 1)",
+      "animation-iteration-count": "infinite",
+      "transition-duration": "0.24s"
+    },
+    "Percentage": null
+  },
+  "popupBox": {
+    "x": 160,
+    "y": 156,
+    "width": 320,
+    "height": 8
+  },
+  "evals": [
+    [
+      {
+        "name": "pulse",
+        "duration": 2000,
+        "easing": "linear",
+        "iterations": null,
+        "target": "h-full rounded-lg bg-semantic-info-primary transition-[width"
+      }
+    ]
+  ]
+}

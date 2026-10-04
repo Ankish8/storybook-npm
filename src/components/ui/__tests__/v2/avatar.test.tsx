@@ -1,6 +1,7 @@
+import * as React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { Avatar, getInitials } from "../../v2/avatar";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { Avatar, AvatarGroup, getInitials } from "../../v2/avatar";
 
 describe("getInitials", () => {
   it("returns first and last initials for two-word names", () => {
@@ -244,5 +245,171 @@ describe("v2 outline", () => {
     expect(identity).toHaveAttribute("title", "Support agent");
     expect(identity.querySelector("[data-status=busy]")).toBeInTheDocument();
     expect(screen.getByText("AK")).toBeInTheDocument();
+  });
+});
+
+describe("v2 image fallback", () => {
+  it("shows initials instead of a broken image when the image fails to load", () => {
+    const { container } = render(
+      <Avatar name="Aditi Kumar" src="/missing.png" />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    expect(container.querySelector("img")).toBeNull();
+    // Same output as an avatar that never had a src.
+    expect(screen.getByText("AK")).toBeInTheDocument();
+    expect(screen.getByRole("img")).toHaveAttribute(
+      "aria-label",
+      "Aditi Kumar"
+    );
+  });
+  it("falls back to custom children, then explicit initials, like the no-src path", () => {
+    const { container, rerender } = render(
+      <Avatar src="/missing.png" initials="ZZ">
+        <span data-testid="icon" />
+      </Avatar>
+    );
+    fireEvent.error(container.querySelector("img")!);
+    expect(screen.getByTestId("icon")).toBeInTheDocument();
+    expect(screen.queryByText("ZZ")).not.toBeInTheDocument();
+    rerender(<Avatar src="/missing.png" initials="ZZ" />);
+    expect(screen.getByText("ZZ")).toBeInTheDocument();
+  });
+  it("renders an empty avatar, not a broken image, when there is nothing to fall back to", () => {
+    const { container } = render(<Avatar src="/missing.png" />);
+    fireEvent.error(container.querySelector("img")!);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.firstChild).toBeEmptyDOMElement();
+  });
+  it("keeps showing a working image, including after it loads", () => {
+    const { container } = render(<Avatar name="Aditi Kumar" src="/ok.png" />);
+    const img = container.querySelector("img")!;
+    fireEvent.load(img);
+    expect(container.querySelector("img")).toBe(img);
+    expect(screen.queryByText("AK")).not.toBeInTheDocument();
+  });
+  it("tries again when src changes after a failure", () => {
+    const { container, rerender } = render(
+      <Avatar name="Aditi Kumar" src="/missing.png" />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    expect(container.querySelector("img")).toBeNull();
+    rerender(<Avatar name="Aditi Kumar" src="/other.png" />);
+    expect(container.querySelector("img")).toHaveAttribute("src", "/other.png");
+  });
+  it("keeps the status dot when the image falls back", () => {
+    const { container } = render(
+      <Avatar name="Aditi Kumar" src="/missing.png" status="online" />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    expect(container.querySelector("[data-status=online]")).toBeInTheDocument();
+  });
+});
+
+describe("v2 AvatarGroup", () => {
+  const people = ["Aditi Kumar", "Ravi Shah", "Meera Iyer", "Karan Mehta"];
+  const group = (props: React.ComponentProps<typeof AvatarGroup> = {}) =>
+    render(
+      <AvatarGroup aria-label="Assigned to" {...props}>
+        {people.map((name) => (
+          <Avatar key={name} name={name} />
+        ))}
+      </AvatarGroup>
+    );
+
+  it("overlaps the small sizes (xs, sm) by 4px so initials stay readable", () => {
+    for (const size of ["xs", "sm"] as const) {
+      const { container, unmount } = render(
+        <AvatarGroup size={size}>
+          <Avatar>AK</Avatar>
+          <Avatar>MI</Avatar>
+        </AvatarGroup>
+      );
+      const group = container.firstElementChild as HTMLElement;
+      expect(group).toHaveClass("[&>*:not(:first-child)]:-ms-1");
+      expect(group).not.toHaveClass("[&>*:not(:first-child)]:-ms-2");
+      unmount();
+    }
+  });
+
+  it("overlaps avatars by 8px with a 2px surface ring", () => {
+    group();
+    const root = screen.getByRole("group", { name: "Assigned to" });
+    expect(root).toHaveClass(
+      "inline-flex",
+      "[&>*]:ring-2",
+      "[&>*]:ring-semantic-bg-primary",
+      "[&>*:not(:first-child)]:-ms-2"
+    );
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+    expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
+  });
+  it("collapses the rest into a +N tile when max is lower than the count", () => {
+    group({ max: 2 });
+    expect(screen.getAllByRole("img")).toHaveLength(3);
+    expect(
+      screen.getByRole("img", { name: "Aditi Kumar" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("img", { name: "Meera Iyer" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("+2")).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "2 more" })).toBeInTheDocument();
+  });
+  it("shows everything with no tile when max covers the count", () => {
+    group({ max: 4 });
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+    expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
+  });
+  it("can collapse every avatar and ignores invalid max values", () => {
+    const { unmount } = group({ max: 0 });
+    expect(screen.getByText("+4")).toBeInTheDocument();
+    unmount();
+    group({ max: Number.NaN });
+    expect(screen.getAllByRole("img")).toHaveLength(4);
+  });
+  it("sizes the +N tile like the avatars beside it", () => {
+    const { unmount } = group({ max: 1, size: "lg" });
+    expect(screen.getByText("+3")).toHaveClass("size-12", "text-base");
+    // The group size also reaches children that did not set their own.
+    expect(screen.getByRole("img", { name: "Aditi Kumar" })).toHaveClass(
+      "size-12"
+    );
+    unmount();
+    render(
+      <AvatarGroup max={1}>
+        <Avatar name="Aditi Kumar" size="xs" />
+        <Avatar name="Ravi Shah" size="xs" />
+      </AvatarGroup>
+    );
+    // No group size: the tile follows the first avatar.
+    expect(screen.getByText("+1")).toHaveClass("size-6", "text-[10px]");
+  });
+  it("lets a child keep its own size and a consumer recolour the ring", () => {
+    render(
+      <AvatarGroup
+        size="md"
+        className="[&>*]:ring-semantic-bg-ui"
+        data-testid="g"
+      >
+        <Avatar name="Aditi Kumar" size="xl" />
+      </AvatarGroup>
+    );
+    expect(screen.getByRole("img")).toHaveClass("size-16");
+    expect(screen.getByTestId("g")).toHaveClass("[&>*]:ring-semantic-bg-ui");
+    expect(screen.getByTestId("g")).not.toHaveClass(
+      "[&>*]:ring-semantic-bg-primary"
+    );
+  });
+  it("forwards its ref and ignores empty children", () => {
+    const ref = { current: null };
+    render(
+      <AvatarGroup ref={ref}>
+        {null}
+        <Avatar name="Aditi Kumar" />
+        {false}
+      </AvatarGroup>
+    );
+    expect(ref.current).toBeInstanceOf(HTMLDivElement);
+    expect(screen.getAllByRole("img")).toHaveLength(1);
   });
 });

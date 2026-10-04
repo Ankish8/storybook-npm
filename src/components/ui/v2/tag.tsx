@@ -105,9 +105,16 @@ const Tag = React.forwardRef(
           <button
             type="button"
             className={cn(
-              "inline-flex items-center justify-center shrink-0 bg-transparent border-none p-0 cursor-pointer transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] hover:scale-[1.03] active:scale-[0.96] motion-reduce:hover:scale-100 motion-reduce:active:scale-100",
+              // 24px hit area around the unchanged 12px icon; the -6px margin keeps the old 12px layout footprint, so the
+              // tag does not grow. Both visuals are pseudo-elements (no extra DOM, so v1 markup parity holds) and are
+              // inset to 18px so they fit inside the 20px small tag. ::before is the hover plate, parked behind the icon
+              // with isolate + -z-10. The focus ring is a separate ::after because opacity on the plate would fade it too.
+              "relative isolate -m-1.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer focus-visible:outline-none",
+              "before:pointer-events-none before:absolute before:inset-[3px] before:-z-10 before:rounded-full before:bg-[var(--color-black)] before:opacity-0 before:transition-opacity before:ease-out before:content-[''] enabled:[@media(hover:hover)]:hover:before:opacity-[0.08] focus-visible:before:opacity-[0.08]",
+              "after:pointer-events-none after:absolute after:inset-[3px] after:rounded-full after:content-[''] focus-visible:after:outline focus-visible:after:[outline-width:1px] focus-visible:after:outline-offset-1 focus-visible:after:outline-semantic-primary",
+              "transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] [@media(hover:hover)]:hover:scale-[1.03] active:scale-[0.96] motion-reduce:[@media(hover:hover)]:hover:scale-100 motion-reduce:active:scale-100",
               removeDisabled &&
-                "cursor-not-allowed opacity-50 hover:scale-100 active:scale-100"
+                "cursor-not-allowed opacity-50 [@media(hover:hover)]:hover:scale-100 active:scale-100"
             )}
             onClick={onRemove}
             disabled={removeDisabled}

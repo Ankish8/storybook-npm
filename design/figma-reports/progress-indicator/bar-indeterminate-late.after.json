@@ -1,0 +1,43 @@
+{
+  "story": "v2-components-progressindicator--indeterminate",
+  "measured": {
+    "Progress track": {
+      "width": "320px",
+      "height": "8px",
+      "border-radius": "8px",
+      "background-color": "rgb(233, 234, 235)",
+      "overflow": "hidden"
+    },
+    "Progress fill": {
+      "width": "95.3906px",
+      "height": "6px",
+      "border-radius": "8px",
+      "background-color": "rgb(66, 117, 214)",
+      "opacity": "1",
+      "transform": "matrix(1, 0, 0, 1, 280.725, 0)",
+      "animation-name": "myoperator-v2-progress-slide",
+      "animation-duration": "1.5s",
+      "animation-timing-function": "cubic-bezier(0.65, 0, 0.35, 1)",
+      "animation-iteration-count": "infinite",
+      "transition-duration": "0.24s"
+    },
+    "Percentage": null
+  },
+  "popupBox": {
+    "x": 160,
+    "y": 156,
+    "width": 360.1263427734375,
+    "height": 8
+  },
+  "evals": [
+    [
+      {
+        "name": "myoperator-v2-progress-slide",
+        "duration": 1500,
+        "easing": "linear",
+        "iterations": null,
+        "target": "h-full rounded-lg bg-semantic-info-primary transition-[width"
+      }
+    ]
+  ]
+}

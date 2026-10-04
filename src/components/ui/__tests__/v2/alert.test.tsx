@@ -407,6 +407,37 @@ describe("v2 presentations", () => {
     );
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
+  it.each(["inline", "header", "overlay"] as const)(
+    "gives the %s close button a 24px target around a 16px icon without moving the layout",
+    (presentation) => {
+      render(
+        <Alert presentation={presentation} closable>
+          <AlertTitle>Notice</AlertTitle>
+        </Alert>
+      );
+      const close = screen.getByRole("button", { name: "Close alert" });
+      // 24px hit area; -2px margin keeps the old 20px footprint so row height and icon centre are unchanged.
+      expect(close).toHaveClass("size-6", "-m-0.5");
+      expect(close).not.toHaveClass("size-5");
+      expect(close.querySelector("svg")).toHaveClass("size-4");
+      expect(close).toHaveAttribute("aria-label", "Close alert");
+      expect(close).toHaveAttribute("type", "button");
+    }
+  );
+  it("only recolours the close icon on hover-capable pointers", () => {
+    render(
+      <Alert closable>
+        <AlertTitle>Notice</AlertTitle>
+      </Alert>
+    );
+    const close = screen.getByRole("button", { name: "Close alert" });
+    expect(close).toHaveClass(
+      "[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+    );
+    expect(close).not.toHaveClass(
+      "hover:text-[var(--v2-text-primary,#484848)]"
+    );
+  });
   it("keeps custom content and secondary actions usable in a header", () => {
     const act = vi.fn();
     render(

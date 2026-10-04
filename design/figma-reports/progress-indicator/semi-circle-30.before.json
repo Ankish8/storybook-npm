@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-progressindicator--semi-circle",
+  "measured": {
+    "Percentage": {
+      "width": 27.38,
+      "height": 16,
+      "font-variant-numeric": "normal",
+      "font-size": "12px",
+      "line-height": "16px",
+      "font-weight": "500",
+      "letter-spacing": "0.06px"
+    }
+  },
+  "popupBox": {
+    "x": 293,
+    "y": 143.5,
+    "width": 54,
+    "height": 27
+  },
+  "evals": []
+}

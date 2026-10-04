@@ -1,0 +1,61 @@
+{
+  "story": "v2-components-tag--all-sizes&args=removable:!true",
+  "measured": {
+    "Tag": {
+      "width": "117.203px",
+      "height": "20px",
+      "padding-left": "6px",
+      "padding-right": "6px",
+      "gap": "6px",
+      "border-radius": "8px",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(94, 94, 94)"
+    },
+    "Remove button": {
+      "width": "24px",
+      "height": "24px",
+      "margin-top": "-6px",
+      "margin-left": "-6px",
+      "margin-right": "-6px",
+      "border-radius": "9999px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "transform": "none",
+      "outline-width": "3px",
+      "outline-style": "none",
+      "outline-color": "rgb(94, 94, 94)",
+      "outline-offset": "0px",
+      "transition-duration": "0.2s",
+      "transition-property": "transform",
+      "opacity": "1"
+    },
+    "Remove icon": {
+      "width": "12px",
+      "height": "12px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 459.984375,
+    "height": 56
+  },
+  "evals": [
+    {
+      "hitArea": {
+        "width": 24,
+        "height": 24
+      },
+      "before": {
+        "content": "\"\"",
+        "position": "absolute",
+        "width": "18px",
+        "height": "18px",
+        "background-color": "rgb(0, 0, 0)",
+        "border-radius": "9999px",
+        "opacity": "0",
+        "transition-property": "opacity",
+        "transition-duration": "0.15s"
+      }
+    }
+  ]
+}

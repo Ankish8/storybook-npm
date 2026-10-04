@@ -4,7 +4,8 @@ import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { cn } from "@/lib/utils";
 
 /**
- * A flexible tabs component with underline-style active indicator.
+ * A flexible tabs component. The default "underline" style draws a rail under the
+ * selected tab; `<TabsList variant="pill">` renders a segmented control instead.
  *
  * @example
  * ```tsx
@@ -25,7 +26,17 @@ export interface TabsListProps extends React.ComponentPropsWithoutRef<
 > {
   /** When true, tabs stretch to fill the full width equally */
   fullWidth?: boolean;
+  /**
+   * Visual style. "underline" (default) is the original rail under the selected tab.
+   * "pill" is a segmented control: a grey track with a white cursor that glides to the selected tab.
+   */
+  variant?: "underline" | "pill";
 }
+
+// TabsTrigger needs to know the list style without a new DOM node or a data attribute on every tab.
+const TabsVariantContext = React.createContext<"underline" | "pill">(
+  "underline"
+);
 
 // Keep the Radix DOM and its immediate selection/focus behavior. Only the
 // decorative rail moves, so text and panels never wait for the spring.
@@ -174,9 +185,26 @@ function useTabIndicator(listRef: React.RefObject<HTMLDivElement | null>) {
   }, [listRef]);
 }
 
+const underlineListClasses = [
+  "relative inline-flex items-center border-b border-solid border-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0",
+  "after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
+  "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent",
+  "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent",
+];
+
+// The cursor is the same measured ::after the underline uses, but it covers the whole selected tab, so it needs both
+// axes. `isolate` + `-z-10` park it behind the labels without wrapping them in a new element.
+const pillListClasses = [
+  "relative isolate inline-flex w-fit max-w-full items-center rounded-lg bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
+  "after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-semantic-border-layout after:bg-semantic-bg-primary after:shadow-xs after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
+  // Before the first measurement (server render, hidden Docs sample) the selected tab paints its own pill, so
+  // selection is never invisible; once the cursor is live these are cleared so nothing is drawn twice.
+  "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:bg-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:shadow-none",
+];
+
 const TabsList = React.forwardRef(
   (
-    { className, fullWidth, ...props }: TabsListProps,
+    { className, fullWidth, variant = "underline", ...props }: TabsListProps,
     ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>
   ) => {
     const listRef = React.useRef<HTMLDivElement>(null);
@@ -189,23 +217,44 @@ const TabsList = React.forwardRef(
       },
       [ref]
     );
+    const pill = variant === "pill";
     return (
-      <TabsPrimitive.List
-        ref={composedRef}
-        className={cn(
-          "relative inline-flex items-center border-b border-solid border-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0",
-          "after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
-          "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent",
-          "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent",
-          fullWidth && "[&>*]:flex-1",
-          className
-        )}
-        {...props}
-      />
+      <TabsVariantContext.Provider value={pill ? "pill" : "underline"}>
+        <TabsPrimitive.List
+          ref={composedRef}
+          // Only the new style is marked: the default markup stays exactly what v1 consumers already render.
+          data-variant={pill ? "pill" : undefined}
+          className={cn(
+            pill ? pillListClasses : underlineListClasses,
+            pill && fullWidth && "w-full",
+            fullWidth && "[&>*]:flex-1",
+            className
+          )}
+          {...props}
+        />
+      </TabsVariantContext.Provider>
     );
   }
 );
 TabsList.displayName = TabsPrimitive.List.displayName;
+
+// Hover is gated so a tap on a touch screen does not leave the label stuck in its hover colour.
+const underlineTriggerClasses = [
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out",
+  "text-[var(--v2-text-muted,#707070)] border-transparent [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]",
+  "data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary",
+  "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
+  "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui",
+];
+
+// The 1px transparent border keeps the tab the same size whether or not it paints its own (fallback) pill.
+const pillTriggerClasses = [
+  "inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] cursor-pointer transition-colors duration-150 ease-out",
+  "text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]",
+  "data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs",
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-0 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
+  "data-[orientation=vertical]:justify-start",
+];
 
 const TabsTrigger = React.forwardRef(
   (
@@ -214,20 +263,19 @@ const TabsTrigger = React.forwardRef(
       ...props
     }: React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>,
     ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.Trigger>>
-  ) => (
-    <TabsPrimitive.Trigger
-      ref={ref}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out",
-        "text-[var(--v2-text-muted,#707070)] border-transparent hover:text-[var(--v2-text-primary,#484848)]",
-        "data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary",
-        "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
-        "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui",
-        className
-      )}
-      {...props}
-    />
-  )
+  ) => {
+    const variant = React.useContext(TabsVariantContext);
+    return (
+      <TabsPrimitive.Trigger
+        ref={ref}
+        className={cn(
+          variant === "pill" ? pillTriggerClasses : underlineTriggerClasses,
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
 TabsTrigger.displayName = TabsPrimitive.Trigger.displayName;
 

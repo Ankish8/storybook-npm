@@ -7,6 +7,12 @@ export interface ProgressIndicatorProps extends React.HTMLAttributes<HTMLDivElem
   labelPosition?: "right" | "bottom" | "none";
   indeterminate?: boolean;
 }
+// Self-contained keyframes (same approach as BouncingLoader): consumers get the slide without a theme change or the
+// tailwindcss-animate plugin. The bar is 30% wide, so -100% -> 350% of its own width travels from fully off the left
+// edge to fully off the right edge of the track. Applied only under motion-safe below.
+const SLIDE_KEYFRAMES =
+  "@keyframes myoperator-v2-progress-slide{from{transform:translateX(-100%)}to{transform:translateX(350%)}}";
+
 const ProgressIndicator = React.forwardRef<
   HTMLDivElement,
   ProgressIndicatorProps
@@ -114,7 +120,7 @@ const ProgressIndicator = React.forwardRef<
               <span
                 aria-hidden="true"
                 className={cn(
-                  "absolute text-xs font-medium tracking-[0.06px]",
+                  "absolute text-xs font-medium tabular-nums tracking-[0.06px]",
                   semi && "bottom-0"
                 )}
               >
@@ -133,15 +139,18 @@ const ProgressIndicator = React.forwardRef<
               <div
                 className={cn(
                   "h-full rounded-lg bg-semantic-info-primary transition-[width] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
-                  indeterminate && "animate-pulse motion-reduce:animate-none"
+                  // Reduced motion keeps the static 30% fill: no movement and no pulse.
+                  indeterminate &&
+                    "motion-safe:[animation:myoperator-v2-progress-slide_1.5s_cubic-bezier(0.65,0,0.35,1)_infinite]"
                 )}
                 style={{ width: indeterminate ? "30%" : `${percentage}%` }}
               />
+              {indeterminate && <style>{SLIDE_KEYFRAMES}</style>}
             </div>
             {labelPosition !== "none" && !indeterminate && (
               <span
                 aria-hidden="true"
-                className="shrink-0 text-xs leading-[15px]"
+                className="shrink-0 text-xs leading-[15px] tabular-nums"
               >
                 {Math.round(percentage)}%
               </span>

@@ -1,0 +1,15 @@
+{
+  "story": "v2-components-avatar--states",
+  "measured": {
+    "Group": null,
+    "Avatar (second)": null,
+    "Overflow tile": null
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 868,
+    "height": 260
+  },
+  "evals": []
+}

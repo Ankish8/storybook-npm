@@ -1,0 +1,99 @@
+{
+  "story": "v2-components-tabs--vertical",
+  "measured": {
+    "Tab list": {
+      "width": 200,
+      "height": 156,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "0px",
+      "border-bottom-width": "0px",
+      "border-bottom-color": "rgb(233, 234, 235)",
+      "padding-top": "0px",
+      "padding-left": "0px",
+      "isolation": "auto",
+      "display": "flex"
+    },
+    "Tab (active)": {
+      "width": 200,
+      "height": 52,
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(72, 72, 72)",
+      "border-radius": "0px",
+      "border-bottom-width": "0px",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-left-width": "4px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "padding-top": "16px",
+      "padding-left": "24px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "letter-spacing": "0.014px",
+      "box-shadow": "none",
+      "outline-width": "1px",
+      "outline-style": "solid",
+      "outline-color": "rgb(52, 62, 85)",
+      "outline-offset": "-3px",
+      "transition-duration": "0.15s"
+    },
+    "Tab (inactive)": {
+      "width": 200,
+      "height": 52,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(112, 112, 112)",
+      "border-radius": "0px",
+      "border-bottom-width": "0px",
+      "border-bottom-color": "rgba(0, 0, 0, 0)",
+      "border-left-width": "4px",
+      "border-left-color": "rgba(0, 0, 0, 0)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "padding-top": "16px",
+      "padding-left": "24px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "letter-spacing": "0.014px",
+      "box-shadow": "none",
+      "outline-width": "3px",
+      "outline-style": "none",
+      "outline-color": "rgb(112, 112, 112)",
+      "outline-offset": "0px",
+      "transition-duration": "0.15s"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 728,
+    "height": 156
+  },
+  "evals": [
+    {
+      "cursor": {
+        "position": "absolute",
+        "left": "0px",
+        "top": "0px",
+        "bottom": "104px",
+        "width": "4px",
+        "height": "52px",
+        "background-color": "rgb(39, 171, 184)",
+        "border-top-width": "0px",
+        "border-top-style": "solid",
+        "border-top-color": "rgb(229, 231, 235)",
+        "border-radius": "0px",
+        "box-shadow": "none",
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "opacity": "1",
+        "z-index": "auto"
+      },
+      "vars": [
+        "0px",
+        "0px",
+        "200px",
+        "52px"
+      ],
+      "markup": "<div role=\"tablist\" aria-orientation=\"vertical\" class=\"relative inline-flex items-center border-b border-solid border-semantic-border-layout data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0 after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100 [&amp;[data-motion-indicator=true]&gt;[role=tab][data-state=active]]:border-transparent data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent w-[200px] shrink-0\" aria-label=\"Conversation status\" tabindex=\"0\" data-orientation=\"vertical\" data-motion-indicator=\"true\" style=\"outline: none; --v2-tab-x: 0px; --v2-tab-y: 0px; --v2-tab-width: 200px; --v2-tab-height: 52px;\"><button type=\"button\" role=\"tab\" aria-selected=\"true\" aria-controls=\"radix-_r_0_-content-open\" data-state=\"active\" id=\"radix-_r_0_-trigger-open\" class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] border-transparent hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui\" tabindex=\"0\" data-orientation=\"vertical\" data-radix-collection-item=\"\">Open</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_0_-content-assigned\" data-state=\"inactive\" id=\"radix-_r_0_-trigger-assigned\" class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] border-transparent hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui\" tabindex=\"-1\" data-orientation=\"vertical\" data-radix-collection-item=\"\">Assigned</button><button type=\"button\" role=\"tab\" aria-selected=\"false\" aria-controls=\"radix-_r_0_-content-resolved\" data-state=\"inactive\" id=\"radix-_r_0_-trigger-resolved\" class=\"inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out text-[var(--v2-text-muted,#707070)] border-transparent hover:text-[var(--v2-text-primary,#484848)] data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui\" tabindex=\"-1\" data-orientation=\"vertical\" data-radix-collection-item=\"\">Resolved</button></div>"
+    }
+  ]
+}

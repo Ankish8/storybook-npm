@@ -1,0 +1,27 @@
+{
+  "story": "v2-components-badge--failed&args=dot:!true",
+  "measured": {
+    "Badge": {
+      "width": 59.69,
+      "height": "24px",
+      "padding-left": "12px",
+      "padding-right": "12px",
+      "gap": "8px",
+      "border-radius": "25px",
+      "color": "rgb(180, 35, 24)",
+      "background-color": "rgb(254, 243, 242)",
+      "font-size": "12px",
+      "line-height": "16px",
+      "border-top-width": "1px",
+      "border-top-color": "rgb(254, 205, 202)"
+    },
+    "Dot": null
+  },
+  "popupBox": {
+    "x": 220.15625,
+    "y": 139,
+    "width": 59.6875,
+    "height": 24
+  },
+  "evals": []
+}
