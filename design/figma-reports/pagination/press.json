@@ -1,0 +1,6 @@
+[
+  { "name": "10-press-page-link", "story": "v2-components-pagination--with-more-pages", "press": "#storybook-root a[data-slot=pagination-link]:not([aria-current]):not([aria-label])", "hold": 400, "height": 300,
+    "measure": { "Inactive page link (pressed)": { "sel": "#storybook-root a[data-slot=pagination-link]:not([aria-current]):not([aria-label])", "props": ["transform", "background-color", "transition-duration", "font-variant-numeric"] } } },
+  { "name": "11-press-next-link", "story": "v2-components-pagination--with-more-pages", "press": "#storybook-root a[aria-label='Go to next page']", "hold": 400, "height": 300,
+    "measure": { "Next link (pressed)": { "sel": "#storybook-root a[aria-label='Go to next page']", "props": ["transform", "background-color", "transition-duration"] } } }
+]

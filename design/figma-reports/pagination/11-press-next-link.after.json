@@ -1,0 +1,19 @@
+{
+  "story": "v2-components-pagination--with-more-pages",
+  "measured": {
+    "Next link (pressed)": {
+      "width": 71.19,
+      "height": 31.04,
+      "transform": "matrix(0.97, 0, 0, 0.97, 0, 0)",
+      "background-color": "rgb(245, 245, 245)",
+      "transition-duration": "0.08s"
+    }
+  },
+  "popupBox": {
+    "x": 0,
+    "y": 0,
+    "width": 0,
+    "height": 0
+  },
+  "evals": []
+}

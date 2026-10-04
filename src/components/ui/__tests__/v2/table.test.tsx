@@ -201,7 +201,48 @@ describe("TableRow", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("row")).toHaveClass("hover:bg-semantic-bg-ui");
+    // Hover is gated to hover-capable pointers so it never sticks after a tap.
+    expect(screen.getByTestId("row")).toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+    );
+  });
+
+  it("tints a selected row differently from hover and keeps the tint under the pointer", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow data-testid="row" data-state="selected">
+            <TableCell>Content</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    const row = screen.getByTestId("row");
+    // info surface (#ECF1FB) for selection; bg-ui (#F5F5F5) stays the hover fill
+    expect(row).toHaveClass("data-[state=selected]:bg-semantic-info-surface");
+    expect(row).toHaveClass(
+      "data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface"
+    );
+    expect(row).not.toHaveClass("data-[state=selected]:bg-semantic-bg-ui");
+    expect(row).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+  });
+
+  it("shows a visible focus ring on a focusable row", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableRow data-testid="row" tabIndex={0}>
+            <TableCell>Content</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.getByTestId("row")).toHaveClass(
+      "focus-visible:outline",
+      "focus-visible:outline-semantic-primary"
+    );
   });
 });
 
@@ -278,6 +319,146 @@ describe("TableHead", () => {
 
     const infoIcon = screen.getByTitle("Help text");
     expect(infoIcon).toBeInTheDocument();
+  });
+
+  it("sets aria-sort from sortDirection", () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection="asc">Ascending</TableHead>
+            <TableHead sortDirection="desc">Descending</TableHead>
+            <TableHead sortable>Unsorted</TableHead>
+            <TableHead sortDirection={null}>Null (v1: not sorted)</TableHead>
+            <TableHead>Plain</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+
+    const heads = screen.getAllByRole("columnheader");
+    expect(heads[0]).toHaveAttribute("aria-sort", "ascending");
+    expect(heads[1]).toHaveAttribute("aria-sort", "descending");
+    expect(heads[2]).toHaveAttribute("aria-sort", "none");
+    // sortDirection={null} keeps v1's meaning (no sort, nothing shown); only `sortable` opts in.
+    expect(heads[3]).not.toHaveAttribute("aria-sort");
+    expect(heads[4]).not.toHaveAttribute("aria-sort");
+  });
+
+  it("lets a host-supplied aria-sort override the derived one", () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection="asc" aria-sort="other">
+              Custom
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+
+    expect(screen.getByRole("columnheader")).toHaveAttribute(
+      "aria-sort",
+      "other"
+    );
+  });
+
+  it("falls back to the derived aria-sort when the host passes undefined", () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection="desc" aria-sort={undefined}>
+              Conditional
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+
+    expect(screen.getByRole("columnheader")).toHaveAttribute(
+      "aria-sort",
+      "descending"
+    );
+  });
+
+  it("draws a 12px arrow for a sorted column and turns it over for desc", () => {
+    const { rerender } = render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection="asc">Sortable</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    // the v1 text glyph stays in the DOM, but is hidden from assistive tech
+    const glyph = screen.getByText("↑");
+    expect(glyph.parentElement).toHaveAttribute("aria-hidden", "true");
+    const arrow = screen.getByRole("columnheader").querySelector("svg");
+    expect(arrow).toHaveClass("size-3");
+    expect(arrow).not.toHaveClass("rotate-180");
+
+    rerender(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection="desc">Sortable</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    expect(screen.getByText("↓")).toBeInTheDocument();
+    expect(screen.getByRole("columnheader").querySelector("svg")).toHaveClass(
+      "rotate-180"
+    );
+  });
+
+  it("renders sortDirection={null} exactly like v1: no glyph, no pointer cursor", () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDirection={null} data-testid="head">
+              Unsorted
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+
+    const head = screen.getByTestId("head");
+    expect(head.querySelector("svg")).toBeNull();
+    expect(head).not.toHaveClass("cursor-pointer");
+    expect(head).not.toHaveAttribute("aria-sort");
+  });
+
+  it("shows a faint two-way glyph, without text, on a sortable but unsorted column", () => {
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortable data-testid="head">
+              Unsorted
+            </TableHead>
+            <TableHead data-testid="plain">Plain</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+
+    const head = screen.getByTestId("head");
+    const icon = head.querySelector("svg");
+    expect(icon).toHaveClass("size-3", "opacity-40");
+    expect(icon).toHaveClass(
+      "[@media(hover:hover)]:group-hover/head:opacity-100"
+    );
+    expect(head).toHaveTextContent("Unsorted");
+    expect(head).not.toHaveTextContent("↑");
+    expect(head).toHaveClass("cursor-pointer");
+    expect(screen.getByTestId("plain").querySelector("svg")).toBeNull();
+    expect(screen.getByTestId("plain")).not.toHaveClass("cursor-pointer");
   });
 
   it("applies cursor-pointer when sortable", () => {
@@ -746,5 +927,75 @@ describe("TableToggle", () => {
     expect(screen.getByRole("switch")).toHaveAccessibleDescription(
       "Controls campaign delivery."
     );
+  });
+});
+
+describe("Table stickyHeader", () => {
+  const renderTable = (stickyHeader?: boolean) =>
+    render(
+      <Table stickyHeader={stickyHeader} data-testid="table">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell>Row</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+  it("is off by default", () => {
+    renderTable();
+    const table = screen.getByTestId("table");
+    expect(table.className).not.toContain("sticky");
+    expect(table.parentElement).not.toHaveClass(
+      "max-h-[var(--v2-table-max-height,inherit)]"
+    );
+  });
+
+  it("pins the header cells with a divider shadow and limits the frame height", () => {
+    renderTable(true);
+    const table = screen.getByTestId("table");
+    expect(table).toHaveClass(
+      "[&>thead>tr>th]:sticky",
+      "[&>thead>tr>th]:top-0",
+      "[&>thead>tr>th]:z-20",
+      "[&>thead>tr>th]:bg-semantic-primary-surface"
+    );
+    expect(table.className).toContain(
+      "[&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout,#E9EAEB)]"
+    );
+    expect(table.parentElement).toHaveClass(
+      "max-h-[var(--v2-table-max-height,inherit)]",
+      "overflow-auto"
+    );
+  });
+
+  it("does not leak stickyHeader onto the DOM", () => {
+    renderTable(true);
+    expect(screen.getByTestId("table")).not.toHaveAttribute("stickyheader");
+  });
+});
+
+describe("TableSkeleton stagger", () => {
+  it("starts each row 60ms after the previous one through a custom property", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableSkeleton rows={3} columns={1} />
+        </TableBody>
+      </Table>
+    );
+    const delays = screen
+      .getAllByRole("cell")
+      .map((cell) =>
+        (cell.querySelector("div") as HTMLElement).style.getPropertyValue(
+          "--v2-skeleton-delay"
+        )
+      );
+    expect(delays).toEqual(["0ms", "60ms", "120ms"]);
   });
 });

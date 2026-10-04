@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-table--sortable-headers",
+  "measured": {
+    "Sorted glyph": {
+      "width": "12.0312px",
+      "height": "20px",
+      "color": "rgb(164, 167, 174)",
+      "opacity": "1",
+      "font-size": "14px",
+      "transform": "none",
+      "transition-duration": "0s",
+      "transition-property": "all"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 17,
+    "width": 966,
+    "height": 222
+  },
+  "evals": []
+}

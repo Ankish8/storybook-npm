@@ -123,3 +123,61 @@ describe("Skeleton", () => {
     });
   });
 });
+
+describe("Skeleton animation", () => {
+  it("keeps the pulse as the default behaviour", () => {
+    const { container } = render(<Skeleton />);
+    expect(container.firstChild).toHaveClass(
+      "animate-pulse",
+      "motion-reduce:animate-none"
+    );
+    expect(container.firstChild).not.toHaveClass("overflow-hidden");
+  });
+
+  it("accepts animation=pulse explicitly with the same classes as the default", () => {
+    const { container: a } = render(<Skeleton />);
+    const { container: b } = render(<Skeleton animation="pulse" />);
+    expect((b.firstChild as HTMLElement).className).toBe(
+      (a.firstChild as HTMLElement).className
+    );
+  });
+
+  it("sweeps a highlight band for shimmer, gated to motion-safe", () => {
+    const { container } = render(<Skeleton animation="shimmer" />);
+    const el = container.firstChild as HTMLElement;
+    expect(el).not.toHaveClass("animate-pulse");
+    expect(el).toHaveClass("relative", "overflow-hidden");
+    expect(el.className).toContain("motion-safe:after:animate-in");
+    expect(el.className).toContain(
+      "motion-safe:after:[animation-duration:1.6s]"
+    );
+    expect(el.className).toContain(
+      "motion-safe:after:[animation-timing-function:linear]"
+    );
+    expect(el.className).toContain(
+      "motion-safe:after:[animation-iteration-count:infinite]"
+    );
+    expect(el.className).toContain(
+      "linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary,#FFFFFF)_50%,transparent),transparent)"
+    );
+    // the band rests off-canvas, so reduced motion shows the plain fill
+    expect(el).toHaveClass("after:left-full", "after:w-full");
+    expect(el).toHaveClass("bg-semantic-bg-grey");
+  });
+
+  it("renders a static fill for animation=none", () => {
+    const { container } = render(<Skeleton animation="none" />);
+    const el = container.firstChild as HTMLElement;
+    expect(el).not.toHaveClass("animate-pulse");
+    expect(el.className).not.toContain("animate-in");
+    expect(el).toHaveClass("bg-semantic-bg-grey");
+  });
+
+  it("keeps the placeholder hidden from assistive technology in every mode", () => {
+    for (const animation of ["pulse", "shimmer", "none"] as const) {
+      const { container, unmount } = render(<Skeleton animation={animation} />);
+      expect(container.firstChild).toHaveAttribute("aria-hidden", "true");
+      unmount();
+    }
+  });
+});

@@ -434,7 +434,7 @@ function InlineForm({
             version === "v2" ? "right-6 top-6" : "right-4 top-4"
           )}
         >
-          <X className={version === "v2" ? "size-3" : "size-4"} />
+          <X className="size-4" />
         </button>
         <div
           className={version === "v2" ? "grid gap-4 p-6" : "grid gap-4 py-4"}

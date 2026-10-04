@@ -1,0 +1,71 @@
+{
+  "story": "v2-components-dialog--scrolling-content",
+  "measured": {
+    "Dialog panel": {
+      "width": "512px",
+      "height": 668,
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-left-radius": "12px",
+      "border-top-width": "1px",
+      "border-top-color": "rgb(233, 234, 235)",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(10, 13, 18, 0.08) 0px 20px 24px -4px, rgba(10, 13, 18, 0.03) 0px 8px 8px -4px, rgba(10, 13, 18, 0.04) 0px 3px 3px -1.5px",
+      "overflow-y": "auto",
+      "max-height": "668px"
+    },
+    "Header": {
+      "width": 510,
+      "height": "105px",
+      "position": "sticky",
+      "top": "0px",
+      "z-index": "10",
+      "background-color": "rgb(255, 255, 255)",
+      "padding-top": "24px",
+      "padding-left": "24px",
+      "border-bottom-width": "1px",
+      "border-bottom-color": "rgb(233, 234, 235)"
+    },
+    "Footer": {
+      "width": 510,
+      "height": "64px",
+      "position": "sticky",
+      "bottom": "0px",
+      "z-index": "10",
+      "background-color": "rgb(255, 255, 255)",
+      "padding-left": "24px",
+      "padding-bottom": "24px",
+      "border-top-width": "0px"
+    },
+    "Corner close button": {
+      "width": "24px",
+      "height": "24px",
+      "position": "sticky",
+      "top": "24px",
+      "right": "auto",
+      "z-index": "20",
+      "border-radius": "6px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(112, 112, 112)",
+      "outline-style": "none",
+      "outline-offset": "0px",
+      "transition-duration": "0.15s"
+    },
+    "Corner close icon": {
+      "width": "16px",
+      "height": "16px",
+      "color": "rgb(112, 112, 112)"
+    }
+  },
+  "popupBox": {
+    "x": 244,
+    "y": 16,
+    "width": 512,
+    "height": 668
+  },
+  "evals": [
+    [
+      519,
+      1185,
+      666
+    ]
+  ]
+}

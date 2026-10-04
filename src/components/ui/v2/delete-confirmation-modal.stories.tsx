@@ -134,7 +134,7 @@ function InlineDelete({
               className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-[var(--v2-text-muted,#707070)]"
               onClick={() => args.onOpenChange?.(false)}
             >
-              <X className="size-3" />
+              <X className="size-4" />
             </button>
           </Header>
         ) : (

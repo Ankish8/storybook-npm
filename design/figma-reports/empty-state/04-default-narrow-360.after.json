@@ -1,0 +1,51 @@
+{
+  "story": "v2-components-emptystate--overview",
+  "measured": {
+    "Root": {
+      "width": "326px",
+      "height": "288px",
+      "padding-top": "24px",
+      "padding-left": "24px",
+      "row-gap": "20px"
+    },
+    "Icon tile": {
+      "width": "90px",
+      "height": "90px",
+      "border-top-left-radius": "60px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(12, 15, 18, 0.05) 0px 1px 2px 0px, rgba(10, 13, 18, 0.18) 0px 0px 0px 1px inset, rgba(12, 15, 18, 0.05) 0px -2px 0px 0px inset",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(94, 94, 94)"
+    },
+    "Icon": {
+      "width": "40px",
+      "height": "40px"
+    },
+    "Title": {
+      "width": 199.63,
+      "height": 32,
+      "font-size": "24px",
+      "line-height": "32px",
+      "font-weight": "600",
+      "color": "rgb(72, 72, 72)"
+    },
+    "Description": {
+      "width": 278,
+      "height": 40,
+      "font-size": "16px",
+      "line-height": "normal",
+      "color": "rgb(94, 94, 94)"
+    },
+    "Text group": {
+      "width": 278,
+      "height": 78,
+      "row-gap": "6px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 328,
+    "height": 290
+  },
+  "evals": []
+}

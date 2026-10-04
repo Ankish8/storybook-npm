@@ -222,10 +222,7 @@ function InlineDialog({
                 : "absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
             }
           >
-            <X
-              aria-hidden="true"
-              className={version === "v2" ? "size-3" : "size-4"}
-            />
+            <X aria-hidden="true" className="size-4" />
           </Close>
         )}
       </section>
@@ -285,9 +282,13 @@ const meta: Meta<DialogStoryArgs> = {
             [
               "Sections",
               "24px outer padding, 16px gaps",
-              "24px header with a divider; 24px body; footer padding 0 / 24 / 24px",
+              "24px header with a divider; 24px body; footer padding 0 / 24 / 24px. Header and footer stay in view while a tall body scrolls; the footer gains a divider only while content is hidden beneath it",
             ],
-            ["Close control", "16px icon", "12px icon in a 24px control"],
+            [
+              "Close control",
+              "16px icon",
+              "16px icon in a 24px control with a 32px hit area; stays pinned while the body scrolls",
+            ],
             [
               "Widths",
               "384 / 512 / 672 / 896px and full",
@@ -464,6 +465,99 @@ export const HideCloseButton: Story = {
 export const LoadingAction: Story = {
   name: "Loading action",
   args: { busy: true },
+};
+
+const PREFERENCE_FIELDS = [
+  "Display name",
+  "Work email",
+  "Phone number",
+  "Team",
+  "Job title",
+  "Time zone",
+  "Language",
+  "Default inbox",
+  "Signature",
+  "Backup contact",
+  "Escalation contact",
+  "Notes for admins",
+] as const;
+
+function ScrollingDialog(args: DialogStoryArgs) {
+  return (
+    <Dialog
+      open={args.open}
+      onOpenChange={args.onOpenChange}
+      modal={args.modal}
+    >
+      <DialogTrigger asChild>
+        <Button variant="outline">{args.triggerLabel}</Button>
+      </DialogTrigger>
+      <DialogContent
+        size={args.size}
+        hideCloseButton={args.hideCloseButton}
+        data-v2-component="dialog"
+        data-size={args.size}
+      >
+        <DialogHeader className="pr-16" data-dialog-section="header">
+          <DialogTitle>{args.title}</DialogTitle>
+          <DialogDescription>{args.description}</DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 p-6" data-dialog-section="body">
+          {PREFERENCE_FIELDS.map((field) => (
+            <div key={field} className="flex flex-col gap-1.5">
+              <label
+                htmlFor={"scroll-" + field}
+                className="text-sm font-medium leading-5 text-[var(--v2-text-secondary,#5E5E5E)]"
+              >
+                {field}
+              </label>
+              <Input id={"scroll-" + field} placeholder={field} />
+            </div>
+          ))}
+        </div>
+        <DialogFooter data-dialog-section="footer">
+          <DialogClose asChild>
+            <Button variant="outline">{args.cancelLabel}</Button>
+          </DialogClose>
+          <DialogClose asChild>
+            <Button onClick={() => args.onAction?.()}>
+              {args.actionLabel}
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export const ScrollingContent: Story = {
+  name: "Scrolling content",
+  args: {
+    triggerLabel: "Edit preferences",
+    title: "Workspace preferences",
+    description: "Update your profile. Scroll to see every field.",
+    actionLabel: "Save changes",
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A form taller than the viewport. The header and footer stay in view while the body scrolls beneath them; the footer shows a divider only while content is hidden below it.",
+      },
+    },
+  },
+  render: function Render(args) {
+    const [, updateArgs] = useArgs<DialogStoryArgs>();
+    return (
+      <ScrollingDialog
+        {...args}
+        onOpenChange={(open) => {
+          args.onOpenChange?.(open);
+          updateArgs({ open });
+        }}
+      />
+    );
+  },
 };
 
 const INLINE_CONTROLS = ["open", "modal", "triggerLabel"];

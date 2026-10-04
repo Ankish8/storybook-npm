@@ -6,9 +6,23 @@ import { cn } from "@/lib/utils";
 /**
  * Skeleton variants for content placeholders.
  * Uses semantic background tokens for consistent theming.
+ *
+ * `animation` is listed first so the default output keeps today's class order ("animate-pulse
+ * motion-reduce:animate-none ..."). Shimmer sweeps a highlight band (the ::after) over the fill using
+ * tailwindcss-animate's `enter` keyframes, which animate from a start offset to the element's own
+ * resting state. The band rests just right of the placeholder (left-full) and starts 200% of its
+ * width to the left, so one pass crosses the whole fill. No transform class is used on purpose: a
+ * host stylesheet that marks utilities !important would pin it and freeze the animation. The band
+ * rests off-canvas, so reduced motion (no animation) leaves the plain static fill.
  */
-const skeletonVariants = cva("animate-pulse motion-reduce:animate-none", {
+const skeletonVariants = cva("", {
   variants: {
+    animation: {
+      pulse: "animate-pulse motion-reduce:animate-none",
+      shimmer:
+        "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary,#FFFFFF)_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:1.6s] motion-safe:after:[animation-timing-function:linear] motion-safe:after:[animation-iteration-count:infinite] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)]",
+      none: "",
+    },
     variant: {
       default: "bg-semantic-bg-grey",
       subtle: "bg-semantic-bg-ui",
@@ -20,13 +34,14 @@ const skeletonVariants = cva("animate-pulse motion-reduce:animate-none", {
     },
   },
   defaultVariants: {
+    animation: "pulse",
     variant: "default",
     shape: "line",
   },
 });
 
 /**
- * A placeholder loading component with pulse animation for content loading states.
+ * A placeholder loading component with pulse animation (or a shimmer sweep, or none) for content loading states.
  * Use shape, width, and height props to match the content being loaded.
  *
  * @example
@@ -42,6 +57,9 @@ const skeletonVariants = cva("animate-pulse motion-reduce:animate-none", {
  *
  * // Subtle variant
  * <Skeleton variant="subtle" />
+ *
+ * // Shimmer sweep instead of pulse
+ * <Skeleton animation="shimmer" />
  * ```
  */
 export interface SkeletonProps
@@ -59,6 +77,7 @@ const Skeleton = React.forwardRef(
     {
       className,
       variant,
+      animation,
       shape,
       width,
       height,
@@ -82,7 +101,7 @@ const Skeleton = React.forwardRef(
         ref={ref}
         aria-hidden="true"
         className={cn(
-          skeletonVariants({ variant, shape }),
+          skeletonVariants({ variant, shape, animation }),
           (shape === undefined || shape === null || shape === "line") &&
             width === undefined &&
             style?.width === undefined &&

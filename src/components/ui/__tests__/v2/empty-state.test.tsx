@@ -93,3 +93,53 @@ describe("EmptyState", () => {
     );
   });
 });
+
+describe("EmptyState size", () => {
+  const DEFAULT_ROOT =
+    "flex flex-col items-center justify-center gap-5 p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]";
+
+  it("leaves the default output unchanged", () => {
+    const { container: omitted } = render(
+      <EmptyState icon={<svg />} title="Nothing" description="Details" />
+    );
+    const { container: explicit } = render(
+      <EmptyState
+        size="default"
+        icon={<svg />}
+        title="Nothing"
+        description="Details"
+      />
+    );
+    expect(omitted.innerHTML).toBe(explicit.innerHTML);
+    expect((omitted.firstChild as HTMLElement).className).toBe(DEFAULT_ROOT);
+    expect(omitted.querySelector("p")).toHaveClass("text-2xl", "leading-8");
+    expect(omitted.querySelector("svg")?.parentElement).toHaveClass(
+      "size-[90px]"
+    );
+  });
+
+  it("renders a compact layout for sm", () => {
+    const { container } = render(
+      <EmptyState
+        size="sm"
+        icon={<svg />}
+        title="Nothing"
+        description="Details"
+      />
+    );
+    expect(container.firstChild).toHaveClass("gap-4", "p-4");
+    expect(container.firstChild).not.toHaveClass("p-6");
+    const tile = container.querySelector("svg")?.parentElement as HTMLElement;
+    expect(tile).toHaveClass("size-12", "[&>svg]:size-6");
+    expect(tile).not.toHaveClass("size-[90px]");
+    expect(screen.getByText("Nothing")).toHaveClass("text-base", "leading-6");
+    expect(screen.getByText("Details")).toHaveClass("text-sm", "leading-5");
+  });
+
+  it("keeps a custom className on both sizes", () => {
+    const { container } = render(
+      <EmptyState size="sm" title="Nothing" className="custom" />
+    );
+    expect(container.firstChild).toHaveClass("custom", "p-4");
+  });
+});

@@ -324,3 +324,24 @@ describe("ConfirmationModal", () => {
     });
   });
 });
+
+describe("ConfirmationModal close control", () => {
+  it("keeps a 24px control with a 32px hit area and a 16px icon", () => {
+    render(<ConfirmationModal open title="Confirm" />);
+    const close = screen.getByRole("button", { name: "Close" });
+    expect(close).toHaveClass(
+      "size-6",
+      "relative",
+      "before:absolute",
+      "before:-inset-1"
+    );
+    expect(close.querySelector("svg")).toHaveClass("size-4");
+    expect(close).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+  });
+
+  it("stays pinned with its sticky header", () => {
+    render(<ConfirmationModal open title="Confirm" />);
+    const header = screen.getByRole("button", { name: "Close" }).closest("div");
+    expect(header).toHaveClass("sticky", "top-0");
+  });
+});

@@ -1,0 +1,32 @@
+{
+  "story": "v2-components-table--sortable-headers",
+  "measured": {
+    "Focused header cell (th)": {
+      "width": 155.84,
+      "height": "60px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(72, 72, 72)",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "position": "static",
+      "top": "auto",
+      "z-index": "auto",
+      "box-shadow": "none",
+      "cursor": "auto",
+      "outline-style": "auto",
+      "outline-width": "1px"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 17,
+    "width": 966,
+    "height": 222
+  },
+  "evals": [
+    0,
+    "TH:Status"
+  ]
+}

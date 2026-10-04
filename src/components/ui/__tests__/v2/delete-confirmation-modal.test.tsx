@@ -246,3 +246,24 @@ describe("DeleteConfirmationModal", () => {
     );
   });
 });
+
+describe("DeleteConfirmationModal close control", () => {
+  it("keeps a 24px control with a 32px hit area and a 16px icon", () => {
+    render(<DeleteConfirmationModal open />);
+    const close = screen.getByRole("button", { name: "Close" });
+    expect(close).toHaveClass(
+      "size-6",
+      "relative",
+      "before:absolute",
+      "before:-inset-1"
+    );
+    expect(close.querySelector("svg")).toHaveClass("size-4");
+    expect(close).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+  });
+
+  it("stays pinned with its sticky header", () => {
+    render(<DeleteConfirmationModal open />);
+    const header = screen.getByRole("button", { name: "Close" }).closest("div");
+    expect(header).toHaveClass("sticky", "top-0");
+  });
+});

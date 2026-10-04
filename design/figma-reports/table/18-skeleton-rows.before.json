@@ -1,0 +1,26 @@
+{
+  "story": "v2-components-table--loading",
+  "measured": {
+    "Skeleton bar row 1": {
+      "width": 95.31,
+      "height": 16,
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-delay": "0s"
+    },
+    "Skeleton bar row 3": {
+      "width": 95.31,
+      "height": 16,
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-delay": "0s"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 17,
+    "width": 966,
+    "height": 222
+  },
+  "evals": []
+}

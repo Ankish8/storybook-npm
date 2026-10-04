@@ -478,3 +478,90 @@ describe.each([
     expect(screen.queryByText("Dialog content")).not.toBeInTheDocument();
   });
 });
+
+describe("Dialog scroll chrome and close hit area", () => {
+  it("pins the header and footer inside the dialog's own scroll area", () => {
+    render(
+      <Dialog open>
+        <DialogContent data-testid="content">
+          <DialogHeader data-testid="header">
+            <DialogTitle>Title</DialogTitle>
+          </DialogHeader>
+          <div>Body</div>
+          <DialogFooter data-testid="footer">
+            <button>OK</button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    );
+
+    expect(screen.getByTestId("content")).toHaveClass("overflow-y-auto");
+    expect(screen.getByTestId("header")).toHaveClass(
+      "sticky",
+      "top-0",
+      "z-10",
+      "bg-semantic-bg-primary"
+    );
+    expect(screen.getByTestId("footer")).toHaveClass(
+      "sticky",
+      "bottom-0",
+      "z-10",
+      "bg-semantic-bg-primary"
+    );
+    // divider only while content is stuck beneath the footer (scroll-state), 1px divider elsewhere
+    expect(screen.getByTestId("footer").className).toContain(
+      "[@container_scroll-state(stuck:bottom)]"
+    );
+  });
+
+  it("keeps the 24px close button, adds a 32px hit area and a 16px icon", () => {
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    );
+
+    const close = screen.getByRole("button", { name: "Close" });
+    expect(close).toHaveClass("size-6", "before:absolute", "before:-inset-1");
+    expect(close.querySelector("svg")).toHaveClass("size-4");
+    // pinned beside the sticky header without changing the DOM order (Tab order, initial focus)
+    expect(close).toHaveClass("sticky", "order-first");
+    expect(close.parentElement?.lastElementChild).toBe(close);
+  });
+
+  it("gates the close hover fill to hover-capable pointers", () => {
+    render(
+      <Dialog open>
+        <DialogContent>
+          <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    );
+
+    const close = screen.getByRole("button", { name: "Close" });
+    expect(close).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+    expect(close.className).not.toMatch(/(^| )hover:bg-semantic-bg-ui/);
+  });
+
+  it("still closes on Escape and from the close button", async () => {
+    const onOpenChange = vi.fn();
+    render(
+      <Dialog open onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogTitle>Title</DialogTitle>
+          <DialogDescription>Description</DialogDescription>
+        </DialogContent>
+      </Dialog>
+    );
+
+    await userEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+    onOpenChange.mockClear();
+    await userEvent.keyboard("{Escape}");
+    expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+});

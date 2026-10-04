@@ -45,6 +45,7 @@ function Sample({
       className={
         (version === "v1" ? "font-sans " : "") + (args.className || "")
       }
+      {...(version === "v2" ? { size: args.size } : {})}
       icon={Icon ? <Icon className="size-10" /> : undefined}
       actions={
         args.actionCount > 0 ? (
@@ -79,6 +80,7 @@ function Sample({
   );
 }
 const controls = [
+  "size",
   "title",
   "description",
   "iconType",
@@ -112,6 +114,11 @@ const meta: Meta<Args> = {
             ["Description", "14px body", "16px regular Inter"],
             ["Actions", "v1 buttons", "v2 Small buttons"],
             [
+              "Size",
+              "One size",
+              'default, or size="sm": 48px icon tile, 16px title, 14px description, 16px padding',
+            ],
+            [
               "Slots",
               "ReactNode icon/title/description/actions",
               "Same slot API",
@@ -133,6 +140,7 @@ const meta: Meta<Args> = {
     title: "Setup Calling API",
     description:
       "Generate production credentials when your environment is ready.",
+    size: "default",
     iconType: "phone",
     actionCount: 2,
     primaryLabel: "Generate credentials",
@@ -142,6 +150,7 @@ const meta: Meta<Args> = {
     onAction: fn(),
   },
   argTypes: {
+    size: { control: "select", options: ["default", "sm"] },
     title: { control: "text" },
     description: { control: "text" },
     iconType: {
@@ -172,6 +181,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
 export const WithIcon: Story = {};
+export const Small: Story = {
+  args: {
+    size: "sm",
+    iconType: "inbox",
+    title: "No conversations yet",
+    description: "New conversations will appear here.",
+    actionCount: 1,
+    primaryLabel: "Start a conversation",
+  },
+};
 export const NoButtons: Story = {
   name: "Without action buttons",
   args: {

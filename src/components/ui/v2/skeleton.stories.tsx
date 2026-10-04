@@ -15,7 +15,7 @@ const meta: Meta<typeof Skeleton> = {
       url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-12193",
     },
     layout: "centered",
-    controls: { include: ["variant", "shape", "width", "height"] },
+    controls: { include: ["variant", "shape", "animation", "width", "height"] },
     docs: {
       description: {
         component: v2ComponentDocs({
@@ -29,21 +29,39 @@ const meta: Meta<typeof Skeleton> = {
               "Same semantic loading surfaces",
             ],
             ["Namespace", "ui/skeleton", "ui/v2/skeleton"],
+            [
+              "Animation",
+              "Pulse only",
+              'Pulse by default; optional animation="shimmer" (1.6s linear sweep) or "none"',
+            ],
           ],
           tokens: [
             ["Default", "--semantic-bg-grey", "E9EAEB", "#E9EAEB"],
             ["Subtle", "--semantic-bg-ui", "F5F5F5", "#F5F5F5"],
+            [
+              "Shimmer highlight",
+              "--semantic-bg-primary",
+              "#FFFFFF",
+              "#FFFFFF at 50%",
+            ],
           ],
           guidance:
-            "Match shape, width and height to the content being loaded. Skeletons are hidden from screen readers; describe loading once on the parent region. Pulse animation respects reduced motion.",
+            "Match shape, width and height to the content being loaded. Skeletons are hidden from screen readers; describe loading once on the parent region. Pulse and shimmer respect reduced motion: both show the static fill. Shimmer needs tailwindcss-animate in the consuming project.",
         }),
       },
     },
   },
-  args: { variant: "default", shape: "line", width: 240, height: 16 },
+  args: {
+    variant: "default",
+    shape: "line",
+    animation: "pulse",
+    width: 240,
+    height: 16,
+  },
   argTypes: {
     variant: { control: "select", options: ["default", "subtle"] },
     shape: { control: "select", options: ["line", "circle", "rectangle"] },
+    animation: { control: "select", options: ["pulse", "shimmer", "none"] },
     width: { control: { type: "number", min: 16, max: 600 } },
     height: { control: { type: "number", min: 8, max: 320 } },
   },
@@ -58,6 +76,57 @@ export const Rectangle: Story = {
   args: { shape: "rectangle", width: 240, height: 120 },
 };
 export const Subtle: Story = { args: { variant: "subtle" } };
+export const Shimmer: Story = {
+  args: { animation: "shimmer", width: 240, height: 16 },
+};
+export const Animations: Story = {
+  parameters: gallery(
+    ["variant", "animation"],
+    "Pulse is the default. Shimmer sweeps a soft highlight across the placeholder; none is a static fill. Reduced motion shows the static fill for every option."
+  ),
+  render: (args) => (
+    <div className="grid w-[640px] max-w-full gap-6 md:grid-cols-3">
+      {(["pulse", "shimmer", "none"] as const).map((animation) => (
+        <section
+          key={animation}
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+        >
+          <h3 className="m-0 text-sm font-medium capitalize">{animation}</h3>
+          <div className="flex items-center gap-3">
+            <Skeleton
+              variant={args.variant}
+              animation={animation}
+              shape="circle"
+              width={40}
+              height={40}
+            />
+            <div className="min-w-0 flex-1 space-y-2">
+              <Skeleton
+                variant={args.variant}
+                animation={animation}
+                width="80%"
+                height={14}
+              />
+              <Skeleton
+                variant={args.variant}
+                animation={animation}
+                width="55%"
+                height={12}
+              />
+            </div>
+          </div>
+          <Skeleton
+            variant={args.variant}
+            animation={animation}
+            shape="rectangle"
+            width="100%"
+            height={72}
+          />
+        </section>
+      ))}
+    </div>
+  ),
+};
 export const AllVariants: Story = {
   parameters: gallery(
     ["variant"],
@@ -131,7 +200,7 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
 export const Usage: Story = {
   parameters: gallery(
     ["shape", "width", "height"],
-    "Fixed avatar and text dimensions. Palette applies to all placeholders. Toggle between loading and content."
+    "Fixed avatar and text dimensions. Palette and animation apply to all placeholders. Toggle between loading and content."
   ),
   render: (args) => <LoadingExample {...args} />,
 };

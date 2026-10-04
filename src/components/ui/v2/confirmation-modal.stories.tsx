@@ -146,7 +146,7 @@ function InlineConfirmation({
                 onClick={() => args.onOpenChange?.(false)}
                 className="flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent text-[var(--v2-text-muted,#707070)]"
               >
-                <X className="size-3" />
+                <X className="size-4" />
               </button>
             </Header>
             <div className={args.description ? "px-4 py-3" : "sr-only"}>

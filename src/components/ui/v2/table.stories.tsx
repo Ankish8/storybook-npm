@@ -109,6 +109,7 @@ function TableExample({
         withoutBorder={args.withoutBorder}
         wrapContent={args.wrapContent}
         className={args.className}
+        {...(version === "v2" ? { stickyHeader: args.stickyHeader } : {})}
         aria-label={version + " campaigns"}
         aria-busy={args.isLoading || undefined}
       >
@@ -268,6 +269,7 @@ const meta: Meta<ExampleArgs> = {
         "size",
         "withoutBorder",
         "wrapContent",
+        "stickyHeader",
         "className",
         "isLoading",
         "loadingRows",
@@ -310,7 +312,7 @@ const meta: Meta<ExampleArgs> = {
             [
               "Table behavior",
               "Composed markup, loading, wrapping and sticky cells",
-              "Same exports, props and behavior",
+              "Same exports, props and behavior; optional stickyHeader keeps headers in view. Sortable headers set aria-sort and show a 12px arrow (or, with the opt-in sortable prop, a faint two-way glyph on unsorted columns)",
             ],
           ],
           tokens: [
@@ -324,7 +326,8 @@ const meta: Meta<ExampleArgs> = {
             ],
             ["Divider", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Highlight", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
-            ["Hover / selected", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
+            ["Hover", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
+            ["Selected", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Font", "--font-v2", "Inter"],
           ],
           guidance:
@@ -344,6 +347,7 @@ const meta: Meta<ExampleArgs> = {
     size: "md",
     withoutBorder: false,
     wrapContent: false,
+    stickyHeader: false,
     className: "",
     isLoading: false,
     loadingRows: 3,
@@ -372,6 +376,12 @@ const meta: Meta<ExampleArgs> = {
       control: "boolean",
       description:
         "Allow longer cell content to wrap; otherwise the table scrolls horizontally.",
+    },
+    stickyHeader: {
+      control: "boolean",
+      description:
+        "Keep the column headers visible while the rows scroll. The table frame is the scroll area: set --v2-table-max-height on an ancestor (or a max-height on its direct parent).",
+      table: { defaultValue: { summary: "false" } },
     },
     className: {
       control: "text",
@@ -936,6 +946,109 @@ export const StickyColumn: Story = {
     </div>
   ),
 };
+export const StickyHeader: Story = {
+  name: "Sticky header",
+  args: {
+    stickyHeader: true,
+    wrapContent: false,
+    showToggle: false,
+    rows: Array.from({ length: 14 }, (_, index) => ({
+      ...CAMPAIGNS[index % CAMPAIGNS.length],
+      id: index + 1,
+      name: CAMPAIGNS[index % CAMPAIGNS.length].name + " " + (index + 1),
+    })),
+  },
+  parameters: gallery(
+    ["query"],
+    "The column headers stay visible while the rows scroll in a 320px frame. The frame is the table's own scroll area, sized by the --v2-table-max-height custom property on an ancestor, so the sticky header also works with horizontal scrolling."
+  ),
+  render: (args) => (
+    <div className="max-h-[320px] max-w-full overflow-auto [--v2-table-max-height:320px]">
+      <TableExample args={args} />
+    </div>
+  ),
+};
+
+function SortableHeadersExample() {
+  const [sort, setSort] = React.useState<{
+    key: string;
+    direction: "asc" | "desc";
+  }>({ key: "name", direction: "asc" });
+  const rows = [...CAMPAIGNS].sort((a, b) => {
+    const left = sort.key === "name" ? a.name : a.contacts;
+    const right = sort.key === "name" ? b.name : b.contacts;
+    const order = left < right ? -1 : left > right ? 1 : 0;
+    return sort.direction === "asc" ? order : -order;
+  });
+  const direction = (key: string) => (sort.key === key ? sort.direction : null);
+  const toggle = (key: string) =>
+    setSort((previous) => ({
+      key,
+      direction:
+        previous.key === key && previous.direction === "asc" ? "desc" : "asc",
+    }));
+  const sortButton =
+    "rounded text-left font-medium uppercase focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-semantic-primary";
+  return (
+    <V2.Table aria-label="Sortable campaigns">
+      <V2.TableHeader>
+        <V2.TableRow>
+          <V2.TableHead scope="col" sortable sortDirection={direction("name")}>
+            <button
+              type="button"
+              className={sortButton}
+              onClick={() => toggle("name")}
+            >
+              Campaign
+            </button>
+          </V2.TableHead>
+          <V2.TableHead scope="col">Status</V2.TableHead>
+          <V2.TableHead
+            scope="col"
+            sortable
+            sortDirection={direction("contacts")}
+          >
+            <button
+              type="button"
+              className={sortButton}
+              onClick={() => toggle("contacts")}
+            >
+              Contacts
+            </button>
+          </V2.TableHead>
+        </V2.TableRow>
+      </V2.TableHeader>
+      <V2.TableBody>
+        {rows.map((row) => (
+          <V2.TableRow key={row.id}>
+            <V2.TableCell className="font-medium text-[var(--v2-text-primary,#484848)]">
+              {row.name}
+            </V2.TableCell>
+            <V2.TableCell>
+              <Badge variant={row.enabled ? "active" : "disabled"}>
+                {row.enabled ? "Active" : "Paused"}
+              </Badge>
+            </V2.TableCell>
+            <V2.TableCell>{row.contacts.toLocaleString("en-US")}</V2.TableCell>
+          </V2.TableRow>
+        ))}
+      </V2.TableBody>
+    </V2.Table>
+  );
+}
+export const SortableHeaders: Story = {
+  name: "Sortable headers",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Pass sortDirection to a sorted header: asc and desc show one arrow that turns over. Add sortable to a column that can be sorted but currently is not: it shows a faint two-way glyph that strengthens on hover (sortDirection={null} alone renders nothing, exactly as in v1). Leave both off on columns that cannot be sorted. Put the sort action on a button inside the header.",
+      },
+    },
+  },
+  render: () => <SortableHeadersExample />,
+};
+
 export const Scroll: Story = {
   parameters: gallery(
     ["query"],

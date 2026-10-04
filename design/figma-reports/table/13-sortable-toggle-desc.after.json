@@ -1,0 +1,38 @@
+{
+  "story": "v2-components-table--sortable-headers",
+  "measured": {
+    "Sorted glyph": {
+      "width": "12px",
+      "height": "12px",
+      "color": "rgb(72, 72, 72)",
+      "opacity": "1",
+      "font-size": "14px",
+      "transform": "none",
+      "transition-duration": "0s",
+      "transition-property": "all"
+    },
+    "Sorted arrow icon": {
+      "width": "12px",
+      "height": "12px",
+      "color": "rgb(72, 72, 72)",
+      "opacity": "1",
+      "font-size": "14px",
+      "transform": "matrix(-1, 0, 0, -1, 0, 0)",
+      "transition-duration": "0.15s",
+      "transition-property": "transform"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 17,
+    "width": 966,
+    "height": 222
+  },
+  "evals": [
+    [
+      "descending",
+      null,
+      "none"
+    ]
+  ]
+}

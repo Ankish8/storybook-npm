@@ -108,8 +108,11 @@ const DialogContent = React.forwardRef(
             </DialogPrimitive.Description>
           )}
           {!hideCloseButton && (
-            <DialogPrimitive.Close className="absolute right-6 top-6 flex size-6 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--semantic-primary,#343E55)] disabled:pointer-events-none">
-              <X className="size-3" />
+            // Last in the DOM so Tab order and initial focus are unchanged, but ordered first and sticky so
+            // it stays pinned beside the sticky header while a tall body scrolls (net layout height is 0:
+            // mt-6 + size-6 - mb-12). The 24px control gets a 32px hit area from the ::before inset.
+            <DialogPrimitive.Close className="sticky top-6 z-20 order-first -mb-12 mr-6 mt-6 flex size-6 shrink-0 items-center justify-center self-end rounded-md text-[var(--v2-text-muted,#707070)] transition-colors before:absolute before:-inset-1 before:content-[''] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--semantic-primary,#343E55)] disabled:pointer-events-none">
+              <X className="size-4" />
               <span className="sr-only">Close</span>
             </DialogPrimitive.Close>
           )}
@@ -126,7 +129,8 @@ const DialogHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex flex-col gap-4 border-b border-solid border-semantic-border-layout p-6 text-left",
+      // Sticky inside the dialog's own scroll area (no wrapper); opaque so scrolled content passes beneath.
+      "sticky top-0 z-10 flex flex-col gap-4 border-b border-solid border-semantic-border-layout bg-semantic-bg-primary p-6 text-left",
       className
     )}
     {...props}
@@ -141,6 +145,12 @@ const DialogFooter = ({
   <div
     className={cn(
       "flex flex-col-reverse gap-2 px-6 pb-6 sm:flex-row sm:justify-end",
+      // Pinned to the bottom of the scroll area. The ::before is the divider plus 16px of breathing room
+      // above the buttons. With scroll-state queries (Chrome 133+) it shows only while the footer is stuck,
+      // that is while content is hidden beneath it; elsewhere it falls back to an always-visible 1px divider.
+      "sticky bottom-0 z-10 bg-semantic-bg-primary [container-type:scroll-state]",
+      "before:pointer-events-none before:absolute before:inset-x-0 before:bottom-full before:h-px before:bg-[linear-gradient(var(--semantic-border-layout,#E9EAEB)_0_1px,var(--semantic-bg-primary,#FFF)_1px)] before:content-[''] before:transition-opacity before:[transition-duration:150ms]",
+      "[@supports(container-type:scroll-state)]:before:h-[17px] [@supports(container-type:scroll-state)]:before:opacity-0 [@supports(container-type:scroll-state)]:[@container_scroll-state(stuck:bottom)]:before:opacity-100",
       className
     )}
     {...props}

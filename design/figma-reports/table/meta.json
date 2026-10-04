@@ -1,0 +1,90 @@
+{
+  "title": "Table",
+  "storybook": "V2/Components/Table",
+  "figmaNode": "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-8961",
+  "summary": "Selected rows now read as selected (light blue #ECF1FB) instead of looking identical to hover (#F5F5F5). Sortable column headers show a small arrow that turns over when the sort flips, or (with the new opt-in `sortable` prop) a faint two-way glyph when the column can be sorted but is not; the header exposes aria-sort. A new optional stickyHeader keeps the column headers in view while rows scroll, and hover fills no longer stick after a tap.",
+  "why": [
+    "Untitled UI, HeroUI and Mantine tables all tint selected rows differently from hover; in v2 both were #F5F5F5, so a selected row vanished under the pointer.",
+    "HeroUI, Mantine and React Aria show a muted two-way sort glyph on sortable-but-unsorted columns that strengthens on hover, and a single arrow for the active column; React Aria and the WAI-ARIA authoring guide put aria-sort on the th.",
+    "Mantine (stickyHeader) and HeroUI (isHeaderSticky) pin the header inside a bounded scroll area with a divider; collapsed table borders do not travel with a stuck cell, so the divider has to be drawn on the cell itself.",
+    "shadcn and Radix Themes gate hover fills behind hover-capable pointers so a tapped row does not stay highlighted on touch screens."
+  ],
+  "scenarioLabels": {
+    "01-default": "Default (Overview)",
+    "02-hover-row": "Row hover",
+    "03-selected-row": "Selected row (pointer elsewhere)",
+    "04-selected-row-hover": "Selected row under the pointer",
+    "05-sorted-column-asc": "Sorted column, ascending",
+    "06-sorted-column-hover": "Sorted column, header hovered",
+    "07-sorted-column-desc": "Sorted column after flipping to descending",
+    "08-loading-skeleton": "Loading skeleton",
+    "09-empty": "Empty",
+    "10-narrow-360": "Narrow viewport (360px)",
+    "11-sortable-headers": "Sortable headers: ascending, plain and unsorted",
+    "12-sortable-idle-hover": "Unsorted sortable header hovered",
+    "13-sortable-toggle-desc": "Sortable headers after a click (descending)",
+    "14-header-cell-focus": "Focusable header cell with keyboard focus",
+    "15-row-focus": "Focusable row with keyboard focus",
+    "16-scroll-no-sticky-top": "Tall table in a 320px frame (header at the top)",
+    "17-scroll-sticky-scrolled": "Tall table scrolled 200px (before: header scrolls away; after: header pinned)",
+    "18-skeleton-rows": "Skeleton rows (stagger)"
+  },
+  "motion": [
+    {
+      "what": "Sorted arrow when direction flips",
+      "before": "none (the glyph text swaps)",
+      "after": "12px arrow rotates 180deg, 150ms, ease-out cubic-bezier(0.16,1,0.3,1); no rotation under reduced motion"
+    },
+    {
+      "what": "Unsorted sort glyph on header hover",
+      "before": "none (no glyph)",
+      "after": "opacity 40% -> 100%, 150ms (hover-capable pointers only)"
+    },
+    {
+      "what": "Row hover / selection fill",
+      "before": "150ms colour fade",
+      "after": "unchanged 150ms colour fade; hover fill now only on hover-capable pointers"
+    },
+    {
+      "what": "Loading skeleton rows",
+      "before": "all rows pulse together (2s)",
+      "after": "each row starts 60ms after the one above (row 1 0ms, row 2 60ms, row 3 120ms); reduced motion: no pulse"
+    }
+  ],
+  "states": [
+    "Table row / default: fill none (white), 1px bottom divider #E9EAEB.",
+    "Table row / hover: fill #F5F5F5 (--semantic-bg-ui). Unchanged value; only applies on hover-capable pointers.",
+    "Table row / selected: fill #ECF1FB (--semantic-info-surface) instead of #F5F5F5. NEW distinct state.",
+    "Table row / selected + hover: stays #ECF1FB (no darker step).",
+    "Table row / highlighted (existing prop): unchanged, #ECF1FB.",
+    "Table row / focus-visible (only when the host makes a row focusable): 1px outline #343E55 (--semantic-primary) drawn inside the row (offset -1px).",
+    "Header cell / sortable-unsorted: NEW 12px chevrons-up-down glyph, #707070 at 40% opacity, 4px gap after the label.",
+    "Header cell / sortable-unsorted + hover: glyph at 100% opacity.",
+    "Header cell / sorted ascending: 12px arrow-up, #484848, 4px gap after the label (was a 14px text arrow, #A4A7AE).",
+    "Header cell / sorted descending: same arrow rotated 180deg (arrow-down).",
+    "Header cell / focus-visible (only when the host makes the th focusable): 1px outline #343E55 inside the cell (offset -2px).",
+    "Header / sticky (NEW variant): header cells fill #EBECEE, 1px bottom divider #E9EAEB drawn inside the cell, layered above the rows.",
+    "Info icon (ⓘ) in headers: unchanged."
+  ],
+  "figmaSteps": [
+    "Row fills: on the Table Row component add a variant 'selected'. Fill #ECF1FB (token semantic/info-surface). Keep 'hover' at #F5F5F5 (semantic/bg-ui). Selected+hover uses the same #ECF1FB. Row heights are unchanged: sm 48, md 54, lg 60; header row stays 60; cell padding 24px horizontal.",
+    "Sortable header, sorted: after the label add an icon 'arrow-up' 12x12 (stroke 2, rounded caps), colour #484848 (v2/text-primary), gap 4px (auto-layout, centre aligned). For descending use the same icon rotated 180deg (variants: asc / desc). Delete the old 14px text glyph '↑ / ↓' (#A4A7AE).",
+    "Sortable header, unsorted: add variant 'sortable' (opt-in, matches the `sortable` prop) with icon 'chevrons-up-down' 12x12 (stroke 2), colour #707070 (v2/text-muted), layer opacity 40%. In the hover variant of that header set the icon opacity to 100%. Non-sortable headers get no icon.",
+    "Prototype: sorted icon rotation 180deg, smart-animate, ease-out (custom bezier 0.16, 1, 0.3, 1), 150ms. Idle icon hover: dissolve 150ms.",
+    "Sticky header variant: header cells keep fill #EBECEE; replace the 1px row border under the header with an INSIDE bottom stroke 1px #E9EAEB on each header cell (the border does not travel with a pinned cell). The header sits above scrolled rows (z-index 20, above sticky first-column cells at 10).",
+    "Scroll frame: for the sticky header the table frame is the scroll area with a max height (for example 320). Mark the frame 'clip content' and 'vertical scroll'.",
+    "Focus: any cell/row a product makes focusable shows a 1px #343E55 outline inside the box (row: offset -1, header and body cells: offset -2).",
+    "Skeleton rows: each skeleton bar is 16px high, radius 4px, fill #E9EAEB, widths 60% / 80% / 30% / 60% (unchanged). Pulse stays 2s; in a prototype delay row N by N x 60ms (0, 60, 120, 180, 240).",
+    "Touch: hover fills (row #F5F5F5, idle sort glyph at 100%) exist only for mouse/trackpad; there is no hover variant to design for touch."
+  ],
+  "notes": [
+    "DECIDED (compat): `sortDirection={null}` keeps v1's meaning (not sorted; nothing shown, no pointer cursor, no aria-sort). The faint 'sortable but unsorted' glyph, pointer cursor and aria-sort=\"none\" are opt-in through the new additive `sortable` prop on TableHead. In Figma, build the 'sortable' variant as an option, not as the default state of an unsorted header.",
+    "stickyHeader is on Table (not TableHeader): the Table frame is the vertical scroll area, so it needs a height limit. Set the custom property --v2-table-max-height on any ancestor (for example the Tailwind class [--v2-table-max-height:320px]) or a max-height on the direct parent (the frame inherits it). Without a limit the frame never scrolls and the header just does not stick (same as today). This was not in the brief: the brief assumed a bare prop would work, but the frame (overflow-auto) is the nearest scroller, so a limit has to reach it somehow.",
+    "Sticky header cells use z-20 (brief said z-10): sticky first-column body cells are z-10 and come later in the DOM, so z-10 would paint them over the header while scrolling.",
+    "The v1 text arrow ('↑' / '↓') is kept in the DOM as a visually hidden, aria-hidden span so v1 tests and stories that query the text still pass; the visible arrow is an inline SVG (no new icon dependency).",
+    "Skeleton rows in the table keep animate-pulse (the v1 test table.test.tsx asserts the class); they stagger 60ms per row through the --v2-skeleton-delay custom property. A shimmer table skeleton would need a new prop and was not done; use Skeleton animation='shimmer' for custom layouts.",
+    "Focus rings on cells/rows only appear if the host makes them focusable (tabIndex). The sort control itself should be a button inside the th (as in the stories), which keeps its own ring.",
+    "Not verified: the selected-row tint on touch devices, Safari sticky thead behaviour (sticky is applied to th cells, which Safari supports).",
+    "Research conclusions in 'why' come from the task brief; I did not re-verify them against each library."
+  ]
+}

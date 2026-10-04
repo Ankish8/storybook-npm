@@ -465,3 +465,63 @@ describe("PaginationWidget item count", () => {
     expect(screen.getByRole("navigation")).toHaveClass("justify-center");
   });
 });
+
+describe("Pagination polish", () => {
+  it("keeps page numbers a stable width and presses every link to 0.97", () => {
+    render(
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious href="#" />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink href="#">7</PaginationLink>
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationNext href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+
+    for (const link of [
+      screen.getByText("7"),
+      screen.getByLabelText("Go to previous page"),
+      screen.getByLabelText("Go to next page"),
+    ]) {
+      expect(link).toHaveClass(
+        "tabular-nums",
+        "active:scale-[0.97]",
+        "[transition-duration:180ms]"
+      );
+      expect(link).not.toHaveClass("active:scale-[0.98]");
+    }
+  });
+
+  it("gates the hover fill and text colour to hover-capable pointers", () => {
+    render(
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationLink href="#">2</PaginationLink>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+
+    const link = screen.getByText("2");
+    expect(link).toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui",
+      "[@media(hover:hover)]:hover:text-[var(--v2-text-secondary,#5E5E5E)]"
+    );
+    expect(link).not.toHaveClass("hover:bg-semantic-bg-ui");
+    expect(link).not.toHaveClass(
+      "hover:text-[var(--v2-text-secondary,#5E5E5E)]"
+    );
+  });
+
+  it("uses tabular numerals in the summary", () => {
+    render(<PaginationInfo currentPage={2} pageSize={10} totalItems={120} />);
+    expect(screen.getByText(/Showing/)).toHaveClass("tabular-nums");
+  });
+});

@@ -1,0 +1,54 @@
+{
+  "story": "v2-components-skeleton--animations",
+  "measured": {
+    "Pulse circle": {
+      "width": "40px",
+      "height": "40px",
+      "background-color": "rgb(233, 234, 235)",
+      "border-top-left-radius": "9999px",
+      "opacity": "0.975808",
+      "overflow": "visible",
+      "position": "static",
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-timing-function": "cubic-bezier(0.4, 0, 0.6, 1)",
+      "animation-iteration-count": "infinite",
+      "animation-delay": "0s"
+    },
+    "Shimmer circle": {
+      "width": "40px",
+      "height": "40px",
+      "background-color": "rgb(233, 234, 235)",
+      "border-top-left-radius": "9999px",
+      "opacity": "0.975808",
+      "overflow": "visible",
+      "position": "static",
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-timing-function": "cubic-bezier(0.4, 0, 0.6, 1)",
+      "animation-iteration-count": "infinite",
+      "animation-delay": "0s"
+    },
+    "None circle": {
+      "width": "40px",
+      "height": "40px",
+      "background-color": "rgb(233, 234, 235)",
+      "border-top-left-radius": "9999px",
+      "opacity": "0.975808",
+      "overflow": "visible",
+      "position": "static",
+      "animation-name": "pulse",
+      "animation-duration": "2s",
+      "animation-timing-function": "cubic-bezier(0.4, 0, 0.6, 1)",
+      "animation-iteration-count": "infinite",
+      "animation-delay": "0s"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 640,
+    "height": 642
+  },
+  "evals": []
+}

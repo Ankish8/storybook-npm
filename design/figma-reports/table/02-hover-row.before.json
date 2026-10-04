@@ -1,0 +1,49 @@
+{
+  "story": "v2-components-table--overview",
+  "measured": {
+    "Header cell (th)": {
+      "width": 103.7,
+      "height": "60px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(72, 72, 72)",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "position": "static",
+      "top": "auto",
+      "z-index": "auto",
+      "box-shadow": "none",
+      "cursor": "auto",
+      "outline-style": "none",
+      "outline-width": "3px"
+    },
+    "Body row 2 (tr)": {
+      "width": 966,
+      "height": "54px",
+      "background-color": "rgb(245, 245, 245)",
+      "border-bottom-width": "1px",
+      "border-bottom-color": "rgb(233, 234, 235)",
+      "transition-duration": "0.15s",
+      "transition-property": "color, background-color, border-color, text-decoration-color, fill, stroke",
+      "cursor": "auto"
+    },
+    "Body cell (td)": {
+      "width": 103.7,
+      "height": 54,
+      "color": "rgb(94, 94, 94)",
+      "padding-left": "24px",
+      "padding-top": "8px",
+      "font-size": "14px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "outline-style": "none"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": 17,
+    "width": 966,
+    "height": 222
+  },
+  "evals": []
+}

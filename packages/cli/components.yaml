@@ -2599,6 +2599,7 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "tailwindcss-animate"
 
   v2-spinner:
     description: "Spinner (v2 design); same API as spinner"

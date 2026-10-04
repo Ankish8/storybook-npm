@@ -1,0 +1,38 @@
+{
+  "story": "v2-components-table--sticky-header",
+  "measured": {
+    "Header cell (th)": {
+      "width": 115.23,
+      "height": "60px",
+      "background-color": "rgb(235, 236, 238)",
+      "color": "rgb(72, 72, 72)",
+      "padding-left": "24px",
+      "padding-right": "24px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "position": "sticky",
+      "top": "0px",
+      "z-index": "20",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(233, 234, 235) 0px -1px 0px 0px inset",
+      "cursor": "auto",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "inset-block-start": "0px"
+    }
+  },
+  "popupBox": {
+    "x": 17,
+    "y": -123,
+    "width": 966,
+    "height": 756
+  },
+  "evals": [
+    [
+      "DIV",
+      "relative w-full overflow-auto max-h-[var",
+      200,
+      318,
+      816
+    ]
+  ]
+}

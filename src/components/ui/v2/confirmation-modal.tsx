@@ -125,9 +125,9 @@ const ConfirmationModal = React.forwardRef(
               <button
                 type="button"
                 aria-label="Close"
-                className="flex size-6 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors hover:bg-semantic-bg-ui hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+                className="relative flex size-6 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] transition-colors before:absolute before:-inset-1 before:content-[''] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
               >
-                <X className="size-3" aria-hidden />
+                <X className="size-4" aria-hidden />
               </button>
             </DialogClose>
           </DialogHeader>

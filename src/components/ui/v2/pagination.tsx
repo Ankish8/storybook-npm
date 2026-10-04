@@ -84,9 +84,13 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
+        // tabular-nums keeps page numbers the same width while paging (9 -> 10). Every link presses to 0.97
+        // (Button gives prev/next 0.98) and returns in 180ms. The ghost fill and text hover are re-declared
+        // behind (hover: hover) so a tapped link does not stay tinted on touch screens.
+        "tabular-nums active:scale-[0.97] [transition-duration:180ms]",
         isActive
           ? "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
-          : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-secondary,#5E5E5E)]",
+          : "text-[var(--v2-text-muted,#707070)] hover:bg-transparent [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-secondary,#5E5E5E)]",
         className
       )}
       {...props}
@@ -206,7 +210,7 @@ function PaginationInfo({
       data-slot="pagination-info"
       aria-live="polite"
       className={cn(
-        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-muted,#707070)] whitespace-nowrap",
+        "m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm tabular-nums text-[var(--v2-text-muted,#707070)] whitespace-nowrap",
         className
       )}
       {...props}
