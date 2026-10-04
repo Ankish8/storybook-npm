@@ -1,0 +1,40 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Month pill (menu open)": {
+      "width": 90,
+      "height": "36px",
+      "border-radius": "6px",
+      "background-color": "rgb(255, 255, 255)",
+      "color": "rgb(72, 72, 72)",
+      "border-top-width": "1px",
+      "border-top-color": "rgb(39, 171, 184)",
+      "padding": "0px 12px",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(43, 188, 202, 0.15) 0px 0px 0px 1px",
+      "opacity": "1"
+    },
+    "Month pill chevron (menu open)": {
+      "width": "12px",
+      "height": 12,
+      "transform": "matrix(0, -1, 1, 0, 0, 0)",
+      "transition-duration": "0.2s"
+    },
+    "Year pill chevron": {
+      "width": 12,
+      "height": 12,
+      "transform": "none"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 461
+  },
+  "evals": [
+    true
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "story": "v2-components-datetimepicker--time-range",
+  "measured": {
+    "Time dropdown panel": {
+      "width": "310px",
+      "height": 203.5,
+      "border-radius": "8px",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(16, 24, 40, 0.08) 0px 12px 16px -4px, rgba(16, 24, 40, 0.03) 0px 4px 6px -2px",
+      "animation-name": "enter"
+    },
+    "Hours column list": {
+      "width": 101.66,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "68px",
+      "padding-bottom": "68px",
+      "-webkit-mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "scroll-snap-type": "y",
+      "gap": "2px"
+    },
+    "Hours selected row": {
+      "width": 93.66,
+      "height": "32px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "500",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(72, 72, 72)",
+      "border-top-color": "rgb(168, 192, 236)",
+      "border-radius": "6px",
+      "scroll-snap-align": "center"
+    },
+    "Hours unselected row": {
+      "width": 93.66,
+      "height": "32px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "400",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "6px",
+      "scroll-snap-align": "center"
+    },
+    "Minutes column list": {
+      "width": 101.67,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "68px",
+      "padding-bottom": "68px",
+      "-webkit-mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "scroll-snap-type": "y"
+    },
+    "Minutes selected row": {
+      "width": 93.67,
+      "height": "32px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "500",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(72, 72, 72)",
+      "border-top-color": "rgb(168, 192, 236)",
+      "border-radius": "6px",
+      "scroll-snap-align": "center"
+    },
+    "AM/PM column list": {
+      "width": 102.66,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "68px",
+      "padding-bottom": "68px",
+      "-webkit-mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "scroll-snap-type": "y"
+    },
+    "AM/PM selected row": {
+      "width": 94.66,
+      "height": "32px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "500",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(72, 72, 72)",
+      "border-top-color": "rgb(168, 192, 236)",
+      "border-radius": "6px",
+      "scroll-snap-align": "center"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 438.5
+  },
+  "evals": [
+    true,
+    {
+      "col": "hours",
+      "scrollTop": 340,
+      "scrollHeight": 542,
+      "clientHeight": 168,
+      "selectedCentreOffset": 0,
+      "firstRowVisibleFraction": 0,
+      "selectedLabel": "11"
+    }
+  ]
+}

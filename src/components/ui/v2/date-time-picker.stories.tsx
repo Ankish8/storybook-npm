@@ -148,7 +148,7 @@ const meta: Meta<Args> = {
         component: v2ComponentDocs({
           name: "date-time-picker",
           summary:
-            "A typed date/time field with calendar and time-column selection. The recorded v2 input family applies to its field; existing calendar, time layout and parsing behavior are preserved.",
+            "A typed date/time field with calendar and time-column selection. The recorded v2 input family applies to its field; the calendar now matches the date range picker and the time lists centre the selected row. Props, aria-labels, value formats and parsing are unchanged.",
           changes: [
             [
               "Field dimensions",
@@ -178,9 +178,24 @@ const meta: Meta<Args> = {
               "Solid grey field; grey border; no halo",
             ],
             [
+              "Calendar",
+              "Ring on today; 24px arrows; chevron-right pills; instant month swap",
+              "4px dot on today; 32px arrows (36px on small screens); 32px pills with a turning chevron; 8px slide and fade on month change",
+            ],
+            [
+              "Touch and keyboard",
+              "Hover fills stuck after a tap; no focus ring",
+              "Hover only where a pointer can hover; 2px primary focus ring; 36px day cells on small screens",
+            ],
+            [
+              "Time lists",
+              "Selected row could sit under the edge; first row clipped half-way",
+              "Selected row centred on open; 12px edge fade; 32px rows (36px for coarse pointers); arrows, Home and End move the selection",
+            ],
+            [
               "Parsing and selection",
               "Segment typing, date/time modes, range limits, portals and clearing",
-              "Preserved; precise calendar/time inner dimensions remain unverified",
+              "Preserved",
             ],
           ],
           tokens: [
@@ -198,7 +213,7 @@ const meta: Meta<Args> = {
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Controls serialize the Date object into a YYYY-MM-DD string; the adapter converts it back to a local Date before passing value, minDate and maxDate. Typed edits, selection, clearing and open state synchronize in Controls. Sizes control field width, with a shared 40px v2 height. Figma could not verify precise calendar day geometry, time-column dimensions and inner popover spacing, which retain current v1 values.",
+            "Controls serialize the Date object into a YYYY-MM-DD string; the adapter converts it back to a local Date before passing value, minDate and maxDate. Typed edits, selection, clearing and open state synchronize in Controls. Sizes control field width, with a shared 40px v2 height. The calendar and time-list geometry (cells, arrows, pills, row heights, edge fade, motion) is recorded in design/figma-reports/date-time-picker/REPORT.md.",
         }),
       },
     },

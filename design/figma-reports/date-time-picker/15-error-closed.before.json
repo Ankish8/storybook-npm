@@ -1,0 +1,19 @@
+{
+  "story": "v2-components-datetimepicker--error",
+  "measured": {
+    "Input row (error)": {
+      "width": 276,
+      "height": 24,
+      "border-top-color": "rgb(229, 231, 235)"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 94
+  },
+  "evals": [
+    true
+  ]
+}

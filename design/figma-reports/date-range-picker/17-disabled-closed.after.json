@@ -1,0 +1,21 @@
+{
+  "story": "v2-components-daterangepicker--disabled",
+  "measured": {
+    "Trigger (disabled)": {
+      "width": 420,
+      "height": 40,
+      "background-color": "rgb(245, 245, 245)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 420,
+    "height": 88
+  },
+  "evals": [
+    true
+  ]
+}

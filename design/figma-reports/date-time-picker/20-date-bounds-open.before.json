@@ -1,0 +1,30 @@
+{
+  "story": "v2-components-datetimepicker--date-bounds",
+  "measured": {
+    "Day Oct 2 (disabled, before min)": {
+      "width": 32,
+      "height": 32,
+      "border-radius": "9999px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "padding": "0px",
+      "font-size": "12px",
+      "font-weight": "400",
+      "line-height": "16px",
+      "box-shadow": "none",
+      "opacity": "0.4",
+      "cursor": "not-allowed"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 461
+  },
+  "evals": [
+    true
+  ]
+}

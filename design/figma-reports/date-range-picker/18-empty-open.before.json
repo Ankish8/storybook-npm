@@ -1,0 +1,30 @@
+{
+  "story": "v2-components-daterangepicker--empty",
+  "measured": {
+    "Preset: Today": {
+      "width": 119,
+      "height": 32,
+      "border-radius": "4px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "padding": "6px 8px",
+      "gap": "normal",
+      "font-size": "14px",
+      "font-weight": "400",
+      "line-height": "20px",
+      "box-shadow": "none",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 420,
+    "height": 366
+  },
+  "evals": [
+    true
+  ]
+}

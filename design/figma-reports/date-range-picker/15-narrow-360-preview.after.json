@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Cell Oct 14 ::before (mobile preview)": {
+      "top": "1px",
+      "bottom": "1px",
+      "height": "34px",
+      "border-top-style": "dashed",
+      "border-top-width": "1px",
+      "background-color": "rgb(246, 248, 253)"
+    }
+  },
+  "popupBox": {
+    "x": 8,
+    "y": 16,
+    "width": 344,
+    "height": 520
+  },
+  "evals": [
+    true
+  ]
+}

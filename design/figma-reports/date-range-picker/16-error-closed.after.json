@@ -1,0 +1,20 @@
+{
+  "story": "v2-components-daterangepicker--error",
+  "measured": {
+    "Trigger (error)": {
+      "width": 420,
+      "height": "40px",
+      "border-top-color": "rgb(240, 68, 56)",
+      "box-shadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(240, 68, 56, 0.4) 0px 0px 4px 0px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 420,
+    "height": 88
+  },
+  "evals": [
+    true
+  ]
+}

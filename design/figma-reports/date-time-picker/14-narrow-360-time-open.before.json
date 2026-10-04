@@ -1,0 +1,18 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Time dropdown panel (mobile)": {
+      "width": "302px",
+      "height": 203.5
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 328,
+    "height": 671.5
+  },
+  "evals": [
+    true
+  ]
+}

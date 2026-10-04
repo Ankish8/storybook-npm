@@ -1,0 +1,39 @@
+{
+  "story": "v2-components-datetimepicker--with-seconds",
+  "measured": {
+    "Time dropdown panel (4 columns)": {
+      "width": "310px",
+      "height": 203.5,
+      "grid-template-columns": "77px 77px 77px 77px"
+    },
+    "Seconds column list": {
+      "width": 76,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "68px",
+      "padding-bottom": "68px",
+      "-webkit-mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "mask-image": "linear-gradient(rgba(0, 0, 0, 0), rgb(0, 0, 0) 12px, rgb(0, 0, 0) calc(100% - 12px), rgba(0, 0, 0, 0))",
+      "scroll-snap-type": "y"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 651.5
+  },
+  "evals": [
+    true,
+    {
+      "col": "seconds",
+      "scrollTop": 102,
+      "scrollHeight": 542,
+      "clientHeight": 168,
+      "selectedCentreOffset": 0,
+      "firstRowVisibleFraction": 0,
+      "selectedLabel": "15"
+    }
+  ]
+}

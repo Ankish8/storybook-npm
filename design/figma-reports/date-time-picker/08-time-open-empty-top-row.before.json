@@ -1,0 +1,58 @@
+{
+  "story": "v2-components-datetimepicker--empty",
+  "measured": {
+    "Minutes column list": {
+      "width": 101.67,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "4px",
+      "padding-bottom": "4px",
+      "-webkit-mask-image": "none",
+      "mask-image": "none",
+      "scroll-snap-type": "none"
+    },
+    "Minutes selected row (00)": {
+      "width": 93.67,
+      "height": "34px",
+      "background-color": "rgb(236, 241, 251)",
+      "font-weight": "500"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 655.5
+  },
+  "evals": [
+    true,
+    {
+      "col": "hours",
+      "scrollTop": 270,
+      "scrollHeight": 438,
+      "clientHeight": 168,
+      "selectedCentreOffset": 63,
+      "firstRowVisibleFraction": 0,
+      "selectedLabel": "12"
+    },
+    {
+      "col": "minutes",
+      "scrollTop": 0,
+      "scrollHeight": 438,
+      "clientHeight": 168,
+      "selectedCentreOffset": -63,
+      "firstRowVisibleFraction": 1,
+      "selectedLabel": "00"
+    },
+    {
+      "col": "meridiem",
+      "scrollTop": 0,
+      "scrollHeight": 78,
+      "clientHeight": 78,
+      "selectedCentreOffset": -18,
+      "firstRowVisibleFraction": 1,
+      "selectedLabel": "AM"
+    }
+  ]
+}

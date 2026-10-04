@@ -1,0 +1,31 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Hours row (keyboard focus)": {
+      "width": 93.66,
+      "height": "32px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "400",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "6px",
+      "scroll-snap-align": "center",
+      "outline-style": "solid",
+      "outline-width": "2px",
+      "outline-offset": "-2px",
+      "outline-color": "rgb(52, 62, 85)",
+      "z-index": "auto"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 651.5
+  },
+  "evals": [
+    true
+  ]
+}

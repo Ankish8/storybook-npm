@@ -1,0 +1,99 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Cell Sep 28 (range start, Mon) ::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "top": "2px",
+      "bottom": "2px",
+      "left": "3.70312px",
+      "right": "0px",
+      "height": "32px",
+      "background-color": "rgb(236, 241, 251)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "0px",
+      "border-top-width": "0px",
+      "border-top-style": "solid",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-bottom-style": "solid"
+    },
+    "Cell Oct 3 (Sat = row end) ::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "top": "2px",
+      "bottom": "2px",
+      "left": "0px",
+      "right": "0px",
+      "height": "32px",
+      "background-color": "rgb(236, 241, 251)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "9999px",
+      "border-top-width": "0px",
+      "border-top-style": "solid",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-bottom-style": "solid"
+    },
+    "Cell Oct 4 (range end, Sun = row start) ::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "top": "2px",
+      "bottom": "2px",
+      "left": "0px",
+      "right": "3.70312px",
+      "height": "32px",
+      "background-color": "rgb(236, 241, 251)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "9999px",
+      "border-top-width": "0px",
+      "border-top-style": "solid",
+      "border-top-color": "rgb(229, 231, 235)",
+      "border-bottom-style": "solid"
+    },
+    "Preset: Last 7 days (selected)": {
+      "width": 119,
+      "height": 32,
+      "border-radius": "4px",
+      "background-color": "rgb(236, 241, 251)",
+      "color": "rgb(72, 72, 72)",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "padding": "6px 8px",
+      "gap": "normal",
+      "font-size": "14px",
+      "font-weight": "500",
+      "line-height": "20px",
+      "box-shadow": "none",
+      "opacity": "1",
+      "outline-style": "none",
+      "transition-duration": "0.15s",
+      "transition-property": "color, background-color, border-color, text-decoration-color, fill, stroke",
+      "animation-name": "none",
+      "animation-duration": "0s"
+    },
+    "Preset: Today": {
+      "width": 119,
+      "height": 32,
+      "border-radius": "4px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "padding": "6px 8px",
+      "gap": "normal",
+      "font-size": "14px",
+      "font-weight": "400",
+      "line-height": "20px",
+      "box-shadow": "none",
+      "opacity": "1"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 446,
+    "height": 388
+  },
+  "evals": [
+    true
+  ]
+}

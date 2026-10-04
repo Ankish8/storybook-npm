@@ -1,0 +1,35 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Day Oct 14 (keyboard focus)": {
+      "width": 32,
+      "height": 32,
+      "border-radius": "9999px",
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-width": "0px",
+      "border-top-color": "rgb(229, 231, 235)",
+      "padding": "0px",
+      "font-size": "12px",
+      "font-weight": "400",
+      "line-height": "16px",
+      "box-shadow": "none",
+      "opacity": "1",
+      "outline-style": "auto",
+      "outline-width": "1px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(0, 95, 204)",
+      "z-index": "auto",
+      "position": "relative"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 461
+  },
+  "evals": [
+    true
+  ]
+}

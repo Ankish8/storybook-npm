@@ -54,8 +54,42 @@ const POPOVER_WIDTH_VAR = "--date-time-picker-popover-width";
 const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const YEAR_RANGE_BEFORE = 100;
 const YEAR_RANGE_AFTER = 10;
-const CALENDAR_DROPDOWN_TRIGGER_CLASS =
-  "h-9 min-w-[90px] rounded-md border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_0_1px_rgba(43,188,202,0.15)]";
+// Outline rather than ring: it follows border-radius, takes no part in layout
+// and is not clipped by the neighbouring cell's background.
+const FOCUS_RING =
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-semantic-primary";
+// List rows sit inside scrolling columns that clip at their edge, so their ring
+// is drawn inside the row instead of outside it.
+const FOCUS_RING_INSET =
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[-2px] focus-visible:outline-semantic-primary";
+// Hover fills only where a real hover exists. On touch a tap would otherwise
+// leave the fill stuck on the element until the next tap elsewhere.
+const HOVER_FILL = "[@media(hover:hover)]:hover:bg-semantic-bg-hover";
+const HOVER_BORDER =
+  "[@media(hover:hover)]:hover:border-[var(--color-primary-100,#C0C3CA)]";
+
+// Same geometry as the DateRangePicker's calendar header so the two pickers
+// read as one family: 32px nav hit areas (36px on touch-sized viewports) and
+// 32px pills with a chevron that turns while the list is open.
+const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] transition-colors max-sm:size-9 ${HOVER_FILL}`;
+const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-[90px] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors ${HOVER_FILL}`;
+
+// Month change motion. The grid only gets these classes after the user has
+// navigated, so mounting the popover never animates.
+const MONTH_MOTION =
+  "motion-safe:animate-in fade-in-0 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]";
+const MONTH_MOTION_DIRECTION = {
+  next: "motion-safe:slide-in-from-right-2",
+  prev: "motion-safe:slide-in-from-left-2",
+} as const;
+
+type MonthDirection = keyof typeof MONTH_MOTION_DIRECTION | null;
+
+// Time columns fade 12px at both edges so a row cut by the edge reads as
+// scrolling rather than as clipping.
+const TIME_COLUMN_FADE =
+  "[-webkit-mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)]";
+
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
   new Intl.DateTimeFormat("en-US", { month: "short" }).format(
@@ -1138,15 +1172,16 @@ function CalendarDropdown({
         data-value={value}
         className={cn(
           CALENDAR_DROPDOWN_TRIGGER_CLASS,
+          FOCUS_RING,
           "inline-flex items-center justify-between gap-2"
         )}
         onClick={() => onOpenChange(!open)}
       >
         <span>{selectedOption?.label ?? value}</span>
-        <ChevronRight
+        <ChevronDown
           className={cn(
-            "size-3 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
-            open && "-rotate-90"
+            "size-3.5 shrink-0 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
+            open && "rotate-180"
           )}
           aria-hidden="true"
         />
@@ -1179,9 +1214,13 @@ function CalendarDropdown({
                 disabled={option.disabled}
                 className={cn(
                   "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm disabled:cursor-not-allowed disabled:opacity-40",
+                  FOCUS_RING_INSET,
                   option.value === value
                     ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
-                    : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
+                    : cn(
+                        "border-transparent text-[var(--v2-text-secondary,#5E5E5E)]",
+                        HOVER_FILL
+                      )
                 )}
                 onClick={() => {
                   if (option.disabled) return;
@@ -1206,6 +1245,13 @@ interface TimeColumnOption {
   selected: boolean;
 }
 
+// Instant, so reduced motion needs no special case. offsetTop is measured from
+// the list (it is `relative`) and ignores the panel's zoom-in transform, which
+// getBoundingClientRect would not.
+function scrollRowToCentre(list: HTMLElement, row: HTMLElement) {
+  list.scrollTop = row.offsetTop - (list.clientHeight - row.offsetHeight) / 2;
+}
+
 function TimeColumn({
   header,
   ariaLabel,
@@ -1220,14 +1266,54 @@ function TimeColumn({
   const listRef = React.useRef<HTMLDivElement | null>(null);
   const selectedRef = React.useRef<HTMLButtonElement | null>(null);
 
-  React.useEffect(() => {
-    const list = listRef.current;
-    const selected = selectedRef.current;
-    if (!list || !selected) return;
-
-    list.scrollTop =
-      selected.offsetTop - list.clientHeight / 2 + selected.clientHeight / 2;
+  // Layout effect: the centred position is in place before the first paint,
+  // so the list never shows its unscrolled top first. Open-only: later
+  // selections keep the list where the user left it.
+  React.useLayoutEffect(() => {
+    if (listRef.current && selectedRef.current) {
+      scrollRowToCentre(listRef.current, selectedRef.current);
+    }
   }, []);
+
+  // Additive to the Tab/click behaviour: inside a focused column the arrows
+  // step the selection (like clicking the neighbour) and Home/End jump to the
+  // ends. Modified keys are left to the browser.
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+    if (!["ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) return;
+
+    const rows = Array.from(
+      event.currentTarget.querySelectorAll<HTMLButtonElement>('[role="option"]')
+    );
+    if (rows.length === 0) return;
+
+    const focusedIndex = rows.indexOf(event.target as HTMLButtonElement);
+    const currentIndex =
+      focusedIndex >= 0
+        ? focusedIndex
+        : options.findIndex((option) => option.selected);
+    const lastIndex = rows.length - 1;
+    let nextIndex: number;
+    if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = lastIndex;
+    else if (event.key === "ArrowDown") {
+      nextIndex = currentIndex < 0 ? 0 : Math.min(lastIndex, currentIndex + 1);
+    } else {
+      nextIndex = currentIndex < 0 ? lastIndex : Math.max(0, currentIndex - 1);
+    }
+
+    // Keep the arrows from scrolling the column or the popover underneath.
+    event.preventDefault();
+    const nextRow = rows[nextIndex];
+    const nextOption = options[nextIndex];
+    if (!nextRow || !nextOption) return;
+
+    if (nextIndex !== currentIndex) onSelect(nextOption.key);
+    nextRow.focus({ preventScroll: true });
+    scrollRowToCentre(event.currentTarget, nextRow);
+  };
 
   return (
     <div className="flex min-w-0 flex-col border-r border-solid border-semantic-border-layout last:border-r-0">
@@ -1238,8 +1324,14 @@ function TimeColumn({
         ref={listRef}
         role="listbox"
         aria-label={ariaLabel}
-        className="flex flex-col gap-0.5 overflow-y-auto p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+        // py-[68px] = (168px list - 32px row) / 2, so the first and last row
+        // can reach the centre; 66px for the 36px coarse-pointer row.
+        className={cn(
+          "relative flex flex-col gap-0.5 overflow-y-auto px-1 py-[68px] [@media(pointer:coarse)]:py-[66px] [scroll-snap-type:y_proximity] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5",
+          TIME_COLUMN_FADE
+        )}
         style={{ maxHeight: `${TIME_COLUMN_MAX_HEIGHT}px` }}
+        onKeyDown={handleKeyDown}
       >
         {options.map((option) => (
           <button
@@ -1249,10 +1341,14 @@ function TimeColumn({
             role="option"
             aria-selected={option.selected}
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm",
+              "flex h-8 shrink-0 items-center justify-center rounded-md border border-solid px-2 text-sm [scroll-snap-align:center] [@media(pointer:coarse)]:h-9",
+              FOCUS_RING_INSET,
               option.selected
                 ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
-                : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
+                : cn(
+                    "border-transparent text-[var(--v2-text-secondary,#5E5E5E)]",
+                    HOVER_FILL
+                  )
             )}
             onClick={() => onSelect(option.key)}
           >
@@ -1347,7 +1443,9 @@ function TimeField({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:border-[var(--color-primary-100,#C0C3CA)]",
+          "flex h-[42px] w-full items-center gap-2 rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors",
+          HOVER_BORDER,
+          FOCUS_RING,
           open &&
             "border-[var(--color-secondary-600,#27ABB8)] shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
         )}
@@ -1503,6 +1601,31 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       startOfMonth(currentValue.date ?? new Date())
     );
+    // Direction of the last month change, derived while rendering ("store the
+    // previous value in state") so the new grid mounts with its slide class in
+    // the same commit; an effect would paint one frame without it. Whether the
+    // popover is showing is part of the snapshot so that mounting it, even
+    // with a stale direction from the last session, never plays the motion.
+    const isPopoverShown = open && !disabled && !readOnly;
+    const visibleMonthKey = getMonthKey(visibleMonth);
+    const [monthMotion, setMonthMotion] = React.useState<{
+      key: number;
+      shown: boolean;
+      direction: MonthDirection;
+    }>({ key: visibleMonthKey, shown: isPopoverShown, direction: null });
+    if (monthMotion.shown !== isPopoverShown) {
+      setMonthMotion({
+        key: visibleMonthKey,
+        shown: isPopoverShown,
+        direction: null,
+      });
+    } else if (monthMotion.key !== visibleMonthKey) {
+      setMonthMotion({
+        key: visibleMonthKey,
+        shown: isPopoverShown,
+        direction: visibleMonthKey > monthMotion.key ? "next" : "prev",
+      });
+    }
     const [dateInputValue, setDateInputValue] = React.useState(() =>
       formatValueForDisplay(
         currentValue,
@@ -1985,7 +2108,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <button
                   type="button"
                   aria-label="Previous month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
+                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, -1))
                   }
@@ -2050,14 +2173,18 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       );
                     }}
                   />
-                  <div id={`${triggerId}-calendar-heading`} className="sr-only">
+                  <div
+                    id={`${triggerId}-calendar-heading`}
+                    aria-live="polite"
+                    className="sr-only"
+                  >
                     {monthFormatter.format(visibleMonth)}
                   </div>
                 </div>
                 <button
                   type="button"
                   aria-label="Next month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
+                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
                   onClick={() =>
                     syncCalendarMonthAndValue(addMonths(visibleMonth, 1))
                   }
@@ -2066,15 +2193,27 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 </button>
               </div>
 
+              {/* Static: only the day grid below re-mounts (and slides) per month. */}
               <div className="grid grid-cols-7">
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="mx-auto flex size-8 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)]"
+                    className="flex h-8 items-center justify-center text-xs font-medium uppercase text-[var(--v2-text-muted,#707070)] max-sm:h-9"
                   >
                     {day}
                   </div>
                 ))}
+              </div>
+              <div
+                key={visibleMonthKey}
+                className={cn(
+                  "grid grid-cols-7",
+                  monthMotion.direction && [
+                    MONTH_MOTION,
+                    MONTH_MOTION_DIRECTION[monthMotion.direction],
+                  ]
+                )}
+              >
                 {calendarDays.map((day) => {
                   const isCurrentMonth =
                     day.getMonth() === visibleMonth.getMonth();
@@ -2098,15 +2237,17 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       aria-current={isToday ? "date" : undefined}
                       disabled={!!isDisabled}
                       className={cn(
-                        "relative flex items-center justify-center size-8 mx-auto rounded-full text-xs transition-colors",
+                        "relative mx-auto flex size-8 items-center justify-center rounded-full text-xs transition-colors max-sm:size-9",
+                        FOCUS_RING,
+                        "focus-visible:z-10",
                         isSelected
                           ? "bg-semantic-primary text-semantic-text-inverted font-medium"
-                          : isCurrentMonth
-                            ? "text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
-                            : "text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover",
-                        isToday &&
-                          !isSelected &&
-                          "ring-1 ring-inset ring-semantic-border-secondary",
+                          : cn(
+                              isCurrentMonth
+                                ? "text-[var(--v2-text-secondary,#5E5E5E)]"
+                                : "text-[var(--v2-text-muted,#707070)]",
+                              HOVER_FILL
+                            ),
                         isDisabled &&
                           "opacity-40 cursor-not-allowed pointer-events-none"
                       )}
@@ -2120,6 +2261,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       }}
                     >
                       {day.getDate()}
+                      {isToday && !isSelected && (
+                        <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
+                      )}
                     </button>
                   );
                 })}
@@ -2268,7 +2412,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <button
                 type="button"
                 aria-label="Clear date"
-                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)]"
+                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
                 onClick={clearValue}
               >
                 <X className="size-4" aria-hidden="true" />
@@ -2278,7 +2422,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
             onClick={() => setOpen(!open)}
           >
             {showCalendar ? (

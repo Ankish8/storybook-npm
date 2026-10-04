@@ -1,0 +1,40 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Popover": {
+      "width": "328px",
+      "height": 419
+    },
+    "Prev month button (mobile)": {
+      "width": "36px",
+      "height": "36px",
+      "border-radius": "8px"
+    },
+    "Month pill (mobile)": {
+      "width": 90,
+      "height": "32px",
+      "border-radius": "8px"
+    },
+    "Day Oct 7 (mobile)": {
+      "width": "36px",
+      "height": "36px"
+    },
+    "Day Oct 20 (mobile)": {
+      "width": "36px",
+      "height": "36px"
+    },
+    "Weekday label (mobile)": {
+      "width": "43.1406px",
+      "height": "36px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 16,
+    "width": 328,
+    "height": 560
+  },
+  "evals": [
+    true
+  ]
+}

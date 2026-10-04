@@ -1,0 +1,39 @@
+{
+  "story": "v2-components-datetimepicker--with-seconds",
+  "measured": {
+    "Time dropdown panel (4 columns)": {
+      "width": "310px",
+      "height": 203.5,
+      "grid-template-columns": "77px 77px 77px 77px"
+    },
+    "Seconds column list": {
+      "width": 76,
+      "height": "168px",
+      "max-height": "168px",
+      "overflow-y": "auto",
+      "padding-top": "4px",
+      "padding-bottom": "4px",
+      "-webkit-mask-image": "none",
+      "mask-image": "none",
+      "scroll-snap-type": "none"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 655.5
+  },
+  "evals": [
+    true,
+    {
+      "col": "seconds",
+      "scrollTop": 78,
+      "scrollHeight": 438,
+      "clientHeight": 168,
+      "selectedCentreOffset": -33,
+      "firstRowVisibleFraction": 0,
+      "selectedLabel": "15"
+    }
+  ]
+}

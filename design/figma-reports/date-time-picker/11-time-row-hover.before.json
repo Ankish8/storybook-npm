@@ -1,0 +1,26 @@
+{
+  "story": "v2-components-datetimepicker--overview",
+  "measured": {
+    "Hours row (hovered)": {
+      "width": 93.66,
+      "height": "34px",
+      "min-height": "auto",
+      "font-size": "14px",
+      "font-weight": "400",
+      "background-color": "rgb(245, 245, 245)",
+      "color": "rgb(94, 94, 94)",
+      "border-top-color": "rgba(0, 0, 0, 0)",
+      "border-radius": "6px",
+      "scroll-snap-align": "none"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 655.5
+  },
+  "evals": [
+    true
+  ]
+}

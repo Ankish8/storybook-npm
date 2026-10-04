@@ -212,7 +212,7 @@ const meta: Meta<Args> = {
         component: v2ComponentDocs({
           name: "date-range-picker",
           summary:
-            "Choose a preset or a start and end date. The recorded v2 input-family treatment is applied to the trigger; the existing calendar layout and behavior are retained.",
+            "Choose a preset or a start and end date. The recorded v2 input-family treatment is applied to the trigger; the calendar adds a continuous range band, a preview while the end date is chosen, a selected preset and month-change motion. Props, aria-labels and behavior are unchanged.",
           changes: [
             [
               "Trigger",
@@ -233,9 +233,39 @@ const meta: Meta<Args> = {
               "Solid grey surface; grey border; no halo",
             ],
             [
+              "Range band",
+              "Squared per week row, no end caps",
+              "One continuous band: 32px tall, fully rounded caps on the range ends and at the first and last column of each row",
+            ],
+            [
+              "End-date preview",
+              "None until the second click",
+              "After the first click a lighter band with dashed edges runs to the hovered or focused day, which gets a 1px outline",
+            ],
+            [
+              "Presets",
+              "No selected state",
+              "The preset equal to the committed range is highlighted and marked aria-current",
+            ],
+            [
+              "Calendar header",
+              "24px arrows; year pill only had a chevron",
+              "32px arrows (36px on small screens); month and year pills are 32px with a chevron that turns while open",
+            ],
+            [
+              "Touch and keyboard",
+              "Hover fills stuck after a tap; no focus ring",
+              "Hover only where a pointer can hover; 2px primary focus ring on days, arrows, pills and presets",
+            ],
+            [
+              "Month change",
+              "Instant swap",
+              "Day grid slides 8px and fades over 200ms; reduced motion is a 120ms fade",
+            ],
+            [
               "Range behavior",
               "Presets, limits, month/year navigation, clearing and portals",
-              "Preserved; inner calendar dimensions remain unverified",
+              "Preserved; popover is 28px wider so month names never resize it",
             ],
           ],
           tokens: [
@@ -253,7 +283,7 @@ const meta: Meta<Args> = {
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Controls serialize Date values as YYYY-MM-DD strings; the example converts them to local Date objects before passing the public value/minDate/maxDate props. Selection and open state synchronize in Controls. Label, helper, width and presetMode are host example settings. Figma could not verify calendar grid/day dimensions and inner popover spacing; those retain v1 values.",
+            "Controls serialize Date values as YYYY-MM-DD strings; the example converts them to local Date objects before passing the public value/minDate/maxDate props. Selection and open state synchronize in Controls. Label, helper, width and presetMode are host example settings. The calendar geometry (36px rows, 32px days, band, preview, header sizes) is recorded in design/figma-reports/date-range-picker/REPORT.md.",
         }),
       },
     },

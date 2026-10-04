@@ -1,0 +1,22 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Trigger": {
+      "width": 420,
+      "height": "40px",
+      "border-radius": "8px",
+      "background-color": "rgb(255, 255, 255)",
+      "border-top-color": "rgb(233, 234, 235)",
+      "box-shadow": "none"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 420,
+    "height": 88
+  },
+  "evals": [
+    true
+  ]
+}

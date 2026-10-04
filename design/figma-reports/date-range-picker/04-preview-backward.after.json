@@ -1,0 +1,74 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Cell Oct 12 (hovered start) ::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "top": "2px",
+      "bottom": "2px",
+      "left": "3.70312px",
+      "right": "0px",
+      "height": "32px",
+      "background-color": "rgb(246, 248, 253)",
+      "border-top-left-radius": "9999px",
+      "border-top-right-radius": "0px",
+      "border-top-width": "1px",
+      "border-top-style": "dashed",
+      "border-top-color": "rgb(196, 212, 242)",
+      "border-bottom-style": "dashed"
+    },
+    "Circle Oct 12 (hovered, earlier)": {
+      "width": 32,
+      "height": 32,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "font-weight": "400",
+      "border-radius": "9999px",
+      "box-shadow": "rgb(255, 255, 255) 0px 0px 0px 0px inset, rgb(52, 62, 85) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "outline-style": "none",
+      "outline-width": "3px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(94, 94, 94)",
+      "z-index": "1"
+    },
+    "Circle Oct 20 (first click)": {
+      "width": 32,
+      "height": 32,
+      "background-color": "rgb(52, 62, 85)",
+      "color": "rgb(255, 255, 255)",
+      "font-weight": "500",
+      "border-radius": "9999px",
+      "box-shadow": "none",
+      "outline-style": "none",
+      "outline-width": "0px",
+      "outline-offset": "0px",
+      "outline-color": "rgb(255, 255, 255)",
+      "z-index": "1"
+    },
+    "Cell Oct 20 ::before": {
+      "content": "\"\"",
+      "position": "absolute",
+      "top": "2px",
+      "bottom": "2px",
+      "left": "0px",
+      "right": "3.71875px",
+      "height": "32px",
+      "background-color": "rgb(246, 248, 253)",
+      "border-top-left-radius": "0px",
+      "border-top-right-radius": "9999px",
+      "border-top-width": "1px",
+      "border-top-style": "dashed",
+      "border-top-color": "rgb(196, 212, 242)",
+      "border-bottom-style": "dashed"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 446,
+    "height": 388
+  },
+  "evals": [
+    true
+  ]
+}

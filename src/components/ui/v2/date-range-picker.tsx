@@ -32,6 +32,53 @@ const CALENDAR_PLACEMENT: Placement = "bottom-start";
 const CALENDAR_DROPDOWN_Z_INDEX = "z-[10060]";
 const YEAR_OPTIONS_SPAN = 10;
 
+// Outline rather than ring: it follows border-radius, takes no part in layout
+// and is not clipped by the neighbouring cell's background.
+const FOCUS_RING =
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-semantic-primary";
+// Hover fills only where a real hover exists. On touch a tap would otherwise
+// leave the fill stuck on the element until the next tap elsewhere.
+const HOVER_FILL = "[@media(hover:hover)]:hover:bg-semantic-bg-hover";
+
+// 32px hit area (36px on touch-sized viewports) around the 16px chevron; the
+// old 24px button was below the minimum comfortable target.
+const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] transition-colors max-sm:size-9 ${HOVER_FILL}`;
+// Month and year share one pill so the two read as a pair.
+const CALENDAR_PILL = `inline-flex h-8 items-center gap-1 rounded-lg border border-solid border-semantic-border-layout px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors ${HOVER_FILL}`;
+const CALENDAR_PILL_CHEVRON =
+  "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none";
+
+// The range band is a ::before on the 36px cell wrapper rather than a child
+// node, so a week row can cap both of its ends (and the range's own ends)
+// without extra DOM. 32px tall from `sm` (the day circle is 32px there), the
+// full 36px below it where the circle is 36px.
+const BAND_BASE =
+  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:right-0 before:content-[''] sm:before:inset-y-0.5";
+// At the range's own start/end the band begins at the circle's outer edge
+// instead of the cell edge (the cell is wider than the circle), so it emerges
+// from the circle without a pale halo. Week-row wraps stay flush with the grid.
+const BAND_START_AT_CIRCLE =
+  "before:left-[calc(50%-1.125rem)] sm:before:left-[calc(50%-1rem)]";
+const BAND_END_AT_CIRCLE =
+  "before:right-[calc(50%-1.125rem)] sm:before:right-[calc(50%-1rem)]";
+const BAND_RANGE = "before:bg-semantic-info-surface";
+// Lighter than the committed band and edged with dashes, so a not-yet-chosen
+// end reads as provisional. Below `sm` the rows touch, so the preview is
+// inset 1px there; otherwise two stacked rows would double their dashed edge.
+const BAND_PREVIEW =
+  "before:border-y before:border-dashed before:border-[color:var(--color-info-100)] before:bg-semantic-info-surface-subtle max-sm:before:inset-y-px";
+
+// Month change motion. The grid only gets these classes after the user has
+// navigated, so mounting the popover (which resets the month) never animates.
+const MONTH_MOTION =
+  "motion-safe:animate-in fade-in-0 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]";
+const MONTH_MOTION_DIRECTION = {
+  next: "motion-safe:slide-in-from-right-2",
+  prev: "motion-safe:slide-in-from-left-2",
+} as const;
+
+type MonthDirection = keyof typeof MONTH_MOTION_DIRECTION | null;
+
 const weekDays = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 const MONTH_SHORT_NAMES = [
   "Jan",
@@ -158,6 +205,21 @@ function startOfMonth(date: Date) {
 
 function addMonths(date: Date, months: number) {
   return new Date(date.getFullYear(), date.getMonth() + months, 1);
+}
+
+function getMonthKey(date: Date) {
+  return date.getFullYear() * 12 + date.getMonth();
+}
+
+// Two ranges describe the same days. A missing end only matches a missing end,
+// and an entirely empty range matches nothing.
+function isSameRange(a: DateRangeValue, b: DateRangeValue) {
+  if (!a.start && !a.end) return false;
+
+  const sameStart = a.start ? isSameDay(a.start, b.start) : !b.start;
+  const sameEnd = a.end ? isSameDay(a.end, b.end) : !b.end;
+
+  return sameStart && sameEnd;
 }
 
 function addDays(date: Date, days: number) {
@@ -375,6 +437,31 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
     const [visibleMonth, setVisibleMonth] = React.useState(() =>
       startOfMonth(currentValue.start ?? currentValue.end ?? new Date())
     );
+    // Day under the pointer (or keyboard focus) while the second click is
+    // pending. Purely visual: it paints the preview band and never feeds the
+    // draft, so nothing is announced or committed by hovering.
+    const [previewDay, setPreviewDay] = React.useState<Date | null>(null);
+
+    // Direction of the last month change, derived while rendering ("store the
+    // previous value in state") so the new grid mounts with its slide class in
+    // the same commit — an effect would paint one frame without it. `open` is
+    // part of the snapshot because opening resets the visible month and
+    // mounting the popover must not play the month motion.
+    const visibleMonthKey = getMonthKey(visibleMonth);
+    const [monthMotion, setMonthMotion] = React.useState<{
+      key: number;
+      open: boolean;
+      direction: MonthDirection;
+    }>({ key: visibleMonthKey, open, direction: null });
+    if (monthMotion.open !== open) {
+      setMonthMotion({ key: visibleMonthKey, open, direction: null });
+    } else if (monthMotion.key !== visibleMonthKey) {
+      setMonthMotion({
+        key: visibleMonthKey,
+        open,
+        direction: visibleMonthKey > monthMotion.key ? "next" : "prev",
+      });
+    }
 
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLButtonElement | null>(null);
@@ -489,12 +576,17 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       if (!open) return;
 
       const latestValue = currentValueRef.current;
+      const resetMonth = startOfMonth(
+        latestValue.start ?? latestValue.end ?? new Date()
+      );
       setDraftValue(latestValue);
       setPendingEnd(false);
+      setPreviewDay(null);
       setOpenMenu(null);
-      setVisibleMonth(
-        startOfMonth(latestValue.start ?? latestValue.end ?? new Date())
-      );
+      setVisibleMonth(resetMonth);
+      // Same batch as the month reset: the render-time derivation above then
+      // sees an unchanged key and leaves the direction empty.
+      setMonthMotion({ key: getMonthKey(resetMonth), open, direction: null });
     }, [open]);
 
     React.useEffect(() => {
@@ -585,10 +677,35 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
 
       setDraftValue(nextValue);
       setPendingEnd(false);
+      setPreviewDay(null);
       commitValue(nextValue);
       setOpen(false);
       triggerRef.current?.focus();
     };
+
+    // The provisional range runs from the first click to the day under the
+    // pointer, in whichever order they fall. Before the first click (and after
+    // the commit) there is nothing to preview.
+    const previewAnchor = pendingEnd ? draftValue.start : undefined;
+    const previewIsReversed =
+      !!previewAnchor && !!previewDay && isBeforeDay(previewDay, previewAnchor);
+    const previewLow =
+      previewAnchor && previewDay
+        ? previewIsReversed
+          ? previewDay
+          : previewAnchor
+        : null;
+    const previewHigh =
+      previewAnchor && previewDay
+        ? previewIsReversed
+          ? previewAnchor
+          : previewDay
+        : null;
+    const selectedPresetIndex = presets.findIndex((preset) => {
+      const range = clampRange(preset.getRange(), effectiveMinDate, maxDate);
+
+      return range !== null && isSameRange(range, currentValue);
+    });
 
     const popover =
       open &&
@@ -623,20 +740,29 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           <div className="flex flex-col sm:flex-row">
             {presets.length > 0 && (
               <div className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-3 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-36 sm:flex-col sm:border-r">
-                {presets.map((preset) => {
+                {presets.map((preset, presetIndex) => {
                   const presetDisabled =
                     clampRange(preset.getRange(), effectiveMinDate, maxDate) ===
                     null;
+                  const presetSelected = presetIndex === selectedPresetIndex;
 
                   return (
                     <button
                       key={preset.label}
                       type="button"
                       disabled={presetDisabled}
+                      aria-current={presetSelected ? "true" : undefined}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-2 py-2 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-colors hover:bg-semantic-bg-hover max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:w-full sm:py-1.5",
+                        "shrink-0 whitespace-nowrap rounded px-2 py-2 text-left text-sm transition-colors max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:w-full sm:py-1.5",
+                        FOCUS_RING,
+                        presetSelected
+                          ? "bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                          : cn(
+                              "text-[var(--v2-text-secondary,#5E5E5E)]",
+                              HOVER_FILL
+                            ),
                         presetDisabled &&
-                          "cursor-not-allowed opacity-40 hover:bg-transparent"
+                          "cursor-not-allowed opacity-40 [@media(hover:hover)]:hover:bg-transparent"
                       )}
                       onClick={() => handlePresetClick(preset)}
                     >
@@ -647,12 +773,17 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
               </div>
             )}
 
-            <div className="min-w-0 flex-1 p-3 touch-pan-y sm:min-w-[272px]">
+            {/*
+              300px (276px of content) because the header's widest month
+              ("September" + chevron + 32px arrows) needs ~268px: any narrower
+              and the popover would resize as you page between months.
+            */}
+            <div className="min-w-0 flex-1 p-3 touch-pan-y sm:min-w-[300px]">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   aria-label="Previous month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
+                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
                   onClick={() =>
                     setVisibleMonth((month) => addMonths(month, -1))
                   }
@@ -662,6 +793,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
 
                 <div
                   id={`${triggerId}-calendar-heading`}
+                  aria-live="polite"
                   className="flex items-center gap-2"
                 >
                   <DropdownMenu
@@ -683,9 +815,16 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         data-calendar-menu="month"
                         onPointerDown={(event) => event.preventDefault()}
                         onClick={() => toggleCalendarMenu("month")}
-                        className="rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors hover:bg-semantic-bg-hover"
+                        className={cn(CALENDAR_PILL, FOCUS_RING)}
                       >
                         {MONTH_LONG_NAMES[visibleMonth.getMonth()]}
+                        <ChevronDown
+                          className={cn(
+                            CALENDAR_PILL_CHEVRON,
+                            openMenu === "month" && "rotate-180"
+                          )}
+                          aria-hidden="true"
+                        />
                       </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -747,12 +886,12 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         data-calendar-menu="year"
                         onPointerDown={(event) => event.preventDefault()}
                         onClick={() => toggleCalendarMenu("year")}
-                        className="flex items-center gap-1 rounded border border-solid border-semantic-border-layout px-3 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors hover:bg-semantic-bg-hover"
+                        className={cn(CALENDAR_PILL, FOCUS_RING)}
                       >
                         {visibleMonth.getFullYear()}
                         <ChevronDown
                           className={cn(
-                            "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
+                            CALENDAR_PILL_CHEVRON,
                             openMenu === "year" && "rotate-180"
                           )}
                           aria-hidden="true"
@@ -791,7 +930,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 <button
                   type="button"
                   aria-label="Next month"
-                  className="p-1 rounded hover:bg-semantic-bg-hover text-[var(--v2-text-secondary,#5E5E5E)] transition-colors"
+                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
                   onClick={() =>
                     setVisibleMonth((month) => addMonths(month, 1))
                   }
@@ -800,6 +939,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 </button>
               </div>
 
+              {/* Static: only the day grid below re-mounts (and slides) per month. */}
               <div className="grid w-full grid-cols-7">
                 {weekDays.map((day) => (
                   <div
@@ -809,7 +949,24 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                     {day}
                   </div>
                 ))}
-                {calendarDays.map((day) => {
+              </div>
+              <div
+                key={visibleMonthKey}
+                className={cn(
+                  "grid w-full grid-cols-7",
+                  monthMotion.direction && [
+                    MONTH_MOTION,
+                    MONTH_MOTION_DIRECTION[monthMotion.direction],
+                  ]
+                )}
+                onPointerLeave={() => setPreviewDay(null)}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget)) {
+                    setPreviewDay(null);
+                  }
+                }}
+              >
+                {calendarDays.map((day, dayIndex) => {
                   const isCurrentMonth =
                     day.getMonth() === visibleMonth.getMonth();
                   const isToday = isSameDay(day, new Date());
@@ -825,7 +982,28 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                     isBeforeDay(day, end);
                   const isInBand =
                     hasRange && (isRangeStart || isRangeEnd || isBetween);
+                  const isInPreview =
+                    !isInBand &&
+                    !!previewLow &&
+                    !!previewHigh &&
+                    !isSameDay(previewLow, previewHigh) &&
+                    !isBeforeDay(day, previewLow) &&
+                    !isAfterDay(day, previewHigh);
+                  const isPreviewEnd =
+                    !!previewDay &&
+                    !!previewAnchor &&
+                    isSameDay(day, previewDay) &&
+                    !isSameDay(day, previewAnchor);
                   const isSelectedEdge = isRangeStart || isRangeEnd;
+                  // The grid always starts on Sunday, so the column alone says
+                  // where a week row wraps: the band is capped there as well
+                  // as at the range's own ends.
+                  const columnIndex = dayIndex % 7;
+                  const hasBand = isInBand || isInPreview;
+                  const isBandStart =
+                    hasBand && isSameDay(day, isInPreview ? previewLow : start);
+                  const isBandEnd =
+                    hasBand && isSameDay(day, isInPreview ? previewHigh : end);
                   const isDisabled =
                     (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
                     (maxDate && isAfterDay(day, maxDate));
@@ -839,10 +1017,18 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                     <div
                       key={day.toISOString()}
                       className={cn(
-                        "relative flex h-9 items-center justify-center sm:h-8",
-                        isInBand && "bg-semantic-info-surface",
-                        isRangeStart && hasRange && "rounded-l-full",
-                        isRangeEnd && hasRange && "rounded-r-full"
+                        "relative flex h-9 items-center justify-center",
+                        hasBand && BAND_BASE,
+                        isInBand && BAND_RANGE,
+                        isInPreview && BAND_PREVIEW,
+                        hasBand &&
+                          (columnIndex === 0 || isBandStart) &&
+                          "before:rounded-l-full",
+                        hasBand &&
+                          (columnIndex === 6 || isBandEnd) &&
+                          "before:rounded-r-full",
+                        isBandStart && BAND_START_AT_CIRCLE,
+                        isBandEnd && BAND_END_AT_CIRCLE
                       )}
                     >
                       <button
@@ -852,12 +1038,21 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         aria-current={isToday ? "date" : undefined}
                         disabled={!!isDisabled}
                         className={cn(
-                          "relative flex h-9 w-full max-w-9 items-center justify-center rounded-full text-xs transition-colors sm:h-8 sm:max-w-8",
+                          "relative z-[1] flex h-9 w-full max-w-9 items-center justify-center rounded-full text-xs transition-colors sm:h-8 sm:max-w-8",
+                          FOCUS_RING,
+                          "focus-visible:z-10",
                           isSelectedEdge
                             ? "bg-semantic-primary text-semantic-text-inverted font-medium"
-                            : isCurrentMonth
-                              ? "text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
-                              : "text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover",
+                            : cn(
+                                isCurrentMonth
+                                  ? "text-[var(--v2-text-secondary,#5E5E5E)]"
+                                  : "text-[var(--v2-text-muted,#707070)]",
+                                // The provisional end is outlined, not filled:
+                                // it only becomes a selected circle on click.
+                                isPreviewEnd
+                                  ? "ring-1 ring-inset ring-semantic-primary"
+                                  : HOVER_FILL
+                              ),
                           isDisabled &&
                             "opacity-40 cursor-not-allowed pointer-events-none"
                         )}
@@ -865,6 +1060,16 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                           if (isDisabled) return;
 
                           handleDayClick(day);
+                        }}
+                        onPointerEnter={(event) => {
+                          // A touch "hover" is just the tap that is about to
+                          // commit; previewing it would flash a band.
+                          if (pendingEnd && event.pointerType !== "touch") {
+                            setPreviewDay(day);
+                          }
+                        }}
+                        onFocus={() => {
+                          if (pendingEnd) setPreviewDay(day);
                         }}
                       >
                         {day.getDate()}

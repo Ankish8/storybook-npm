@@ -1,0 +1,29 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Circle Oct 14 (keyboard focus)": {
+      "width": 32,
+      "height": 32,
+      "background-color": "rgba(0, 0, 0, 0)",
+      "color": "rgb(94, 94, 94)",
+      "font-weight": "400",
+      "border-radius": "9999px",
+      "box-shadow": "none",
+      "outline-style": "solid",
+      "outline-width": "2px",
+      "outline-offset": "1px",
+      "outline-color": "rgb(52, 62, 85)",
+      "z-index": "10",
+      "position": "relative"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 446,
+    "height": 388
+  },
+  "evals": [
+    true
+  ]
+}

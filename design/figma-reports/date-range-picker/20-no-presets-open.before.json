@@ -1,0 +1,19 @@
+{
+  "story": "v2-components-daterangepicker--no-presets",
+  "measured": {
+    "Popover": {
+      "width": "274px",
+      "height": 296,
+      "border-radius": "8px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 420,
+    "height": 366
+  },
+  "evals": [
+    true
+  ]
+}

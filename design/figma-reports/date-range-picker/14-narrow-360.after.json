@@ -1,0 +1,55 @@
+{
+  "story": "v2-components-daterangepicker--overview",
+  "measured": {
+    "Presets column (mobile)": {
+      "width": "342px",
+      "height": 63,
+      "padding": "12px",
+      "gap": "2px",
+      "border-bottom-width": "1px",
+      "overflow-x": "auto"
+    },
+    "Prev month button (mobile)": {
+      "width": "36px",
+      "height": "36px",
+      "border-radius": "8px"
+    },
+    "Month pill (mobile)": {
+      "width": 91.22,
+      "height": "32px",
+      "border-radius": "8px"
+    },
+    "Weekday label (mobile)": {
+      "width": 45.42,
+      "height": "36px"
+    },
+    "Cell Oct 1 (mobile)": {
+      "width": "45.4375px",
+      "height": "36px"
+    },
+    "Cell Oct 1 ::before (mobile band)": {
+      "top": "0px",
+      "bottom": "0px",
+      "height": "36px",
+      "border-top-left-radius": "9999px",
+      "background-color": "rgb(236, 241, 251)"
+    },
+    "Circle Oct 1 (mobile)": {
+      "width": "36px",
+      "height": "36px"
+    },
+    "Circle Oct 20 (mobile)": {
+      "width": "36px",
+      "height": "36px"
+    }
+  },
+  "popupBox": {
+    "x": 8,
+    "y": 16,
+    "width": 344,
+    "height": 520
+  },
+  "evals": [
+    true
+  ]
+}

@@ -1222,3 +1222,465 @@ describe("DateTimePicker", () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// Calendar + time list refresh. jsdom has no layout, so geometry is asserted
+// through classes and, for the centring maths, a stubbed layout.
+// ---------------------------------------------------------------------------
+describe("DateTimePicker calendar and time list refresh", () => {
+  const may = (day: number) => new Date(2026, 4, day);
+  const dayLabel = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  const day = (date: Date) => screen.getByLabelText(dayLabel(date));
+  const dialog = () => screen.getByRole("dialog", { hidden: true });
+  // The last 7-column grid is the day grid (the first is the weekday header).
+  const dayGrid = () =>
+    Array.from(
+      dialog().querySelectorAll<HTMLElement>(".grid-cols-7")
+    ).pop() as HTMLElement;
+  const classTokens = (element: Element) =>
+    (element.getAttribute("class") ?? "").split(/\s+/).filter(Boolean);
+  const defaultValue = {
+    date: may(12),
+    startTime: "10:30:00",
+    endTime: "12:30:00",
+  };
+  const renderOpen = (
+    props: Partial<React.ComponentProps<typeof DateTimePicker>> = {}
+  ) =>
+    render(
+      <DateTimePicker defaultOpen defaultValue={defaultValue} {...props} />
+    );
+  const option = (list: string, label: string) =>
+    within(screen.getByLabelText(list)).getByText(label);
+
+  describe("calendar", () => {
+    it("marks today with a 4px primary dot and no ring, keeping aria-current", () => {
+      vi.useFakeTimers({ toFake: ["Date"] });
+      vi.setSystemTime(may(20));
+      render(<DateTimePicker defaultOpen defaultValue={{ date: may(12) }} />);
+
+      const today = day(may(20));
+      expect(today).toHaveAttribute("aria-current", "date");
+      expect(today.className).not.toContain("ring-");
+      const dot = today.querySelector("span");
+      expect(dot).toHaveClass(
+        "size-1",
+        "rounded-full",
+        "bg-semantic-primary",
+        "bottom-0.5"
+      );
+      // The selected day keeps its filled circle and shows no dot.
+      expect(day(may(12))).toHaveClass("bg-semantic-primary");
+      expect(day(may(12)).querySelector("span")).toBeNull();
+    });
+
+    it("sizes day cells 32px, 36px on small screens", () => {
+      renderOpen();
+
+      expect(day(may(20))).toHaveClass("size-8", "max-sm:size-9");
+    });
+
+    it("gates every hover utility behind (hover: hover) so touch never sticks", () => {
+      renderOpen();
+
+      const ungated = Array.from(dialog().querySelectorAll("*")).flatMap(
+        (element) =>
+          classTokens(element).filter((token) => token.startsWith("hover:"))
+      );
+
+      expect(ungated).toEqual([]);
+      expect(day(may(20))).toHaveClass(
+        "[@media(hover:hover)]:hover:bg-semantic-bg-hover"
+      );
+    });
+
+    it("gates the clear and calendar icon buttons too, and keeps their labels", () => {
+      renderOpen();
+
+      for (const name of ["Clear date", "Open calendar"]) {
+        const button = screen.getByLabelText(name);
+        expect(
+          classTokens(button).filter((token) => token.startsWith("hover:"))
+        ).toEqual([]);
+        expect(button).toHaveClass(
+          "[@media(hover:hover)]:hover:bg-semantic-bg-hover"
+        );
+      }
+    });
+
+    it("shows a keyboard focus ring on days, arrows and the month/year pills", () => {
+      renderOpen();
+      const ring = [
+        "focus-visible:outline",
+        "focus-visible:[outline-width:2px]",
+        "focus-visible:outline-offset-1",
+        "focus-visible:outline-semantic-primary",
+      ];
+
+      expect(day(may(20))).toHaveClass(...ring, "focus-visible:z-10");
+      expect(screen.getByLabelText("Previous month")).toHaveClass(...ring);
+      expect(screen.getByLabelText("Next month")).toHaveClass(...ring);
+      expect(screen.getByLabelText("Month")).toHaveClass(...ring);
+      expect(screen.getByLabelText("Year")).toHaveClass(...ring);
+    });
+
+    it("sizes the arrows like the range picker: 32px, 36px on small screens", () => {
+      renderOpen();
+
+      for (const name of ["Previous month", "Next month"]) {
+        const button = screen.getByLabelText(name);
+        expect(button).toHaveClass("size-8", "max-sm:size-9", "rounded-lg");
+        expect(button.querySelector("svg")).toHaveClass("size-4");
+      }
+    });
+
+    it("gives the month and year pills one height and a chevron that turns while open", () => {
+      renderOpen();
+
+      for (const name of ["Month", "Year"]) {
+        const pill = screen.getByLabelText(name);
+        expect(pill).toHaveClass("h-8", "rounded-lg");
+        expect(pill.querySelector("svg")).toHaveClass(
+          "transition-transform",
+          "motion-reduce:transition-none"
+        );
+        expect(pill.querySelector("svg")).not.toHaveClass("rotate-180");
+      }
+
+      fireEvent.click(screen.getByLabelText("Month"));
+
+      expect(screen.getByLabelText("Month")).toHaveAttribute(
+        "aria-expanded",
+        "true"
+      );
+      expect(screen.getByLabelText("Month").querySelector("svg")).toHaveClass(
+        "rotate-180"
+      );
+      expect(
+        screen.getByLabelText("Year").querySelector("svg")
+      ).not.toHaveClass("rotate-180");
+    });
+
+    it("renders weekday labels uppercase through CSS without changing their text", () => {
+      renderOpen();
+
+      const label = screen.getByText("Su");
+      expect(label).toHaveClass("uppercase");
+      expect(label.parentElement).not.toBe(dayGrid());
+    });
+
+    it("announces month changes through the existing screen-reader heading", () => {
+      renderOpen();
+
+      const heading = document.getElementById(
+        dialog().getAttribute("aria-labelledby") ?? ""
+      );
+      expect(heading).toHaveTextContent("May 2026");
+      expect(heading).toHaveAttribute("aria-live", "polite");
+      expect(heading).toHaveClass("sr-only");
+    });
+  });
+
+  describe("month change motion", () => {
+    it("does not animate the month when the popover opens", () => {
+      renderOpen();
+
+      expect(dayGrid().className).not.toContain("animate-in");
+      expect(dayGrid().className).not.toContain("slide-in-from");
+    });
+
+    it("slides the new month in from the right on Next and from the left on Previous", () => {
+      renderOpen();
+      const first = dayGrid();
+
+      fireEvent.click(screen.getByLabelText("Next month"));
+      expect(dayGrid()).not.toBe(first);
+      expect(dayGrid()).toHaveClass(
+        "motion-safe:animate-in",
+        "fade-in-0",
+        "motion-safe:slide-in-from-right-2",
+        "motion-safe:[animation-duration:200ms]",
+        "motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+      );
+
+      fireEvent.click(screen.getByLabelText("Previous month"));
+      expect(dayGrid()).toHaveClass("motion-safe:slide-in-from-left-2");
+      expect(dayGrid()).not.toHaveClass("motion-safe:slide-in-from-right-2");
+    });
+
+    it("keeps the weekday header static while the day grid re-mounts", () => {
+      renderOpen();
+      const weekdayRow = screen.getByText("Su").parentElement as HTMLElement;
+
+      fireEvent.click(screen.getByLabelText("Next month"));
+
+      expect(weekdayRow.isConnected).toBe(true);
+      expect(weekdayRow.className).not.toContain("animate-in");
+    });
+
+    it("does not animate on reopen even when the last direction is still remembered", () => {
+      renderOpen();
+
+      fireEvent.click(screen.getByLabelText("Next month"));
+      fireEvent.click(screen.getByLabelText("Previous month"));
+      expect(dayGrid()).toHaveClass("motion-safe:slide-in-from-left-2");
+
+      fireEvent.keyDown(document, { key: "Escape" });
+      expect(
+        screen.queryByRole("dialog", { hidden: true })
+      ).not.toBeInTheDocument();
+      fireEvent.click(screen.getByLabelText("Open calendar"));
+
+      expect(dialog()).toBeInTheDocument();
+      expect(dayGrid().className).not.toContain("animate-in");
+      expect(dayGrid().className).not.toContain("slide-in-from");
+    });
+  });
+
+  describe("time columns", () => {
+    const openStartTime = () => {
+      fireEvent.click(screen.getByLabelText("Start Time"));
+    };
+
+    it("keeps every list's roles, labels and headers", () => {
+      renderOpen();
+      openStartTime();
+
+      for (const name of [
+        "Start Time hours",
+        "Start Time minutes",
+        "Start Time meridiem",
+      ]) {
+        expect(screen.getByLabelText(name)).toHaveAttribute("role", "listbox");
+      }
+      expect(screen.getByText("Hours")).toBeInTheDocument();
+      expect(screen.getByText("Minutes")).toBeInTheDocument();
+      expect(screen.getByText("AM/PM")).toBeInTheDocument();
+      expect(option("Start Time hours", "10")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    it("pads, fades and snaps each list, with 32px rows (36px for coarse pointers)", () => {
+      renderOpen();
+      openStartTime();
+      const list = screen.getByLabelText("Start Time hours");
+
+      // Spacers let the first and last row reach the centre of the 168px list.
+      expect(list).toHaveClass(
+        "py-[68px]",
+        "[@media(pointer:coarse)]:py-[66px]",
+        "overflow-y-auto",
+        "[scroll-snap-type:y_proximity]"
+      );
+      expect(list.className).toContain("[mask-image:linear-gradient(");
+      expect(list.className).toContain("black_12px");
+      expect(list.className).toContain("black_calc(100%-12px)");
+      expect(list).toHaveStyle({ maxHeight: "168px" });
+
+      const row = option("Start Time hours", "09");
+      expect(row).toHaveClass(
+        "h-8",
+        "[@media(pointer:coarse)]:h-9",
+        "[scroll-snap-align:center]"
+      );
+      // Selected row = the existing info-surface fill + medium weight.
+      expect(option("Start Time hours", "10")).toHaveClass(
+        "bg-semantic-info-surface",
+        "font-medium"
+      );
+    });
+
+    it("centres the selected row when a list opens", () => {
+      const scrollTops = new Map<Element, number>();
+      const originals = [
+        "scrollTop",
+        "offsetTop",
+        "offsetHeight",
+        "clientHeight",
+      ].map(
+        (name) =>
+          [
+            name,
+            Object.getOwnPropertyDescriptor(Element.prototype, name) ??
+              Object.getOwnPropertyDescriptor(HTMLElement.prototype, name),
+          ] as const
+      );
+      Object.defineProperty(Element.prototype, "scrollTop", {
+        configurable: true,
+        get() {
+          return scrollTops.get(this) ?? 0;
+        },
+        set(value: number) {
+          scrollTops.set(this, value);
+        },
+      });
+      // 32px rows in a 168px list; the selected row sits 300px from the top.
+      Object.defineProperty(HTMLElement.prototype, "offsetTop", {
+        configurable: true,
+        get: () => 300,
+      });
+      Object.defineProperty(HTMLElement.prototype, "offsetHeight", {
+        configurable: true,
+        get: () => 32,
+      });
+      Object.defineProperty(Element.prototype, "clientHeight", {
+        configurable: true,
+        get: () => 168,
+      });
+
+      try {
+        renderOpen();
+        openStartTime();
+
+        // 300 - (168 - 32) / 2: the selected row's centre meets the list's.
+        expect(scrollTops.get(screen.getByLabelText("Start Time hours"))).toBe(
+          232
+        );
+        expect(
+          scrollTops.get(screen.getByLabelText("Start Time minutes"))
+        ).toBe(232);
+      } finally {
+        for (const [name, descriptor] of originals) {
+          if (descriptor) {
+            const target =
+              name === "scrollTop" || name === "clientHeight"
+                ? Element.prototype
+                : HTMLElement.prototype;
+            Object.defineProperty(target, name, descriptor);
+          } else {
+            delete (Element.prototype as unknown as Record<string, unknown>)[
+              name
+            ];
+            delete (
+              HTMLElement.prototype as unknown as Record<string, unknown>
+            )[name];
+          }
+        }
+      }
+    });
+
+    it("moves the selection with ArrowDown/ArrowUp inside a focused column", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      renderOpen({ onValueChange });
+      openStartTime();
+
+      option("Start Time hours", "10").focus();
+      await user.keyboard("{ArrowDown}");
+
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "11:30:00" })
+      );
+      expect(option("Start Time hours", "11")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      // Focus follows the selection so the next arrow continues from there.
+      expect(option("Start Time hours", "11")).toHaveFocus();
+
+      await user.keyboard("{ArrowUp}{ArrowUp}");
+
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "09:30:00" })
+      );
+      expect(option("Start Time hours", "09")).toHaveFocus();
+    });
+
+    it("jumps with Home and End and stops at the ends", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      renderOpen({ onValueChange });
+      openStartTime();
+
+      option("Start Time hours", "10").focus();
+      await user.keyboard("{Home}");
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "01:30:00" })
+      );
+
+      await user.keyboard("{ArrowUp}");
+      // Already the first row: no wrap, no extra change.
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(option("Start Time hours", "01")).toHaveFocus();
+
+      await user.keyboard("{End}");
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "00:30:00" })
+      );
+      expect(option("Start Time hours", "12")).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    it("steps minutes by the configured step and AM/PM between its two rows", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      renderOpen({ onValueChange });
+      openStartTime();
+
+      option("Start Time minutes", "30").focus();
+      await user.keyboard("{ArrowDown}");
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "10:35:00" })
+      );
+
+      option("Start Time meridiem", "AM").focus();
+      await user.keyboard("{ArrowDown}");
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ startTime: "22:35:00" })
+      );
+    });
+
+    it("leaves modified arrow keys alone and prevents scrolling for plain ones", () => {
+      const onValueChange = vi.fn();
+      renderOpen({ onValueChange });
+      openStartTime();
+      const row = option("Start Time hours", "10");
+      row.focus();
+
+      expect(fireEvent.keyDown(row, { key: "ArrowDown", shiftKey: true })).toBe(
+        true
+      );
+      expect(fireEvent.keyDown(row, { key: "ArrowDown", metaKey: true })).toBe(
+        true
+      );
+      expect(onValueChange).not.toHaveBeenCalled();
+      // false = preventDefault was called: the list/popover must not scroll.
+      expect(fireEvent.keyDown(row, { key: "ArrowDown" })).toBe(false);
+    });
+
+    it("does not change how the date input handles ArrowUp/ArrowDown", () => {
+      const onValueChange = vi.fn();
+      renderOpen({ onValueChange });
+      const input = screen.getByLabelText("Date and time") as HTMLInputElement;
+
+      input.setSelectionRange(0, 2);
+      fireEvent.keyDown(input, { key: "ArrowUp" });
+
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ date: may(13) })
+      );
+    });
+
+    it("keeps Tab order: every row stays a tabbable option button", () => {
+      renderOpen();
+      openStartTime();
+
+      for (const row of within(
+        screen.getByLabelText("Start Time hours")
+      ).getAllByRole("option", { hidden: true })) {
+        expect(row.tagName).toBe("BUTTON");
+        expect(row).not.toHaveAttribute("tabindex");
+      }
+    });
+  });
+});

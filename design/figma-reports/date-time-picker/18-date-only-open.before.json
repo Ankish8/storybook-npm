@@ -1,0 +1,18 @@
+{
+  "story": "v2-components-datetimepicker--date-only",
+  "measured": {
+    "Popover": {
+      "width": "336px",
+      "height": "298px"
+    }
+  },
+  "popupBox": {
+    "x": 16,
+    "y": 32,
+    "width": 336,
+    "height": 368
+  },
+  "evals": [
+    true
+  ]
+}
