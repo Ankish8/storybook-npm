@@ -19,8 +19,9 @@ import fs from "node:fs";
 import http from "node:http";
 import os from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 
-const argv = process.argv.slice(2);
+const argv = typeof process === "undefined" ? [] : process.argv.slice(2);
 const opt = (k) => (argv.includes(`--${k}`) ? argv[argv.indexOf(`--${k}`) + 1] : undefined);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -61,7 +62,7 @@ async function connect(port) {
 // Page-side recorder: every frame, remember each animation/transition that exists, with what it targets and how long
 // it is. getAnimations() only shows RUNNING ones, so a 150ms animation must be caught while it is alive.
 // ---------------------------------------------------------------------------------------------------------------
-const PAGE_HELPERS = `
+export const PAGE_HELPERS = `
 (() => {
   const root = () => document.querySelector('#storybook-root') || document.body;
   window.__rec = null;
@@ -112,7 +113,7 @@ const offCentre = (a) => {
 /** Positioned panels must never animate where they sit (that is the "flies in from the corner" bug). */
 const sitsStill = (r) => !r.anims.some((a) => a.kind === "CSSTransition" && ["left", "top", "right", "bottom", "visibility", "width", "height", "all"].includes(a.name) && a.role);
 
-const SCENARIOS = [
+export const SCENARIOS = [
   // ---- press / hover feedback --------------------------------------------------------------------------------
   {
     name: "button-press", story: "v2-components-button--default",
@@ -137,7 +138,7 @@ const SCENARIOS = [
       await p.mouse(sel, "up");
       return { pressed };
     },
-    normal: (r) => scaleOf(r.pressed) === 0.95,
+    normal: (r) => scaleOf(r.pressed) === 0.97,
     reduced: (r) => scaleOf(r.pressed) === 1,
   },
   {
@@ -163,27 +164,27 @@ const SCENARIOS = [
       await p.mouse(sel, "up");
       return { pressed };
     },
-    normal: (r) => scaleOf(r.pressed) === 0.9,
+    normal: (r) => scaleOf(r.pressed) === 0.96,
     reduced: (r) => scaleOf(r.pressed) === 1,
   },
   // ---- toggles -----------------------------------------------------------------------------------------------
   {
     name: "switch-toggle", story: "v2-components-switch--off", observe: 700,
     async run(p) { await p.click("#storybook-root [role=switch]"); },
-    normal: (r) => r.anims.some((a) => a.kind === "CSSTransition" && a.name === "transform" && a.dur === 200) && r.anims.some((a) => a.name === "background-color" && a.dur === 200),
+    normal: (r) => r.anims.some((a) => a.kind === "CSSTransition" && a.name === "transform" && a.dur === 240) && r.anims.some((a) => a.name === "background-color" && a.dur === 240),
     reduced: (r) => !r.anims.some((a) => a.name === "transform"),
   },
   {
     name: "checkbox-tick-pops", story: "v2-components-checkbox--unchecked", observe: 600,
     async run(p) { await p.click("#storybook-root [role=checkbox]"); },
-    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 150),
+    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 180),
     reduced: (r) => !r.anims.some((a) => a.name === "enter" || a.name === "exit"),
   },
   {
     name: "radio-dot-grows", story: "v2-components-radio--all-variants", observe: 600,
     async run(p) { await p.click("#storybook-root input[type=radio]:not(:checked):not(:disabled)"); },
     normal: (r) => r.anims.some((a) => a.kind === "CSSTransition" && a.name === "background-size"),
-    reduced: () => true,
+    reduced: (r) => !r.anims.some((a) => a.name === "background-size"),
   },
   // ---- overlays ----------------------------------------------------------------------------------------------
   {
@@ -193,13 +194,13 @@ const SCENARIOS = [
       await sleep(450);
       await p.key("Escape");
     },
-    normal: (r) => r.anims.some((a) => a.name === "enter" && a.dur === 200 && a.role === "dialog") && r.anims.some((a) => a.name === "exit" && a.dur === 150 && a.role === "dialog"),
+    normal: (r) => r.anims.some((a) => a.name === "enter" && a.dur === 220 && a.role === "dialog") && r.anims.some((a) => a.name === "exit" && a.dur === 160 && a.role === "dialog"),
     reduced: (r) => !r.anims.some((a) => a.name === "enter" || a.name === "exit"),
   },
   {
     name: "dropdown-menu", story: "v2-components-dropdown-menu--default", observe: 900,
     async run(p) { await p.click("#storybook-root button"); await sleep(400); await p.key("Escape"); },
-    normal: (r) => r.anims.some((a) => a.name === "enter" && a.role === "menu" && offCentre(a)) && r.anims.some((a) => a.name === "exit" && a.role === "menu" && a.dur === 100),
+    normal: (r) => r.anims.some((a) => a.name === "enter" && a.role === "menu" && offCentre(a)) && r.anims.some((a) => a.name === "exit" && a.role === "menu" && a.dur === 120),
     reduced: (r) => !r.anims.some((a) => a.name === "enter" || a.name === "exit"),
   },
   {
@@ -224,7 +225,7 @@ const SCENARIOS = [
   {
     name: "accordion-expand", story: "v2-components-accordion--default", observe: 700,
     async run(p) { await p.click("#storybook-root button[aria-expanded=false]"); },
-    normal: (r) => r.anims.some((a) => a.name === "height" && a.dur === 200) && r.anims.some((a) => a.name === "transform" && a.dur === 200),
+    normal: (r) => r.anims.some((a) => a.name === "height" && a.dur === 240) && r.anims.some((a) => a.name === "transform" && a.dur === 240),
     reduced: (r) => !r.anims.some((a) => a.name === "transform" || a.name === "height"),
   },
   // ---- custom floating panels: must animate AND must not jump -------------------------------------------------
@@ -243,20 +244,22 @@ const SCENARIOS = [
       const last = await p.evalv(`(() => { const e=document.querySelector(${JSON.stringify(panel)}); return e ? e.getBoundingClientRect().toJSON() : null })()`);
       return { first, last };
     },
-    normal: (r) => r.anims.some((a) => a.name === "enter" && a.dur === 150) && sitsStill(r) && r.first && r.last && Math.abs(r.first.left - r.last.left) < 12 && Math.abs(r.first.top - r.last.top) < 12,
+    normal: (r) => r.anims.some((a) => a.name === "enter" && a.dur === 200) && sitsStill(r) && r.first && r.last && Math.abs(r.first.left - r.last.left) < 12 && Math.abs(r.first.top - r.last.top) < 12,
     reduced: (r) => !r.anims.some((a) => a.name === "enter"),
   })),
   {
-    name: "textfield-error-fades", story: "v2-components-textfield--error", observe: 500,
-    async run() {},
-    loadObserve: true,
+    name: "textfield-error-fades", story: "v2-components-textfield--usage", observe: 500,
+    async run(p) {
+      await p.click("#storybook-root button[aria-label='Clear input']");
+      await p.click("#storybook-root button[type=submit]");
+    },
     normal: (r) => r.anims.some((a) => a.name === "enter" && a.dur === 150),
     reduced: (r) => !r.anims.some((a) => a.name === "enter"),
   },
   {
     name: "readable-field-copy-pops", story: "v2-components-readablefield--overview", observe: 600,
     async run(p) { await p.click("#storybook-root button[aria-label='Copy to clipboard']"); },
-    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 150),
+    normal: (r) => r.anims.some((a) => a.kind === "CSSAnimation" && a.name === "enter" && a.dur === 180),
     reduced: (r) => !r.anims.some((a) => a.name === "enter"),
   },
   {
@@ -266,7 +269,7 @@ const SCENARIOS = [
       await p.mouse(sel, "move"); await sleep(450);
       return { hovered: await p.style(sel, "transform") };
     },
-    normal: (r) => scaleOf(r.hovered) === 1.1,
+    normal: (r) => scaleOf(r.hovered) === 1.03,
     reduced: (r) => scaleOf(r.hovered) === 1,
   },
 ];
@@ -342,4 +345,96 @@ async function main() {
   cleanup();
   process.exit(failed.length ? 1 : 0);
 }
-main().catch((e) => { console.error(e); process.exit(2); });
+if (typeof process !== "undefined" && process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((e) => { console.error(e); process.exit(2); });
+}
+
+/** Run the checks through an already connected Browser skill CDP capability. */
+export async function runMotionScenarios(cdp, {
+  base = "http://localhost:6008",
+  only = [],
+  modes = ["normal", "reduced"],
+  scenarios = SCENARIOS,
+  helpers = PAGE_HELPERS,
+  onResult = () => {},
+} = {}) {
+  await cdp.send("Page.enable");
+  await cdp.send("Runtime.enable");
+  const evalv = async (expression) => {
+    const r = await cdp.send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
+    if (r.exceptionDetails) throw new Error(r.exceptionDetails.exception?.description || r.exceptionDetails.text);
+    return r.result.value;
+  };
+  const page = {
+    evalv,
+    style: (sel, prop) => evalv(`window.__style(${JSON.stringify(sel)}, ${JSON.stringify(prop)})`),
+    async mouse(sel, type) {
+      const c = await evalv(`window.__center(${JSON.stringify(sel)})`);
+      if (!c) throw new Error(`no element for ${sel}`);
+      const map = { move: "mouseMoved", down: "mousePressed", up: "mouseReleased" };
+      await cdp.send("Input.dispatchMouseEvent", { type: map[type], x: c.x, y: c.y, button: type === "move" ? "none" : "left", buttons: type === "down" ? 1 : 0, clickCount: type === "move" ? 0 : 1 });
+    },
+    async click(sel) { await page.mouse(sel, "move"); await page.mouse(sel, "down"); await sleep(40); await page.mouse(sel, "up"); },
+    async key(key) {
+      const codes = { Escape: 27, Tab: 9, Enter: 13, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40, Home: 36, End: 35 };
+      const code = codes[key] || 0;
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyDown", key, code: key, windowsVirtualKeyCode: code });
+      await cdp.send("Input.dispatchKeyEvent", { type: "keyUp", key, code: key, windowsVirtualKeyCode: code });
+    },
+  };
+  const results = [];
+  try {
+    for (const mode of modes) {
+      await cdp.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: mode === "reduced" ? "reduce" : "no-preference" }] });
+      for (const sc of scenarios) {
+        if (only.length && !only.some((name) => sc.name.includes(name))) continue;
+        let result;
+        try {
+          await cdp.send("Page.navigate", { url: `${base}/iframe.html?id=${sc.story}&viewMode=story` });
+          let ready = false;
+          for (let i = 0; i < 80; i++) {
+            await sleep(250);
+            ready = await evalv("!!document.querySelector('#storybook-root') && document.querySelector('#storybook-root').children.length>0 && document.readyState==='complete'").catch(() => false);
+            if (ready) break;
+          }
+          if (!ready) throw new Error("Story did not mount before timeout");
+          await evalv(helpers);
+          await sleep(sc.loadObserve ? 0 : 700);
+          await evalv("window.__start()");
+          const extra = (await sc.run(page)) || {};
+          await sleep(sc.observe || 400);
+          const rec = await evalv("window.__stop()");
+          const data = { ...rec, ...extra };
+          result = { name: sc.name, story: sc.story, mode, ok: !!sc[mode](data), ...data };
+        } catch (error) {
+          result = { name: sc.name, story: sc.story, mode, ok: false, error: String(error.message || error) };
+        }
+        results.push(result);
+        await onResult(result);
+      }
+    }
+  } finally {
+    await cdp.send("Emulation.setEmulatedMedia", { features: [] });
+  }
+  return results;
+}
+
+
+/** Supported browser runtime adapter: navigation and keys use its public UI API. */
+export function createBrowserRuntimeAdapter(tab, capability) {
+  return {
+    async send(method, params = {}) {
+      if (method === "Page.navigate") {
+        await tab.goto(params.url);
+        return {};
+      }
+      if (method === "Input.dispatchKeyEvent") {
+        if (params.type === "keyDown") {
+          await tab.cua.keypress({ keys: [params.key === "Escape" ? "ESC" : params.key] });
+        }
+        return {};
+      }
+      return capability.send(method, params);
+    },
+  };
+}

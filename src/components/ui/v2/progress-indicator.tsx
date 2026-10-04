@@ -79,6 +79,7 @@ const ProgressIndicator = React.forwardRef<
                     strokeWidth="5.13488"
                     strokeDasharray={length}
                     strokeDashoffset={length * (1 - percentage / 100)}
+                    className="transition-[stroke-dashoffset] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
                   />
                 </>
               ) : (
@@ -100,11 +101,11 @@ const ProgressIndicator = React.forwardRef<
                     strokeWidth="5.13488"
                     strokeDasharray={length}
                     strokeDashoffset={length * (1 - percentage / 100)}
-                    className={
-                      indeterminate
-                        ? "origin-center animate-spin motion-reduce:[animation-duration:2s]"
-                        : undefined
-                    }
+                    className={cn(
+                      "transition-[stroke-dashoffset] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
+                      indeterminate &&
+                        "origin-center animate-spin motion-reduce:[animation-duration:2s]"
+                    )}
                   />
                 </g>
               )}
@@ -131,7 +132,7 @@ const ProgressIndicator = React.forwardRef<
             >
               <div
                 className={cn(
-                  "h-full rounded-lg bg-semantic-info-primary transition-[width] duration-200 motion-reduce:transition-none",
+                  "h-full rounded-lg bg-semantic-info-primary transition-[width] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
                   indeterminate && "animate-pulse motion-reduce:animate-none"
                 )}
                 style={{ width: indeterminate ? "30%" : `${percentage}%` }}

@@ -73,12 +73,16 @@ const SelectTrigger = React.forwardRef(
   ) => (
     <SelectPrimitive.Trigger
       ref={ref}
-      className={cn(selectTriggerVariants({ state }), className)}
+      className={cn(
+        selectTriggerVariants({ state }),
+        "group/v2-select",
+        className
+      )}
       {...props}
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-70" />
+        <ChevronDown className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none group-data-[state=open]/v2-select:rotate-180" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -274,12 +278,12 @@ const SelectContent = React.forwardRef(
           ref={ref}
           className={cn(
             "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
-            "origin-[var(--radix-select-content-transform-origin)] data-[state=closed]:motion-safe:[animation-duration:100ms]",
+            "origin-[var(--radix-select-content-transform-origin)] data-[state=open]:motion-safe:[animation-duration:200ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] data-[state=closed]:[animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]",
             "data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-            "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-            "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2",
-            "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            "data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.98]",
+            "data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1",
+            "data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1",
             position === "popper" &&
               "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
             className

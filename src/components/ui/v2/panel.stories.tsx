@@ -369,7 +369,7 @@ export const Interactive: Story = {
     docs: {
       description: {
         story:
-          "Close the panel, press Escape within it, or use the workspace button. Each updates open Controls and preserves the300ms transition.",
+          "Close the panel, press Escape within it, or use the workspace button. Each updates open Controls and preserves the 260ms transition.",
       },
     },
   },
@@ -397,14 +397,16 @@ export const Sizes: Story = {
     "All three widths are fixed. Other controls seed each independent panel; close/reopen and local fields remain interactive."
   ),
   render: (args) => (
-    <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[1500px] grid-cols-3 gap-5">
-        {(["sm", "default", "lg"] as const).map((size) => (
-          <Card key={size} title={size}>
-            <Demo args={{ ...args, size }} />
-          </Card>
-        ))}
-      </div>
+    <div className="grid max-w-full grid-cols-[repeat(auto-fit,minmax(min(100%,660px),1fr))] gap-5">
+      {(["sm", "default", "lg"] as const).map((size) => (
+        <Card key={size} title={size}>
+          <div className="max-w-full overflow-x-auto">
+            <div className="min-w-[600px]">
+              <Demo args={{ ...args, size }} />
+            </div>
+          </div>
+        </Card>
+      ))}
     </div>
   ),
 };

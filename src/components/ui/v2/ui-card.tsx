@@ -30,7 +30,7 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
           "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_2px_0_rgba(12,15,18,0.05),inset_0_0_0_1px_rgba(10,13,18,0.18),inset_0_-2px_0_0_rgba(12,15,18,0.05)]",
           interactive &&
             !disabled &&
-            "cursor-pointer transition-[background,box-shadow,border-color] hover:bg-[linear-gradient(290deg,color-mix(in_srgb,var(--semantic-border-layout)_40%,transparent)_0.89%,color-mix(in_srgb,var(--semantic-bg-primary)_40%,transparent)_36.25%)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
+            "cursor-pointer transition-[background-color,box-shadow,border-color] duration-150 ease-out hover:bg-[linear-gradient(290deg,color-mix(in_srgb,var(--semantic-border-layout)_40%,transparent)_0.89%,color-mix(in_srgb,var(--semantic-bg-primary)_40%,transparent)_36.25%)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
           (variant === "icon" || variant === "action") && "w-[200px]",
           variant === "action" &&
             "border-dashed border-semantic-info-border shadow-none",

@@ -254,6 +254,9 @@
     --v2-text-secondary: #5E5E5E;
     --v2-text-muted: #707070;
     --v2-text-placeholder: #707070;
+    /* v2 motion: quiet settling, no overshoot. */
+    --v2-ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    --v2-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --border-skeuomorphic: rgba(255, 255, 255, 0.12);
   }
 
@@ -298,4 +301,20 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+}
+
+/* Read only by v2 classes; no legacy motion values are changed. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --v2-ease-spring: linear(0.00000 0%, 0.06174 5%, 0.19179 10%, 0.33839 15%, 0.47651 20%, 0.59579 25%, 0.69365 30%, 0.77125 35%, 0.83131 40%, 0.87696 45%, 0.91117 50%, 0.93653 55%, 0.95515 60%, 0.96872 65%, 0.97855 70%, 0.98562 75%, 0.99070 80%, 0.99431 85%, 0.99689 90%, 0.99871 95%, 1.00000 100%);
+  }
+}
+
+@keyframes v2-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes v2-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }

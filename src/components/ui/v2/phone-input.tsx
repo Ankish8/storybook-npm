@@ -216,7 +216,7 @@ const PhoneInput = React.forwardRef(
         {phoneInput}
         <p
           id={validationId}
-          className="m-0 text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+          className="m-0 text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
         >
           {validation}
         </p>

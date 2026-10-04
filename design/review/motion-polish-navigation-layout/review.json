@@ -1,0 +1,1249 @@
+{
+  "browser": "Chrome extension runtime ID4; isolated agent tabs",
+  "url": "http://localhost:6008",
+  "date": "2026-10-03",
+  "sourceChanges": false,
+  "records": [
+    {
+      "component": "PageFooter",
+      "view": "overview-controls",
+      "primaryLabel": "Apply changes",
+      "disabledControl": true,
+      "mobileLayout": true,
+      "status": "Changes saved in this example.",
+      "pass": true
+    },
+    {
+      "component": "Input",
+      "view": "overview-controls",
+      "forwardValue": "Customer success",
+      "reverseValue": "Billing team",
+      "disabledControl": true,
+      "pass": true
+    },
+    {
+      "component": "Pagination",
+      "view": "overview-controls",
+      "forwardPage": "4",
+      "reverseCurrent": "page",
+      "iconsOnly": {
+        "name": "Go to next page",
+        "text": ""
+      },
+      "pass": true
+    },
+    {
+      "component": "Stepper",
+      "view": "overview-controls",
+      "forwardStep": "1",
+      "reverseCurrent": "step",
+      "verticalLayout": true,
+      "iconMarkers": true,
+      "disabledControl": true,
+      "pass": true
+    },
+    {
+      "component": "Pagination",
+      "view": "usage-interaction",
+      "queryControl": "Contact 02",
+      "text": "Contacts\n\nPage a local list or filter it. Selection and query stay synchronized with Controls.\n\nSearch contacts\nContact 020\nContact 021\nContact 022\nContact 023\nContact 024\n\nShowing 1\u20135 of 10\n\nPrevious\n1\n2\nNext",
+      "pass": true
+    },
+    {
+      "component": "Stepper",
+      "view": "usage-interaction",
+      "forwardStep": "1",
+      "backStep": "0",
+      "text": "Create a workspace\n\nNavigate the local setup flow with step labels or actions.\n\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nTeam\n\nChoose the people to invite\n\nBack\nContinue\n\nStep 2 of 3",
+      "pass": true
+    },
+    {
+      "component": "Input",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Zoom out",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Example input",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": "Reset controls",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Set boolean",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Input",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Error",
+        "Disabled",
+        "Read Only",
+        "With Value",
+        "With focus check icon",
+        "All variants",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Number inputs",
+        "Usage"
+      ],
+      "overflow": false,
+      "text": "Input\n\nA single-line field for text and numbers. Native input attributes and the current typing rules are preserved. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nHeight and radius\t42px height, 4px radius\t40px height, 8px radius\nTypography\tInherited 16px\tInter 16/24 regular\nHorizontal padding\t16px\t16px\nHover border\tDefault border\t#C0C3CA on enabled fields\nFocus\tTeal border and a thin 1px shadow\t#27ABB8 border and a soft 4px shadow\nError focus\tThin red shadow\tSoft 4px red shadow\nDisabled\tReduced opacity\tSolid grey surface and border\nTyping behavior\tNumber guards, spinner control, consecutive-space protection\tUnchanged, including caret handling and override props\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nBorder\t--semantic-border-input\t#E9EAEB\t\n\nHover border\t--co",
+      "file": "design/review/motion-polish-navigation-layout/input-docs.png"
+    },
+    {
+      "component": "Input",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "text": "Default\nError\n\nEnter a valid email address.",
+      "file": "design/review/motion-polish-navigation-layout/input-all-variants.png"
+    },
+    {
+      "component": "Input",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "default Default",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "default Hover",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "default Focus",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "default Disabled",
+          "disabled": true,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "default Disabled + hover",
+          "disabled": true,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "error Default",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "error Hover",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "error Focus",
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "error Disabled",
+          "disabled": true,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "error Disabled + hover",
+          "disabled": true,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "text": "Default\nHover\nFocus\nDisabled\nDisabled + hover\nDefault\nError",
+      "file": "design/review/motion-polish-navigation-layout/input-states.png"
+    },
+    {
+      "component": "Input",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "Customer support"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "text": "Workspace details\n\nUpdate the name used in your workspace.\n\nWorkspace name\n\nUse a name your team can recognize.\n\nChanges are local to this example\nSave",
+      "file": "design/review/motion-polish-navigation-layout/input-usage.png"
+    },
+    {
+      "component": "PageFooter",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Zoom out",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": "Reset controls",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "desktop"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "mobile"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example actions items",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example actions items",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "PageFooter",
+        "Import",
+        "Unprefixed Tailwind",
+        "Design specification",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Desktop",
+        "Mobile",
+        "Disabled",
+        "All Variants",
+        "States",
+        "Usage"
+      ],
+      "overflow": false,
+      "text": "PageFooter\n\nPage actions with supporting text in desktop and mobile layouts. v2 design \u2014 a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nDesign specification\nAspect\tv2\nDesktop\t10px /16px padding;12px gap\nMobile\t16px padding;12px vertical gap\nDivider\t1px top border;white surface\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nBorder\t--semantic-border-layout\t#E9EAEB\t\n\nSupporting text\t--v2-text-secondary\t#5E5E5E\t\n\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nHeading and selected text\t--v2-text-primary\t#484848\t\n\nSupporting text\t--v2-text-muted\t#707070\t\n\nPlaceholder text\t--v2-text-placeholder\t#707070\t\nUsage guidance\n\nSupply actions as a slot. Each action owns its disabled, loading and event behavior. Use the mobile layout for stacked supporting text and full-width actions.\n\nShow code\nName\tDescription\tDefault\tControl\ndescription\t\nReactNode\n\t-\t\n\nlayout\t\n\"mobile\"\n\"desktop\"\n\t\n\"desktop\"\n\t\nlayout\ndesktop\nmobile\n\n\n",
+      "file": "design/review/motion-polish-navigation-layout/pagefooter-docs.png"
+    },
+    {
+      "component": "PageFooter",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "desktop",
+        "mobile"
+      ],
+      "overflow": false,
+      "text": "Desktop\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result.\n\nMobile\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result.",
+      "file": "design/review/motion-polish-navigation-layout/pagefooter-all-variants.png"
+    },
+    {
+      "component": "PageFooter",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Enabled",
+        "Disabled"
+      ],
+      "overflow": false,
+      "text": "Enabled\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result.\n\nDisabled\nConfigure and manage your webhook integrations\nCancel\nSave changes\n\nChoose an action to see its result.",
+      "file": "design/review/motion-polish-navigation-layout/pagefooter-states.png"
+    },
+    {
+      "component": "PageFooter",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Notification settings"
+      ],
+      "overflow": false,
+      "text": "Notification settings\nMessage\n\nNo unsaved changes\n\nConfigure and manage your webhook integrations\nCancel\nSave changes",
+      "file": "design/review/motion-polish-navigation-layout/pagefooter-usage.png"
+    },
+    {
+      "component": "Pagination",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Zoom out",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": "Reset controls",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "3"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "12"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": "1"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example items",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example items",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": "",
+          "value": "on"
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Pagination",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "With More Pages",
+        "First Page Active",
+        "Last Page Active",
+        "Icons Only",
+        "Few Pages",
+        "Widget",
+        "Widget First Page",
+        "Widget Last Page",
+        "Widget Few Pages",
+        "Composed Links",
+        "With Item Count",
+        "Pagination Info Only",
+        "All Compositions",
+        "All alignments",
+        "States",
+        "v1 vs v2",
+        "Usage",
+        "Accessibility"
+      ],
+      "overflow": false,
+      "text": "Pagination\n\nPage navigation with a ready-to-use widget or composable links, ellipses and an optional item range. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nControls\t36px default icon controls\t32px default links and previous/next controls\nSpacing\tUnpadded navigation\t10px outer padding and 12px group gap\nTypography\tInherited font\tInter and v2 Button labels\nSelection\tWidget currentPage/onPageChange\tExisting API and ellipsis algorithm retained\nComposable sizes\tButton size override\tExisting size overrides still available\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nActive surface\t--semantic-bg-ui\t#F5F5F5\t\n\nActive label\t--v2-text-primary\t#484848\t\n\nMuted label\t--v2-text-muted\t#707070\t\n\nBorder\t--semantic-border-layout\t#E9EAEB\t\n\nFocus\t--semantic-primary\t#343E55\t\n\nBody and field values\t--v2-text-secondary\t#5E",
+      "file": "design/review/motion-polish-navigation-layout/pagination-docs.png"
+    },
+    {
+      "component": "Pagination",
+      "view": "all-compositions",
+      "controls": [],
+      "headings": [
+        "No Preview",
+        "",
+        "widget",
+        "links"
+      ],
+      "overflow": false,
+      "text": "widget\nPrevious\n1\n2\n3\n4\nMore pages\n12\nNext\nlinks\nPrevious\n1\n2\n3\n4\nMore pages\n12\nNext",
+      "file": "design/review/motion-polish-navigation-layout/pagination-all-compositions.png"
+    },
+    {
+      "component": "Pagination",
+      "view": "states",
+      "controls": [],
+      "headings": [
+        "No Preview",
+        "",
+        "Default",
+        "Hover",
+        "Focus",
+        "First page",
+        "Last page"
+      ],
+      "overflow": false,
+      "text": "Default\nPrevious\n1\n2\n3\n4\nMore pages\n12\nNext\nHover\nPrevious\n1\n2\n3\n4\nMore pages\n12\nNext\nFocus\nPrevious\n1\n2\n3\n4\nMore pages\n12\nNext\nFirst page\nPrevious\n1\n2\nMore pages\n12\nNext\nLast page\nPrevious\n1\nMore pages\n11\n12\nNext",
+      "file": "design/review/motion-polish-navigation-layout/pagination-states.png"
+    },
+    {
+      "component": "Pagination",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "INPUT",
+          "text": "",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Contacts"
+      ],
+      "overflow": false,
+      "text": "Contacts\n\nPage a local list or filter it. Selection and query stay synchronized with Controls.\n\nSearch contacts\nContact 001\nContact 002\nContact 003\nContact 004\nContact 005\n\nShowing 1\u20135 of 42\n\nPrevious\n1\n2\nMore pages\n9\nNext",
+      "file": "design/review/motion-polish-navigation-layout/pagination-usage.png"
+    },
+    {
+      "component": "Stepper",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Zoom out",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code",
+          "value": ""
+        },
+        {
+          "aria": "Reset controls",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": "Edit the steps properties in JSON format",
+          "disabled": false,
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "steps :",
+          "value": ""
+        },
+        {
+          "aria": "add a new item to the 'steps' array",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "0 :",
+          "value": ""
+        },
+        {
+          "aria": "remove the object '0'",
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 :",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Stepper",
+        "Import",
+        "Unprefixed Tailwind",
+        "Design specification",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Vertical",
+        "Small",
+        "Icons",
+        "Disabled",
+        "All Variants",
+        "All Sizes",
+        "States",
+        "Usage"
+      ],
+      "overflow": false,
+      "text": "Stepper\n\nProgressive steps with numbered or icon markers in horizontal and vertical layouts. v2 design \u2014 a new component from the v2 Figma library.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nDesign specification\nAspect\tv2\nSmall marker\t20 \u00d720px; 0.4px border\nMedium marker\t24 \u00d724px; 0.4px border\nConnector\t2px; rounded ends\nLabels\tSemibold titles and regular supporting text\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nMarker/connector\t--semantic-border-layout\t#E9EAEB\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nSupporting text\t--v2-text-muted\t#707070\t\n\nBody and field values\t--v2-text-secondary\t#5E5E5E\t\n\nPlaceholder text\t--v2-text-placeholder\t#707070\t\nUsage guidance\n\ncurrentStep is a zero-based index exposed as aria-current=step. Without onStepChange this is a read-only progress display; supplying it enables native keyboard-accessible step actions. Mark unavailable steps disabled.\n\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to",
+      "file": "design/review/motion-polish-navigation-layout/stepper-docs.png"
+    },
+    {
+      "component": "Stepper",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "horizontal \u00b7 numbered",
+        "horizontal \u00b7 icon",
+        "vertical \u00b7 numbered",
+        "vertical \u00b7 icon"
+      ],
+      "overflow": false,
+      "text": "Horizontal \u00b7 Numbered\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nHorizontal \u00b7 Icon\nDetails\nAdd your workspace details\nTeam\nChoose the people to invite\nReview\nConfirm your settings\nVertical \u00b7 Numbered\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nVertical \u00b7 Icon\nDetails\nAdd your workspace details\nTeam\nChoose the people to invite\nReview\nConfirm your settings",
+      "file": "design/review/motion-polish-navigation-layout/stepper-all-variants.png"
+    },
+    {
+      "component": "Stepper",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Current step 1",
+        "Current step 2",
+        "Current step 3",
+        "Disabled"
+      ],
+      "overflow": false,
+      "text": "Current step 1\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nCurrent step 2\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nCurrent step 3\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nDisabled\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings",
+      "file": "design/review/motion-polish-navigation-layout/stepper-states.png"
+    },
+    {
+      "component": "Stepper",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "DetailsAdd your workspace details",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "TeamChoose the people to invite",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "ReviewConfirm your settings",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": true,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Back",
+          "value": ""
+        },
+        {
+          "aria": null,
+          "disabled": false,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue",
+          "value": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Create a workspace"
+      ],
+      "overflow": false,
+      "text": "Create a workspace\n\nNavigate the local setup flow with step labels or actions.\n\n1\nDetails\nAdd your workspace details\n2\nTeam\nChoose the people to invite\n3\nReview\nConfirm your settings\nDetails\n\nAdd your workspace details\n\nBack\nContinue\n\nStep 1 of 3",
+      "file": "design/review/motion-polish-navigation-layout/stepper-usage.png"
+    }
+  ]
+}

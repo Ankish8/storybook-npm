@@ -932,11 +932,11 @@ const MultiSelect = React.forwardRef(
                 />
               )}
               {loading ? (
-                <Loader2 className="size-4 animate-spin text-[var(--v2-text-muted,#707070)]" />
+                <Loader2 className="size-4 animate-spin motion-reduce:[animation-duration:2s] text-[var(--v2-text-muted,#707070)]" />
               ) : (
                 <ChevronDown
                   className={cn(
-                    "size-4 text-[var(--v2-text-muted,#707070)] transition-transform shrink-0",
+                    "size-4 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none shrink-0",
                     isOpen && "rotate-180"
                   )}
                 />
@@ -951,7 +951,7 @@ const MultiSelect = React.forwardRef(
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
                 >
                   <CircleAlert
                     className="size-3.5 shrink-0 text-semantic-error-primary"
@@ -981,7 +981,7 @@ const MultiSelect = React.forwardRef(
                   id={listboxId}
                   role="listbox"
                   aria-multiselectable="true"
-                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left"
+                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
                   style={{
                     ...floatingStyles,
                     zIndex: 10050,
@@ -1228,7 +1228,7 @@ const MultiSelect = React.forwardRef(
                         aria-live="polite"
                         className="flex items-center justify-center gap-2 py-3 text-sm text-[var(--v2-text-muted,#707070)]"
                       >
-                        <Loader2 className="size-4 animate-spin" />
+                        <Loader2 className="size-4 animate-spin motion-reduce:[animation-duration:2s]" />
                         <span>Loading more...</span>
                       </div>
                     ) : null}

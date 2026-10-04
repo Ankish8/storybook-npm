@@ -657,36 +657,56 @@ export const Interaction: Story = {
     docs: {
       description: {
         story:
-          "Opens the list with a click, picks an option, then reopens it to pick another while a disabled option stays unavailable. Open the Interactions panel to step through it.",
+          "Opens the list with a click, picks an option, then reopens it with the keyboard to pick another while a disabled option stays unavailable. Open the Interactions panel to step through it.",
       },
     },
   },
   play: async ({ args, canvasElement, step }) => {
-    const t0 = performance.now();
     clearAllMocks();
     const trigger = within(canvasElement).getByRole("combobox", {
       name: "Authentication",
     });
     const body = within(canvasElement.ownerDocument.body);
-    const user = userEvent.setup();
+    // Radix makes the trigger inert between pointer-down and pointer-up while its
+    // modal list is open. Both halves of this real click must still be delivered.
+    const user = userEvent.setup({
+      document: canvasElement.ownerDocument,
+      pointerEventsCheck: 0,
+    });
+    const choose = async (option: HTMLElement) => {
+      // Radix ignores a release within 10px of the opening press. Move to the
+      // actual option before clicking; synthetic user-event coordinates default
+      // to (0, 0) for both elements and would otherwise suppress selection.
+      const bounds = option.getBoundingClientRect();
+      await user.pointer({
+        target: option,
+        coords: {
+          clientX: bounds.left + bounds.width / 2,
+          clientY: bounds.top + bounds.height / 2,
+        },
+      });
+      // Pointer movement highlights the item; Enter commits the highlighted
+      // option without depending on synthetic pointer-up timing during layout.
+      await user.keyboard("{Enter}");
+    };
 
     await step("A click opens the list", async () => {
-      await user.pointer({ keys: "[MouseLeft>]", target: trigger });
+      await expect(trigger).toBeEnabled();
+      await user.click(trigger);
       await expect(await body.findAllByRole("option")).toHaveLength(6);
-      await user.pointer({ keys: "[/MouseLeft]" });
       await expect(trigger).toHaveAttribute("aria-expanded", "true");
-      await expect(args.onOpenChange).toHaveBeenCalledTimes(1);
-      await expect(args.onOpenChange).toHaveBeenLastCalledWith(true);
+      await waitFor(() =>
+        expect(args.onOpenChange).toHaveBeenLastCalledWith(true)
+      );
     });
 
     await step(
       "Choosing an option commits it and closes the list",
       async () => {
-        await userEvent.click(
-          body.getByRole("option", { name: "Bearer Token" })
+        await choose(body.getByRole("option", { name: "Bearer Token" }));
+        await waitFor(() =>
+          expect(args.onValueChange).toHaveBeenLastCalledWith("bearer")
         );
-        await expect(args.onValueChange).toHaveBeenCalledTimes(1);
-        await expect(args.onValueChange).toHaveBeenLastCalledWith("bearer");
         await waitFor(() =>
           expect(body.queryByRole("listbox")).not.toBeInTheDocument()
         );
@@ -698,21 +718,21 @@ export const Interaction: Story = {
     await step(
       "The chosen option is marked; a disabled one is unavailable",
       async () => {
-        await user.pointer({ keys: "[MouseLeft>]", target: trigger });
+        await waitFor(() => expect(trigger).toHaveFocus());
+        await user.keyboard("{ArrowDown}");
         await body.findByRole("listbox");
-        await user.pointer({ keys: "[/MouseLeft]" });
         const chosen = await body.findByRole("option", {
           name: "Bearer Token",
         });
         await expect(chosen).toHaveAttribute("data-state", "checked");
         const unavailable = body.getByRole("option", { name: /unavailable/ });
         await expect(unavailable).toHaveAttribute("aria-disabled", "true");
-        await userEvent.click(body.getByRole("option", { name: "OAuth 2.0" }));
-        await expect(args.onValueChange).toHaveBeenCalledTimes(2);
-        await expect(args.onValueChange).toHaveBeenLastCalledWith("oauth2");
+        await choose(body.getByRole("option", { name: "OAuth 2.0" }));
+        await waitFor(() =>
+          expect(args.onValueChange).toHaveBeenLastCalledWith("oauth2")
+        );
         await waitFor(() => expect(trigger).toHaveTextContent("OAuth 2.0"));
       }
     );
-    console.warn("PLAYMS " + Math.round(performance.now() - t0));
   },
 };

@@ -409,7 +409,7 @@ const SelectField = React.forwardRef(
           >
             <SelectValue placeholder={placeholder} />
             {loading && (
-              <Loader2 className="absolute right-8 size-4 animate-spin text-[var(--v2-text-muted,#707070)]" />
+              <Loader2 className="absolute right-8 size-4 animate-spin motion-reduce:[animation-duration:2s] text-[var(--v2-text-muted,#707070)]" />
             )}
           </SelectTrigger>
           <SelectContent
@@ -525,7 +525,10 @@ const SelectField = React.forwardRef(
                 aria-live="polite"
                 className="flex items-center justify-center gap-2 py-2 text-xs text-[var(--v2-text-muted,#707070)]"
               >
-                <Loader2 className="size-3.5 animate-spin" aria-hidden="true" />
+                <Loader2
+                  className="size-3.5 animate-spin motion-reduce:[animation-duration:2s]"
+                  aria-hidden="true"
+                />
                 <span>Loading more…</span>
               </div>
             )}
@@ -548,7 +551,7 @@ const SelectField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
               >
                 {error}
               </span>

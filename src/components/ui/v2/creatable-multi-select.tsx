@@ -459,7 +459,7 @@ const CreatableMultiSelect = React.forwardRef(
                 </span>
               ) : null}
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start rotate-180 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform"
+                className="mt-1 size-4 shrink-0 self-start rotate-180 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:200ms]"
                 aria-hidden
               />
             </div>
@@ -564,7 +564,7 @@ const CreatableMultiSelect = React.forwardRef(
                 )}
               </div>
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform"
+                className="mt-1 size-4 shrink-0 self-start text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
                 aria-hidden
               />
             </div>
@@ -572,7 +572,7 @@ const CreatableMultiSelect = React.forwardRef(
 
           {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above. */}
           {isOpen && (
-            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] slide-in-from-top-1">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
                   <span className="text-sm text-[var(--v2-text-muted,#707070)]">

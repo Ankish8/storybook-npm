@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import {
   Accordion,
   AccordionItem,
@@ -296,5 +296,50 @@ describe("AccordionItem disabled", () => {
     );
 
     expect(screen.getByRole("button")).toBeDisabled();
+  });
+});
+
+describe("Accordion measured content", () => {
+  it("retargets open height after nested content resizes and disconnects on unmount", () => {
+    const callbacks: ResizeObserverCallback[] = [];
+    const disconnect = vi.fn();
+    const previousObserver = globalThis.ResizeObserver;
+    globalThis.ResizeObserver = class {
+      constructor(callback: ResizeObserverCallback) {
+        callbacks.push(callback);
+      }
+      observe() {}
+      unobserve() {}
+      disconnect = disconnect;
+    } as unknown as typeof ResizeObserver;
+    try {
+      const { unmount } = render(
+        <Accordion defaultValue={["resizing"]}>
+          <AccordionItem value="resizing">
+            <AccordionTrigger>Details</AccordionTrigger>
+            <AccordionContent data-testid="resizing-content">
+              Deferred content
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      );
+      const content = screen.getByTestId("resizing-content");
+      const inner = content.firstElementChild as HTMLDivElement;
+      Object.defineProperty(inner, "scrollHeight", {
+        configurable: true,
+        value: 160,
+      });
+      act(() => callbacks[0]([], {} as ResizeObserver));
+      expect(content).toHaveStyle({ height: "160px" });
+      Object.defineProperty(inner, "scrollHeight", { value: 280 });
+      act(() => callbacks[0]([], {} as ResizeObserver));
+      expect(content).toHaveStyle({ height: "280px" });
+      fireEvent.click(screen.getByRole("button", { name: "Details" }));
+      expect(content).toHaveStyle({ height: "0px" });
+      unmount();
+      expect(disconnect).toHaveBeenCalledTimes(2);
+    } finally {
+      globalThis.ResizeObserver = previousObserver;
+    }
   });
 });

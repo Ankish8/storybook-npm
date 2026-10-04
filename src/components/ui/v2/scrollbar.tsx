@@ -67,7 +67,10 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
       el.scrollBy({
         top: vertical ? amount : 0,
         left: vertical ? 0 : amount,
-        behavior: "smooth",
+        behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")
+          .matches
+          ? "auto"
+          : "smooth",
       });
     };
     const trackMove = (event: React.PointerEvent<HTMLDivElement>) => {

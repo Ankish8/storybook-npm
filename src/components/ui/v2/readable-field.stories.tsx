@@ -115,11 +115,70 @@ export const AllVariants: Story = {
   ),
 };
 export const States: Story = {
-  parameters: gallery(
-    [],
-    "Copy shows success feedback. Secret values reveal on demand; the header action can be disabled."
+  parameters: {
+    ...gallery(
+      ["secret"],
+      "Copy any example to see success feedback. Reveal and hide the secret, or try the enabled and disabled header actions. Label, value and helper Controls update every example."
+    ),
+    widePreview: true,
+    layout: "padded",
+  },
+  render: (args) => (
+    <div className="grid max-w-full gap-5 sm:grid-cols-2">
+      {[
+        {
+          title: "Ready to copy",
+          description:
+            "The checkmark confirms a successful copy for two seconds.",
+          secret: false,
+          headerAction: undefined,
+        },
+        {
+          title: "Masked secret",
+          description: "Reveal the example value, then hide it again.",
+          secret: true,
+          headerAction: undefined,
+        },
+        {
+          title: "Header action",
+          description:
+            "The action remains available alongside reveal and copy.",
+          secret: true,
+          headerAction: {
+            label: "Regenerate",
+            onClick: () => headerAction(),
+          },
+        },
+        {
+          title: "Disabled action",
+          description:
+            "Reveal and copy remain available; the action explains its restriction.",
+          secret: true,
+          headerAction: {
+            label: "Regenerate",
+            onClick: () => headerAction(),
+            disabled: true,
+            disabledTooltip: "Only administrators can regenerate this value",
+          },
+        },
+      ].map(({ title, description, ...state }) => (
+        <section
+          key={title}
+          className="min-w-0 space-y-4 rounded-lg border border-solid border-semantic-border-layout p-5"
+        >
+          <div className="space-y-1">
+            <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+              {title}
+            </h3>
+            <p className="m-0 text-xs leading-relaxed text-[var(--v2-text-muted,#707070)]">
+              {description}
+            </p>
+          </div>
+          <ReadableField {...args} {...state} />
+        </section>
+      ))}
+    </div>
   ),
-  render: (args) => <ReadableField {...args} />,
 };
 function Credentials({
   onRegenerate,

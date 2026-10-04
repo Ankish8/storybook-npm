@@ -10,7 +10,7 @@ import { Button } from "./button";
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-all duration-300 ease-in-out shrink-0",
+  "border-l-[1.2px] border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-[width,opacity] [transition-duration:260ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-opacity motion-reduce:duration-150 motion-reduce:ease-out shrink-0",
   {
     variants: {
       size: {
@@ -100,7 +100,7 @@ const Panel = React.forwardRef(
         ref={ref}
         className={cn(
           panelVariants({ size }),
-          open ? widthClass : "w-0 border-l-0",
+          open ? cn(widthClass, "opacity-100") : "w-0 border-l-0 opacity-0",
           className
         )}
         aria-label={ariaLabel ?? title}

@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
  * kept. `[outline-width:1px]` is immune to both, so the ring is identical.
  */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-150 ease-out active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-semibold leading-5 tracking-[0.014px] transition-[background-color,border-color,box-shadow,color,opacity,transform] duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.98] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -49,11 +49,12 @@ const buttonVariants = cva(
         default: "h-10 px-4 [&_svg]:size-[18px]",
         sm: "h-8 px-4 text-xs leading-4 tracking-[0.06px] [&_svg]:size-[18px]",
         lg: "h-12 px-4 [&_svg]:size-[18px]",
-        icon: "h-10 w-10 p-0 active:scale-95 [&_svg]:size-[18px]",
-        "icon-sm": "h-8 w-8 p-0 active:scale-95 [&_svg]:size-[18px]",
-        "icon-lg": "h-12 w-12 p-0 active:scale-95 [&_svg]:size-[18px]",
+        icon: "h-10 w-10 p-0 active:scale-[0.97] [&_svg]:size-[18px]",
+        "icon-sm": "h-8 w-8 p-0 active:scale-[0.97] [&_svg]:size-[18px]",
+        "icon-lg": "h-12 w-12 p-0 active:scale-[0.97] [&_svg]:size-[18px]",
       },
     },
+    compoundVariants: [{ variant: "link", class: "active:scale-100" }],
     defaultVariants: {
       variant: "default",
       size: "default",

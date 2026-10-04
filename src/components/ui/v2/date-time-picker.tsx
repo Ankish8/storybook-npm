@@ -1144,7 +1144,10 @@ function CalendarDropdown({
       >
         <span>{selectedOption?.label ?? value}</span>
         <ChevronRight
-          className={cn("size-3 transition-transform", open && "-rotate-90")}
+          className={cn(
+            "size-3 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
+            open && "-rotate-90"
+          )}
           aria-hidden="true"
         />
       </button>
@@ -1157,7 +1160,7 @@ function CalendarDropdown({
             role="listbox"
             aria-label={`${label} options`}
             data-dtp-dropdown=""
-            className="motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+            className="motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 shadow-lg [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             style={{
               ...floatingStyles,
               width: `var(${DROPDOWN_WIDTH_VAR}, auto)`,
@@ -1175,7 +1178,7 @@ function CalendarDropdown({
                 aria-selected={option.value === value}
                 disabled={option.disabled}
                 className={cn(
-                  "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                  "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm disabled:cursor-not-allowed disabled:opacity-40",
                   option.value === value
                     ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
                     : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
@@ -1246,7 +1249,7 @@ function TimeColumn({
             role="option"
             aria-selected={option.selected}
             className={cn(
-              "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm transition-colors",
+              "flex shrink-0 items-center justify-center rounded-md border border-solid px-2 py-1.5 text-sm",
               option.selected
                 ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
                 : "border-transparent text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-hover"
@@ -1359,7 +1362,7 @@ function TimeField({
         </span>
         <ChevronDown
           className={cn(
-            "size-4 shrink-0 text-[var(--v2-text-muted,#707070)] transition-transform",
+            "size-4 shrink-0 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
             open && "rotate-180"
           )}
           aria-hidden="true"
@@ -1374,7 +1377,7 @@ function TimeField({
             aria-label={`${label} options`}
             data-dtp-dropdown=""
             className={cn(
-              "motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left",
+              "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
               "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
@@ -1955,7 +1958,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           }
           aria-label={showCalendar ? undefined : "Time picker"}
           className={cn(
-            "motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left",
+            "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
             "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
@@ -2296,7 +2299,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <span
                 id={errorId}
                 role="alert"
-                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
               >
                 {error}
               </span>

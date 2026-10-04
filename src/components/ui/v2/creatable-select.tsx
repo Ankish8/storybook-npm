@@ -336,7 +336,7 @@ const CreatableSelect = React.forwardRef(
                 {search.length}/{maxLength}
               </span>
             ) : null}
-            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 rotate-180 transition-transform" />
+            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 rotate-180 transition-transform duration-200 [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:200ms]" />
           </div>
         ) : (
           <button
@@ -369,7 +369,7 @@ const CreatableSelect = React.forwardRef(
 
         {/* Dropdown */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md motion-safe:animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 duration-200">
+          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] slide-in-from-top-1">
             {creatableHint ? (
               <div className={creatablePrimaryRoleHintRowClassName}>
                 <span className="text-sm text-[var(--v2-text-muted,#707070)]">

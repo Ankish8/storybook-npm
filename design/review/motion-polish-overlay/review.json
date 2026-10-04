@@ -1,0 +1,3555 @@
+{
+  "surface": "Codex in-app browser; isolated fresh tabs",
+  "url": "http://localhost:6008",
+  "rows": [
+    {
+      "component": "Dialog",
+      "overview": "pass",
+      "normalEnterMs": 220,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "overflow": false
+    },
+    {
+      "component": "DropdownMenu",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "overflow": false
+    },
+    {
+      "component": "Dialog",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "Dialog"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "DialogContent"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "DialogHeader"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "DialogFooter"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "DialogTitle"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "DialogDescription"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Dialog",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Small",
+        "Large",
+        "Extra Large",
+        "Full",
+        "With an icon",
+        "Without the corner close button",
+        "Loading action",
+        "All variants",
+        "All sizes",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Dialog\n\nA composable modal for a focused task. Existing Radix open, dismissal, focus and accessibility behavior is preserved. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nRadius and border\t8px / 1px\t12px / 1.2px\nTitle\t18px semibold\tInter 16px medium\nDescription\t14px regular\tInter 12px regular\nSections\t24px outer padding, 16px gaps\t24px header with a divider; 24px body; footer padding 0 / 24 / 24px\nClose control\t16px icon\t12px icon in a 24px control\nWidths\t384 / 512 / 672 / 896px and full\tSame size API; 16px minimum viewport gutters\nBehavior\tPortals, focus trapping, Escape, outside click and focus return\tUnchanged\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nBorder\t--semantic-border-layout\t#E9EAEB\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nBody\t--v2-text-secondary\t#5E5E",
+      "file": "design/review/motion-polish-overlay/dialog-docs.png"
+    },
+    {
+      "component": "Dialog",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Update conversation settings",
+        "Update conversation settings",
+        "Update conversation settings"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nContinue\nWith an icon\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nContinue\nWithout corner close\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nContinue",
+      "file": "design/review/motion-polish-overlay/dialog-all-variants.png"
+    },
+    {
+      "component": "Dialog",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Saving\u2026"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Continue"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Update conversation settings",
+        "Update conversation settings",
+        "Update conversation settings"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Open\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nContinue\nSaving\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nSaving\u2026\nCorner close hidden\nUpdate conversation settings\n\nReview the change before continuing.\n\nUse a dialog when a short task needs your attention before you return to the page.\n\nConversation settings\n\nChanges apply to future conversations in this workspace.\n\nCancel\nContinue",
+      "file": "design/review/motion-polish-overlay/dialog-states.png"
+    },
+    {
+      "component": "Dialog",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit profile"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Workspace profile\n\nEdit the local example and save to update this card.\n\nName\nAlex Morgan\nEmail\nalex@example.com\nEdit profile\n\nNo changes saved yet.",
+      "file": "design/review/motion-polish-overlay/dialog-usage.png"
+    },
+    {
+      "component": "Dropdown Menu",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Conversation actions",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Conversation actions"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide DropdownMenu items"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide DropdownMenu items"
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Dropdown Menu",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Icon Trigger",
+        "With Shortcuts",
+        "Disabled Items",
+        "With Description And Suffix",
+        "Destructive",
+        "asChild link",
+        "Checkboxes",
+        "Radio Groups",
+        "Submenus",
+        "All variants",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Dropdown Menu\n\nKeyboard-accessible action menus with independent choices, single choices and nested actions. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nItems\tCompact 14px rows\t48px minimum, 16px Inter, 10px / 6px padding\nSelection\tDark checkmark\tTeal checkmark\nContainer\t6px corners\t8px corners\nDescriptions / suffixes\tWrapped labels and trailing content\tPreserved; 12px muted supporting text\nComposition\tRadix asChild props\tPreserved, including decorated anchors and buttons\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nHover\t--semantic-bg-ui\t#F5F5F5\t\n\nSection and selected labels\t--v2-text-primary\t#484848\t\n\nChoice labels\t--v2-text-secondary\t#5E5E5E\t\n\nSupporting text\t--v2-text-muted\t#707070\t\n\nSelected check\t--semantic-border-accent\t#27ABB8\t\n\nDestructive\t--semantic-e",
+      "file": "design/review/motion-polish-overlay/dropdown-menu-docs.png"
+    },
+    {
+      "component": "Dropdown Menu",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversation\u2318E"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Share conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Archive"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversationManage the conversation and its assignee.\u2318E"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Share conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Archive"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversationThis action cannot be undone."
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Plain actions\nConversation\nEdit conversation\n\u2318E\nDesktop notifications\nShare conversation\nArchive\nSupporting text\nConversation\nEdit conversation\nManage the conversation and its assignee.\n\u2318E\nDesktop notifications\nShare conversation\nArchive\nDestructive action\nConversation\nEdit conversation\nThis action cannot be undone.\nDesktop notifications\nShare conversation\nArchive",
+      "file": "design/review/motion-polish-overlay/dropdown-menu-all-variants.png"
+    },
+    {
+      "component": "Dropdown Menu",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Share conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Archive"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Share conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Archive"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit conversation"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Desktop notifications"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\nConversation\nEdit conversation\nDesktop notifications\nShare conversation\nArchive\nFocus\nConversation\nEdit conversation\nDesktop notifications\nShare conversation\nArchive\nDisabled\nConversation\nEdit conversation\nDesktop notifications\nShare conversation\nArchive",
+      "file": "design/review/motion-polish-overlay/dropdown-menu-states.png"
+    },
+    {
+      "component": "Dropdown Menu",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": "Inbox actions",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Customer support inbox\n\nChoose an action, preference or sort order. This example changes local state.\n\nNotifications\nDisabled\nSort order\nnewest\n\nNo action selected.",
+      "file": "design/review/motion-polish-overlay/dropdown-menu-usage.png"
+    },
+    {
+      "component": "Tooltip",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "Tooltip"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "TooltipTrigger"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "TooltipContent"
+        },
+        {
+          "aria": null,
+          "role": "tab",
+          "tag": "BUTTON",
+          "text": "TooltipArrow"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Tooltip items"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Tooltip",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "With Title",
+        "Without Arrow",
+        "Bottom",
+        "Left",
+        "Right",
+        "Long Content",
+        "All variants",
+        "Sides and offsets",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Tooltip\n\nShort contextual help on hover or keyboard focus. Existing desktop, touch and controlled-open behavior stays available. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nSurface\tDark primary, inverted text\tLight blue info surface, secondary text\nPadding\t6px / 12px\t6px / 16px\nTypography\tInherited 12px\tInter 12px regular; optional title 12px medium\nCorners\t6px\t6px\nMaximum width\t320px\t320px\nInteraction\tHover, keyboard focus, Escape and touch toggle\tUnchanged\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-info-surface\t#ECF1FB\t\n\nText\t--v2-text-secondary\t#5E5E5E\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nFont\t--font-v2\tInter 400 / 500\t\u2014\nCorners\t6px literal\t6px\t\u2014\nShadow\tRecorded tooltip shadow\t0 1px 3px rgba(10,13,18,.1), 0 1px 2px -1px rgba(10,13,18,.1)\t\u2014\nSupporting text\t--v2-text-muted\t#70707",
+      "file": "design/review/motion-polish-overlay/tooltip-docs.png"
+    },
+    {
+      "component": "Tooltip",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Plain help\n\nView conversation details.\n\nHover or focus me\nTitle and description\n\nConversation details\n\nView conversation details.\n\nHover or focus me",
+      "file": "design/review/motion-polish-overlay/tooltip-all-variants.png"
+    },
+    {
+      "component": "Tooltip",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hover or focus me"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Closed\nHover or focus me\nVisible\n\nView conversation details.\n\nHover or focus me\nHover\n\nView conversation details.\n\nHover or focus me\nKeyboard focus\n\nView conversation details.\n\nHover or focus me",
+      "file": "design/review/motion-polish-overlay/tooltip-states.png"
+    },
+    {
+      "component": "Tooltip",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Start inbox tour"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Inbox tour\n\nA local three-step guide with working navigation.\n\nStart inbox tour\n\nTour not started.",
+      "file": "design/review/motion-polish-overlay/tooltip-usage.png"
+    },
+    {
+      "component": "MultiSelect",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Edit the value properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "value :"
+        },
+        {
+          "aria": "add a new item to the 'value' array",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "remove the array 'value'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "MultiSelect",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Error",
+        "Disabled",
+        "Loading",
+        "Selected chips",
+        "Selection limit",
+        "Searchable",
+        "Select all",
+        "Summary",
+        "Disabled options",
+        "Detailed rows",
+        "Grouped detailed rows",
+        "Empty options",
+        "Long option labels",
+        "Loading more",
+        "All variants",
+        "Validation states",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Usage",
+        "Controlled form",
+        "Form example",
+        "Inside a dialog",
+        "Lazy loading"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "MultiSelect\n\nA multi-select with chips, search, detailed/grouped rows, select-all, selection limits and a portal menu that works inside dialogs. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nTrigger\t42px minimum / 4px radius\t40px minimum / 8px radius; grows when chips wrap\nTypography\tInherited font\tInter 16px value; 14px medium label; 12px helper/error\nSelected chips\tSmall corners\t8px radius, 0.4px border and medium text\nHover / focus\tDefault border / thin teal shadow\t#C0C3CA hover; #27ABB8 focus and soft 4px halo\nError\tRed border\tRed border with soft 4px halo\nDisabled / loading\tReduced opacity\tSolid grey field and inactive chip controls\nBehavior\tDetailed aliases, grouped sections, limits, paging and dialog portal\tSame current public props and behavior\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurfa",
+      "file": "design/review/motion-polish-overlay/multiselect-docs.png"
+    },
+    {
+      "component": "MultiSelect",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\n\nSkills\nSelect skills\nChoose the skills this team uses.\n\nError\n\nSkills\nSelect skills\nCheck this selection.",
+      "file": "design/review/motion-polish-overlay/multiselect-all-variants.png"
+    },
+    {
+      "component": "MultiSelect",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\nLoading\n\ndefault\n\nSkills\nSelect skills\nChoose the skills this team uses.\nSkills\nSelect skills\nChoose the skills this team uses.\nSkills\nSelect skills\nChoose the skills this team uses.\nSkills\nSelect skills\nChoose the skills this team uses.\nSkills\nSelect skills\nChoose the skills this team uses.\nSkills\nSelect skills\nChoose the skills this team uses.\n\nerror\n\nSkills\nSelect skills\nCheck this selection.\nSkills\nSelect skills\nCheck this selection.\nSkills\nSelect skills\nCheck this selection.\nSkills\nSelect skills\nCheck this selection.\nSkills\nSelect skills\nCheck this selection.\nSkills\nSelect skills\nCheck this selection.",
+      "file": "design/review/motion-polish-overlay/multiselect-states.png"
+    },
+    {
+      "component": "MultiSelect",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select skills"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Team skills\n\nChoose skills for this local example.\n\nSkills*\nSelect skills\nChoose the skills this team uses.\nChanges stay in this example\nClear\nSave",
+      "file": "design/review/motion-polish-overlay/multiselect-usage.png"
+    },
+    {
+      "component": "Tooltip",
+      "overview": "pass",
+      "normalEnterMs": 160,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "via reload and keyboard focus",
+      "overflow": false
+    },
+    {
+      "component": "MultiSelect",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "Default closeOnEscape=false intentionally does not dismiss",
+      "reopen": "pass",
+      "selection": "React chip synchronized",
+      "overflow": false
+    },
+    {
+      "component": "CreatableMultiSelect",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Edit the value properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "value :"
+        },
+        {
+          "aria": "add a new item to the 'value' array",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "remove the array 'value'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "CreatableMultiSelect",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "With Preselected Values",
+        "Error State",
+        "Disabled",
+        "Empty Options",
+        "Selection Limit",
+        "Character Limit",
+        "Character Guard",
+        "Summary",
+        "Disabled Presets",
+        "All Variants",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "CreatableMultiSelect\n\nSelect several presets or create custom tones with Enter. The controlled string array synchronizes with Controls; the open draft is internal and reported through onInputValueChange. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nTrigger\t42px minimum / 4px corners\t40px minimum / 8px corners; wraps selected chips\nType\tInherited type\tInter 16px values; host label 14px / 500; helper 12px\nSelected chips\t4px corners / regular text\t8px corners, subtle border, 14px medium\nHover\tThin stroke\tC0C3CA border\nFocus\tOuter focus ring\t27ABB8 border and soft 4px halo\nError\tRed border\tF04438 border and soft halo\nDisabled\tNative modifiers did not cover div trigger\tSolid grey surface; no halo; draft/options also disable\nKeyboard presets\tMouse selection only\tNative keyboard and mouse activation preserve input focus\nCreation behavior\tLimits, legacy preset aliases, internal draft, Backspace removal\tPreserved\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each tex",
+      "file": "design/review/motion-polish-overlay/creatablemultiselect-docs.png"
+    },
+    {
+      "component": "CreatableMultiSelect",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Validation variants\n\nThe error message is linked to the field.\n\nDEFAULT\n\nConversation tones\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\nERROR\n\nConversation tones\n\nSelect or create tones\n\nChoose at least one tone.",
+      "file": "design/review/motion-polish-overlay/creatablemultiselect-all-variants.png"
+    },
+    {
+      "component": "CreatableMultiSelect",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Interaction states\n\nThe comparison grid scrolls inside its canvas.\n\nDefault\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\ndefault\n\ndefault Default\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\ndefault Hover\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\ndefault Focus\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\ndefault Disabled\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\ndefault Disabled + hover\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\nerror\n\nerror Default\n\nSelect or create tones\n\nChoose at least one tone.\n\nerror Hover\n\nSelect or create tones\n\nChoose at least one tone.\n\nerror Focus\n\nSelect or create tones\n\nChoose at least one tone.\n\nerror Disabled\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\nerror Disabled + hover\n\nSelect or create tones\n\nChoose the tones this agent should use.",
+      "file": "design/review/motion-polish-overlay/creatablemultiselect-states.png"
+    },
+    {
+      "component": "CreatableMultiSelect",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": "Select or create tones",
+          "role": "combobox",
+          "tag": "DIV",
+          "text": "Select or create tones"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save tones"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear selection"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Agent voice\n\nSet the tones for this agent\u2019s conversations.\n\nConversation tones\n\nSelect or create tones\n\nChoose the tones this agent should use.\n\nSave tones\nClear selection",
+      "file": "design/review/motion-polish-overlay/creatablemultiselect-usage.png"
+    },
+    {
+      "component": "CreatableSelect",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Edit the options properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "options :"
+        },
+        {
+          "aria": "add a new item to the 'options' array",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "0 :"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "CreatableSelect",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "With Preselected Value",
+        "Error State",
+        "Disabled",
+        "With Disabled Options",
+        "Empty Options",
+        "Character Limit",
+        "Character Guard",
+        "All Variants",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "CreatableSelect\n\nChoose a saved role or type a custom one and press Enter. The selected value is controlled; the open draft is internal and reported through onInputValueChange. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nTrigger\t42px height / 4px radius\t40px height / 8px radius\nValue type\tInherited font\tInter 16px / 400\nHost label / helper\tHost styling\t14px / 500 label; 12px helper\nHover\tThin stroke\tC0C3CA border\nFocus\tTeal stroke\t27ABB8 border and soft 4px halo\nError\tRed border\tF04438 border and halo; B42318 host message\nDisabled\tMuted styling\tSolid F5F5F5; grey border; no halo\nCreation contract\tSelected value; internal draft; sanitize and normalize callbacks\tPreserved, with named inner controls and disabled draft/options\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FF",
+      "file": "design/review/motion-polish-overlay/creatableselect-docs.png"
+    },
+    {
+      "component": "CreatableSelect",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Validation variants\n\nLabels and hints stay aligned with the field.\n\nDEFAULT\n\nPrimary role\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\nERROR\n\nPrimary role\n\nSelect or create a role\n\nChoose or create a role.",
+      "file": "design/review/motion-polish-overlay/creatableselect-all-variants.png"
+    },
+    {
+      "component": "CreatableSelect",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Interaction states\n\nDisabled overrides the error halo. The table scrolls within this canvas.\n\nDefault\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\ndefault\n\ndefault Default\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\ndefault Hover\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\ndefault Focus\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\ndefault Disabled\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\ndefault Disabled + hover\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\nerror\n\nerror Default\n\nSelect or create a role\n\nChoose or create a role.\n\nerror Hover\n\nSelect or create a role\n\nChoose or create a role.\n\nerror Focus\n\nSelect or create a role\n\nChoose or create a role.\n\nerror Disabled\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\nerror Disabled + hover\n\nSelect or create a role\n\nChoose a preset or type your own role.",
+      "file": "design/review/motion-polish-overlay/creatableselect-states.png"
+    },
+    {
+      "component": "CreatableSelect",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Select or create a role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save role"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear selection"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Agent profile\n\nChoose the main role for this agent.\n\nPrimary role\n\nSelect or create a role\n\nChoose a preset or type your own role.\n\nSave role\nClear selection",
+      "file": "design/review/motion-polish-overlay/creatableselect-usage.png"
+    },
+    {
+      "component": "CreatableMultiSelect",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms; static chevron",
+      "escape": "pass",
+      "reopen": "pass",
+      "selection": "Calm creation synchronized without navigation",
+      "overflow": false
+    },
+    {
+      "component": "CreatableSelect",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms; static chevron",
+      "escape": "pass",
+      "reopen": "pass",
+      "selection": "Account manager creation synchronized",
+      "overflow": false
+    },
+    {
+      "component": "SelectField",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Edit the options properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "options :"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "SelectField",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "With required label",
+        "With helper text",
+        "Error",
+        "Disabled",
+        "Loading",
+        "With groups",
+        "Searchable",
+        "Searchable groups",
+        "Searchable separated groups",
+        "Empty options",
+        "Long option labels",
+        "Loading more",
+        "End of list",
+        "All variants",
+        "Validation states",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Usage",
+        "Form example",
+        "Webhook form",
+        "Controlled form",
+        "onSelect callback",
+        "Action items",
+        "Lazy loading",
+        "Controlled search"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "SelectField\n\nA complete labelled select with live search, grouping, validation, action items and viewport pagination. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nTrigger\t42px / 4px\t40px / 8px\nTypography\tInherited font\tInter 16px value; 14px medium label; 12px supporting text\nHover\tDefault border\t#C0C3CA enabled border\nFocus\tThin teal shadow\t#27ABB8 border and soft 4px halo\nError\tRed border\tRed border and soft 4px halo\nDisabled / loading\tReduced opacity\tSolid grey field without opacity loss\nBehavior\tSearch, groups, onSelect, interceptValue, pagination\tSame current props and behavior\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nValue\t--v2-text-secondary\t#5E5E5E\t\n\nLabel\t--v2-text-primary\t#484848\t\n\nHelper\t--v2-text-muted\t#707070\t\n\nBorder\t--semantic-border-input\t#E9",
+      "file": "design/review/motion-polish-overlay/selectfield-docs.png"
+    },
+    {
+      "component": "SelectField",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\n\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\n\nError\n\nAuthentication\nSelect a method\nCheck this selection.",
+      "file": "design/review/motion-polish-overlay/selectfield-all-variants.png"
+    },
+    {
+      "component": "SelectField",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\nLoading\n\nDefault\n\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\nAuthentication\nSelect a method\nChoose how this webhook authenticates.\n\nError\n\nAuthentication\nSelect a method\nCheck this selection.\nAuthentication\nSelect a method\nCheck this selection.\nAuthentication\nSelect a method\nCheck this selection.\nAuthentication\nSelect a method\nCheck this selection.\nAuthentication\nSelect a method\nCheck this selection.\nAuthentication\nSelect a method\nCheck this selection.",
+      "file": "design/review/motion-polish-overlay/selectfield-states.png"
+    },
+    {
+      "component": "SelectField",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Select a method"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Webhook authentication\n\nChoose a method for this local example.\n\nAuthentication*\nSelect a method\nNone\nBasic Auth\nBearer Token\nAPI Key\nOAuth 2.0\nChoose how this webhook authenticates.\nChanges stay in this example\nClear\nSave",
+      "file": "design/review/motion-polish-overlay/selectfield-usage.png"
+    },
+    {
+      "component": "DateRangePicker",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Edit the value properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "value :"
+        },
+        {
+          "aria": "add a new property to the object 'value'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "remove the property 'start' with value '2026-10-01' from 'undefined'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "remove the property 'end' with value '2026-10-07' from 'undefined'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "DateRangePicker",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Empty",
+        "Error",
+        "Disabled",
+        "No Presets",
+        "Custom Presets",
+        "Date Bounds",
+        "Past Dates Disabled",
+        "Partial Range",
+        "All Variants",
+        "Height and width",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "DateRangePicker\n\nChoose a preset or a start and end date. The recorded v2 input-family treatment is applied to the trigger; the existing calendar layout and behavior are retained. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nTrigger\t40px height / 4px corners / 14px type\t40px height / 8px corners / Inter 16px\nHost text\tHost styling\t14px / 500 label; 12px helper\nHover\tOld teal stroke\tC0C3CA border\nFocus and open\tThin teal highlight\t27ABB8 and soft 4px halo\nError\tRed border\tF04438 border and soft halo\nDisabled\t50% opacity\tSolid grey surface; grey border; no halo\nRange behavior\tPresets, limits, month/year navigation, clearing and portals\tPreserved; inner calendar dimensions remain unverified\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nDisabled surface\t--semantic-bg",
+      "file": "design/review/motion-polish-overlay/daterangepicker-docs.png"
+    },
+    {
+      "component": "DateRangePicker",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Validation variants\n\nThe calendar behavior is the same in both variants.\n\ndefault\n\nReport period\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\nerror\n\nReport period\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose a start and end date.",
+      "file": "design/review/motion-polish-overlay/daterangepicker-all-variants.png"
+    },
+    {
+      "component": "DateRangePicker",
+      "view": "states",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "1 Oct 2026 - 7 Oct 2026"
+        },
+        {
+          "aria": "Clear date range",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Interaction states\n\nThe wide comparison remains within the canvas.\n\nDefault\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\ndefault\n\ndefault Default\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\ndefault Hover\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\ndefault Focus\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\ndefault Disabled\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\ndefault Disabled + hover\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\nerror\n\nerror Default\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose a start and end date.\n\nerror Hover\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose a start and end date.\n\nerror Focus\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose a start and end date.\n\nerror Disabled\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.\n\nerror Disabled + hover\n\n1 Oct 2026 - 7 Oct 2026\n\nChoose the period to include in the report.",
+      "file": "design/review/motion-polish-overlay/daterangepicker-states.png"
+    },
+    {
+      "component": "DateRangePicker",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Choose a date range"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save period"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Export a report\n\nChoose the reporting period for this local example.\n\nReport period\n\nChoose a date range\n\nChoose the period to include in the report.\n\nSave period\nClear",
+      "file": "design/review/motion-polish-overlay/daterangepicker-usage.png"
+    },
+    {
+      "component": "SelectField",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "selection": "Bearer Token synchronized",
+      "overflow": false,
+      "notes": "First open interrupted by HMR; fresh stable retry passed"
+    },
+    {
+      "component": "DateRangePicker",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass; nested menu then calendar",
+      "reopen": "pass",
+      "selection": "Today preset synchronized; panel remains open by existing behavior",
+      "nestedYear": "200ms inherited spring",
+      "overflow": false
+    },
+    {
+      "component": "DateTimePicker",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Edit the value properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "value :"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "DateTimePicker",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Empty",
+        "Date Only",
+        "Time Only",
+        "Time Range",
+        "With Seconds",
+        "Error",
+        "Disabled",
+        "Read Only",
+        "Date Bounds",
+        "Past Dates Disabled",
+        "Partial Value",
+        "All Variants",
+        "All Sizes",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "DateTimePicker\n\nA typed date/time field with calendar and time-column selection. The recorded v2 input family applies to its field; existing calendar, time layout and parsing behavior are preserved. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nField dimensions\t36px small / 42px default and large; 4px corners\t40px field in all width sizes; 8px corners; 16px horizontal padding\nWidth sizes\t280px / 336px / 360px\tPreserved\nType\tInherited type\tInter 16px values; label 14px / 500; supporting text 12px\nHover\tOld teal stroke\tC0C3CA border\nFocus and open\tThin teal highlight\t27ABB8 border and soft 4px halo\nError\tRed border and 14px message\tF04438 border and halo; B42318 12px message\nDisabled\tMuted field\tSolid grey field; grey border; no halo\nParsing and selection\tSegment typing, date/time modes, range limits, portals and clearing\tPreserved; precise calendar/time inner dimensions remain unverified\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes ",
+      "file": "design/review/motion-polish-overlay/datetimepicker-docs.png"
+    },
+    {
+      "component": "DateTimePicker",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Date",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open time picker",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Picker modes\n\nDate and time, date only, and time only.\n\ndate-time\n\nAppointment\nChoose a date and start time.\n\ndate-only\n\nAppointment\nChoose a date and start time.\n\ntime-only\n\nAppointment\nChoose a date and start time.",
+      "file": "design/review/motion-polish-overlay/datetimepicker-all-variants.png"
+    },
+    {
+      "component": "DateTimePicker",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear date",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Interaction states\n\nChoose a width size in Controls. The grid scrolls within the canvas.\n\nDefault\n\nHover\n\nFocus\n\nDisabled\n\nDisabled + hover\n\ndate-time \u00b7 default\n\ndate-time default Default\nChoose a date and start time.\ndate-time default Hover\nChoose a date and start time.\ndate-time default Focus\nChoose a date and start time.\ndate-time default Disabled\nChoose a date and start time.\ndate-time default Disabled + hover\nChoose a date and start time.\n\ndate-time \u00b7 error\n\ndate-time error Default\nChoose a valid value.\ndate-time error Hover\nChoose a valid value.\ndate-time error Focus\nChoose a valid value.\ndate-time error Disabled\nChoose a valid value.\ndate-time error Disabled + hover\nChoose a valid value.\n\ndate-only \u00b7 default\n\ndate-only default Default\nChoose a date and start time.\ndate-only default Hover\nChoose a date and start time.\ndate-only default Focus\nChoose a date and start time.\ndate-only default Disabled\nChoose a date and start time.\ndate-only default Disabled + hover\nChoose a date and start time.\n\ndate-only \u00b7 error\n\ndate-only error Default\nChoose a valid value.\ndate-only error Hover\nChoose a valid value.\ndate-only error Focus\nChoose a valid value.\ndate-only error Disabled\nChoose a valid value.\ndate-only error Disabled + hover\nChoose a valid value.\n\ntime-only \u00b7 default\n\ntime-only default Default\nChoose a date and start time.\ntime-only default Hover\nChoose a date and start time.\ntime-only default Focus\nChoose a date and start time.\ntime-only default Disabled\nChoose a date and start time.\ntime-only default Disabled + hover\nChoose a date and start time.\n\ntime-only \u00b7 error\n\ntime",
+      "file": "design/review/motion-polish-overlay/datetimepicker-states.png"
+    },
+    {
+      "component": "DateTimePicker",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": "Date and time",
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Open calendar",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save appointment"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Clear"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Schedule a call\n\nSet an appointment in this local example.\n\nAppointment*\nChoose a date and start time.\nSave appointment\nClear",
+      "file": "design/review/motion-polish-overlay/datetimepicker-usage.png"
+    },
+    {
+      "component": "SearchFilter",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Edit the options properties in JSON format",
+          "role": "switch",
+          "tag": "BUTTON",
+          "text": "Edit JSON"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "options :"
+        },
+        {
+          "aria": "add a new item to the 'options' array",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "0 :"
+        },
+        {
+          "aria": "remove the object '0'",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "SearchFilter",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Small",
+        "Large",
+        "Text Search",
+        "Selected",
+        "Empty Results",
+        "Min Search Length",
+        "Disabled",
+        "Search Disabled",
+        "Long Labels",
+        "All sizes",
+        "Search Modes",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "SearchFilter\n\nA searchable single-select field for phone numbers or text lists, composed with the v2 Input and dropdown row styling. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nField\t42px legacy input / 4px corners\t40px v2 Input, 8px corners, 16px Inter\nSurface\t4px corners and legacy list rows\t8px surface and 48px rows with 10 / 6px padding\nRows\t14px labels / whole-row disabled opacity\t16px labels, explicit disabled text, teal selected check\nWidths\t320 / 360 / 420px\tPreserved\nBehavior\tNumeric/text search, exact option selection, clear and close\tPreserved, including cancellation of pending focus on selection\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nBorder\t--semantic-border-layout\t#E9EAEB\t\n\nSelected label\t--v2-text-primary\t#484848\t\n\nChoice labels\t--v2-text-se",
+      "file": "design/review/motion-polish-overlay/searchfilter-docs.png"
+    },
+    {
+      "component": "SearchFilter",
+      "view": "all-sizes",
+      "controls": [
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "sm \u00b7 320px\ndefault \u00b7 360px\nlg \u00b7 420px",
+      "file": "design/review/motion-polish-overlay/searchfilter-all-sizes.png"
+    },
+    {
+      "component": "SearchFilter",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear search",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Clear search",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Ready\nSelected\nNo results\nDisabled\nSearch disabled",
+      "file": "design/review/motion-polish-overlay/searchfilter-states.png"
+    },
+    {
+      "component": "SearchFilter",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": "Search options",
+          "role": "searchbox",
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Conversation queue\n\nSelect a team to filter this local example.\n\nShowing all teams \u00b7 4 conversations\n\nAlex Morgan\nRequested an update on a support ticket\nSam Rivera\nAsked about the workspace plan\nCasey Lee\nShared a screenshot of an issue\nJordan Patel\nConfirmed the delivery schedule",
+      "file": "design/review/motion-polish-overlay/searchfilter-usage.png"
+    },
+    {
+      "component": "DateTimePicker",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms calendar and nested time",
+      "escape": "pass; first closes nested time, second calendar",
+      "reopen": "pass",
+      "nestedMonth": "200ms spring",
+      "nestedTime": "200ms spring",
+      "overflow": false
+    },
+    {
+      "component": "SearchFilter",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "selection": "numeric search and exact option synchronized",
+      "overflow": false
+    },
+    {
+      "component": "Toast",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show notification"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Toast items"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Toast items"
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Toast",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Success",
+        "Error",
+        "Warning",
+        "Info",
+        "Destructive",
+        "Without Action",
+        "Without Description",
+        "Disabled Action",
+        "Long Content",
+        "All variants",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Toast\n\nDismissible notifications with six semantic treatments, a header and a description/action row. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nStructure\tOne compact row\t16px header; 12px / 16px description and action row\nContainer\t5px corners, flat status borders\t384px, 8px corners, 1px tint border and overlay shadow\nTypography\t14px semibold title\t16px medium title, 12px description\nStatus\tDefault, success, error, warning, info\tPreserved plus destructive alias to error\nInteraction\tProvider, duration, action, swipe, store helpers\tPreserved; controlled primitive playground and hook Usage\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nDefault surface\t--semantic-bg-primary\t#FFFFFF\t\n\nSuccess surface / border\t--semantic-success-surface / --color-success-200\t#ECFDF3 / #ABEFC6\t\n\nError / destructive\t--semant",
+      "file": "design/review/motion-polish-overlay/toast-docs.png"
+    },
+    {
+      "component": "Toast",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        },
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        },
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        },
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        },
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "default\nChanges saved\nYour workspace settings are up to date.\nView\nsuccess\nChanges saved\nYour workspace settings are up to date.\nView\nerror\nChanges saved\nYour workspace settings are up to date.\nView\nwarning\nChanges saved\nYour workspace settings are up to date.\nView\ninfo\nChanges saved\nYour workspace settings are up to date.\nView\ndestructive\nChanges saved\nYour workspace settings are up to date.\nView",
+      "file": "design/review/motion-polish-overlay/toast-all-variants.png"
+    },
+    {
+      "component": "Toast",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        },
+        {
+          "aria": "Dismiss preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "View the saved workspace settings",
+          "role": null,
+          "tag": "BUTTON",
+          "text": "View"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Visible\nChanges saved\nYour workspace settings are up to date.\nView\nDisabled action\nChanges saved\nYour workspace settings are up to date.\nView\nDismissed\n\nNotification closed \u00b7 content unmounted",
+      "file": "design/review/motion-polish-overlay/toast-states.png"
+    },
+    {
+      "component": "Toast",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save workspace"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Dismiss notifications"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Workspace settings\n\nSave a local edit and use the notification action to undo it.\n\nWorkspace name\nSave workspace\nDismiss notifications\n\nSaved name: Customer support\n\nNo changes saved yet.",
+      "file": "design/review/motion-polish-overlay/toast-usage.png"
+    },
+    {
+      "component": "ConfirmationModal",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example composition items"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "ConfirmationModal",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Destructive",
+        "Loading",
+        "Without Description",
+        "Long Content",
+        "All variants",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "ConfirmationModal\n\nA brief confirmation for a decision that needs an explicit answer. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nContainer\t384px, 8px corners, 24px outer padding\t384px, 12px corners, independently padded sections\nHeader\tTitle and description grouped\t24px icon, 16px medium title, close; 16px padding / 12px gap\nMessage\t14px muted in header\t14px secondary in a separate 12px / 16px body\nActions\tRight aligned, compact gaps\tEqual-width medium buttons; 12px / 16px / 16px footer\nCallbacks\tonConfirm / onCancel / onOpenChange\tPreserved; consumer closes after confirming\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nMessage\t--v2-text-secondary\t#5E5E5E\t\n\nDivider\t--semantic-border-layout\t#E9EAEB\t\n\nCorners\t12px literal\t12px\t\u2014\n",
+      "file": "design/review/motion-polish-overlay/confirmationmodal-docs.png"
+    },
+    {
+      "component": "ConfirmationModal",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Keep enabled"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Pause notifications"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Keep enabled"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Pause notifications"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Pause notifications?",
+        "Pause notifications?"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "default\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\ndestructive\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications",
+      "file": "design/review/motion-polish-overlay/confirmationmodal-all-variants.png"
+    },
+    {
+      "component": "ConfirmationModal",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Keep enabled"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Pause notifications"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Keep enabled"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Pause notifications"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Keep enabled"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Pause notifications"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?",
+        "Pause notifications?"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default\nHover\nFocus\nLoading\ndefault\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\ndestructive\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications\nPause notifications?\n\nYou can enable notifications again at any time.\n\nKeep enabled\nPause notifications",
+      "file": "design/review/motion-polish-overlay/confirmationmodal-states.png"
+    },
+    {
+      "component": "ConfirmationModal",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Change preference"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Inbox notifications\n\nConfirm before changing this workspace preference.\n\nDesktop notifications: Enabled\nChange preference\n\nNo changes made.",
+      "file": "design/review/motion-polish-overlay/confirmationmodal-usage.png"
+    },
+    {
+      "component": "Toast",
+      "overview": "pass",
+      "normalEnterMs": 200,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass from toast focus",
+      "reopen": "pass",
+      "overflow": false,
+      "swipe": "not exercised manually"
+    },
+    {
+      "component": "ConfirmationModal",
+      "overview": "pass",
+      "normalEnterMs": 220,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "overflow": false
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example composition items"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example composition items"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "DeleteConfirmationModal",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Default",
+        "Custom Title",
+        "Custom Confirm Text",
+        "Loading",
+        "Without Description",
+        "Long Content",
+        "Compositions",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "DeleteConfirmationModal\n\nA destructive confirmation that requires an exact typed phrase before enabling its action. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nContainer\t384px, 8px corners, 24px outer padding\t384px, 12px corners, separate section padding\nHeader\tTitle and description\t32px destructive icon box, 16px medium title, 12px description, close\nBody\t14px label / legacy input\t14px medium label / v2 input; recorded 0px / 24px padding\nFooter\tLegacy outline / destructive buttons\tMedium v2 buttons, right aligned; 0px / 16px / 16px\nVerification\tExact matching, reset on close\tPreserved; each field keeps a unique generated ID\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nDescription\t--v2-text-muted\t#707070\t\n\nIcon surface\t--semant",
+      "file": "design/review/motion-polish-overlay/deleteconfirmationmodal-docs.png"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "view": "all-variants",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Delete webhook"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Delete webhook"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Are you sure you want to delete this webhook?",
+        "Remove this webhook?",
+        "Are you sure you want to delete this webhook?"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Default title\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook\nCustom title\nRemove this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook\nNo description\nAre you sure you want to delete this webhook?\n\nDelete confirmation dialog - this action cannot be undone\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook",
+      "file": "design/review/motion-polish-overlay/deleteconfirmationmodal-all-variants.png"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Delete webhook"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Delete webhook"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Are you sure you want to delete this webhook?",
+        "Are you sure you want to delete this webhook?",
+        "Are you sure you want to delete this webhook?",
+        "Are you sure you want to delete this webhook?"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Empty\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook\nPartial\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook\nExact match\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook\nLoading\nAre you sure you want to delete this webhook?\n\nThis removes the webhook from the workspace. This action cannot be undone.\n\nEnter \"DELETE\" in uppercase to confirm\nCancel\nDelete webhook",
+      "file": "design/review/motion-polish-overlay/deleteconfirmationmodal-states.png"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Delete webhook"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Customer support webhook\n\nA local example of a typed destructive confirmation.\n\nWorkspace event notifications\nDelete webhook\n\nWebhook is active.",
+      "file": "design/review/motion-polish-overlay/deleteconfirmationmodal-usage.png"
+    },
+    {
+      "component": "FormModal",
+      "view": "docs",
+      "controls": [
+        {
+          "aria": "Zoom in",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Zoom out",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": "Reset zoom",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Show code"
+        },
+        {
+          "aria": "Reset controls",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "switch",
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example composition items"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Hide Example composition items"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "FormModal",
+        "Import",
+        "Unprefixed Tailwind",
+        "What changes from v1",
+        "Text hierarchy",
+        "Design Tokens",
+        "Usage guidance",
+        "Stories",
+        "Overview",
+        "Small",
+        "Default",
+        "Large",
+        "Extra Large",
+        "Full",
+        "Without Description",
+        "Custom Buttons",
+        "Loading",
+        "Save Disabled",
+        "Multiple Field Types",
+        "Long Content",
+        "All sizes",
+        "States",
+        "v1 vs v2",
+        "Usage"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "FormModal\n\nA composed Dialog for editing fields with consistent header, body and action spacing. v2 design \u2014 existing v1 props remain available, so moving a screen starts with an import-path change.\n\nImport\nUnprefixed Tailwind\n\nv1 components ship with a tw- class prefix for Bootstrap hosts. v2 does not \u2014 it installs exactly as written. Your project must build Tailwind without a prefix and define the semantic colors (npx myoperator-ui init with an empty prefix does both). v1 output is unchanged.\n\nWhat changes from v1\nAspect\tv1\tv2\nContainer\t8px corners and 24px outer padding\t12px corners and section padding; 384 / 512 / 672 / 896px widths\nHeader\t18px semibold title\t16px medium title, 12px description, 24px padding and reserved close space\nBody\t16px vertical gap within outer padding\t24px padding and 16px field gap\nFooter\tLegacy buttons and responsive spacing\tMedium v2 buttons, 8px gap, 0 / 24 / 24px padding\nCallbacks\tConsumer saves; Cancel requests close\tPreserved; loading and disableSave keep their existing behavior\nText hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\nDesign Tokens\nToken\tCSS Variable\tValue\tPreview\nSurface\t--semantic-bg-primary\t#FFFFFF\t\n\nTitle\t--v2-text-primary\t#484848\t\n\nDescription\t--v2-text-muted\t#707070\t\n\nDivider\t--semantic",
+      "file": "design/review/motion-polish-overlay/formmodal-docs.png"
+    },
+    {
+      "component": "FormModal",
+      "view": "all-sizes",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Customer support"
+        },
+        {
+          "aria": null,
+          "role": "checkbox",
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Edit profile",
+        "Edit profile",
+        "Edit profile",
+        "Edit profile",
+        "Edit profile"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "sm \u00b7 384px\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\ndefault \u00b7 512px\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\nlg \u00b7 672px\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\nxl \u00b7 896px\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\nfull \u00b7 viewport reference\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes",
+      "file": "design/review/motion-polish-overlay/formmodal-all-sizes.png"
+    },
+    {
+      "component": "FormModal",
+      "view": "states",
+      "controls": [
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": "combobox",
+          "tag": "BUTTON",
+          "text": "Customer support"
+        },
+        {
+          "aria": null,
+          "role": "checkbox",
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Cancel"
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Save changes"
+        },
+        {
+          "aria": "Close preview",
+          "role": null,
+          "tag": "BUTTON",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        },
+        {
+          "aria": null,
+          "role": null,
+          "tag": "INPUT",
+          "text": ""
+        }
+      ],
+      "headings": [
+        "No Preview",
+        "",
+        "Edit profile",
+        "Edit profile",
+        "Edit profile"
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Ready\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\nSave disabled\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes\nLoading\nEdit profile\n\nUpdate your workspace profile and notification preferences.\n\nName\nEmail\nDepartment\nCustomer support\nEmail notifications\nCancel\nSave changes",
+      "file": "design/review/motion-polish-overlay/formmodal-states.png"
+    },
+    {
+      "component": "FormModal",
+      "view": "usage",
+      "controls": [
+        {
+          "aria": null,
+          "role": null,
+          "tag": "BUTTON",
+          "text": "Edit profile"
+        }
+      ],
+      "headings": [
+        "No Preview",
+        ""
+      ],
+      "overflow": false,
+      "overlays": [],
+      "text": "Workspace profile\n\nEdit, validate and save this local profile.\n\nName\nAlex Morgan\nEmail\nalex@example.com\nDepartment\nSupport\nNotifications\nEnabled\nEdit profile\n\nNo unsaved changes have been saved.",
+      "file": "design/review/motion-polish-overlay/formmodal-usage.png"
+    },
+    {
+      "component": "DeleteConfirmationModal",
+      "overview": "pass",
+      "normalEnterMs": 220,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass; typed verification resets",
+      "selection": "exact DELETE enables action",
+      "overflow": false
+    },
+    {
+      "component": "FormModal",
+      "overview": "pass",
+      "normalEnterMs": 220,
+      "reduced": "opacity-only 120ms",
+      "escape": "pass",
+      "reopen": "pass",
+      "selection": "Name typing and notifications toggling synchronized",
+      "overflow": false
+    }
+  ],
+  "exitObservations": [
+    {
+      "component": "Dialog",
+      "motion": "no-preference",
+      "exits": [
+        {
+          "animation": "exit",
+          "duration": "0.12s",
+          "text": "",
+          "timing": "cubic-bezier(0.16, 1, 0.3, 1)",
+          "transform": "matrix(1, 0, 0, 1, 0, 0)"
+        },
+        {
+          "animation": "exit",
+          "duration": "0.16s",
+          "text": "Update conversation settingsReview the change before continuing.Use a dialog when a short task needs",
+          "timing": "cubic-bezier(0.16, 1, 0.3, 1)",
+          "transform": "matrix(1, 0, 0, 1, -256, -167.5)"
+        }
+      ]
+    },
+    {
+      "component": "Dialog",
+      "motion": "reduce",
+      "exits": []
+    }
+  ]
+}

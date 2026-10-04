@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  "peer inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl border-2 border-solid border-transparent transition-colors duration-200 ease-out focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:hover:data-[state=checked]:bg-semantic-primary-hover enabled:hover:data-[state=unchecked]:bg-semantic-border-layout disabled:data-[state=checked]:bg-semantic-disabled-primary",
+  "peer inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl border-2 border-solid border-transparent transition-colors [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:hover:data-[state=checked]:bg-semantic-primary-hover enabled:hover:data-[state=unchecked]:bg-semantic-border-layout disabled:data-[state=checked]:bg-semantic-disabled-primary",
   {
     variants: {
       size: {
@@ -27,7 +27,7 @@ const switchVariants = cva(
  * Switch thumb variants (the sliding circle)
  */
 const switchThumbVariants = cva(
-  "pointer-events-none block rounded-full bg-semantic-bg-primary shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] ring-0 transition-transform duration-200 ease-out motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
+  "pointer-events-none block rounded-full bg-semantic-bg-primary shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] ring-0 transition-transform [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
   {
     variants: {
       size: {

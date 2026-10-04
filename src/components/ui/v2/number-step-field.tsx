@@ -131,7 +131,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepUp}
               aria-label={incrementAriaLabel ?? "Increase value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] duration-150 active:scale-90 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronUp className="size-3" />
             </button>
@@ -141,7 +141,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerDown={handleStepperPointerDown}
               onClick={stepDown}
               aria-label={decrementAriaLabel ?? "Decrease value"}
-              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] duration-150 active:scale-90 motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex items-center justify-center text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <ChevronDown className="size-3" />
             </button>

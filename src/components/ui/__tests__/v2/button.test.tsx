@@ -75,6 +75,16 @@ describe("Button (v2)", () => {
     );
   });
 
+  it.each(["icon", "icon-sm", "icon-lg"] as const)(
+    "keeps link buttons stationary at %s size",
+    (size) => {
+      render(<Button variant="link" size={size} aria-label="Open details" />);
+      const button = screen.getByRole("button");
+      expect(button).toHaveClass("active:scale-100");
+      expect(button).not.toHaveClass("active:scale-[0.97]");
+    }
+  );
+
   it("uses the Figma focus ring (1px outline, 3px offset)", () => {
     render(<Button>Focus</Button>);
     const button = screen.getByRole("button");

@@ -610,7 +610,14 @@ export const Usage: Story = {
 export const Interaction: Story = {
   name: "Interaction test",
   tags: ["!autodocs"],
-  args: { secondDisabled: true },
+  args: {
+    value: "open",
+    orientation: "horizontal",
+    activationMode: "automatic",
+    showCounts: false,
+    disabled: false,
+    secondDisabled: true,
+  },
   parameters: {
     // The meta render writes the selection back through useArgs; every one of those re-renders would
     // otherwise restore the action spy and wipe its call history mid-play.
@@ -623,15 +630,22 @@ export const Interaction: Story = {
     },
   },
   play: async ({ args, canvasElement, step }) => {
-    clearAllMocks();
     const canvas = within(canvasElement);
+    const user = userEvent.setup({ document: canvasElement.ownerDocument });
     const open = canvas.getByRole("tab", { name: "Open" });
     const assigned = canvas.getByRole("tab", { name: "Assigned" });
     const resolved = canvas.getByRole("tab", { name: "Resolved" });
 
+    // A previous Controls edit or play run can leave another tab selected or focused.
+    // Seed the example through its public interaction before checking keyboard entry.
+    await user.click(open);
+    await waitFor(() => expect(open).toHaveAttribute("aria-selected", "true"));
+    clearAllMocks();
+    open.blur();
+
     await step("Tab enters the list on the selected tab only", async () => {
-      await userEvent.tab();
-      await expect(open).toHaveFocus();
+      await user.tab();
+      await waitFor(() => expect(open).toHaveFocus());
       await expect(open).toHaveAttribute("aria-selected", "true");
       await expect(resolved).toHaveAttribute("tabindex", "-1");
     });
@@ -639,33 +653,37 @@ export const Interaction: Story = {
     await step(
       "Arrow keys move focus, select, and skip the disabled tab",
       async () => {
-        await userEvent.keyboard("{ArrowRight}");
+        await user.keyboard("{ArrowRight}");
         await waitFor(() => expect(resolved).toHaveFocus());
         await waitFor(() =>
           expect(resolved).toHaveAttribute("aria-selected", "true")
         );
-        await userEvent.keyboard("{ArrowRight}");
+        await user.keyboard("{ArrowRight}");
         await waitFor(() => expect(open).toHaveFocus());
-        await userEvent.keyboard("{ArrowLeft}");
+        await user.keyboard("{ArrowLeft}");
         await waitFor(() => expect(resolved).toHaveFocus());
-        await expect(args.onValueChange).toHaveBeenLastCalledWith("resolved");
+        await waitFor(() =>
+          expect(args.onValueChange).toHaveBeenLastCalledWith("resolved")
+        );
       }
     );
 
     await step("Home and End jump to the first and last tab", async () => {
-      await userEvent.keyboard("{Home}");
+      await user.keyboard("{Home}");
       await waitFor(() => expect(open).toHaveFocus());
-      await userEvent.keyboard("{End}");
+      await user.keyboard("{End}");
       await waitFor(() => expect(resolved).toHaveFocus());
       await expect(resolved).toHaveAttribute("aria-selected", "true");
     });
 
     await step("A click selects a tab and shows its panel", async () => {
-      await userEvent.click(open);
+      await user.click(open);
       await waitFor(() =>
         expect(open).toHaveAttribute("aria-selected", "true")
       );
-      await expect(args.onValueChange).toHaveBeenLastCalledWith("open");
+      await waitFor(() =>
+        expect(args.onValueChange).toHaveBeenLastCalledWith("open")
+      );
       await expect(canvas.getByRole("tabpanel")).toHaveTextContent(
         "Inbox · Open"
       );
@@ -673,7 +691,11 @@ export const Interaction: Story = {
 
     await step("A disabled tab cannot be selected", async () => {
       await expect(assigned).toBeDisabled();
-      await userEvent.click(assigned, { pointerEventsCheck: 0 });
+      const disabledPointer = userEvent.setup({
+        document: canvasElement.ownerDocument,
+        pointerEventsCheck: 0,
+      });
+      await disabledPointer.click(assigned);
       await expect(assigned).toHaveAttribute("aria-selected", "false");
       await expect(args.onValueChange).not.toHaveBeenCalledWith("assigned");
       await expect(open).toHaveAttribute("aria-selected", "true");

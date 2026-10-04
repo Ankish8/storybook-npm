@@ -60,7 +60,7 @@ const accordionTriggerVariants = cva(
  * Accordion content variants
  */
 const accordionContentVariants = cva(
-  "overflow-hidden text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-[height,opacity] duration-200 ease-out motion-reduce:transition-none aria-hidden:opacity-0",
+  "overflow-hidden text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-[height,opacity] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-[opacity] motion-reduce:duration-150 motion-reduce:ease-out aria-hidden:opacity-0",
   {
     variants: {
       variant: {
@@ -294,7 +294,7 @@ const AccordionTrigger = React.forwardRef(
         {showChevron && (
           <ChevronDown
             className={cn(
-              "h-4 w-4 shrink-0 text-[var(--v2-text-primary,#484848)] transition-transform duration-200 ease-out motion-reduce:transition-none",
+              "h-4 w-4 shrink-0 text-[var(--v2-text-primary,#484848)] transition-transform [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
               isOpen && "rotate-180"
             )}
           />
@@ -324,10 +324,17 @@ const AccordionContent = React.forwardRef(
     const [height, setHeight] = React.useState<number | undefined>(undefined);
 
     React.useEffect(() => {
-      if (contentRef.current) {
-        const contentHeight = contentRef.current.scrollHeight;
-        setHeight(isOpen ? contentHeight : 0);
-      }
+      const content = contentRef.current;
+      if (!content) return;
+
+      // Keep the measured height current when fonts, images or nested content
+      // resize after opening. Retargeting the same transition avoids clipping.
+      const measure = () => setHeight(isOpen ? content.scrollHeight : 0);
+      measure();
+      if (typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(measure);
+      observer.observe(content);
+      return () => observer.disconnect();
     }, [isOpen, children]);
 
     return (

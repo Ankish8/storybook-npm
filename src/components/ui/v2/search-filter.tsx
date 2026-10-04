@@ -509,7 +509,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
               ref={setDropdownRef}
               className={cn(
                 "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
-                "motion-safe:animate-in fade-in-0 zoom-in-95 origin-top-left",
+                "motion-safe:animate-in fade-in-0 zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
                 searchFilterDropdownVariants()
               )}
               style={{

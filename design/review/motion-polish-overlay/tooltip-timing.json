@@ -1,0 +1,13 @@
+{
+  "normalEnterMs": 160,
+  "exitSamples": [
+    [
+      {
+        "animation": "exit",
+        "duration": "0.1s",
+        "state": "closed",
+        "timing": "cubic-bezier(0.16, 1, 0.3, 1)"
+      }
+    ]
+  ]
+}

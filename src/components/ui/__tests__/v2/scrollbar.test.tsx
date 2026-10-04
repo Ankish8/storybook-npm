@@ -73,3 +73,33 @@ it("can omit the arrow controls", () => {
   render(<Scrollbar showControls={false} />);
   expect(screen.queryByRole("button")).not.toBeInTheDocument();
 });
+
+it("snaps step scrolling when reduced motion is requested", () => {
+  const preference = vi.spyOn(window, "matchMedia").mockReturnValue({
+    matches: true,
+  } as MediaQueryList);
+  try {
+    render(
+      <Scrollbar>
+        <span>People</span>
+      </Scrollbar>
+    );
+    const view = screen.getByRole("region");
+    Object.defineProperties(view, {
+      clientHeight: { value: 200 },
+      scrollHeight: { value: 1000 },
+      scrollTop: { value: 0, writable: true },
+    });
+    view.scrollBy = vi.fn() as unknown as typeof view.scrollBy;
+    fireEvent.scroll(view);
+    fireEvent.click(screen.getByRole("button", { name: "Scroll forward" }));
+    expect(preference).toHaveBeenCalledWith("(prefers-reduced-motion: reduce)");
+    expect(view.scrollBy).toHaveBeenCalledWith({
+      top: 140,
+      left: 0,
+      behavior: "auto",
+    });
+  } finally {
+    preference.mockRestore();
+  }
+});

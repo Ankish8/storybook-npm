@@ -282,7 +282,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 <div
                   id={errorId}
                   role="alert"
-                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
                 >
                   <CircleAlert
                     className="size-3.5 shrink-0 text-semantic-error-text"
@@ -295,7 +295,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               ) : (
                 <span
                   id={errorId}
-                  className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                  className="text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
                 >
                   {error}
                 </span>

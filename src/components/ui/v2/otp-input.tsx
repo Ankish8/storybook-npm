@@ -88,7 +88,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
               aria-invalid={error || undefined}
               aria-describedby={helperText ? id + "-helper" : undefined}
               className={cn(
-                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color,color] duration-150 ease-out placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
                 error
                   ? "border-semantic-error-primary focus:shadow-[0_0_4px_rgba(240,68,56,0.4)]"
                   : "border-semantic-border-layout enabled:hover:[&:not(:focus)]:border-[var(--color-primary-100)] focus:border-semantic-border-accent focus:shadow-[0_0_4px_rgba(39,171,184,0.4)]"

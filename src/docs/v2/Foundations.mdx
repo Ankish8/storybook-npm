@@ -44,17 +44,19 @@ Common field and action corners are 8px; dialog and card corners are 12px. Stand
 
 Interactive components distinguish hover, focus, pressed, disabled, loading and error where supported. Keep focus indicators visible. Loading effects and transitions respect reduced-motion preferences; status text remains readable when animation is disabled.
 
-Motion is small and purposeful: it confirms an action or shows where something came from. Nothing takes longer than 200ms.
+Motion is small and purposeful: it confirms an action or shows where something came from. Fast feedback uses short fades; spatial changes settle gently with a restrained spring curve. Selection and focus update immediately.
 
 <table>
   <thead><tr><th>Moment</th><th>Behaviour</th><th>Timing</th></tr></thead>
   <tbody>
     <tr><td>Hover, focus, colour change</td><td>Cross-fade on the changing properties only</td><td>150ms</td></tr>
-    <tr><td>Press</td><td>Buttons scale to 98%, icon-only buttons to 95%; links do not move</td><td>150ms</td></tr>
-    <tr><td>Toggle, checkbox, radio</td><td>Thumb glides, tick pops in, radio dot grows from the centre</td><td>150-200ms</td></tr>
-    <tr><td>Expand and collapse</td><td>Accordion height and chevron move together</td><td>200ms</td></tr>
-    <tr><td>Menus, selects, tooltips, pickers</td><td>Grow out of the control that opened them</td><td>150ms in, 100ms out</td></tr>
-    <tr><td>Dialogs</td><td>Backdrop fades, panel fades and scales up slightly</td><td>200ms in, 150ms out</td></tr>
+    <tr><td>Press</td><td>Buttons scale to 98%, icon-only buttons to 97%; links do not move</td><td>80ms press / 200ms return</td></tr>
+    <tr><td>Toggle, checkbox, radio</td><td>Thumb glides, tick pops in, radio dot grows from the centre</td><td>180–240ms</td></tr>
+    <tr><td>Expand and collapse</td><td>Accordion height and chevron move together</td><td>240ms</td></tr>
+    <tr><td>Menus, selects, tooltips, pickers</td><td>Grow out of the control that opened them</td><td>200ms in / 120ms out; tooltip 160ms / 100ms</td></tr>
+    <tr><td>Dialogs</td><td>Backdrop fades, panel fades and scales up slightly</td><td>220ms in / 160ms out</td></tr>
+    <tr><td>Tabs</td><td>Measured underline or vertical rail follows selection with an interruptible spring; panel fades</td><td>Immediate selection, gentle settling</td></tr>
+    <tr><td>Panel and progress</td><td>Width or progress settles without overshoot</td><td>240–260ms</td></tr>
     <tr><td>Validation message</td><td>Fades in with a 4px drop</td><td>150ms</td></tr>
   </tbody>
 </table>

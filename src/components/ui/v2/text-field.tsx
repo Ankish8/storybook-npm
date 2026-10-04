@@ -383,7 +383,7 @@ const TextField = React.forwardRef(
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin size-4 text-[var(--v2-text-muted,#707070)] ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin motion-reduce:[animation-duration:2s] size-4 text-[var(--v2-text-muted,#707070)] ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
               <span className="ml-2 text-[var(--v2-text-muted,#707070)] [&_svg]:size-4 flex-shrink-0">
@@ -417,7 +417,7 @@ const TextField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-1"
+                className="font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in fade-in-0 slide-in-from-top-0.5 [animation-duration:150ms] ease-out"
               >
                 {error}
               </span>
