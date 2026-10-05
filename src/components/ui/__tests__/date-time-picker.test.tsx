@@ -1101,12 +1101,15 @@ describe("DateTimePicker", () => {
 
     // The calendar opens on the current month, so pick a day in it.
     const now = new Date();
-    const dayLabel = new Date(now.getFullYear(), now.getMonth(), 12)
-      .toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      });
+    const dayLabel = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      12
+    ).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
     const month = String(now.getMonth() + 1).padStart(2, "0");
 
     const input = screen.getByLabelText("Date and time");
@@ -1219,10 +1222,9 @@ describe("DateTimePicker", () => {
       ).toBeNull();
     });
 
-    it("renders Clear, Cancel and OK when showActions is set", () => {
+    it("renders Cancel and OK when showActions is set", () => {
       render(<DateTimePicker defaultValue={initial} showActions />);
       fireEvent.click(screen.getByLabelText("Date and time"));
-      expect(screen.getByText("Clear")).toBeInTheDocument();
       expect(screen.getByText("Cancel")).toBeInTheDocument();
       expect(screen.getByText("OK")).toBeInTheDocument();
     });
@@ -1257,38 +1259,6 @@ describe("DateTimePicker", () => {
       );
       expect(onCancel).toHaveBeenCalled();
       expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
-    });
-
-    it("extra action clears by default and can be overridden", () => {
-      const onValueChange = vi.fn();
-      const { unmount } = render(
-        <DateTimePicker
-          defaultValue={initial}
-          showActions
-          onValueChange={onValueChange}
-        />
-      );
-      fireEvent.click(screen.getByLabelText("Date and time"));
-      fireEvent.click(screen.getByText("Clear"));
-      expect(onValueChange).toHaveBeenLastCalledWith({
-        date: undefined,
-        startTime: "",
-        endTime: "",
-      });
-      unmount();
-
-      const onExtraAction = vi.fn();
-      render(
-        <DateTimePicker
-          defaultValue={initial}
-          showActions
-          extraActionLabel="Today"
-          onExtraAction={onExtraAction}
-        />
-      );
-      fireEvent.click(screen.getByLabelText("Date and time"));
-      fireEvent.click(screen.getByText("Today"));
-      expect(onExtraAction).toHaveBeenCalled();
     });
   });
 });

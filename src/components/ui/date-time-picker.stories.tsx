@@ -242,7 +242,7 @@ export const WithLabelWithActions: Story = {
     docs: {
       description: {
         story:
-          "Field label above the trigger combined with the Clear / Cancel / OK footer.",
+          "Field label above the trigger combined with the Cancel / OK footer.",
       },
     },
   },
@@ -259,7 +259,7 @@ export const WithHelperTextWithActions: Story = {
     docs: {
       description: {
         story:
-          "Label and helper text combined with the Clear / Cancel / OK footer.",
+          "Label and helper text combined with the Cancel / OK footer.",
       },
     },
   },

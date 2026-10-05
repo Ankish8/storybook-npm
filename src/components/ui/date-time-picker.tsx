@@ -153,16 +153,12 @@ export interface DateTimePickerProps
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   portalContainer?: HTMLElement | null;
-  /** Shows a footer with Clear, Cancel and OK actions */
+  /** Shows a footer with Cancel and OK actions */
   showActions?: boolean;
   /** Label for the OK action */
   okLabel?: string;
   /** Label for the Cancel action */
   cancelLabel?: string;
-  /** Label for the extra (left-aligned) action. Defaults to "Clear" */
-  extraActionLabel?: string;
-  /** Overrides the extra action. Defaults to clearing the value */
-  onExtraAction?: () => void;
   /** Called when OK is pressed, with the confirmed value */
   onOk?: (value: DateTimePickerValue) => void;
   /** Called when Cancel is pressed, after the value is restored */
@@ -1478,8 +1474,6 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       showActions = false,
       okLabel = "OK",
       cancelLabel = "Cancel",
-      extraActionLabel = "Clear",
-      onExtraAction,
       onOk,
       onCancel,
       id,
@@ -1724,14 +1718,6 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const handleOk = () => {
       setOpen(false);
       onOk?.(currentValue);
-    };
-
-    const handleExtraAction = (event: React.MouseEvent<HTMLElement>) => {
-      if (onExtraAction) {
-        onExtraAction();
-        return;
-      }
-      clearValue(event);
     };
 
     const clearValue = (event: React.MouseEvent<HTMLElement>) => {
@@ -2214,14 +2200,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           )}
 
           {showActions && (
-            <div className="flex items-center justify-between gap-2 border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)] px-3 py-2">
-              <button
-                type="button"
-                className="rounded px-2 py-1.5 text-sm font-semibold text-[var(--semantic-text-muted,#717680)] transition-colors hover:bg-[var(--semantic-bg-ui,#F5F5F5)] hover:text-[var(--semantic-text-primary,#181D27)]"
-                onClick={handleExtraAction}
-              >
-                {extraActionLabel}
-              </button>
+            <div className="flex items-center justify-end gap-2 border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)] px-3 py-2">
               <div className="flex items-center gap-2">
                 <button
                   type="button"
