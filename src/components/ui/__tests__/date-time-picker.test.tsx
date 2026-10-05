@@ -1099,10 +1099,20 @@ describe("DateTimePicker", () => {
 
     render(<DateTimePicker />);
 
+    // The calendar opens on the current month, so pick a day in it.
+    const now = new Date();
+    const dayLabel = new Date(now.getFullYear(), now.getMonth(), 12)
+      .toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      });
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+
     const input = screen.getByLabelText("Date and time");
     await user.click(input);
-    await user.click(screen.getByLabelText("September 12, 2026"));
-    expect(input).toHaveValue("12/09/2026 --:-- --");
+    await user.click(screen.getByLabelText(dayLabel));
+    expect(input).toHaveValue(`12/${month}/${now.getFullYear()} --:-- --`);
 
     await user.click(screen.getByRole("button", { name: "Clear date" }));
 
