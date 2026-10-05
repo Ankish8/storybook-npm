@@ -97,7 +97,8 @@ const dateTimePickerTriggerVariants = cva(
       },
       state: {
         default: "",
-        error: "border-[var(--semantic-error-primary,#F04438)] hover:border-[var(--semantic-error-primary,#F04438)]",
+        error:
+          "border-[var(--semantic-error-primary,#F04438)] hover:border-[var(--semantic-error-primary,#F04438)]",
       },
     },
     defaultVariants: {
@@ -152,6 +153,20 @@ export interface DateTimePickerProps
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   portalContainer?: HTMLElement | null;
+  /** Shows a footer with Clear, Cancel and OK actions */
+  showActions?: boolean;
+  /** Label for the OK action */
+  okLabel?: string;
+  /** Label for the Cancel action */
+  cancelLabel?: string;
+  /** Label for the extra (left-aligned) action. Defaults to "Clear" */
+  extraActionLabel?: string;
+  /** Overrides the extra action. Defaults to clearing the value */
+  onExtraAction?: () => void;
+  /** Called when OK is pressed, with the confirmed value */
+  onOk?: (value: DateTimePickerValue) => void;
+  /** Called when Cancel is pressed, after the value is restored */
+  onCancel?: () => void;
 }
 
 type DateTimePickerVariant = NonNullable<
@@ -1460,6 +1475,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       defaultOpen = false,
       onOpenChange,
       portalContainer,
+      showActions = false,
+      okLabel = "OK",
+      cancelLabel = "Cancel",
+      extraActionLabel = "Clear",
+      onExtraAction,
+      onOk,
+      onCancel,
       id,
       ...props
     },
@@ -1583,8 +1605,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     );
     const hasValue = Boolean(
       currentValue.date ||
-        currentValue.startTime ||
-        (resolvedShowEndTime && currentValue.endTime)
+      currentValue.startTime ||
+      (resolvedShowEndTime && currentValue.endTime)
     );
     const effectiveMinDate = React.useMemo(() => {
       if (!disablePastDates) return minDate;
@@ -1683,6 +1705,34 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       },
       [isValueControlled, onValueChange]
     );
+
+    // Value at the moment the popover opened, so Cancel can restore it.
+    const openSnapshotRef = React.useRef<DateTimePickerValue | null>(null);
+    React.useEffect(() => {
+      openSnapshotRef.current = open ? currentValue : null;
+      // Only re-snapshot when the popover opens, not on every value change.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
+    const handleCancel = () => {
+      const snapshot = openSnapshotRef.current;
+      if (snapshot) updateValue(snapshot);
+      setOpen(false);
+      onCancel?.();
+    };
+
+    const handleOk = () => {
+      setOpen(false);
+      onOk?.(currentValue);
+    };
+
+    const handleExtraAction = (event: React.MouseEvent<HTMLElement>) => {
+      if (onExtraAction) {
+        onExtraAction();
+        return;
+      }
+      clearValue(event);
+    };
 
     const clearValue = (event: React.MouseEvent<HTMLElement>) => {
       event.stopPropagation();
@@ -2163,6 +2213,33 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             </div>
           )}
 
+          {showActions && (
+            <div className="flex items-center justify-between gap-2 border-t border-solid border-[var(--semantic-border-layout,#E9EAEB)] px-3 py-2">
+              <button
+                type="button"
+                className="rounded px-2 py-1.5 text-sm font-semibold text-[var(--semantic-text-muted,#717680)] transition-colors hover:bg-[var(--semantic-bg-ui,#F5F5F5)] hover:text-[var(--semantic-text-primary,#181D27)]"
+                onClick={handleExtraAction}
+              >
+                {extraActionLabel}
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="rounded px-2 py-1.5 text-sm font-semibold text-[var(--semantic-text-link,#4275D6)] transition-colors hover:bg-[var(--semantic-bg-ui,#F5F5F5)]"
+                  onClick={handleCancel}
+                >
+                  {cancelLabel}
+                </button>
+                <button
+                  type="button"
+                  className="rounded px-2 py-1.5 text-sm font-semibold text-[var(--semantic-text-link,#4275D6)] transition-colors hover:bg-[var(--semantic-bg-ui,#F5F5F5)]"
+                  onClick={handleOk}
+                >
+                  {okLabel}
+                </button>
+              </div>
+            </div>
+          )}
         </div>,
         portalMount
       );
@@ -2203,7 +2280,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           >
             {label}
             {required && (
-              <span className="text-[var(--semantic-error-primary,#F04438)] ml-0.5">*</span>
+              <span className="text-[var(--semantic-error-primary,#F04438)] ml-0.5">
+                *
+              </span>
             )}
           </label>
         )}

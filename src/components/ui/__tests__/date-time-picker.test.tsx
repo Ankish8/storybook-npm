@@ -38,7 +38,9 @@ describe("DateTimePicker", () => {
   it("renders the placeholder when no date is selected", () => {
     render(<DateTimePicker />);
 
-    expect(screen.getByPlaceholderText("--/--/---- --:-- --")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("--/--/---- --:-- --")
+    ).toBeInTheDocument();
   });
 
   it("renders the date-only placeholder when no date is selected", () => {
@@ -51,7 +53,9 @@ describe("DateTimePicker", () => {
     const { unmount } = render(
       <DateTimePicker variant="date-time" value={{}} />
     );
-    expect(screen.getByPlaceholderText("--/--/---- --:-- --")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("--/--/---- --:-- --")
+    ).toBeInTheDocument();
     unmount();
 
     render(<DateTimePicker variant="date-only" value={{}} />);
@@ -241,8 +245,12 @@ describe("DateTimePicker", () => {
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2.5");
     expect(trigger).toHaveClass("text-base");
-    expect(trigger).toHaveClass("border-[var(--semantic-border-input,#E9EAEB)]");
-    expect(trigger).toHaveClass("text-[var(--semantic-text-placeholder,#A2A6B1)]");
+    expect(trigger).toHaveClass(
+      "border-[var(--semantic-border-input,#E9EAEB)]"
+    );
+    expect(trigger).toHaveClass(
+      "text-[var(--semantic-text-placeholder,#A2A6B1)]"
+    );
   });
 
   it("selects a day and reports value changes", () => {
@@ -349,7 +357,9 @@ describe("DateTimePicker", () => {
       />
     );
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 10:30 AM"
+    );
 
     fireEvent.click(screen.getByLabelText("Date and time"));
 
@@ -979,27 +989,31 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker label="Event date" required />);
 
     const asterisk = screen.getByText("*");
-    expect(asterisk).toHaveClass("text-[var(--semantic-error-primary,#F04438)]");
+    expect(asterisk).toHaveClass(
+      "text-[var(--semantic-error-primary,#F04438)]"
+    );
   });
 
   it("does not render a label when none is provided", () => {
     render(<DateTimePicker data-testid="no-label" />);
 
-    expect(
-      screen.getByTestId("no-label").querySelector("label")
-    ).toBeNull();
+    expect(screen.getByTestId("no-label").querySelector("label")).toBeNull();
   });
 
   it("shows only the date until a time is explicitly selected", () => {
     render(<DateTimePicker defaultValue={{ date: mayTwelve }} />);
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("12/05/2026 --:-- --");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 --:-- --"
+    );
   });
 
   it("shows only the time until a date is explicitly selected", () => {
     render(<DateTimePicker defaultValue={{ startTime: "10:30:00" }} />);
 
-    expect(screen.getByLabelText("Date and time")).toHaveValue("--/--/---- 10:30 AM");
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "--/--/---- 10:30 AM"
+    );
   });
 
   it("clears date and both times, then hides the clear action", () => {
@@ -1160,7 +1174,9 @@ describe("DateTimePicker", () => {
     expect(message).toHaveClass("text-[var(--semantic-error-primary,#F04438)]");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAttribute("aria-describedby", message.id);
-    expect(input.parentElement).toHaveClass("border-[var(--semantic-error-primary,#F04438)]");
+    expect(input.parentElement).toHaveClass(
+      "border-[var(--semantic-error-primary,#F04438)]"
+    );
   });
 
   it("prefers the error message over helper text", () => {
@@ -1180,5 +1196,89 @@ describe("DateTimePicker", () => {
     expect(formatDateForDisplay(mayTwelve, "23:05:07", true)).toBe(
       "12/05/2026 11:05:07 PM"
     );
+  });
+
+  describe("footer actions", () => {
+    const initial = { date: mayTwelve, startTime: "10:30:00", endTime: "" };
+
+    it("does not render the footer by default", () => {
+      render(<DateTimePicker defaultValue={initial} />);
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      expect(
+        screen.queryByRole("button", { name: "OK", hidden: true })
+      ).toBeNull();
+    });
+
+    it("renders Clear, Cancel and OK when showActions is set", () => {
+      render(<DateTimePicker defaultValue={initial} showActions />);
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      expect(screen.getByText("Clear")).toBeInTheDocument();
+      expect(screen.getByText("Cancel")).toBeInTheDocument();
+      expect(screen.getByText("OK")).toBeInTheDocument();
+    });
+
+    it("OK closes the popover and reports the value", () => {
+      const onOk = vi.fn();
+      render(<DateTimePicker defaultValue={initial} showActions onOk={onOk} />);
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByText("OK"));
+      expect(onOk).toHaveBeenCalledWith(
+        expect.objectContaining({ date: mayTwelve, startTime: "10:30:00" })
+      );
+      expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
+    });
+
+    it("Cancel restores the value from when the popover opened", () => {
+      const onValueChange = vi.fn();
+      const onCancel = vi.fn();
+      render(
+        <DateTimePicker
+          defaultValue={initial}
+          showActions
+          onValueChange={onValueChange}
+          onCancel={onCancel}
+        />
+      );
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByLabelText("May 20, 2026"));
+      fireEvent.click(screen.getByText("Cancel"));
+      expect(onValueChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({ date: mayTwelve })
+      );
+      expect(onCancel).toHaveBeenCalled();
+      expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
+    });
+
+    it("extra action clears by default and can be overridden", () => {
+      const onValueChange = vi.fn();
+      const { unmount } = render(
+        <DateTimePicker
+          defaultValue={initial}
+          showActions
+          onValueChange={onValueChange}
+        />
+      );
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByText("Clear"));
+      expect(onValueChange).toHaveBeenLastCalledWith({
+        date: undefined,
+        startTime: "",
+        endTime: "",
+      });
+      unmount();
+
+      const onExtraAction = vi.fn();
+      render(
+        <DateTimePicker
+          defaultValue={initial}
+          showActions
+          extraActionLabel="Today"
+          onExtraAction={onExtraAction}
+        />
+      );
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByText("Today"));
+      expect(onExtraAction).toHaveBeenCalled();
+    });
   });
 });

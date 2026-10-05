@@ -196,7 +196,7 @@ export const WithErrorMessage: Story = {
     docs: {
       description: {
         story:
-          "`error` renders the message below the picker and puts the trigger in the error state — no need to pass `state=\"error\"` as well. It also replaces `helperText` while set.",
+          '`error` renders the message below the picker and puts the trigger in the error state — no need to pass `state="error"` as well. It also replaces `helperText` while set.',
       },
     },
   },
@@ -226,6 +226,73 @@ export const StartTimeOnly: Story = {
   args: {
     defaultValue: sampleValue,
     showEndTime: false,
+  },
+};
+
+export const WithActions: Story = {
+  args: {
+    defaultValue: sampleValue,
+    showActions: true,
+    defaultOpen: true,
+  },
+};
+
+export const WithLabelWithActions: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Field label above the trigger combined with the Clear / Cancel / OK footer.",
+      },
+    },
+  },
+  args: {
+    label: "Event date",
+    required: true,
+    defaultValue: sampleValue,
+    showActions: true,
+  },
+};
+
+export const WithHelperTextWithActions: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Label and helper text combined with the Clear / Cancel / OK footer.",
+      },
+    },
+  },
+  args: {
+    label: "Event date",
+    helperText: "Slots are bookable between 9:00 AM and 6:00 PM.",
+    defaultValue: sampleValue,
+    showActions: true,
+  },
+};
+
+export const DateOnlyWithActions: Story = {
+  args: {
+    defaultValue: sampleValue,
+    variant: "date-only",
+    showActions: true,
+  },
+};
+
+export const TimeOnlyWithActions: Story = {
+  args: {
+    defaultValue: sampleValue,
+    variant: "time-only",
+    showEndTime: false,
+    showActions: true,
+  },
+};
+
+export const StartTimeOnlyWithActions: Story = {
+  args: {
+    defaultValue: sampleValue,
+    showEndTime: false,
+    showActions: true,
   },
 };
 
