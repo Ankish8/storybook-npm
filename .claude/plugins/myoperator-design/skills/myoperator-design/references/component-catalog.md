@@ -404,6 +404,7 @@ import { Mail } from "lucide-react"
 > A form-ready select component with label, helper text, error handling, and grouped options support.
 
 **Install**: `npx myoperator-ui add select-field`
+**Requires**: `select`, `input` (auto-installed)
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
