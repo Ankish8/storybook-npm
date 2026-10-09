@@ -438,3 +438,38 @@ describe("ReadableField copy feedback", () => {
     expect(onValueCopy).toHaveBeenCalledWith(props.value);
   });
 });
+
+describe("ReadableField header row alignment", () => {
+  const props = { label: "Integration key", value: "example_key_123" };
+
+  it("centres the label and the action on one row, with the same line height", () => {
+    render(
+      <ReadableField
+        {...props}
+        headerAction={{ label: "Regenerate", onClick: () => {} }}
+      />
+    );
+    const row = screen.getByText("Integration key").parentElement;
+    expect(row).toHaveClass("items-center");
+    expect(row).not.toHaveClass("items-start");
+    expect(screen.getByRole("button", { name: "Regenerate" })).toHaveClass(
+      "leading-[1.4]"
+    );
+  });
+
+  it("does not let the disabled action's tooltip wrapper add a line box that pushes it down", () => {
+    render(
+      <ReadableField
+        {...props}
+        headerAction={{
+          label: "Regenerate",
+          disabled: true,
+          disabledTooltip: "Not available on this plan",
+        }}
+      />
+    );
+    const action = screen.getByRole("button", { name: "Regenerate" });
+    expect(action).toHaveClass("leading-[1.4]");
+    expect(action.parentElement).toHaveClass("inline-flex");
+  });
+});

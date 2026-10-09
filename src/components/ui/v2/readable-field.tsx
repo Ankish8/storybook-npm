@@ -145,17 +145,17 @@ export const ReadableField = React.forwardRef(
         {...props}
       >
         {/* Header Row: Label + Optional Action */}
-        <div className="flex items-start justify-between">
+        <div className="flex items-center justify-between">
           <span className="text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]">
             {label}
           </span>
           {headerAction &&
             (headerAction.disabled ? (
-              <span className="relative group/regen-action">
+              <span className="relative inline-flex group/regen-action">
                 <button
                   type="button"
                   disabled
-                  className="text-sm font-medium text-[var(--v2-text-muted,#707070)] tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
+                  className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] opacity-50 cursor-not-allowed rounded"
                 >
                   {headerAction.label}
                 </button>
@@ -170,7 +170,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={headerAction.onClick}
-                className="text-sm font-medium text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors duration-150"
+                className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors duration-150"
               >
                 {headerAction.label}
               </button>
