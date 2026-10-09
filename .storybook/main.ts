@@ -7,9 +7,17 @@ import type { StorybookConfig } from '@storybook/react-vite';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const config: StorybookConfig = {
+  // v2 (src/components/ui/v2, src/docs/v2) is documented on the docs site (`npm run docs`), not in Storybook, so
+  // it is left out on purpose. The v2 story files stay in the repo: the docs site's preview runner renders them.
+  // Directories are listed explicitly because a negated glob is easy to get subtly wrong; add a new story
+  // directory here when you create one.
   stories: [
-    "../src/docs/**/*.mdx",
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)"
+    "../src/docs/*.mdx",
+    "../src/docs/foundations/*.mdx",
+    "../src/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../src/practice/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../src/components/ui/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../src/components/custom/**/*.stories.@(js|jsx|mjs|ts|tsx)"
   ],
   addons: [
     "@chromatic-com/storybook",
