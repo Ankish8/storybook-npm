@@ -471,4 +471,9 @@ function publishMetadata(prepared: any, args: Args) {
     layout: prepared.parameters.layout || "padded",
   });
 }
-createRoot(document.getElementById("preview-root")!).render(<App />);
+// Vite re-runs this module on every hot update. A second createRoot on the same container makes React warn, so the
+// root is kept across updates and only re-rendered.
+const container = document.getElementById("preview-root")!;
+const root = import.meta.hot?.data.root ?? createRoot(container);
+if (import.meta.hot) import.meta.hot.data.root = root;
+root.render(<App />);
