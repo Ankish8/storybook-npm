@@ -95,8 +95,10 @@ function Example({
     props.state === "error" && !props.disabled ? errorMessage : helperText;
   return (
     <div
-      style={{ width }}
-      className="max-w-full space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      // `width` is a ceiling, not a fixed size: a grid column sizes itself to its widest child, so a fixed pixel
+      // width here made the column (and the page) wider than a phone-width frame.
+      style={{ width: "100%", maxWidth: width }}
+      className="space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       {label && (
         <p
@@ -217,14 +219,14 @@ const meta: Meta<Args> = {
             [
               "Trigger",
               "40px height / 4px corners / 14px type",
-              "40px height / 8px corners / Inter 16px",
+              "44px height / 8px corners / Inter 14px",
             ],
             ["Host text", "Host styling", "14px / 500 label; 12px helper"],
             ["Hover", "Old teal stroke", "C0C3CA border"],
             [
               "Focus and open",
               "Thin teal highlight",
-              "27ABB8 and soft 4px halo",
+              "Primary border emphasis; no outer glow",
             ],
             ["Error", "Red border", "F04438 border and soft halo"],
             [
@@ -276,7 +278,7 @@ const meta: Meta<Args> = {
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318"],
             ["Family", "--font-v2", "Inter"],
@@ -395,7 +397,7 @@ export const AllVariants: Story = {
       </header>
       <div className="flex flex-wrap gap-6">
         {VARIANTS.map((state) => (
-          <section key={state} className="space-y-3">
+          <section key={state} className="min-w-0 space-y-3">
             <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
@@ -414,7 +416,7 @@ export const HeightAndWidth: Story = {
   name: "Height and width",
   parameters: gallery(
     ["width", "open"],
-    "One recorded 40px field height, shown at two widths."
+    "One 44px field height, shown at two widths."
   ),
   render: (args) => (
     <div className="min-h-[540px] space-y-5">
@@ -423,12 +425,16 @@ export const HeightAndWidth: Story = {
           Field proportions
         </p>
         <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
-          40px high with 8px corners.
+          44px high with 8px corners.
         </p>
       </header>
       <div className="flex flex-wrap gap-6">
         {[420, 280].map((width) => (
-          <section key={width} className="space-y-3">
+          <section
+            key={width}
+            style={{ width }}
+            className="max-w-full space-y-3"
+          >
             <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
               {width}px wide
             </p>

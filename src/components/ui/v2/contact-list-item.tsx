@@ -45,6 +45,7 @@ const ContactListItem = React.forwardRef(
       avatarSrc,
       isSelected = false,
       onClick,
+      onKeyDown,
       className,
       ...props
     }: ContactListItemProps,
@@ -55,16 +56,20 @@ const ContactListItem = React.forwardRef(
         ref={ref}
         role="button"
         tabIndex={0}
+        aria-pressed={isSelected}
         onClick={onClick}
         onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
+          onKeyDown?.(e);
+          if (!e.defaultPrevented && (e.key === "Enter" || e.key === " ")) {
             e.preventDefault();
             onClick?.(e as unknown as React.MouseEvent<HTMLDivElement>);
           }
         }}
         className={cn(
-          "flex items-center gap-3 px-3 py-3 cursor-pointer transition-colors focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
-          isSelected ? "bg-semantic-bg-ui" : "hover:bg-semantic-bg-hover",
+          "flex items-center gap-3 px-3 py-3 cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          isSelected
+            ? "bg-semantic-bg-ui"
+            : "[@media(hover:hover)]:hover:bg-semantic-bg-ui active:bg-semantic-bg-ui",
           className
         )}
         {...props}
@@ -73,17 +78,17 @@ const ContactListItem = React.forwardRef(
 
         <div className="flex-1 flex items-center justify-between min-w-0">
           <div className="flex flex-col min-w-0">
-            <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)] leading-5 truncate">
+            <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)] leading-[1.4] tracking-[-0.01em] truncate">
               {name}
             </span>
             {subtitle && (
-              <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+              <span className="text-xs leading-[1.4] tracking-[-0.01em] truncate text-[var(--v2-text-muted,#707070)]">
                 {subtitle}
               </span>
             )}
           </div>
           {trailing && (
-            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)] shrink-0 ml-2">
+            <span className="text-xs font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)] shrink-0 ml-2">
               {trailing}
             </span>
           )}

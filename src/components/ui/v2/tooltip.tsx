@@ -3,7 +3,17 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-const TooltipProvider = TooltipPrimitive.Provider;
+/**
+ * Arc opens a tooltip after 250ms (Radix's own default is 700ms) and lets the next one open without delay for
+ * 300ms after the last closes (Radix's default skip window). A `delayDuration` passed here still wins.
+ */
+const TooltipProvider = ({
+  delayDuration = 250,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Provider>) => (
+  <TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />
+);
+TooltipProvider.displayName = "TooltipProvider";
 
 /** True when the primary input cannot hover (touch / most phones & tablets). Desktop hover stays false. */
 function usePrefersTapTooltipInteraction() {
@@ -183,17 +193,18 @@ const TooltipTrigger = React.forwardRef<
 TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 
 /**
- * `instant-open` is what Radix emits for a tooltip that opens inside its skip-delay
- * window (pointer moved straight from one trigger to the next) and for keyboard
- * focus: the delay is already skipped, so the 160ms grow-in is skipped too.
- * `ring-1 ring-inset` is a 1px edge so the pale #ECF1FB surface does not melt into a
- * white page; `ring-black/5` resolves to a static colour, not a var(), so the alpha works.
+ * Arc's tooltip. Opened through the delay it rises 3px from its trigger and grows from 0.97 over 160ms; Radix
+ * emits `instant-open` for a tooltip that opens inside the skip-delay window (pointer moved straight from one
+ * trigger to the next) and for keyboard focus, and that one only fades, over 120ms. Closing is a 120ms fade to 0.98.
+ * The 1px `border-black/5` edge keeps the pale #ECF1FB surface from melting into a white page; `black/5` resolves
+ * to a static colour, not a var(), so the alpha works.
  */
 const TooltipContent = React.forwardRef(
   (
     {
       className,
-      sideOffset = 4,
+      sideOffset = 8,
+      collisionPadding = 12,
       ...props
     }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>,
     ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>
@@ -202,8 +213,9 @@ const TooltipContent = React.forwardRef(
       <TooltipPrimitive.Content
         ref={ref}
         sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
         className={cn(
-          "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)] ring-1 ring-inset ring-black/5 origin-[var(--radix-tooltip-content-transform-origin)] motion-safe:[animation-duration:160ms] data-[state=instant-open]:[animation-duration:0ms] data-[state=closed]:motion-safe:[animation-duration:100ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] data-[state=closed]:[animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 max-w-xs whitespace-normal",
+          "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto rounded-md border border-solid border-black/5 bg-semantic-info-surface px-4 py-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_6px_18px_rgba(0,0,0,0.065),0_1px_3px_rgba(0,0,0,0.035)] origin-[var(--radix-tooltip-content-transform-origin)] motion-safe:[animation-duration:160ms] data-[state=instant-open]:motion-safe:[animation-duration:120ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] data-[state=instant-open]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] motion-safe:animate-in motion-safe:fade-in-0 data-[state=delayed-open]:motion-safe:zoom-in-[0.97] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=delayed-open]:data-[side=bottom]:slide-in-from-top-[3px] data-[state=delayed-open]:data-[side=left]:slide-in-from-right-[3px] data-[state=delayed-open]:data-[side=right]:slide-in-from-left-[3px] data-[state=delayed-open]:data-[side=top]:slide-in-from-bottom-[3px] max-w-[15rem] whitespace-normal",
           className
         )}
         {...props}

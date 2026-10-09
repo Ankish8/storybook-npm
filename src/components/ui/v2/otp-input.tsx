@@ -106,10 +106,10 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
                 // An empty slot has transparent, 90%-size text; a digit fades and grows into place (180ms spring).
                 // The digit is the input's own text, so the scale from .9 to 1 is a font-size change from 14.4 to 16px.
                 // The caret colour is set explicitly because currentColor is transparent while empty.
-                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] caret-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition-property:border-color,box-shadow,background-color,color,font-size] [transition-duration:150ms,150ms,150ms,180ms,180ms] [transition-timing-function:ease-out,ease-out,ease-out,var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] data-[filled=false]:text-[14.4px] data-[filled=false]:text-transparent motion-reduce:data-[filled=false]:text-base placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+                "h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2.5 text-center text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] caret-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition-property:border-color,background-color,color,font-size] [transition-duration:160ms,160ms,180ms,180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:[transition-duration:0.01ms] data-[filled=false]:text-[14.4px] data-[filled=false]:text-transparent motion-reduce:data-[filled=false]:text-base placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50",
                 error
-                  ? "border-semantic-error-primary focus:shadow-[0_0_4px_rgba(240,68,56,0.4)]"
-                  : "border-semantic-border-layout enabled:hover:[&:not(:focus)]:border-[var(--color-primary-100)] focus:border-semantic-border-accent focus:shadow-[0_0_4px_rgba(39,171,184,0.4)]"
+                  ? "border-semantic-error-primary focus:shadow-none"
+                  : "border-semantic-border-input enabled:hover:[&:not(:focus)]:border-semantic-primary focus:shadow-none"
               )}
               onFocus={(event) => event.currentTarget.select()}
               onChange={(event) => {
@@ -147,7 +147,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
           <p
             id={id + "-helper"}
             className={cn(
-              "m-0 text-xs",
+              "m-0 text-xs leading-[1.4] tracking-[-0.16px]",
               error
                 ? "text-semantic-error-text"
                 : "text-[var(--v2-text-muted,#707070)]"

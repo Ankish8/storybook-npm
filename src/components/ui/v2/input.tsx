@@ -33,14 +33,16 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  "h-10 w-full box-border rounded-lg bg-semantic-bg-primary px-4 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-6 text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:text-base file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui",
+  // Arc field: 44px, 12px inset, 14px/1.4 with -0.01em tracking; border colour is the only focus/hover answer
+  // (no ring or glow), eased over 160ms on Arc's standard curve; disabled dims to 50%.
+  "h-11 w-full box-border rounded-lg bg-semantic-bg-primary px-3 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input enabled:hover:border-[var(--color-primary-100)] focus:outline-none focus:border-semantic-border-accent focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
     },
     defaultVariants: {
@@ -131,7 +133,7 @@ const Input = React.forwardRef(
           inputVariants({ state }),
           className,
           state === "error" &&
-            "border-semantic-error-primary focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+            "border-semantic-error-primary focus:shadow-none",
           showCheckIcon && "pr-9",
           type === "number" &&
             hideNumberSpinners &&

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
+import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Switch, type SwitchProps } from "./switch";
 
@@ -8,12 +9,12 @@ import { Switch, type SwitchProps } from "./switch";
  * Table size variants for row height.
  */
 const tableVariants = cva(
-  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,#5E5E5E)]",
+  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)]",
   {
     variants: {
       size: {
         sm: "[&_td]:py-1.5 [&_th]:py-2 [&_tbody_tr]:h-12",
-        md: "[&_td]:py-2 [&_th]:py-3 [&_tbody_tr]:h-[54px]",
+        md: "[&_td]:py-2 [&_th]:py-3 [&_tbody_tr]:h-[52px]",
         lg: "[&_td]:py-3 [&_th]:py-4 [&_tbody_tr]:h-[60px]",
       },
     },
@@ -112,7 +113,7 @@ const TableHeader = React.forwardRef(
     <thead
       ref={ref}
       className={cn(
-        "bg-semantic-primary-surface [&_tr]:border-b [&_tr]:border-solid",
+        "bg-semantic-primary-surface [&_tr]:border-b [&_tr]:border-solid [&_tr]:border-semantic-border-layout",
         className
       )}
       {...props}
@@ -183,21 +184,27 @@ const TableRow = React.forwardRef(
   (
     { className, highlighted, ...props }: TableRowProps,
     ref: React.Ref<HTMLTableRowElement>
-  ) => (
-    <tr
-      ref={ref}
-      className={cn(
-        "border-b border-solid border-semantic-border-layout transition-colors focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
-        // Hover is gated so it never sticks after a tap. A selected row keeps its own tint under
-        // the pointer, so selection and hover stay distinguishable (#ECF1FB vs #F5F5F5).
-        highlighted
-          ? "bg-semantic-info-surface"
-          : "[@media(hover:hover)]:hover:bg-semantic-bg-ui data-[state=selected]:bg-semantic-info-surface data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface",
-        className
-      )}
-      {...props}
-    />
-  )
+  ) => {
+    const reducedMotion = useReducedMotion();
+    return (
+      <motion.tr
+        layout={reducedMotion ? false : "position"}
+        // Arc "smooth": critically damped, settles visually in 0.4s, so rows that trade places never overshoot.
+        transition={{ type: "spring", visualDuration: 0.4, bounce: 0 }}
+        ref={ref}
+        className={cn(
+          "border-b border-solid border-semantic-bg-ui transition-colors [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
+          // Hover is gated so it never sticks after a tap. A selected row keeps its own tint under
+          // the pointer, so selection and hover stay distinguishable (#ECF1FB vs #F5F5F5).
+          highlighted
+            ? "bg-semantic-info-surface"
+            : "[@media(hover:hover)]:hover:bg-semantic-bg-ui data-[state=selected]:bg-semantic-info-surface data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface",
+          className
+        )}
+        {...(props as React.ComponentProps<typeof motion.tr>)}
+      />
+    );
+  }
 );
 TableRow.displayName = "TableRow";
 
@@ -255,29 +262,37 @@ const TableHead = React.forwardRef(
               : undefined)
       }
       className={cn(
-        "group/head h-[60px] px-6 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium uppercase tracking-[0.014px] text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
+        "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,#707070)] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-semantic-primary-surface z-10",
+        sortDirection && "text-[var(--v2-text-primary,#484848)]",
         (sortDirection || sortable) && "cursor-pointer select-none",
         className
       )}
       {...props}
     >
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         {children}
-        {sortDirection && (
-          // v1 renders the arrow as text and its tests query it, so the glyph stays in the DOM (hidden);
-          // the visible 12px arrow turns over in 150ms and aria-sort carries the state for assistive tech.
+        {(sortDirection || sortable) && (
+          // v1 renders the arrow as text and its tests query it, so the glyph stays in the DOM (hidden). The visible
+          // 16px arrow is one element for every state, as in Arc: it fades and scales in where a column becomes sorted,
+          // flips on a spring when the direction changes, and shows faintly on hover while the column is unsorted.
           <span
             aria-hidden="true"
-            className="relative inline-flex size-3 shrink-0 items-center justify-center text-[var(--v2-text-primary,#484848)]"
+            className="relative inline-flex size-4 shrink-0 items-center justify-center text-[var(--v2-text-primary,#484848)]"
           >
-            <span className="sr-only">
-              {sortDirection === "asc" ? "↑" : "↓"}
-            </span>
+            {sortDirection && (
+              <span className="sr-only">
+                {sortDirection === "asc" ? "↑" : "↓"}
+              </span>
+            )}
             <svg
               {...SORT_ICON_PROPS}
+              strokeWidth={1.75}
               className={cn(
-                "size-3 transition-transform [transition-duration:150ms] [transition-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:transition-none",
+                "size-4 transition-[transform,opacity,filter] [transition-duration:500ms,160ms,160ms] [transition-timing-function:linear(0,0.0689,0.216,0.3825,0.5378,0.6687,0.7719,0.8492,0.9046,0.9428,0.9681,0.9841,0.9937,0.999,1.0017,1.0028,1.003,1.0027,1.0022,1.0017,1.0013,1.0009,1.0006,1.0004,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                sortDirection
+                  ? "scale-100 opacity-100 [filter:none]"
+                  : "scale-[0.6] text-[var(--v2-text-muted,#707070)] opacity-0 blur-[2px] [@media(hover:hover)]:group-hover/head:scale-100 [@media(hover:hover)]:group-hover/head:opacity-60 [@media(hover:hover)]:group-hover/head:[filter:none]",
                 sortDirection === "desc" && "rotate-180"
               )}
             >
@@ -285,15 +300,6 @@ const TableHead = React.forwardRef(
               <path d="M12 19V5" />
             </svg>
           </span>
-        )}
-        {sortable && !sortDirection && (
-          <svg
-            {...SORT_ICON_PROPS}
-            className="size-3 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-40 transition-opacity [transition-duration:150ms] [@media(hover:hover)]:group-hover/head:opacity-100"
-          >
-            <path d="m7 15 5 5 5-5" />
-            <path d="m7 9 5-5 5 5" />
-          </svg>
         )}
         {infoTooltip && (
           <span
@@ -322,7 +328,7 @@ const TableCell = React.forwardRef(
     <td
       ref={ref}
       className={cn(
-        "px-6 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
+        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
         sticky && "sticky left-0 bg-semantic-bg-primary z-10",
         className
       )}
@@ -400,7 +406,7 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
     <TableCell
       colSpan={colSpan}
-      className="text-center py-8 text-[var(--v2-text-muted,#707070)]"
+      className="h-[120px] text-center py-8 text-[var(--v2-text-muted,#707070)]"
     >
       {children || "No data available"}
     </TableCell>

@@ -426,7 +426,7 @@ describe("CreatableMultiSelect v2 refresh", () => {
     const field = screen.getByRole("combobox").parentElement?.parentElement;
     expect(field).toHaveAttribute("data-state", "open");
     expect(field?.className).toContain(
-      "data-[state=open]:border-[var(--color-secondary-600,#27ABB8)]"
+      "data-[state=open]:border-semantic-primary"
     );
   });
 
@@ -440,12 +440,12 @@ describe("CreatableMultiSelect v2 refresh", () => {
       if (mode === "open") await user.click(screen.getAllByRole("combobox")[0]);
 
       const remove = screen.getByRole("button", { name: "Remove Alpha" });
-      // 20px plate, 24px hit area from the invisible ::before.
+      // Arc's 22px circle with a 24px hit area from the invisible ::before.
       expect(remove).toHaveClass(
         "relative",
-        "size-5",
+        "size-[22px]",
         "before:absolute",
-        "before:-inset-0.5"
+        "before:-inset-px"
       );
       // bg-semantic-bg-ui and bg-semantic-bg-hover are #F5F5F5, the chip fill: invisible.
       expect(remove).toHaveClass(
@@ -465,16 +465,278 @@ describe("CreatableMultiSelect v2 refresh", () => {
     ).not.toContain("hover:bg-");
   });
 
-  it("keeps the CSS-anchored panel growing from the top-left (it cannot flip)", async () => {
+  it("keeps the CSS-anchored panel growing from the top edge, 8px below the field (it cannot flip)", async () => {
     const user = userEvent.setup();
     render(<CreatableMultiSelect options={OPTIONS} createHintText="Hint" />);
     await user.click(screen.getByRole("combobox"));
     const panel = screen.getByText("Hint").closest(".absolute");
     expect(panel).toHaveClass(
-      "origin-top-left",
-      "motion-safe:slide-in-from-top-1",
+      "origin-top",
+      "mt-2",
+      "motion-safe:slide-in-from-top-[6px]",
       "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.98]"
+      "motion-safe:zoom-in-[0.97]",
+      "motion-safe:[animation-duration:260ms]"
     );
+  });
+
+  it("sizes the shell, chips and suggestions like Arc's tag input", async () => {
+    const user = userEvent.setup();
+    render(<CreatableMultiSelect options={OPTIONS} value={["Alpha"]} />);
+    const closed = screen.getByRole("combobox");
+    // 7px padding around 28px chips makes one row exactly the 44px minimum.
+    expect(closed).toHaveClass("min-h-11", "p-[7px]", "gap-2");
+    const chip = screen.getByRole("button", { name: "Remove Alpha" })
+      .parentElement as HTMLElement;
+    expect(chip).toHaveClass(
+      "min-h-7",
+      "border",
+      "pl-[9px]",
+      "pr-1",
+      "gap-[3px]",
+      "font-normal",
+      "[@starting-style]:scale-90",
+      "[@starting-style]:blur-[4px]"
+    );
+    expect(chip.className).not.toContain("font-medium");
+
+    await user.click(closed);
+    const input = screen.getByRole("combobox", { name: "Enter or select" });
+    expect(input).toHaveClass("min-h-7", "min-w-[80px]", "px-[5px]");
+    // Suggestions follow Arc's chip group: 36px pills that dip to .97 on press.
+    const preset = screen.getByRole("option", { name: /Beta/ });
+    expect(preset).toHaveClass(
+      "h-9",
+      "px-[14px]",
+      "font-medium",
+      "border",
+      "active:scale-[0.97]"
+    );
+  });
+});
+
+describe("CreatableMultiSelect polish", () => {
+  const TONES = [
+    { value: "professional", label: "Professional" },
+    { value: "friendly", label: "Friendly" },
+    { value: "sarcastic", label: "Sarcastic", disabled: true },
+  ];
+
+  it("centres the placeholder and the summary in the field with a chip-height wrapper", () => {
+    const { rerender } = render(
+      <CreatableMultiSelect options={TONES} placeholder="Pick tones" />
+    );
+    const wrapper = screen.getByText("Pick tones").parentElement;
+    expect(wrapper).toHaveClass("flex", "min-h-7", "items-center", "flex-1");
+
+    rerender(
+      <CreatableMultiSelect
+        options={TONES}
+        value={["friendly"]}
+        triggerDisplay="summary"
+      />
+    );
+    expect(screen.getByText("Friendly").parentElement).toHaveClass(
+      "min-h-7",
+      "items-center"
+    );
+  });
+
+  it("keeps the placeholder visible in the open input until something is selected", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <CreatableMultiSelect options={TONES} placeholder="Pick tones" />
+    );
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("combobox")).toHaveAttribute(
+      "placeholder",
+      "Pick tones"
+    );
+
+    rerender(
+      <CreatableMultiSelect
+        options={TONES}
+        placeholder="Pick tones"
+        value={["friendly"]}
+      />
+    );
+    expect(screen.getByRole("combobox")).not.toHaveAttribute("placeholder");
+  });
+
+  it("keeps the field white while hovered, pressed and open so chips never sit on their own colour", async () => {
+    const user = userEvent.setup();
+    render(<CreatableMultiSelect options={TONES} value={["friendly"]} />);
+    const closed = screen.getByRole("combobox");
+    expect(closed).not.toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+    );
+    expect(closed).not.toHaveClass("active:bg-semantic-bg-ui");
+
+    await user.click(closed);
+    const open = screen
+      .getAllByRole("combobox")[0]
+      .closest("[data-state=open]");
+    expect(open).toHaveClass("data-[state=open]:bg-semantic-bg-primary");
+    expect(open).not.toHaveClass("data-[state=open]:bg-semantic-bg-ui");
+  });
+
+  it("fills chips white on a disabled (grey) field so they stay visible", () => {
+    render(
+      <CreatableMultiSelect options={TONES} value={["friendly"]} disabled />
+    );
+    const chip = screen.getByRole("button", { name: "Remove Friendly" })
+      .parentElement as HTMLElement;
+    expect(chip).toHaveClass("bg-semantic-bg-primary");
+    expect(chip).not.toHaveClass("bg-semantic-bg-ui");
+  });
+
+  it("uses one 8px family of corners: suggestions, panel and Create row match the chips", async () => {
+    const user = userEvent.setup();
+    render(
+      <CreatableMultiSelect
+        options={TONES}
+        value={["professional"]}
+        createHintText="Hint"
+      />
+    );
+    await user.click(screen.getAllByRole("combobox")[0]);
+    await user.type(screen.getAllByRole("combobox")[0], "Zen");
+
+    const chip = screen.getByRole("button", { name: "Remove Professional" });
+    expect(chip.parentElement).toHaveClass("rounded-lg");
+    // The remove plate nests inside the chip's 8px corner, so it is one step smaller.
+    expect(chip).toHaveClass("rounded-md");
+    expect(screen.getByText("Hint").closest(".absolute")).toHaveClass(
+      "rounded-lg"
+    );
+    expect(screen.getByRole("option", { name: "Create “Zen”" })).toHaveClass(
+      "rounded-lg"
+    );
+    expect(screen.queryByRole("option", { name: /Friendly/ })).toBeNull();
+  });
+
+  it("gives suggestions the same 8px corner as the chips", async () => {
+    const user = userEvent.setup();
+    render(<CreatableMultiSelect options={TONES} />);
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("option", { name: /Friendly/ })).toHaveClass(
+      "rounded-lg"
+    );
+    expect(screen.getByRole("option", { name: /Friendly/ })).not.toHaveClass(
+      "rounded"
+    );
+  });
+
+  describe("typing a suggestion's name", () => {
+    it.each(["Friendly", "friendly", "  FRIENDLY  "])(
+      "selects the suggestion for %j instead of creating a look-alike",
+      async (typed) => {
+        const user = userEvent.setup();
+        const onValueChange = vi.fn();
+        render(
+          <ControlledCreatableMultiSelect
+            options={TONES}
+            onValueChange={onValueChange}
+          />
+        );
+        await user.click(screen.getByRole("combobox"));
+        await user.type(screen.getByRole("combobox"), `${typed}{Enter}`);
+        expect(onValueChange).toHaveBeenCalledTimes(1);
+        expect(onValueChange).toHaveBeenCalledWith(["friendly"]);
+      }
+    );
+
+    it("does not add a second chip when the suggestion is already selected", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <ControlledCreatableMultiSelect
+          options={TONES}
+          initialValue={["friendly"]}
+          onValueChange={onValueChange}
+        />
+      );
+      await user.click(screen.getAllByRole("combobox")[0]);
+      await user.type(screen.getAllByRole("combobox")[0], "Friendly{Enter}");
+      expect(onValueChange).not.toHaveBeenCalled();
+      expect(screen.getAllByRole("button", { name: /Remove/ })).toHaveLength(1);
+    });
+
+    it("does not offer Create for a suggestion's name or stored value", async () => {
+      const user = userEvent.setup();
+      render(
+        <CreatableMultiSelect
+          options={[{ value: "tone_pro", label: "Professional" }]}
+        />
+      );
+      await user.click(screen.getByRole("combobox"));
+      await user.type(screen.getByRole("combobox"), "tone_pro");
+      expect(screen.queryByText(/Create/)).toBeNull();
+    });
+
+    it("cannot create a disabled option by typing its name", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <ControlledCreatableMultiSelect
+          options={TONES}
+          onValueChange={onValueChange}
+        />
+      );
+      await user.click(screen.getByRole("combobox"));
+      await user.type(screen.getByRole("combobox"), "sarcastic{Enter}");
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+
+    it("still creates a genuinely new value", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <ControlledCreatableMultiSelect
+          options={TONES}
+          onValueChange={onValueChange}
+        />
+      );
+      await user.click(screen.getByRole("combobox"));
+      await user.type(screen.getByRole("combobox"), "Warm{Enter}");
+      expect(onValueChange).toHaveBeenCalledWith(["Warm"]);
+    });
+  });
+
+  describe("character limit", () => {
+    it("caps the draft and shows the counter, which flags when the limit is reached", async () => {
+      const user = userEvent.setup();
+      render(<CreatableMultiSelect maxLengthPerItem={5} aria-label="Tags" />);
+      await user.click(screen.getByRole("combobox"));
+      const input = screen.getByRole("combobox");
+
+      await user.type(input, "abcd");
+      expect(input).toHaveValue("abcd");
+      expect(screen.getByText("4/5")).not.toHaveAttribute("data-at-limit");
+      expect(screen.getByText("4/5")).not.toHaveClass(
+        "text-semantic-error-text"
+      );
+
+      await user.type(input, "efgh");
+      expect(input).toHaveValue("abcde");
+      const counter = screen.getByText("5/5");
+      expect(counter).toHaveAttribute("data-at-limit", "true");
+      expect(counter).toHaveClass("text-semantic-error-text");
+    });
+
+    it("creates a value no longer than the limit", async () => {
+      const user = userEvent.setup();
+      const onValueChange = vi.fn();
+      render(
+        <ControlledCreatableMultiSelect
+          maxLengthPerItem={5}
+          onValueChange={onValueChange}
+          aria-label="Tags"
+        />
+      );
+      await user.click(screen.getByRole("combobox"));
+      await user.type(screen.getByRole("combobox"), "abcdefghij{Enter}");
+      expect(onValueChange).toHaveBeenCalledWith(["abcde"]);
+    });
   });
 });

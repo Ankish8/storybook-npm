@@ -57,7 +57,10 @@ describe("TextField", () => {
     );
     const input = screen.getByTestId("input");
     expect(input).toHaveClass("border-semantic-error-primary");
-    expect(input).toHaveClass("shadow-[0_0_4px_0_rgba(240,68,56,0.4)]");
+    expect(input.className).not.toContain(
+      "focus:border-semantic-error-primary"
+    );
+    expect(input.className).not.toContain("rgba(240,68,56");
   });
 
   it("applies empty state styling", () => {
@@ -375,9 +378,9 @@ describe("TextField", () => {
   it("renders with default size classes", () => {
     render(<TextField data-testid="input" />);
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("h-10");
-    expect(input).toHaveClass("px-4");
-    expect(input).toHaveClass("text-base");
+    expect(input).toHaveClass("h-11");
+    expect(input).toHaveClass("px-3");
+    expect(input).toHaveClass("text-sm");
   });
 
   it("renders with sm size classes", () => {
@@ -405,17 +408,17 @@ describe("TextField", () => {
     const { container } = render(
       <TextField leftIcon={<span>L</span>} data-testid="input" />
     );
-    const inputContainer = container.querySelector(".h-10");
+    const inputContainer = container.querySelector(".h-11");
     expect(inputContainer).toBeInTheDocument();
-    expect(screen.getByTestId("input")).toHaveClass("text-base");
+    expect(screen.getByTestId("input")).toHaveClass("text-sm");
   });
 
   // Container styling with addons
-  it("uses container with focus-within styling when has addons", () => {
+  it("uses a container that adds no focus border or glow when it has addons", () => {
     render(<TextField leftIcon={<span>L</span>} />);
     const inputContainer = screen.getByRole("textbox").parentElement;
-    expect(inputContainer?.className).toContain(
-      "focus-within:border-[var(--color-secondary-600,#27ABB8)]"
+    expect(inputContainer?.className).not.toContain(
+      "focus-within:border-semantic-primary"
     );
     expect(inputContainer).toBeInTheDocument();
   });
@@ -520,8 +523,8 @@ describe("TextField", () => {
     render(<TextField prefix="https://" disabled error="Error" />);
     expect(screen.getByRole("textbox").parentElement).toHaveClass(
       "bg-semantic-bg-ui",
-      "border-semantic-border-layout",
-      "hover:border-semantic-border-layout",
+      "opacity-50",
+      "hover:border-semantic-border-input",
       "shadow-none"
     );
   });
@@ -560,28 +563,40 @@ describe("TextField message reveal and clear button", () => {
     );
   });
 
-  it("reveals a message that appears after the field (height 0fr to 1fr over 240ms, spring)", () => {
-    const { rerender } = render(<TextField label="Name" />);
-    rerender(<TextField label="Name" error="Too short" />);
-    const row = screen.getByText("Too short").parentElement!;
-    expect(row).toHaveClass("grid-rows-[1fr]");
-    expect(row.className).toContain("[@starting-style]:grid-rows-[0fr]");
-    expect(row.className).toContain("[@starting-style]:-mt-1");
-    expect(row.className).toContain("[transition-duration:240ms]");
-    expect(row.className).toContain("var(--v2-ease-spring");
-    expect(row).toHaveClass("motion-reduce:transition-none");
+  it("reveals and replaces feedback inside a persistent measured frame", () => {
+    const { container, rerender } = render(
+      <TextField id="name" label="Name" />
+    );
+    const frame = container.querySelector("[data-field-feedback]");
+    rerender(<TextField id="name" label="Name" error="Too short" />);
+    expect(screen.getByText("Too short").closest("[data-field-feedback]")).toBe(
+      frame
+    );
+    expect(screen.getByLabelText("Name")).toHaveAttribute(
+      "aria-describedby",
+      "name-error"
+    );
+    rerender(
+      <TextField id="name" label="Name" error="Use at least three characters" />
+    );
+    expect(screen.queryByText("Too short")).not.toBeInTheDocument();
+    expect(screen.getByText("Use at least three characters")).toHaveAttribute(
+      "id",
+      "name-error"
+    );
+    rerender(<TextField id="name" label="Name" />);
+    expect(container.querySelector("[data-field-feedback]")).toBe(frame);
+    expect(
+      screen.queryByText("Use at least three characters")
+    ).not.toBeInTheDocument();
   });
 
-  it("fades the error text (150ms, 2px slide) and keeps a fade under reduced motion", () => {
-    render(<TextField error="Bad" />);
-    const message = screen.getByText("Bad");
-    expect(message).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:fade-in-0",
-      "motion-safe:slide-in-from-top-0.5",
-      "[animation-duration:150ms]",
-      "motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
-    );
+  it("keeps animated error replacement in one polite live region", () => {
+    const { rerender } = render(<TextField id="field" error="Bad" />);
+    expect(screen.getByText("Bad")).toHaveAttribute("aria-live", "polite");
+    rerender(<TextField id="field" error="Required" />);
+    expect(screen.getByText("Required")).toHaveAttribute("id", "field-error");
+    expect(document.querySelectorAll('[aria-live="polite"]')).toHaveLength(1);
   });
 
   it("keeps the clear button mounted but hidden and unlabeled while the field is empty", () => {
@@ -595,7 +610,7 @@ describe("TextField message reveal and clear button", () => {
       "opacity-0",
       "scale-[0.8]",
       "pointer-events-none",
-      "-ml-4"
+      "-ml-6"
     );
   });
 
@@ -604,19 +619,23 @@ describe("TextField message reveal and clear button", () => {
     const button = screen.getByLabelText("Clear input");
     expect(button).toHaveClass("visible", "opacity-100", "scale-100", "ml-2");
     expect(button).toHaveClass(
-      "[transition-property:color,opacity,transform,margin-left,visibility]",
-      "[transition-duration:150ms]"
+      "[transition-property:color,background-color,opacity,transform,filter,margin-left,visibility]",
+      "[transition-duration:160ms]",
+      "active:scale-[0.96]"
     );
   });
 
-  it("gives the clear button a 32px hit area around the 16px icon", () => {
+  it("gives the clear button a 24px hit area around the 16px icon", () => {
     render(<TextField clearable defaultValue="hello" />);
     const button = screen.getByLabelText("Clear input");
     expect(button).toHaveClass(
       "relative",
-      "before:absolute",
-      "before:-inset-2"
+      "grid",
+      "size-6",
+      "place-items-center"
     );
+    // visible: reachable by keyboard; hidden (above) keeps tabindex -1
+    expect(button).toHaveAttribute("tabindex", "0");
   });
 
   it("fades the clear button in when the first character is typed", async () => {

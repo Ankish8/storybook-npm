@@ -29,7 +29,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; existing 13px event text",
+              "Inter; 12px event text, 1.4 leading, -0.01em",
             ],
             [
               "Formatting",
@@ -41,7 +41,7 @@ const meta: Meta<Args> = {
           tokens: [
             ["Text", "--semantic-text-muted", "#717680", "#717680"],
             ["Emphasis", "--semantic-text-link", "#4275D6", "#4275D6"],
-            ["Type", "--font-v2", "13px regular; emphasis medium"],
+            ["Type", "--font-v2", "12px regular; emphasis medium"],
             ["Margin", "my-1", "4px"],
           ],
           guidance:

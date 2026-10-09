@@ -88,7 +88,7 @@ const meta: Meta<typeof Textarea> = {
             [
               "Messages",
               "Pop in",
-              "Glide open (240ms); error is a polite live region",
+              "Measured height spring and replacement copy rise/blur; error keeps its polite live region",
             ],
             ["Radius", "4px", "8px"],
             [
@@ -105,7 +105,7 @@ const meta: Meta<typeof Textarea> = {
             [
               "Focus",
               "Thin teal shadow",
-              "#27ABB8 border and a soft 4px shadow",
+              "Primary border emphasis; no outer glow",
             ],
             ["Disabled", "Reduced opacity", "Solid grey surface and border"],
             [
@@ -127,7 +127,7 @@ const meta: Meta<typeof Textarea> = {
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],

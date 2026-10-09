@@ -5,11 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /**
+ * Arc's remove press: a quick dip to .96 (120ms on the standard curve) and a
+ * spring release over 580ms. The sampled curve is Arc's own `--ease-spring`.
+ * Wrapped in `cn(...)` so the CLI prefixer transforms the literal.
+ */
+const removePressClassName = cn(
+  "[transition-property:transform] [transition-duration:580ms] [transition-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] active:[transition-duration:120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100"
+);
+
+/**
  * Tag variants for event labels and categories.
  * Rounded rectangle tags with optional bold labels.
  */
 const tagVariants = cva(
-  "inline-flex items-center gap-1.5 box-border rounded-lg border-[0.4px] border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-5",
+  "inline-flex items-center gap-1.5 box-border rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] tracking-[-0.01em]",
   {
     variants: {
       variant: {
@@ -32,9 +41,10 @@ const tagVariants = cva(
         info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-text",
       },
       size: {
-        default: "h-6 px-2",
-        sm: "h-5 px-1.5 text-xs leading-4",
-        lg: "h-[30px] px-3",
+        // Arc's tag is 28px with 9px side padding; sm and lg step 4px either side of it.
+        default: "h-7 px-[9px]",
+        sm: "h-6 px-2 text-xs",
+        lg: "h-8 px-3",
       },
     },
     defaultVariants: {
@@ -84,20 +94,16 @@ const Tag = React.forwardRef(
   ) => {
     return (
       <span
-        className={cn(tagVariants({ variant, size, className }))}
+        className={cn(
+          tagVariants({ variant, size }),
+          // Arc keeps 4px between the dismiss circle and the edge of the tag.
+          onRemove && "pr-1",
+          className
+        )}
         ref={ref}
         {...props}
       >
-        {label && (
-          <span
-            className={cn(
-              "font-medium",
-              size === "sm" ? "tracking-[0.06px]" : "tracking-[0.014px]"
-            )}
-          >
-            {label}
-          </span>
-        )}
+        {label && <span className="font-medium">{label}</span>}
         <span className="font-normal inline-flex items-center gap-1">
           {children}
         </span>
@@ -105,22 +111,22 @@ const Tag = React.forwardRef(
           <button
             type="button"
             className={cn(
-              // 24px hit area around the unchanged 12px icon; the -6px margin keeps the old 12px layout footprint, so the
-              // tag does not grow. Both visuals are pseudo-elements (no extra DOM, so v1 markup parity holds) and are
-              // inset to 18px so they fit inside the 20px small tag. ::before is the hover plate, parked behind the icon
-              // with isolate + -z-10. The focus ring is a separate ::after because opacity on the plate would fade it too.
-              "relative isolate -m-1.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer focus-visible:outline-none",
-              "before:pointer-events-none before:absolute before:inset-[3px] before:-z-10 before:rounded-full before:bg-[var(--color-black)] before:opacity-0 before:transition-opacity before:ease-out before:content-[''] enabled:[@media(hover:hover)]:hover:before:opacity-[0.08] focus-visible:before:opacity-[0.08]",
-              "after:pointer-events-none after:absolute after:inset-[3px] after:rounded-full after:content-[''] focus-visible:after:outline focus-visible:after:[outline-width:1px] focus-visible:after:outline-offset-1 focus-visible:after:outline-semantic-primary",
-              "transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] [@media(hover:hover)]:hover:scale-[1.03] active:scale-[0.96] motion-reduce:[@media(hover:hover)]:hover:scale-100 motion-reduce:active:scale-100",
-              removeDisabled &&
-                "cursor-not-allowed opacity-50 [@media(hover:hover)]:hover:scale-100 active:scale-100"
+              // Arc: a 22px circle (3px from the label, 4px from the tag edge) around a 14px icon. The 24px
+              // button adds a 1px hit margin on each side that the -ml-1 / -mr-px margins give back, so the
+              // layout footprint is the 22px plate. Both visuals are pseudo-elements (no extra DOM, so v1 markup
+              // parity holds). ::before is the hover plate, parked behind the icon with isolate + -z-10. The focus
+              // ring is a separate ::after because opacity on the plate would fade it too.
+              "relative isolate -ml-1 -mr-px inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer focus-visible:outline-none",
+              "before:pointer-events-none before:absolute before:inset-px before:-z-10 before:rounded-full before:bg-[var(--color-black)] before:opacity-0 before:transition-opacity before:[transition-duration:160ms] before:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] before:content-[''] enabled:[@media(hover:hover)]:hover:before:opacity-[0.08] focus-visible:before:opacity-[0.08]",
+              "after:pointer-events-none after:absolute after:inset-px after:rounded-full after:content-[''] focus-visible:after:outline focus-visible:after:[outline-width:1px] focus-visible:after:outline-offset-1 focus-visible:after:outline-semantic-primary",
+              removePressClassName,
+              removeDisabled && "cursor-not-allowed opacity-50 active:scale-100"
             )}
             onClick={onRemove}
             disabled={removeDisabled}
             aria-label={removeAriaLabel ?? "Remove"}
           >
-            <X className="size-3" />
+            <X className="size-3.5 [stroke-width:1.75]" />
           </button>
         )}
       </span>

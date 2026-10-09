@@ -216,16 +216,28 @@ const meta: Meta<SelectExampleArgs> = {
           summary:
             "Composable Radix select primitives with keyboard navigation, grouped options, wrapped labels and viewport callbacks.",
           changes: [
-            ["Trigger height and radius", "42px / 4px", "40px / 8px"],
+            ["Trigger height and radius", "42px / 4px", "44px / 8px"],
             [
               "Typography",
               "Inherited font",
-              "Inter 16px regular value and options",
+              "Inter 14px regular value and options",
             ],
-            ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px shadow"],
+            [
+              "Focus",
+              "Thin teal shadow",
+              "Primary border emphasis; no outer glow",
+            ],
             ["Error", "Red border", "Red border and soft 4px shadow"],
-            ["Disabled", "Reduced opacity", "Solid grey surface and border"],
-            ["Popup", "6px corners", "8px corners"],
+            [
+              "Disabled",
+              "Reduced opacity",
+              "Solid grey surface and border at 50% opacity",
+            ],
+            [
+              "Popup",
+              "6px corners",
+              "8px corners, 6px padding, 36px rows; rises 6px in 240ms, leaves in 120ms; the chosen value rolls in",
+            ],
             [
               "Behavior",
               "Radix keyboard navigation, scrolling, wrapped/truncated labels",
@@ -243,7 +255,7 @@ const meta: Meta<SelectExampleArgs> = {
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Selection check", "--semantic-brand", "#2BBCCA", "#2BBCCA"],

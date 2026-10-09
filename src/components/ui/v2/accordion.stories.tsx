@@ -130,11 +130,15 @@ const meta: Meta<Args> = {
           summary:
             "Expandable sections with single or multiple selection, disabled items and animated content.",
           changes: [
-            ["Trigger", "Inherited semibold type", "Inter 16px medium title"],
+            [
+              "Trigger",
+              "Inherited semibold type",
+              "Inter 14px medium title, 50px minimum height",
+            ],
             [
               "Spacing",
               "v1 spacing",
-              "Recorded 16px horizontal / 10px vertical, 12px gap",
+              "Plain list: edge-to-edge, 8px vertical, 20px gap, a hairline between rows. Bordered frame keeps a 16px inset",
             ],
             [
               "Borders",
@@ -144,7 +148,7 @@ const meta: Meta<Args> = {
             [
               "Content",
               "Inherited 14px text",
-              "14px body with 16px horizontal inset",
+              "14px body, 32px right and 20px bottom padding; opens on a spring with a brief focus pull",
             ],
             [
               "Selection",
@@ -155,9 +159,9 @@ const meta: Meta<Args> = {
           tokens: [
             ["Title", "--semantic-text-primary", "#181D27", "#181D27"],
             ["Body", "--semantic-text-secondary", "#414651", "#414651"],
-            ["Hover", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
+            ["Hover", "--semantic-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Font", "--font-v2", "Inter 16px / 500"],
+            ["Font", "--font-v2", "Inter 14px / 500"],
           ],
           guidance:
             "Use single when only one section should remain open. value is an array even in single mode. Use defaultValue for initial uncontrolled sections, or value plus onValueChange for synchronized selection. The showChevron control configures AccordionTrigger; firstDisabled configures the first AccordionItem. Use native Enter/Space to toggle a focused trigger.",

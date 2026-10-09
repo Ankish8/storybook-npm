@@ -44,10 +44,10 @@ function ReplyQuoteInner({
           thumb ? "flex-1" : "w-full"
         )}
       >
-        <p className="m-0 min-w-0 shrink-0 truncate text-[14px] font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]">
+        <p className="m-0 min-w-0 shrink-0 truncate text-[14px] font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)]">
           {sender}
         </p>
-        <p className="m-0 min-w-0 line-clamp-1 text-[14px] leading-5 text-[var(--v2-text-secondary,#5E5E5E)]">
+        <p className="m-0 min-w-0 line-clamp-1 text-[14px] leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)]">
           {message}
         </p>
       </div>
@@ -68,12 +68,12 @@ function replyQuoteClassName(
   isInteractive: boolean
 ) {
   return cn(
-    "w-full min-w-0 font-[family-name:var(--font-v2,Inter,sans-serif)] bg-[var(--semantic-bg-ui,#F5F5F5)] border-l-[3px] border-solid border-[var(--semantic-border-accent,#27ABB8)] rounded-sm px-4 py-1.5 mb-2 h-[56px] overflow-hidden cursor-pointer hover:bg-[var(--semantic-bg-hover,#D5D7DA)] transition-colors text-left",
+    "w-full min-w-0 font-[family-name:var(--font-v2,Inter,sans-serif)] bg-[var(--semantic-bg-ui,#F5F5F5)] border-l-[3px] border-solid border-[var(--semantic-border-accent,#27ABB8)] rounded-sm px-4 py-1.5 mb-2 h-[56px] overflow-hidden text-left",
     hasThumbnail
       ? "flex flex-row items-center gap-2"
       : "flex flex-col justify-start gap-0",
     isInteractive &&
-      "focus-visible:ring-2 focus-visible:ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:ring-offset-1 focus-visible:outline-none border-t-0 border-r-0 border-b-0",
+      "cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-[var(--semantic-bg-ui,#F5F5F5)] active:bg-[var(--semantic-info-surface,#ECF1FB)] focus-visible:ring-2 focus-visible:ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:ring-offset-1 focus-visible:outline-none border-t-0 border-r-0 border-b-0",
     className
   );
 }

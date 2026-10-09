@@ -146,7 +146,7 @@ export const ReadableField = React.forwardRef(
       >
         {/* Header Row: Label + Optional Action */}
         <div className="flex items-start justify-between">
-          <span className="text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+          <span className="text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]">
             {label}
           </span>
           {headerAction &&
@@ -180,7 +180,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-10 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui px-4 transition-[border-color,box-shadow] hover:border-[var(--color-primary-100)] focus-within:border-semantic-border-accent focus-within:shadow-[0_0_4px_rgba(39,171,184,0.4)]",
+            "flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui px-3 transition-[border-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] hover:border-semantic-primary focus-within:shadow-none",
             inputClassName
           )}
         >
@@ -188,7 +188,7 @@ export const ReadableField = React.forwardRef(
           <span
             ref={valueRef}
             className={cn(
-              "text-base text-[var(--v2-text-secondary,#5E5E5E)] tracking-[0.08px] truncate",
+              "text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] tracking-[-0.01em] truncate",
               !(secret && !isVisible) && "select-all"
             )}
           >
@@ -269,7 +269,7 @@ export const ReadableField = React.forwardRef(
 
         {/* Helper Text */}
         {helperText && (
-          <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
+          <p className="m-0 text-xs leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-muted,#707070)]">
             {helperText}
           </p>
         )}

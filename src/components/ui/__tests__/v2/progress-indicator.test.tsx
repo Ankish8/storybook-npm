@@ -1,6 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { ProgressIndicator } from "../../v2/progress-indicator";
+// The fill is a full-width bar slid in from the left, so its rounded end keeps its shape: translateX(value - 100%).
+const fillPercent = (fill: HTMLElement) =>
+  100 + parseFloat(/translateX\((-?[\d.]+)%\)/.exec(fill.style.transform)![1]);
 describe("v2 ProgressIndicator", () => {
   it("exposes labelled progress and current value", () => {
     render(<ProgressIndicator value={30} aria-label="Import" />);
@@ -9,6 +12,31 @@ describe("v2 ProgressIndicator", () => {
       "30"
     );
     expect(screen.getByText("30%")).toBeInTheDocument();
+  });
+  it("keeps the visible count and fill synchronized while a value change settles", async () => {
+    const { rerender } = render(<ProgressIndicator value={20} />);
+    const fill = screen.getByRole("progressbar").firstElementChild
+      ?.firstElementChild as HTMLElement;
+    rerender(<ProgressIndicator value={60} />);
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "60"
+    );
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuetext",
+      "60%"
+    );
+    const visibleCount = Number(
+      screen.getByText(/%/).textContent?.replace("%", "")
+    );
+    expect(Math.abs(fillPercent(fill) - visibleCount)).toBeLessThanOrEqual(0.5);
+    await waitFor(
+      () => {
+        expect(screen.getByText("60%")).toBeInTheDocument();
+        expect(fillPercent(fill)).toBeCloseTo(60, 0);
+      },
+      { timeout: 2000 }
+    );
   });
   it("clamps out-of-range values", () => {
     const { rerender } = render(<ProgressIndicator value={110} />);
@@ -94,7 +122,8 @@ describe("v2 ProgressIndicator", () => {
     it("adds no animation or keyframes to a determinate bar", () => {
       const { track, fill } = renderBar({ indeterminate: false, value: 40 });
       expect(track.querySelector("style")).toBeNull();
-      expect(fill).toHaveStyle({ width: "40%" });
+      expect(fillPercent(fill)).toBe(40);
+      expect(fill.style.width).toBe("");
       expect(fill.className).not.toMatch(
         /animate|myoperator-v2-progress-slide/
       );
@@ -107,6 +136,29 @@ describe("v2 ProgressIndicator", () => {
       expect(
         container.querySelector("circle.animate-spin")
       ).toBeInTheDocument();
+    });
+  });
+  describe("completion", () => {
+    it("turns the fill to the success colour and shows a check once the value reaches 100", () => {
+      const { rerender } = render(<ProgressIndicator value={80} />);
+      const bar = screen.getByRole("progressbar");
+      const fill = bar.firstElementChild?.firstElementChild as HTMLElement;
+      expect(fill).not.toHaveAttribute("data-complete");
+      expect(bar.querySelector("svg")).toBeNull();
+      rerender(<ProgressIndicator value={100} />);
+      expect(fill).toHaveAttribute("data-complete");
+      expect(fill).toHaveClass("data-[complete]:bg-semantic-success-primary");
+      expect(bar.querySelector("svg")).toBeInTheDocument();
+      expect(
+        bar.querySelector("svg")?.closest("[aria-hidden=true]")
+      ).not.toBeNull();
+    });
+  });
+  describe("track", () => {
+    it("is 7px tall inside a 1px border, as in Arc", () => {
+      render(<ProgressIndicator value={10} />);
+      const track = screen.getByRole("progressbar").firstElementChild;
+      expect(track).toHaveClass("h-[7px]", "border");
     });
   });
   describe("percentage text", () => {

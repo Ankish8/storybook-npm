@@ -19,7 +19,55 @@ import { cn } from "@/lib/utils";
  * </Tabs>
  * ```
  */
-const Tabs = TabsPrimitive.Root;
+const Tabs = React.forwardRef<
+  React.ComponentRef<typeof TabsPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root>
+>(({ onValueChange, style, ...props }, ref) => {
+  // The incoming panel slides in from the side the new tab sits on (+1 after the old tab, -1 before it), as in Arc.
+  const rootRef = React.useRef<HTMLDivElement | null>(null);
+  const [direction, setDirection] = React.useState(1);
+  // Radix reports uncontrolled changes after it has already committed them, so the previous value is tracked here.
+  const lastValue = React.useRef(props.value ?? props.defaultValue);
+  const composedRef = React.useCallback(
+    (element: HTMLDivElement | null) => {
+      rootRef.current = element;
+      if (typeof ref === "function") ref(element);
+      else if (ref) ref.current = element;
+    },
+    [ref]
+  );
+  const follow = React.useCallback((next: string | undefined) => {
+    const previous = lastValue.current;
+    lastValue.current = next;
+    const root = rootRef.current;
+    if (!root || previous === undefined || next === undefined) return;
+    const ids = Array.from(root.querySelectorAll<HTMLElement>('[role="tab"]'))
+      .filter((tab) => {
+        const panel = tab.closest('[role="tabpanel"]');
+        return !panel || panel.contains(root);
+      })
+      .map((tab) => tab.id);
+    const from = ids.findIndex((id) => id.endsWith(`-trigger-${previous}`));
+    const to = ids.findIndex((id) => id.endsWith(`-trigger-${next}`));
+    if (from >= 0 && to >= 0 && from !== to) setDirection(to > from ? 1 : -1);
+  }, []);
+  React.useLayoutEffect(() => {
+    if (props.value !== undefined && props.value !== lastValue.current)
+      follow(props.value);
+  }, [props.value, follow]);
+  return (
+    <TabsPrimitive.Root
+      ref={composedRef}
+      onValueChange={(next) => {
+        follow(next);
+        onValueChange?.(next);
+      }}
+      style={{ "--v2-tab-dir": direction, ...style } as React.CSSProperties}
+      {...props}
+    />
+  );
+});
+Tabs.displayName = TabsPrimitive.Root.displayName;
 
 export interface TabsListProps extends React.ComponentPropsWithoutRef<
   typeof TabsPrimitive.List
@@ -43,7 +91,16 @@ const TabsVariantContext = React.createContext<"underline" | "pill">(
 const useBrowserLayoutEffect =
   typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
-function useTabIndicator(listRef: React.RefObject<HTMLDivElement | null>) {
+// Arc's "morph" spring (motion: visualDuration 0.42, bounce 0.16) for the pill cursor, derived the way motion does:
+// root = 2π / (visualDuration × 1.2), stiffness = root², damping = 2 × (1 − bounce) × root. The underline keeps its
+// critically damped spring so the original rail never overshoots.
+const PILL_OMEGA = (2 * Math.PI) / (0.42 * 1.2);
+const PILL_ZETA = 1 - 0.16;
+
+function useTabIndicator(
+  listRef: React.RefObject<HTMLDivElement | null>,
+  bouncy: boolean
+) {
   useBrowserLayoutEffect(() => {
     const list = listRef.current;
     if (!list) return;
@@ -57,9 +114,10 @@ function useTabIndicator(listRef: React.RefObject<HTMLDivElement | null>) {
     let current = [0, 0, 0, 0];
     let target = [0, 0, 0, 0];
     let velocity = [0, 0, 0, 0];
-    // Critically damped spring: omega=30 rad/s (mass=1, stiffness=900,
+    // Underline: critically damped spring, omega=30 rad/s (mass=1, stiffness=900,
     // damping=60). Exact integration preserves velocity on rapid retargets.
-    const omega = 30;
+    const omega = bouncy ? PILL_OMEGA : 30;
+    const zeta = bouncy ? PILL_ZETA : 1;
 
     const paint = () => {
       ["x", "y", "width", "height"].forEach((axis, index) => {
@@ -79,18 +137,40 @@ function useTabIndicator(listRef: React.RefObject<HTMLDivElement | null>) {
     const tick = (time: number) => {
       const dt = Math.max(0, (time - lastTime) / 1000);
       lastTime = time;
-      const decay = Math.exp(-omega * dt);
       let settled = true;
-      current = current.map((position, index) => {
-        const offset = position - target[index];
-        const coefficient = velocity[index] + omega * offset;
-        const nextOffset = (offset + coefficient * dt) * decay;
-        velocity[index] = (velocity[index] - omega * coefficient * dt) * decay;
-        if (Math.abs(nextOffset) > 0.1 || Math.abs(velocity[index]) > 0.5) {
-          settled = false;
-        }
-        return target[index] + nextOffset;
-      });
+      if (zeta === 1) {
+        const decay = Math.exp(-omega * dt);
+        current = current.map((position, index) => {
+          const offset = position - target[index];
+          const coefficient = velocity[index] + omega * offset;
+          const nextOffset = (offset + coefficient * dt) * decay;
+          velocity[index] =
+            (velocity[index] - omega * coefficient * dt) * decay;
+          if (Math.abs(nextOffset) > 0.1 || Math.abs(velocity[index]) > 0.5) {
+            settled = false;
+          }
+          return target[index] + nextOffset;
+        });
+      } else {
+        // Under-damped: semi-implicit Euler in 1/240s steps keeps the small overshoot stable at any frame rate.
+        const steps = Math.min(60, Math.max(1, Math.ceil(dt * 240)));
+        const h = dt / steps;
+        const stiffness = omega * omega;
+        const damping = 2 * zeta * omega;
+        current = current.map((position, index) => {
+          let x = position;
+          let v = velocity[index];
+          for (let i = 0; i < steps; i++) {
+            v += (-stiffness * (x - target[index]) - damping * v) * h;
+            x += v * h;
+          }
+          velocity[index] = v;
+          if (Math.abs(x - target[index]) > 0.1 || Math.abs(v) > 0.5) {
+            settled = false;
+          }
+          return x;
+        });
+      }
       paint();
       if (settled) snap();
       else frame = window.requestAnimationFrame(tick);
@@ -182,7 +262,7 @@ function useTabIndicator(listRef: React.RefObject<HTMLDivElement | null>) {
         list.style.removeProperty(`--v2-tab-${axis}`)
       );
     };
-  }, [listRef]);
+  }, [listRef, bouncy]);
 }
 
 const underlineListClasses = [
@@ -195,7 +275,7 @@ const underlineListClasses = [
 // The cursor is the same measured ::after the underline uses, but it covers the whole selected tab, so it needs both
 // axes. `isolate` + `-z-10` park it behind the labels without wrapping them in a new element.
 const pillListClasses = [
-  "relative isolate inline-flex w-fit max-w-full items-center rounded-lg bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
+  "relative isolate inline-flex w-fit max-w-full items-center gap-1 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
   "after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-semantic-border-layout after:bg-semantic-bg-primary after:shadow-xs after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
   // Before the first measurement (server render, hidden Docs sample) the selected tab paints its own pill, so
   // selection is never invisible; once the cursor is live these are cleared so nothing is drawn twice.
@@ -208,7 +288,8 @@ const TabsList = React.forwardRef(
     ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>
   ) => {
     const listRef = React.useRef<HTMLDivElement>(null);
-    useTabIndicator(listRef);
+    const pill = variant === "pill";
+    useTabIndicator(listRef, pill);
     const composedRef = React.useCallback(
       (element: HTMLDivElement | null) => {
         listRef.current = element;
@@ -217,7 +298,6 @@ const TabsList = React.forwardRef(
       },
       [ref]
     );
-    const pill = variant === "pill";
     return (
       <TabsVariantContext.Provider value={pill ? "pill" : "underline"}>
         <TabsPrimitive.List
@@ -249,10 +329,10 @@ const underlineTriggerClasses = [
 
 // The 1px transparent border keeps the tab the same size whether or not it paints its own (fallback) pill.
 const pillTriggerClasses = [
-  "inline-flex h-8 items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] cursor-pointer transition-colors duration-150 ease-out",
-  "text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]",
+  "inline-flex h-9 min-w-[88px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
+  "text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:text-[var(--v2-text-primary,#484848)]",
   "data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs",
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-0 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:opacity-50",
   "data-[orientation=vertical]:justify-start",
 ];
 
@@ -290,8 +370,9 @@ const TabsContent = React.forwardRef(
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline-none",
-        "data-[state=active]:motion-safe:animate-in data-[state=active]:motion-safe:fade-in-0 duration-150 ease-out",
+        "mt-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline-none",
+        // Fades in while sliding 8px from the side of the newly selected tab (--v2-tab-dir is set by <Tabs>).
+        "data-[state=active]:motion-safe:animate-in data-[state=active]:motion-safe:fade-in-0 data-[state=active]:motion-safe:[--tw-enter-translate-x:calc(var(--v2-tab-dir,1)*8px)] data-[state=active]:motion-safe:[animation-duration:240ms] data-[state=active]:motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
         className
       )}
       {...props}

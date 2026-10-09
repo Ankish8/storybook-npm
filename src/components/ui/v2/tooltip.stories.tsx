@@ -37,11 +37,11 @@ function tooltipCopy(args: TooltipStoryArgs) {
   return (
     <div className="flex max-w-full flex-col gap-1.5">
       {args.rich && (
-        <p className="m-0 text-xs font-medium text-[var(--v2-text-primary,#484848)]">
+        <p className="m-0 text-sm font-medium leading-[1.4] text-[var(--v2-text-primary,#484848)]">
           {args.title}
         </p>
       )}
-      <p className="m-0 text-xs leading-4">{args.tooltipText}</p>
+      <p className="m-0 text-sm leading-[1.4]">{args.tooltipText}</p>
     </div>
   );
 }
@@ -57,7 +57,7 @@ function InlineTooltip({
     <div
       className={
         version === "v2"
-          ? "relative max-w-xs whitespace-normal rounded-md bg-semantic-info-surface px-4 py-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_3px_0_rgba(10,13,18,0.1),0_1px_2px_-1px_rgba(10,13,18,0.1)] ring-1 ring-inset ring-black/5"
+          ? "relative max-w-[15rem] whitespace-normal rounded-md border border-solid border-black/5 bg-semantic-info-surface px-4 py-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_6px_18px_rgba(0,0,0,0.065),0_1px_3px_rgba(0,0,0,0.035)]"
           : "relative max-w-xs whitespace-normal rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md"
       }
       data-v2-component={version === "v2" ? "tooltip" : undefined}
@@ -186,14 +186,15 @@ const meta: Meta<TooltipStoryArgs> = {
               "Dark primary, inverted text",
               "Light blue info surface, secondary text",
             ],
-            ["Padding", "6px / 12px", "6px / 16px"],
+            ["Padding", "6px / 12px", "12px / 16px inside a 1px edge"],
             [
               "Typography",
               "Inherited 12px",
-              "Inter 12px regular; optional title 12px medium",
+              "Inter 14px regular, 1.4 line height; optional title 14px medium",
             ],
             ["Corners", "6px", "6px"],
-            ["Maximum width", "320px", "320px"],
+            ["Maximum width", "320px", "240px"],
+            ["Offset and delay", "4px / 700ms", "8px from the trigger, 250ms open delay, next one opens instantly for 300ms"],
             [
               "Interaction",
               "Hover, keyboard focus, Escape and touch toggle",
@@ -209,7 +210,7 @@ const meta: Meta<TooltipStoryArgs> = {
             [
               "Shadow",
               "Recorded tooltip shadow",
-              "0 1px 3px rgba(10,13,18,.1), 0 1px 2px -1px rgba(10,13,18,.1)",
+              "0 6px 18px rgba(0,0,0,.065), 0 1px 3px rgba(0,0,0,.035)",
             ],
           ],
           guidance:
@@ -223,7 +224,7 @@ const meta: Meta<TooltipStoryArgs> = {
     delayDuration: 0,
     side: "top",
     align: "center",
-    sideOffset: 4,
+    sideOffset: 8,
     triggerLabel: "Hover or focus me",
     tooltipText: "View conversation details.",
     title: "Conversation details",

@@ -46,24 +46,27 @@ const mapTagName: { [key in Key]: keyof React.JSX.IntrinsicElements } = {
 };
 
 /**
- * Maps kind-variant combinations to Tailwind typography classes
+ * Maps kind-variant combinations to Tailwind typography classes.
+ * Weights, leading and tracking follow Arc's heading/body conventions (500 headings,
+ * 1.1 display leading, -0.03/-0.02em heading tracking, 1.3 title leading, 1.4 body
+ * leading with -0.01em tracking); sizes keep the existing v2 scale.
  */
 const mapClassName: { [key in Key]: string } = {
-  "display-large": "text-[57px] leading-[64px] font-normal",
-  "display-medium": "text-[45px] leading-[52px] font-normal",
-  "display-small": "text-[36px] leading-[44px] font-normal",
-  "headline-large": "text-[32px] leading-[40px] font-semibold",
-  "headline-medium": "text-[28px] leading-[36px] font-semibold",
-  "headline-small": "text-[24px] leading-[32px] font-semibold",
-  "title-large": "text-lg leading-[22px] font-medium",
-  "title-medium": "text-base leading-5 font-medium",
-  "title-small": "text-sm leading-[18px] font-medium",
-  "label-large": "text-sm leading-5 font-semibold tracking-[0.014px]",
-  "label-medium": "text-xs leading-4 font-semibold tracking-[0.06px]",
-  "label-small": "text-[10px] leading-[14px] font-semibold",
-  "body-large": "text-base leading-5 font-normal",
-  "body-medium": "text-sm leading-[18px] font-normal",
-  "body-small": "text-xs leading-4 font-normal",
+  "display-large": "text-[57px] leading-[1.1] font-medium tracking-[-0.03em]",
+  "display-medium": "text-[45px] leading-[1.1] font-medium tracking-[-0.03em]",
+  "display-small": "text-[36px] leading-[1.1] font-medium tracking-[-0.03em]",
+  "headline-large": "text-[32px] leading-[1.1] font-medium tracking-[-0.03em]",
+  "headline-medium": "text-[28px] leading-[1.1] font-medium tracking-[-0.02em]",
+  "headline-small": "text-[24px] leading-[1.1] font-medium tracking-[-0.02em]",
+  "title-large": "text-lg leading-[1.3] font-medium tracking-[-0.01em]",
+  "title-medium": "text-base leading-[1.3] font-medium tracking-[-0.01em]",
+  "title-small": "text-sm leading-[1.3] font-medium tracking-[-0.01em]",
+  "label-large": "text-sm leading-[1.4] font-medium tracking-[-0.01em]",
+  "label-medium": "text-xs leading-[1.4] font-medium tracking-[-0.01em]",
+  "label-small": "text-[10px] leading-[1.4] font-medium tracking-[-0.01em]",
+  "body-large": "text-base leading-[1.4] font-normal tracking-[-0.01em]",
+  "body-medium": "text-sm leading-[1.4] font-normal tracking-[-0.01em]",
+  "body-small": "text-xs leading-[1.4] font-normal tracking-[-0.01em]",
 };
 
 /**

@@ -81,7 +81,7 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Heights",
               "Content and padding determine the height",
-              "sm 20 · default 24 · lg 30px",
+              "sm 24 · default 28 · lg 32px",
             ],
             ["Radius", "4px", "8px"],
             [
@@ -92,9 +92,9 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Spacing",
               "Label and dismiss margins",
-              "6px gap between label, content and dismiss",
+              "6px between label and content, dismiss circle 3px from the content",
             ],
-            ["Borders", "None", "0.4px tinted border for every variant"],
+            ["Borders", "None", "1px tinted border for every variant"],
             ["Accent", "Grey surface", "Teal surface and border"],
             [
               "Status text",
@@ -104,7 +104,7 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Dismiss target",
               "12px icon is the whole target",
-              "24px target, neutral hover plate and own focus ring; icon stays 12px and the tag does not grow",
+              "24px target around a 22px circle and 14px icon, neutral hover plate and own focus ring; presses to 96% and springs back",
             ],
             [
               "Dismissal and overflow",
@@ -189,7 +189,7 @@ const meta: Meta<TagStoryArgs> = {
     size: {
       control: "select",
       options: SIZES,
-      description: "Small 20px, default 24px, or large 30px.",
+      description: "Small 24px, default 28px, or large 32px.",
     },
     children: {
       control: "text",
@@ -386,7 +386,7 @@ export const VariantsAndSizes: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[720px] grid-cols-[110px_repeat(3,minmax(180px,1fr))] items-center gap-x-6 gap-y-5">
         <div />
-        {["Small · 20px", "Default · 24px", "Large · 30px"].map((label) => (
+        {["Small · 24px", "Default · 28px", "Large · 32px"].map((label) => (
           <div
             key={label}
             className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"

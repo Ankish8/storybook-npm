@@ -159,13 +159,13 @@ const meta: Meta<Args> = {
             [
               "Type",
               "Inherited type",
-              "Inter 16px values; label 14px / 500; supporting text 12px",
+              "Inter 14px values; label 14px / 500; supporting text 12px",
             ],
             ["Hover", "Old teal stroke", "C0C3CA border"],
             [
               "Focus and open",
               "Thin teal highlight",
-              "27ABB8 border and soft 4px halo",
+              "Primary border emphasis; no outer glow",
             ],
             [
               "Error",
@@ -206,7 +206,7 @@ const meta: Meta<Args> = {
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
             ["Family", "--font-v2", "Inter"],

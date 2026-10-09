@@ -1,4 +1,12 @@
 import * as React from "react";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+} from "motion/react";
+import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ProgressIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -33,6 +41,30 @@ const ProgressIndicator = React.forwardRef<
       0,
       Math.min(100, Number.isFinite(value) ? value : 0)
     );
+    const reducedMotion = useReducedMotion();
+    // Arc: one critically damped spring (0.4s visual duration, no bounce) drives the fill and the counted label.
+    const progress = useMotionValue(percentage);
+    const [animatedPercentage, setAnimatedPercentage] =
+      React.useState(percentage);
+    useMotionValueEvent(progress, "change", (next) => {
+      setAnimatedPercentage(Math.max(0, Math.min(100, next)));
+    });
+    React.useEffect(() => {
+      if (reducedMotion) {
+        progress.jump(percentage);
+        return;
+      }
+      const controls = animate(progress, percentage, {
+        type: "spring",
+        visualDuration: 0.4,
+        bounce: 0,
+      });
+      return () => controls.stop();
+    }, [percentage, reducedMotion, progress]);
+    // Completion lands as the fill arrives: the fill turns to the success colour and a check settles in by the count.
+    const complete = percentage >= 100;
+    // The visible count and fill share a single spring; semantic progress exposes the real value immediately.
+    const displayedPercentage = reducedMotion ? percentage : animatedPercentage;
     const circle = variant !== "bar";
     const semi = variant === "semi-circle";
     const radius = 24.43256;
@@ -46,16 +78,16 @@ const ProgressIndicator = React.forwardRef<
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={indeterminate ? undefined : percentage}
+        aria-valuetext={
+          indeterminate ? undefined : `${Math.round(percentage)}%`
+        }
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[15px] text-[var(--v2-text-secondary,#5E5E5E)]",
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)]",
           circle
-            ? "relative inline-flex w-[54px] items-center justify-center"
-            : "flex w-[320px] max-w-full items-center gap-3",
+            ? "relative inline-flex w-[54px] items-center justify-center text-xs leading-[15px]"
+            : "flex w-[320px] max-w-full items-center gap-3 text-sm leading-[1.4]",
           !circle && labelPosition === "bottom" && "flex-col items-end gap-2",
-          !circle &&
-            labelPosition === "right" &&
-            !indeterminate &&
-            "min-h-[17px]",
+          !circle && labelPosition === "right" && !indeterminate && "min-h-5",
           className
         )}
         {...props}
@@ -84,8 +116,7 @@ const ProgressIndicator = React.forwardRef<
                     stroke="var(--semantic-info-primary,#4275D6)"
                     strokeWidth="5.13488"
                     strokeDasharray={length}
-                    strokeDashoffset={length * (1 - percentage / 100)}
-                    className="transition-[stroke-dashoffset] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+                    strokeDashoffset={length * (1 - displayedPercentage / 100)}
                   />
                 </>
               ) : (
@@ -106,9 +137,8 @@ const ProgressIndicator = React.forwardRef<
                     stroke="var(--semantic-info-primary,#4275D6)"
                     strokeWidth="5.13488"
                     strokeDasharray={length}
-                    strokeDashoffset={length * (1 - percentage / 100)}
+                    strokeDashoffset={length * (1 - displayedPercentage / 100)}
                     className={cn(
-                      "transition-[stroke-dashoffset] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
                       indeterminate &&
                         "origin-center animate-spin motion-reduce:[animation-duration:2s]"
                     )}
@@ -124,35 +154,68 @@ const ProgressIndicator = React.forwardRef<
                   semi && "bottom-0"
                 )}
               >
-                {Math.round(percentage)}%
+                {Math.round(displayedPercentage)}%
               </span>
             )}
           </>
         ) : (
           <>
             <div
+              // Arc's track: 7px tall inside a 1px border. The fill slides in from the left instead of scaling, so
+              // its rounded end keeps its shape at every value.
               className={cn(
-                "relative h-2 w-full min-w-0 overflow-hidden rounded-lg border-[0.2px] border-solid border-semantic-border-layout bg-semantic-border-layout",
+                "relative h-[7px] w-full min-w-0 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui",
                 labelPosition === "bottom" ? "shrink-0" : "flex-1"
               )}
             >
               <div
+                data-complete={complete || undefined}
                 className={cn(
-                  "h-full rounded-lg bg-semantic-info-primary transition-[width] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none",
+                  "block h-full w-full rounded-[inherit] bg-semantic-info-primary [transition:background-color_240ms_cubic-bezier(0.22,1,0.36,1)] data-[complete]:bg-semantic-success-primary data-[complete]:[transition-delay:200ms] motion-reduce:transition-none",
                   // Reduced motion keeps the static 30% fill: no movement and no pulse.
                   indeterminate &&
                     "motion-safe:[animation:myoperator-v2-progress-slide_1.5s_cubic-bezier(0.65,0,0.35,1)_infinite]"
                 )}
-                style={{ width: indeterminate ? "30%" : `${percentage}%` }}
+                style={
+                  indeterminate
+                    ? { width: "30%" }
+                    : { transform: `translateX(${displayedPercentage - 100}%)` }
+                }
               />
               {indeterminate && <style>{SLIDE_KEYFRAMES}</style>}
             </div>
             {labelPosition !== "none" && !indeterminate && (
               <span
                 aria-hidden="true"
-                className="shrink-0 text-xs leading-[15px] tabular-nums"
+                className="inline-flex shrink-0 items-center gap-1 text-[var(--v2-text-muted,#707070)]"
               >
-                {Math.round(percentage)}%
+                {complete && (
+                  <motion.span
+                    initial={
+                      reducedMotion
+                        ? { opacity: 0 }
+                        : { opacity: 0, scale: 0.6, filter: "blur(2px)" }
+                    }
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    transition={
+                      reducedMotion
+                        ? { duration: 0.12 }
+                        : {
+                            type: "spring",
+                            visualDuration: 0.26,
+                            bounce: 0.12,
+                            delay: 0.24,
+                          }
+                    }
+                    className="grid place-items-center text-semantic-success-primary"
+                  >
+                    <Check className="size-3.5" strokeWidth={1.75} />
+                  </motion.span>
+                )}
+                {/* A hidden "100%" row reserves the widest count, so the check never shifts as the number gains a digit. */}
+                <span className="inline-grid justify-items-end tabular-nums before:invisible before:h-0 before:overflow-hidden before:content-['100%']">
+                  {Math.round(displayedPercentage)}%
+                </span>
               </span>
             )}
           </>

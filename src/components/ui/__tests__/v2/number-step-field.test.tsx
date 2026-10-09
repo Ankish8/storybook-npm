@@ -365,4 +365,15 @@ describe("NumberStepField hold to repeat and tiles", () => {
     const column = screen.getByLabelText("Increase value").parentElement!;
     expect(column).toHaveClass("h-full", "w-7", "flex-col");
   });
+
+  it("marks a held stepper with data-pressed (pointer down cancels :active) and clears it on release", () => {
+    render(<Harness />);
+    const up = screen.getByLabelText("Increase value");
+    expect(up).not.toHaveAttribute("data-pressed");
+    fireEvent.pointerDown(up, { button: 0 });
+    expect(up).toHaveAttribute("data-pressed");
+    fireEvent.pointerUp(up);
+    expect(up).not.toHaveAttribute("data-pressed");
+    expect(up.className).toContain("[&:is(:active,[data-pressed])");
+  });
 });

@@ -362,7 +362,7 @@ const SelectField = React.forwardRef(
     return (
       <div
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col gap-1",
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col gap-2",
           wrapperClassName
         )}
       >
@@ -371,7 +371,7 @@ const SelectField = React.forwardRef(
           <label
             htmlFor={selectId}
             className={cn(
-              "text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
+              "text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -551,14 +551,14 @@ const SelectField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+                className="text-xs leading-[1.4] text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
               >
                 {error}
               </span>
             ) : helperText ? (
               <span
                 id={helperId}
-                className="text-xs text-[var(--v2-text-muted,#707070)]"
+                className="text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]"
               >
                 {helperText}
               </span>

@@ -1,21 +1,71 @@
 import * as React from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { ChevronDown } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 
 import { cn } from "@/lib/utils";
 
+/** Measures copy as it wraps or changes, so opening, replacement and closing all animate height. */
+function FieldFeedback({
+  active,
+  children,
+  className,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const content = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState<number | null>(null);
+  const reduced = useReducedMotion() ?? false;
+  React.useLayoutEffect(() => {
+    const node = content.current;
+    if (!node) return;
+    const measure = () => setHeight(node.getBoundingClientRect().height);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [children]);
+  return (
+    <motion.div
+      data-field-feedback=""
+      initial={false}
+      animate={{
+        height: active ? (height ?? "auto") : 0,
+        opacity: active ? 1 : 0,
+      }}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : {
+              // Arc: the row opens its height on a critically damped spring while the opacity follows in 160ms.
+              height: { type: "spring", visualDuration: 0.4, bounce: 0 },
+              opacity: { duration: 0.16 },
+            }
+      }
+      className="min-w-0 overflow-hidden"
+    >
+      <div ref={content} className={className}>
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
 const phoneInputContainerVariants = cva(
-  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-12 border-solid rounded-lg bg-semantic-bg-primary transition-[border-color,box-shadow,background-color] duration-150",
+  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-11 border-solid rounded-lg bg-semantic-bg-primary transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
         default:
-          "border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:outline-none focus-within:border-semantic-border-accent focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border-semantic-border-input hover:border-semantic-primary focus-within:outline-none focus-within:shadow-none",
         empty:
-          "border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:outline-none focus-within:border-semantic-border-accent focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border-semantic-border-input hover:border-semantic-primary focus-within:outline-none focus-within:shadow-none",
         error:
-          "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus-within:outline-none focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border-semantic-error-primary focus-within:outline-none focus-within:shadow-none",
       },
     },
     defaultVariants: {
@@ -24,13 +74,6 @@ const phoneInputContainerVariants = cva(
   }
 );
 
-/**
- * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
- * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
- * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
- * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
- * its own fade.
- */
 /**
  * A phone number input with a country code prefix area.
  *
@@ -107,12 +150,17 @@ const PhoneInput = React.forwardRef(
 
     // Reveal the message only when it appears after the field did, never on first render.
     const hasMessage = Boolean(validation);
-    const [hadMessage, setHadMessage] = React.useState(hasMessage);
-    const [revealMessage, setRevealMessage] = React.useState(false);
-    if (hasMessage !== hadMessage) {
-      setHadMessage(hasMessage);
-      setRevealMessage(hasMessage);
-    }
+    const reducedMotion = useReducedMotion() ?? false;
+    const copyMotion = {
+      initial: reducedMotion
+        ? (false as const)
+        : { opacity: 0, y: "0.35em", filter: "blur(4px)" },
+      animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+      transition: {
+        duration: reducedMotion ? 0 : 0.24,
+        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      },
+    };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       onKeyDown?.(event);
@@ -164,7 +212,7 @@ const PhoneInput = React.forwardRef(
             state: derivedState,
           }),
           disabled &&
-            "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none cursor-not-allowed",
+            "bg-semantic-bg-ui opacity-50 shadow-none hover:border-semantic-border-input focus-within:shadow-none cursor-not-allowed",
           wrapperClassName
         )}
       >
@@ -177,9 +225,10 @@ const PhoneInput = React.forwardRef(
               }
             : {})}
           className={cn(
-            "flex h-full items-center gap-1.5 pl-2.5 pr-2 shrink-0",
+            "flex h-full items-center gap-1.5 pl-3 pr-3 shrink-0",
+            // Arc's trigger sits 3px inside the shell and fills on hover (same quiet fill as a keyboard-focused row).
             onCountryClick &&
-              "rounded-[10px] border-0 bg-transparent text-left font-normal outline-none cursor-pointer focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
+              "my-[3px] ml-[3px] h-[calc(100%-6px)] rounded-[10px] border-0 bg-transparent pl-[9px] text-left font-normal outline-none cursor-pointer transition-[background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui active:enabled:bg-semantic-bg-ui focus-visible:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
           )}
           onClick={onCountryClick}
           data-testid="phone-input-country"
@@ -193,14 +242,14 @@ const PhoneInput = React.forwardRef(
               aria-label={countryIso}
             />
           )}
-          <span className="text-base text-[var(--v2-text-secondary,#5E5E5E)]">
+          <span className="text-sm font-medium tabular-nums tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)]">
             {countryCode}
           </span>
           {showChevron && (
-            <ChevronDown className="size-3 text-[var(--v2-text-muted,#707070)]" />
+            <ChevronDown className="ml-0.5 size-4 text-[var(--v2-text-muted,#707070)]" />
           )}
         </CountryArea>
-        <div className="w-px h-5 bg-semantic-border-layout shrink-0" />
+        <div className="w-px h-[22px] bg-semantic-border-layout shrink-0" />
         <input
           type="tel"
           id={inputId}
@@ -212,7 +261,7 @@ const PhoneInput = React.forwardRef(
           aria-invalid={ariaInvalid ?? derivedState === "error"}
           aria-describedby={describedBy || undefined}
           className={cn(
-            "min-w-0 flex-1 h-full pl-2 pr-4 text-base text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] outline-none bg-transparent disabled:cursor-not-allowed",
+            "min-w-0 flex-1 h-full pl-3 pr-3 text-sm leading-[1.4] tabular-nums tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] outline-none bg-transparent disabled:cursor-not-allowed",
             className
           )}
           onBeforeInput={handleBeforeInput}
@@ -223,31 +272,22 @@ const PhoneInput = React.forwardRef(
       </div>
     );
 
-    if (!validation) {
-      return phoneInput;
-    }
-
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
         {phoneInput}
-        {/* keyed so React mounts a fresh node: it would otherwise reuse the old divider
-            <div> at this position, and @starting-style only plays on a new element */}
-        <div
-          key="message"
-          className={cn(
-            "grid",
-            revealMessage &&
-              "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+        <FieldFeedback active={hasMessage} className="grid pt-2">
+          {validation && (
+            <motion.p
+              {...copyMotion}
+              key={validation}
+              id={validationId}
+              aria-live="polite"
+              className="m-0 min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+            >
+              {validation}
+            </motion.p>
           )}
-        >
-          <p
-            id={validationId}
-            aria-live="polite"
-            className="m-0 min-h-0 overflow-hidden break-words text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
-          >
-            {validation}
-          </p>
-        </div>
+        </FieldFeedback>
       </div>
     );
   }

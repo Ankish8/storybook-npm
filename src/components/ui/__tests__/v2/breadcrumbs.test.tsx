@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Breadcrumbs } from "../../v2/breadcrumbs";
 const items = ["Home", "Workspace", "Settings", "Integrations", "Webhook"].map(
@@ -37,11 +37,10 @@ describe("Breadcrumbs", () => {
     await userEvent.click(screen.getByRole("menuitem", { name: "Settings" }));
     expect(navigate).toHaveBeenCalledWith(items[2], 2);
     expect(screen.queryByRole("menu")).not.toBeInTheDocument();
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: "Show hidden pages" })
-      ).toHaveFocus()
-    );
+    // A mouse pick leaves focus off the trigger so no keyboard ring is drawn around it
+    expect(
+      screen.getByRole("button", { name: "Show hidden pages" })
+    ).not.toHaveFocus();
   });
   it("forwards a navigation callback for visible links", async () => {
     const navigate = vi.fn();

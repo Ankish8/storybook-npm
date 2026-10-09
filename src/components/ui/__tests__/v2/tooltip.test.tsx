@@ -184,10 +184,12 @@ describe("Tooltip", () => {
       );
       expect(tooltip).toHaveClass("bg-semantic-info-surface");
       expect(tooltip).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
-      expect(tooltip).toHaveClass("text-xs");
+      expect(tooltip).toHaveClass("text-sm");
+      expect(tooltip).toHaveClass("leading-[1.4]");
       expect(tooltip).toHaveClass("rounded-md");
       expect(tooltip).toHaveClass("px-4");
-      expect(tooltip).toHaveClass("py-1.5");
+      expect(tooltip).toHaveClass("py-3");
+      expect(tooltip).toHaveClass("max-w-[15rem]");
     });
   });
 
@@ -454,7 +456,7 @@ describe("Tooltip", () => {
 });
 
 describe("Tooltip v2 refresh", () => {
-  it("skips the grow-in when Radix opens it inside the skip-delay window or on keyboard focus", () => {
+  it("only fades (120ms, no travel or scale) when Radix opens it inside the skip-delay window or on keyboard focus", () => {
     renderTooltip(
       <Tooltip defaultOpen>
         <TooltipTrigger>Trigger</TooltipTrigger>
@@ -465,23 +467,26 @@ describe("Tooltip v2 refresh", () => {
     // A tooltip that is open from the start is not delayed, so Radix reports `instant-open`.
     expect(content).toHaveAttribute("data-state", "instant-open");
     expect(content).toHaveClass(
-      "data-[state=instant-open]:[animation-duration:0ms]"
+      "data-[state=instant-open]:motion-safe:[animation-duration:120ms]"
     );
-    // fade/zoom vars are motion-safe, or the motion-safe animate-in reset cancels them.
+    // The 0.97 grow and the 3px rise only exist on the delayed path; fade/zoom values are motion-safe, or the
+    // motion-safe animate-in reset cancels them.
     expect(content).toHaveClass(
       "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.98]",
-      "data-[state=closed]:motion-safe:fade-out-0"
+      "data-[state=delayed-open]:motion-safe:zoom-in-[0.97]",
+      "data-[state=delayed-open]:data-[side=top]:slide-in-from-bottom-[3px]",
+      "data-[state=closed]:motion-safe:fade-out-0",
+      "data-[state=closed]:motion-safe:zoom-out-[0.98]"
     );
     expect(content).not.toHaveClass("fade-in-0");
-    // The default 160ms in / 100ms out and the spring curve stay for the delayed path.
+    // 160ms in on the delayed path, 120ms out.
     expect(content).toHaveClass(
       "motion-safe:[animation-duration:160ms]",
-      "data-[state=closed]:motion-safe:[animation-duration:100ms]"
+      "data-[state=closed]:motion-safe:[animation-duration:120ms]"
     );
   });
 
-  it("keeps Radix's default open delay (700ms): not open right after hover, open later", async () => {
+  it("opens after Arc's 250ms delay (Radix defaults to 700ms): not open right after hover, open later", async () => {
     const user = userEvent.setup();
     render(
       <TooltipProvider>
@@ -501,7 +506,7 @@ describe("Tooltip v2 refresh", () => {
     expect(getTooltipContent()).toHaveAttribute("data-state", "delayed-open");
   });
 
-  it("draws a 1px inset edge so the pale surface does not melt into a white page", () => {
+  it("draws a 1px edge so the pale surface does not melt into a white page", () => {
     renderTooltip(
       <Tooltip defaultOpen>
         <TooltipTrigger>Trigger</TooltipTrigger>
@@ -509,10 +514,10 @@ describe("Tooltip v2 refresh", () => {
       </Tooltip>
     );
     const content = getTooltipContent();
-    expect(content).toHaveClass("ring-1", "ring-inset", "ring-black/5");
-    // The drop shadow stays alongside it.
+    expect(content).toHaveClass("border", "border-solid", "border-black/5");
+    // Arc's raised shadow sits alongside it.
     expect(content?.className).toContain(
-      "shadow-[0_1px_3px_0_rgba(10,13,18,0.1)"
+      "shadow-[0_6px_18px_rgba(0,0,0,0.065)"
     );
   });
 
@@ -524,5 +529,21 @@ describe("Tooltip v2 refresh", () => {
       </Tooltip>
     );
     expect(getTooltipContent()).toHaveClass("bg-semantic-primary");
+  });
+});
+
+describe("TooltipProvider delay", () => {
+  it("lets a TooltipProvider delayDuration override the 250ms default", async () => {
+    const user = userEvent.setup();
+    render(
+      <TooltipProvider delayDuration={0}>
+        <Tooltip>
+          <TooltipTrigger>Trigger</TooltipTrigger>
+          <TooltipContent>Help</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+    await user.hover(screen.getByRole("button", { name: "Trigger" }));
+    await waitFor(() => expect(screen.getByRole("tooltip")).toBeInTheDocument());
   });
 });

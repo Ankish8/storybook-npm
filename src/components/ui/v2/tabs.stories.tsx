@@ -203,7 +203,7 @@ const meta: Meta<ExampleArgs> = {
             [
               "Pill style",
               "—",
-              'Optional TabsList variant="pill": 4px padded grey track, 32px tabs, white cursor with a 1px border and a faint shadow',
+              'Optional TabsList variant="pill": 1px-bordered grey track with 4px padding and 4px gaps, 36px tabs (88px minimum), white cursor with a 1px border and a faint shadow that glides on a gentle spring; the new panel fades in sliding 8px from the side of the chosen tab',
             ],
             [
               "Keyboard and selection",

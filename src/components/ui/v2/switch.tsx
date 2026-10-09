@@ -8,16 +8,17 @@ import { cn } from "@/lib/utils";
  * Switch track variants (the outer container)
  */
 const switchVariants = cva(
-  // before: = an invisible ring that reaches 4px beyond the border box (-6px from the padding box, which excludes the 2px
-  // border), so the pointer target is 44 x 28 (default) without moving layout. Press scales the
-  // track only (the thumb is deliberately not stretched, see design/V2-MOTION.md).
-  "peer relative inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl border-2 border-solid border-transparent before:absolute before:-inset-[6px] before:content-[''] [transition-property:color,background-color,border-color,transform] [transition-duration:240ms,240ms,240ms,200ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] enabled:active:scale-[0.96] enabled:active:[transition-duration:240ms,240ms,240ms,80ms] motion-reduce:[transition-property:color,background-color,border-color] motion-reduce:enabled:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:bg-semantic-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:[@media(hover:hover)]:hover:data-[state=checked]:bg-semantic-primary-hover enabled:[@media(hover:hover)]:hover:data-[state=unchecked]:bg-semantic-border-layout disabled:data-[state=checked]:bg-semantic-disabled-primary",
+  // Arc track: 42 x 24 with 3px inside padding (no border). The fill is the ::after layer, which crossfades over 240ms,
+  // so the track colour fades rather than jumping; the unchecked surface fades in 160ms. before: = an invisible ring that
+  // reaches 4px beyond the box, so the pointer target is 50 x 32 (default) without moving layout. The track does not scale
+  // on press; the thumb stretches instead (see the thumb).
+  "peer group/switch relative isolate inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl p-[3px] before:absolute before:-inset-1 before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] after:bg-semantic-primary after:opacity-0 after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:after:[transition:opacity_120ms_ease-out] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:after:opacity-100 data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:[@media(hover:hover)]:hover:data-[state=unchecked]:bg-semantic-border-layout",
   {
     variants: {
       size: {
-        default: "h-5 w-9",
-        sm: "h-[18px] w-8",
-        lg: "h-6 w-11",
+        default: "h-6 w-[42px]",
+        sm: "h-5 w-9",
+        lg: "h-7 w-12",
       },
     },
     defaultVariants: {
@@ -28,15 +29,20 @@ const switchVariants = cva(
 
 /**
  * Switch thumb variants (the sliding circle)
+ *
+ * Arc thumb: 18px (default) that travels the track inside its padding on a critically damped spring (visualDuration .3,
+ * 490ms sampled as --arc-glide). While the track is pressed the thumb widens by ~28% of its size toward the far side, keeping
+ * its far edge anchored, with the snappy spring (350ms) for the width; reduced motion skips the stretch.
  */
 const switchThumbVariants = cva(
-  "pointer-events-none block rounded-full bg-semantic-bg-primary shadow-[0_2px_8px_0_rgba(0,0,0,0.06)] ring-0 transition-transform [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
+  "pointer-events-none relative z-[1] block shrink-0 rounded-full bg-semantic-bg-primary shadow-[0_0_0_0.5px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.14),0_2px_6px_rgba(0,0,0,0.06)] ring-0 [--arc-glide:linear(0,.075,.2163,.3756,.5147,.6358,.7282,.8024,.856,.8973,.9273,.9481,.9636,.9742,.9821,.9874,.9913,.9939,.9958,.9971,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_490ms_var(--arc-glide),width_350ms_var(--arc-snappy),background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:background-color_120ms_ease-out] data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
   {
     variants: {
       size: {
-        default: "h-4 w-4 data-[state=checked]:translate-x-4",
-        sm: "h-3.5 w-3.5 data-[state=checked]:translate-x-3.5",
-        lg: "h-5 w-5 data-[state=checked]:translate-x-5",
+        default:
+          "h-[18px] w-[18px] data-[state=checked]:translate-x-[18px] motion-safe:[button:enabled:active_&]:w-[23px] motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-[13px]",
+        sm: "h-3.5 w-3.5 data-[state=checked]:translate-x-4 motion-safe:[button:enabled:active_&]:w-[18px] motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-3",
+        lg: "h-[22px] w-[22px] data-[state=checked]:translate-x-5 motion-safe:[button:enabled:active_&]:w-7 motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-3.5",
       },
     },
     defaultVariants: {
@@ -51,9 +57,9 @@ const switchThumbVariants = cva(
 const labelSizeVariants = cva("", {
   variants: {
     size: {
-      default: "text-sm",
-      sm: "text-xs",
-      lg: "text-base",
+      default: "text-sm leading-[1.4]",
+      sm: "text-xs leading-[1.4]",
+      lg: "text-base leading-[1.4]",
     },
   },
   defaultVariants: {
@@ -67,9 +73,9 @@ const labelSizeVariants = cva("", {
 const labelRowVariants = cva("", {
   variants: {
     size: {
-      default: "min-h-5",
-      sm: "min-h-[18px]",
-      lg: "min-h-6",
+      default: "min-h-6",
+      sm: "min-h-5",
+      lg: "min-h-7",
     },
   },
   defaultVariants: {
@@ -151,7 +157,7 @@ const Switch = React.forwardRef(
               className={cn(
                 labelSizeVariants({ size }),
                 labelRowVariants({ size }),
-                "flex items-center font-medium text-[var(--v2-text-primary,#484848)]",
+                "flex items-center font-normal text-[var(--v2-text-primary,#484848)]",
                 disabled ? "cursor-not-allowed" : "cursor-pointer"
               )}
             >
@@ -167,7 +173,7 @@ const Switch = React.forwardRef(
         </div>
       );
       return (
-        <div className="inline-flex items-start gap-2 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+        <div className="inline-flex items-start gap-3 font-[family-name:var(--font-v2,Inter,sans-serif)]">
           {labelPosition === "left" && text}
           {switchElement}
           {labelPosition === "right" && text}
@@ -179,7 +185,7 @@ const Switch = React.forwardRef(
       return (
         <label
           className={cn(
-            "inline-flex items-center gap-2 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer",
+            "inline-flex items-center gap-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer",
             disabled && "cursor-not-allowed"
           )}
         >
@@ -187,7 +193,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-medium text-[var(--v2-text-primary,#484848)]",
+                "font-normal text-[var(--v2-text-primary,#484848)]",
                 disabled && "opacity-50"
               )}
             >
@@ -199,7 +205,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-medium text-[var(--v2-text-primary,#484848)]",
+                "font-normal text-[var(--v2-text-primary,#484848)]",
                 disabled && "opacity-50"
               )}
             >

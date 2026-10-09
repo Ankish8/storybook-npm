@@ -50,7 +50,7 @@ const meta: Meta<typeof NumberStepField> = {
           tokens: [
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Focus", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Suffix", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
           ],
           guidance:

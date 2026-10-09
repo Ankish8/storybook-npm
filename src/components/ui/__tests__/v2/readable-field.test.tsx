@@ -297,7 +297,7 @@ describe("ReadableField", () => {
 
     const inputContainer = screen.getByText(defaultProps.value).closest("div");
 
-    expect(inputContainer).toHaveClass("h-10");
+    expect(inputContainer).toHaveClass("h-11");
     expect(inputContainer).toHaveClass("rounded-lg");
     expect(inputContainer).toHaveClass("border");
     expect(inputContainer).toHaveClass("border-semantic-border-layout");

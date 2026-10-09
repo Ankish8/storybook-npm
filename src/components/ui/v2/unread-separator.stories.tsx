@@ -36,13 +36,13 @@ const meta: Meta<Args> = {
               "Singular/plural count or custom label",
               "Preserved, including empty custom labels",
             ],
-            ["Spacing", "16px gap, 8px vertical margin", "Preserved"],
+            ["Spacing", "16px gap, 8px vertical margin", "12px gap (Arc day separator), 8px margin"],
           ],
           tokens: [
             ["Text", "--semantic-text-muted", "#717680", "#717680"],
             ["Lines", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Label surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Type", "--font-v2", "12px regular"],
+            ["Type", "--font-v2", "12px medium, 1.4 leading"],
           ],
           guidance:
             "The separator does not own read state. Usage updates count locally and hides the separator after Mark as read. A supplied custom label overrides the count text; use Reset controls to return to the generated label.",

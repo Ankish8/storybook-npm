@@ -65,15 +65,15 @@ const meta: Meta<typeof Input> = {
             [
               "Height and radius",
               "42px height, 4px radius",
-              "40px height, 8px radius",
+              "44px height, 8px radius",
             ],
-            ["Typography", "Inherited 16px", "Inter 16/24 regular"],
+            ["Typography", "Inherited 16px", "Inter 14/20 regular"],
             ["Horizontal padding", "16px", "16px"],
             ["Hover border", "Default border", "#C0C3CA on enabled fields"],
             [
               "Focus",
               "Teal border and a thin 1px shadow",
-              "#27ABB8 border and a soft 4px shadow",
+              "Primary border emphasis; no outer glow",
             ],
             ["Error focus", "Thin red shadow", "Soft 4px red shadow"],
             ["Disabled", "Reduced opacity", "Solid grey surface and border"],
@@ -87,7 +87,7 @@ const meta: Meta<typeof Input> = {
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus border", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
+            ["Focus border", "--semantic-primary", "#343E55", "#343E55"],
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             [
               "Placeholder",
@@ -264,14 +264,14 @@ export const Sizing: Story = {
   name: "Height and width",
   parameters: gallery(
     [],
-    "Both fields stay 40px high and fill their containers. All input controls apply to both examples."
+    "Both fields stay 44px high and fill their containers. All input controls apply to both examples."
   ),
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col items-start gap-6">
       {[420, 280].map((width) => (
         <div key={width} className="max-w-full space-y-2" style={{ width }}>
           <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
-            40px height · {width}px container
+            44px height · {width}px container
           </p>
           <PreviewInput
             {...args}

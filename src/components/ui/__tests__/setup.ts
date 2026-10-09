@@ -24,6 +24,12 @@ if (typeof Element !== "undefined") {
   Element.prototype.scrollIntoView = () => {};
 }
 
+// motion measures height:auto keyframes and calls window.scrollTo, which JSDOM only logs as
+// "Not implemented".
+if (typeof window !== "undefined") {
+  window.scrollTo = (() => {}) as typeof window.scrollTo;
+}
+
 // Mock ResizeObserver
 global.ResizeObserver = class ResizeObserver {
   observe() {}

@@ -113,12 +113,13 @@ describe("EmptyState size", () => {
     expect(omitted.innerHTML).toBe(explicit.innerHTML);
     expect((omitted.firstChild as HTMLElement).className).toBe(DEFAULT_ROOT);
     expect(omitted.querySelector("p")).toHaveClass("text-2xl", "leading-8");
-    expect(omitted.querySelector("svg")?.parentElement).toHaveClass(
-      "size-[90px]"
-    );
+    // svg -> crossfade slot -> tile
+    expect(
+      omitted.querySelector("svg")?.parentElement?.parentElement
+    ).toHaveClass("size-[90px]");
   });
 
-  it("renders a compact layout for sm", () => {
+  it("matches Arc's empty state for sm", () => {
     const { container } = render(
       <EmptyState
         size="sm"
@@ -127,19 +128,41 @@ describe("EmptyState size", () => {
         description="Details"
       />
     );
-    expect(container.firstChild).toHaveClass("gap-4", "p-4");
+    // 20px between icon, copy and actions; vertical padding clamp(32px, 8vw, 48px) with 20px sides.
+    expect(container.firstChild).toHaveClass(
+      "gap-5",
+      "px-5",
+      "py-[clamp(2rem,8vw,3rem)]"
+    );
     expect(container.firstChild).not.toHaveClass("p-6");
-    const tile = container.querySelector("svg")?.parentElement as HTMLElement;
-    expect(tile).toHaveClass("size-12", "[&>svg]:size-6");
+    const tile = container.querySelector("svg")?.parentElement
+      ?.parentElement as HTMLElement;
+    expect(tile).toHaveClass("size-12", "[&>span>svg]:size-6");
     expect(tile).not.toHaveClass("size-[90px]");
-    expect(screen.getByText("Nothing")).toHaveClass("text-base", "leading-6");
-    expect(screen.getByText("Details")).toHaveClass("text-sm", "leading-5");
+    expect(screen.getByText("Nothing").closest("p")).toHaveClass(
+      "text-base",
+      "leading-[1.1]",
+      "tracking-[-0.03em]"
+    );
+    expect(screen.getByText("Details").closest("p")).toHaveClass(
+      "text-sm",
+      "leading-[1.4]",
+      "max-w-[18rem]"
+    );
+  });
+
+  it("hides the outgoing copy from assistive tech while a new title swaps in", () => {
+    const { rerender } = render(<EmptyState title="Nothing yet" />);
+    rerender(<EmptyState title="All clear" />);
+    expect(screen.getByText("All clear")).not.toHaveAttribute("aria-hidden");
+    const old = screen.queryByText("Nothing yet");
+    if (old) expect(old).toHaveAttribute("aria-hidden", "true");
   });
 
   it("keeps a custom className on both sizes", () => {
     const { container } = render(
       <EmptyState size="sm" title="Nothing" className="custom" />
     );
-    expect(container.firstChild).toHaveClass("custom", "p-4");
+    expect(container.firstChild).toHaveClass("custom", "px-5");
   });
 });

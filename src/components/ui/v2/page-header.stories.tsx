@@ -123,12 +123,12 @@ const meta: Meta<Args> = {
           summary:
             "Page titles with descriptions, back navigation, optional badges and responsive actions.",
           changes: [
-            ["Title", "18px semibold", "16px medium Inter"],
-            ["Description", "14px body", "12px muted Inter"],
+            ["Title", "18px semibold", "18px medium, 1.3 leading, -0.01em (Arc card title)"],
+            ["Description", "14px body", "14px muted, 1.4 leading, 8px gap (Arc card description)"],
             [
               "Padding",
               "16px with 18px desktop vertical override",
-              "16px on all sides at every breakpoint",
+              "20px (Arc content padding) on all sides at every breakpoint",
             ],
             [
               "Actions",

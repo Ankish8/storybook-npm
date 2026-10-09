@@ -31,7 +31,7 @@ const SystemMessage = React.forwardRef(
       )}
       {...props}
     >
-      <span className="text-[13px] text-[var(--v2-text-muted,#707070)]">
+      <span className="text-xs leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)]">
         {children.split(/(\*\*[^*]+\*\*)/).map((part, i) =>
           part.startsWith("**") ? (
             <span key={i} className="text-semantic-text-link font-medium">

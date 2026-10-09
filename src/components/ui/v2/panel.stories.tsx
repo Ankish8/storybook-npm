@@ -170,7 +170,7 @@ function Demo({
           ) : undefined
         }
       >
-        <div className="space-y-4 p-4">
+        <div className={version === "v1" ? "space-y-4 p-4" : "space-y-4 p-6"}>
           <h4
             className={
               version === "v1"
@@ -285,12 +285,18 @@ const meta: Meta<Args> = {
           summary:
             "A collapsible side panel with a header, scrollable body and optional footer.",
           changes: [
-            ["Typography", "Inherited Source Sans", "Inter;16px medium title"],
-            ["Border", "1px divider", "1.2px layout border"],
+            ["Typography", "Inherited Source Sans", "Inter; 18px medium title, 1.4 line height"],
+            ["Header", "56px bar, ghost close", "24px padding, 20px gap, 32px bordered close centred on the title"],
+            ["Border", "1px divider", "1px layout border"],
             [
               "Overlay shadow",
               "Legacy shadow",
-              "Recorded three-layer XL shadow",
+              "20px / 48px + 3px / 10px floating shadow",
+            ],
+            [
+              "Motion",
+              "Width and opacity, 260ms",
+              "Width springs open over about 460ms, fully opaque; closing takes 240ms and fades only over the last 35%",
             ],
             ["Widths", "280/320/400px", "Same width API"],
             [

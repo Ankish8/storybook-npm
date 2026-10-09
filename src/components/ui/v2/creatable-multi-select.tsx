@@ -1,4 +1,5 @@
 import * as React from "react";
+import { animate, useReducedMotion } from "motion/react";
 import { ChevronDown, Plus, Info, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -51,7 +52,8 @@ export interface CreatableMultiSelectProps extends Omit<
   showPerItemCharacterCounter?: boolean;
   /**
    * Closed trigger: show removable chips (default) or a single comma-separated summary line (Figma Tone).
-   * While open, the trigger always shows the summary line; selected chips with remove controls appear in the panel.
+   * In summary mode the field shows that line both closed and open and never draws chips, so while open the only way
+   * to drop a value is Backspace on an empty draft (it removes the last one).
    */
   triggerDisplay?: "chips" | "summary";
   /**
@@ -154,17 +156,154 @@ function isValueAlreadySelected(
 }
 
 /**
- * Chip remove button: 20px plate, 24px hit area (the invisible `::before` reaches
- * 2px past the plate), 14px icon. The plate is `bg-semantic-bg-grey`, one step
+ * The field stays white while it is hovered, pressed and open. Chips are filled `bg-semantic-bg-ui` (#F5F5F5), the
+ * colour the shared trigger variants tint a hovered or open field, so on that tint a chip was told apart from its
+ * field by a 1px border alone. Interaction shows on the border instead (hover, then the primary border when open).
+ * A disabled field is grey, so its chips are filled white.
+ *
+ * Arc's tag input chip: a 28px pill with a 1px border, 9px / 4px padding and a
+ * 3px gap to its remove button. It grows in from .9 through a soft blur
+ * (`@starting-style` gives the freshly mounted node its start; keyed chips stay
+ * mounted, so only a new one plays it). Wrapped in `cn(...)` so the CLI prefixer
+ * transforms the literal.
+ */
+const chipClassName = cn(
+  "inline-flex min-h-7 max-w-full items-center gap-[3px] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-[9px] pr-1 text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
+);
+
+/**
+ * Arc's chevron turns on a 580ms spring that settles with a hint of life; the
+ * sampled curve is Arc's own `--ease-spring`. Wrapped in `cn(...)` so the CLI
+ * prefixer transforms the literal.
+ */
+const chevronSpringClassName = cn(
+  "[stroke-width:1.75] [transition-property:transform,color] [transition-duration:580ms] [transition-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] motion-reduce:transition-none"
+);
+
+/**
+ * Chip remove button: 22px plate (Arc), 24px hit area (the invisible `::before`
+ * reaches 1px past the plate), 14px icon. The plate is `bg-semantic-bg-grey`, one step
  * darker than the chip fill: `bg-semantic-bg-ui` / `bg-semantic-bg-hover` are
  * both #F5F5F5, identical to the chip, so a hover plate in either was invisible.
- * Hover is gated so a tap on touch does not leave the plate stuck.
+ * Hover is gated so a tap on touch does not leave the plate stuck. Arc's press:
+ * a quick dip to .96 (120ms) and a spring release (580ms).
  */
 function chipRemoveClassName(disabled: boolean) {
   return cn(
-    "relative inline-flex size-5 shrink-0 items-center justify-center rounded-sm text-[var(--v2-text-muted,#707070)] transition-colors before:absolute before:-inset-0.5 before:content-['']",
+    "relative inline-flex size-[22px] shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] before:absolute before:-inset-px before:content-[''] motion-reduce:transition-none",
     !disabled &&
-      "[@media(hover:hover)]:hover:bg-semantic-bg-grey [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+      "[@media(hover:hover)]:hover:bg-semantic-bg-grey [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] active:[transition-duration:160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:active:scale-100"
+  );
+}
+
+/**
+ * Arc's chip group chip, which the preset suggestions follow: a 36px pill with a
+ * 1px border and 14px side padding, 500 weight. Hover darkens the border
+ * and text; a press dips to .97 in 120ms and springs back over 580ms.
+ */
+const presetChipClassName = cn(
+  "inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-[14px] text-left text-sm font-medium leading-5 tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:color,border-color,background-color,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [@media(hover:hover)]:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.97] active:[transition-duration:160ms,160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:active:scale-100"
+);
+
+/** Springs an element's height to `measure()` whenever `observed` resizes. Arc's tag input and combobox do this so wrapping chips and filtering never snap. */
+function useSpringHeight(
+  target: React.RefObject<HTMLElement | null>,
+  observed: React.RefObject<HTMLElement | null>,
+  measure: (target: HTMLElement, observed: HTMLElement) => number,
+  deps: React.DependencyList
+) {
+  const reduceMotion = useReducedMotion();
+  React.useEffect(() => {
+    const el = target.current;
+    const watched = observed.current;
+    if (!el || !watched || typeof ResizeObserver === "undefined") return;
+    let measured = false;
+    let controls: ReturnType<typeof animate> | undefined;
+    const observer = new ResizeObserver(() => {
+      const next = measure(el, watched);
+      controls?.stop();
+      if (!measured || reduceMotion) {
+        measured = true;
+        el.style.height = `${next}px`;
+        return;
+      }
+      controls = animate(
+        el,
+        { height: next },
+        { type: "spring", visualDuration: 0.4, bounce: 0 }
+      );
+    });
+    observer.observe(watched);
+    return () => {
+      observer.disconnect();
+      controls?.stop();
+    };
+    // `measure` is a stable module-level function at every call site.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduceMotion, ...deps]);
+}
+
+/** Shell height: the wrapped chip rows plus the shell's own padding and border, never under its minimum. */
+function measureShell(shell: HTMLElement, content: HTMLElement) {
+  const style = getComputedStyle(shell);
+  const chrome =
+    parseFloat(style.paddingTop) +
+    parseFloat(style.paddingBottom) +
+    parseFloat(style.borderTopWidth) +
+    parseFloat(style.borderBottomWidth);
+  return Math.max(
+    parseFloat(style.minHeight) || 0,
+    content.offsetHeight + chrome
+  );
+}
+
+function measureContent(_target: HTMLElement, content: HTMLElement) {
+  return content.offsetHeight;
+}
+
+/** Panel body that follows its content height on a spring while presets filter. */
+function AutoHeight({ children }: { children: React.ReactNode }) {
+  const outerRef = React.useRef<HTMLDivElement>(null);
+  const innerRef = React.useRef<HTMLDivElement>(null);
+  useSpringHeight(outerRef, innerRef, measureContent, []);
+  return (
+    <div ref={outerRef} className="overflow-hidden">
+      <div ref={innerRef}>{children}</div>
+    </div>
+  );
+}
+
+/**
+ * The placeholder and the summary line. The wrapper is as tall as a chip (28px) and centres its text, so the
+ * line sits in the middle of the 44px field the way a chip row does, instead of hugging its top edge.
+ */
+function FieldText({
+  muted = false,
+  grow = true,
+  children,
+}: {
+  muted?: boolean;
+  grow?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "flex min-h-7 min-w-0 items-center px-[5px]",
+        grow && "flex-1"
+      )}
+    >
+      <span
+        className={cn(
+          "line-clamp-2 text-sm leading-[1.4] tracking-[-0.01em]",
+          muted
+            ? "text-[var(--v2-text-placeholder,#707070)]"
+            : "text-[var(--v2-text-primary,#484848)]"
+        )}
+      >
+        {children}
+      </span>
+    </span>
   );
 }
 
@@ -203,6 +342,10 @@ const CreatableMultiSelect = React.forwardRef(
     const [inputValue, setInputValue] = React.useState("");
     const containerRef = React.useRef<HTMLDivElement>(null);
     const inputRef = React.useRef<HTMLInputElement>(null);
+    // Only one shell (open or closed) is mounted at a time, so they share these refs.
+    const shellRef = React.useRef<HTMLDivElement>(null);
+    const chipRowRef = React.useRef<HTMLDivElement>(null);
+    useSpringHeight(shellRef, chipRowRef, measureShell, [isOpen]);
     const listboxId = React.useId();
     const helperId = React.useId();
     const descriptionId =
@@ -235,12 +378,23 @@ const CreatableMultiSelect = React.forwardRef(
 
     const addValue = (val: string) => {
       if (disabled) return;
-      const isPreset = options.some((o) => o.value === val);
+      // A click passes an option's value; Enter passes whatever was typed. Typing a suggestion's name (any case)
+      // has to pick that suggestion, not create a look-alike next to it, and a disabled option stays unavailable.
+      const typed = val.trim().toLowerCase();
+      const matched =
+        options.find((o) => o.value === val) ??
+        options.find(
+          (o) =>
+            o.value.toLowerCase() === typed || o.label.toLowerCase() === typed
+        );
+      if (matched?.disabled) return;
+      const isPreset = Boolean(matched);
+      const chosen = matched ? matched.value : val;
       const afterSanitize = isPreset
-        ? val
+        ? chosen
         : sanitizeInput
-          ? sanitizeInput(val)
-          : val;
+          ? sanitizeInput(chosen)
+          : chosen;
       const afterNormalize =
         isPreset || !normalizeInput
           ? afterSanitize
@@ -338,7 +492,9 @@ const CreatableMultiSelect = React.forwardRef(
     const isCustomDraft =
       trimmedInput.length > 0 &&
       !options.some(
-        (o) => o.label.toLowerCase() === trimmedInput.toLowerCase()
+        (o) =>
+          o.label.toLowerCase() === trimmedInput.toLowerCase() ||
+          o.value.toLowerCase() === trimmedInput.toLowerCase()
       ) &&
       !isValueAlreadySelected(
         trimmedInput,
@@ -353,6 +509,9 @@ const CreatableMultiSelect = React.forwardRef(
       value.length === 0 ? placeholder : selectedSummary;
 
     const canAddMore = maxItems == null || value.length < maxItems;
+    // Typing stops silently at the limit, so the counter changes colour to say why.
+    const atLimit =
+      maxLengthPerItem != null && inputValue.length >= maxLengthPerItem;
 
     return (
       <div
@@ -366,12 +525,14 @@ const CreatableMultiSelect = React.forwardRef(
         <div className="font-[family-name:var(--font-v2,Inter,sans-serif)] relative w-full">
           {isOpen && (
             <div
+              ref={shellRef}
               data-state="open"
               className={cn(
                 creatableSelectTriggerVariants({ state: derivedState }),
-                "flex h-auto min-h-10 cursor-text items-start gap-2 py-1.5 text-left",
+                "flex h-auto min-h-11 cursor-text items-start gap-2 overflow-hidden p-[7px] text-left",
+                !disabled && "data-[state=open]:bg-semantic-bg-primary",
                 disabled &&
-                  "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+                  "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
               )}
               onClick={(e) => {
                 if (disabled) return;
@@ -381,12 +542,18 @@ const CreatableMultiSelect = React.forwardRef(
                 inputRef.current?.focus();
               }}
             >
-              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5">
+              <div
+                ref={chipRowRef}
+                className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5"
+              >
                 {triggerDisplay === "chips" &&
                   value.map((val) => (
                     <span
                       key={val}
-                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+                      className={cn(
+                        chipClassName,
+                        disabled && "bg-semantic-bg-primary"
+                      )}
                     >
                       <span className="min-w-0 truncate">
                         {labelForValue(
@@ -416,14 +583,15 @@ const CreatableMultiSelect = React.forwardRef(
                           if (!disabled) removeValue(val);
                         }}
                       >
-                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                        <X
+                          className="size-3.5 [stroke-width:1.75]"
+                          aria-hidden
+                        />
                       </button>
                     </span>
                   ))}
                 {triggerDisplay === "summary" && value.length > 0 ? (
-                  <span className="line-clamp-2 text-base text-[var(--v2-text-primary,#484848)]">
-                    {selectedSummary}
-                  </span>
+                  <FieldText grow={false}>{selectedSummary}</FieldText>
                 ) : null}
                 <input
                   ref={inputRef}
@@ -451,13 +619,14 @@ const CreatableMultiSelect = React.forwardRef(
                     }
                   }}
                   maxLength={maxLengthPerItem}
+                  placeholder={value.length === 0 ? placeholder : undefined}
                   onKeyDown={handleKeyDown}
                   disabled={disabled}
                   aria-label={props["aria-label"] || placeholder}
                   aria-labelledby={props["aria-labelledby"]}
                   aria-describedby={descriptionId}
                   aria-invalid={props["aria-invalid"] ?? state === "error"}
-                  className="min-w-[120px] flex-1 bg-transparent text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none placeholder:text-[var(--v2-text-placeholder,#707070)]"
+                  className="min-h-7 min-w-[80px] flex-[1_1_100px] bg-transparent px-[5px] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none placeholder:text-[var(--v2-text-placeholder,#707070)]"
                   role="combobox"
                   aria-expanded={isOpen}
                   aria-controls={listboxId}
@@ -466,12 +635,23 @@ const CreatableMultiSelect = React.forwardRef(
                 />
               </div>
               {maxLengthPerItem != null && showPerItemCharacterCounter ? (
-                <span className="mr-2 mt-1 shrink-0 self-start text-sm text-[var(--v2-text-muted,#707070)]">
+                <span
+                  data-at-limit={atLimit || undefined}
+                  className={cn(
+                    "mr-2 mt-1 shrink-0 self-start text-sm leading-[1.4]",
+                    atLimit
+                      ? "text-semantic-error-text"
+                      : "text-[var(--v2-text-muted,#707070)]"
+                  )}
+                >
                   {inputValue.length}/{maxLengthPerItem}
                 </span>
               ) : null}
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start rotate-180 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:200ms]"
+                className={cn(
+                  "mr-1 mt-1.5 size-4 shrink-0 self-start rotate-180 text-[var(--v2-text-muted,#707070)] opacity-70 motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:580ms] motion-safe:[animation-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)]",
+                  chevronSpringClassName
+                )}
                 aria-hidden
               />
             </div>
@@ -479,6 +659,7 @@ const CreatableMultiSelect = React.forwardRef(
 
           {!isOpen && (
             <div
+              ref={shellRef}
               role="combobox"
               tabIndex={disabled ? -1 : 0}
               aria-haspopup="listbox"
@@ -505,37 +686,29 @@ const CreatableMultiSelect = React.forwardRef(
               }}
               className={cn(
                 creatableSelectTriggerVariants({ state: derivedState }),
-                "flex h-auto min-h-10 cursor-pointer items-start gap-2 py-1.5 text-left outline-none",
+                "flex h-auto min-h-11 cursor-pointer items-start gap-2 overflow-hidden p-[7px] text-left outline-none",
                 disabled &&
-                  "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+                  "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
               )}
             >
-              <div className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5">
+              <div
+                ref={chipRowRef}
+                className="flex min-h-0 min-w-0 flex-1 flex-wrap content-start items-center gap-1.5"
+              >
                 {triggerDisplay === "summary" ? (
-                  <span
-                    className={cn(
-                      "line-clamp-2 flex-1 text-base",
-                      value.length === 0
-                        ? "text-[var(--v2-text-placeholder,#707070)]"
-                        : "text-[var(--v2-text-primary,#484848)]"
-                    )}
-                  >
+                  <FieldText muted={value.length === 0}>
                     {summaryTriggerLabel}
-                  </span>
+                  </FieldText>
                 ) : value.length === 0 ? (
-                  <span
-                    className={cn(
-                      "line-clamp-2 flex-1 text-base",
-                      "text-[var(--v2-text-placeholder,#707070)]"
-                    )}
-                  >
-                    {placeholder}
-                  </span>
+                  <FieldText muted>{placeholder}</FieldText>
                 ) : (
                   value.map((val) => (
                     <span
                       key={val}
-                      className="inline-flex max-w-full items-center gap-0.5 rounded-lg border-[0.4px] border-solid border-semantic-border-layout bg-semantic-bg-ui py-0.5 pl-2 pr-0.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+                      className={cn(
+                        chipClassName,
+                        disabled && "bg-semantic-bg-primary"
+                      )}
                     >
                       <span className="min-w-0 truncate">
                         {labelForValue(
@@ -565,23 +738,29 @@ const CreatableMultiSelect = React.forwardRef(
                           if (!disabled) removeValue(val);
                         }}
                       >
-                        <X className="size-3.5" strokeWidth={2} aria-hidden />
+                        <X
+                          className="size-3.5 [stroke-width:1.75]"
+                          aria-hidden
+                        />
                       </button>
                     </span>
                   ))
                 )}
               </div>
               <ChevronDown
-                className="mt-1 size-4 shrink-0 self-start text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
+                className={cn(
+                  "mr-1 mt-1.5 size-4 shrink-0 self-start text-[var(--v2-text-muted,#707070)] opacity-70",
+                  chevronSpringClassName
+                )}
                 aria-hidden
               />
             </div>
           )}
 
           {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above.
-              CSS-anchored below the field (no flip), so it always grows from the top-left corner. */}
+              CSS-anchored 8px below the field (no flip), so it always grows from the top edge. */}
           {isOpen && (
-            <div className="absolute left-0 top-full z-[9999] mt-1 flex w-full flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-sm motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-1">
+            <div className="absolute left-0 top-full z-[9999] mt-2 flex w-full origin-top flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
                   <span className="text-sm text-[var(--v2-text-muted,#707070)]">
@@ -591,79 +770,74 @@ const CreatableMultiSelect = React.forwardRef(
                 </div>
               ) : null}
 
-              {(canAddMore || filteredPresets.length > 0 || isCustomDraft) && (
-                <div
-                  className={cn(
-                    "flex flex-col px-4",
-                    filteredPresets.length > 0 ||
-                      (canAddMore && maxItems != null)
-                      ? "gap-2.5 pb-4 pt-2.5"
-                      : "py-1"
-                  )}
-                >
-                  {maxItems != null && canAddMore ? (
-                    <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
-                      Max selections allowed: {maxItems}
-                    </p>
-                  ) : null}
+              <AutoHeight>
+                {(canAddMore ||
+                  filteredPresets.length > 0 ||
+                  isCustomDraft) && (
+                  <div className="flex flex-col gap-2 p-2">
+                    {maxItems != null && canAddMore ? (
+                      <p className="m-0 px-2 py-1 text-sm text-[var(--v2-text-muted,#707070)]">
+                        Max selections allowed: {maxItems}
+                      </p>
+                    ) : null}
 
-                  {filteredPresets.length > 0 ? (
-                    <div
-                      id={listboxId}
-                      role="listbox"
-                      className="flex flex-wrap gap-1.5"
-                    >
-                      {filteredPresets.map((option) => (
-                        <button
-                          key={option.value}
-                          type="button"
-                          role="option"
-                          aria-selected={false}
-                          disabled={disabled}
-                          onMouseDown={(e) => {
-                            e.preventDefault();
-                          }}
-                          onClick={() => addValue(option.value)}
-                          className="inline-flex items-center gap-2.5 whitespace-nowrap rounded border-0 bg-semantic-bg-ui px-2 py-1 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] transition-colors hover:bg-semantic-bg-hover"
-                        >
-                          <Plus
-                            className="size-2.5 shrink-0 text-[var(--v2-text-muted,#707070)]"
-                            strokeWidth={2}
-                            aria-hidden
-                          />
-                          {option.label}
-                        </button>
-                      ))}
-                    </div>
-                  ) : null}
+                    {filteredPresets.length > 0 ? (
+                      <div
+                        id={listboxId}
+                        role="listbox"
+                        className="flex flex-wrap gap-2"
+                      >
+                        {filteredPresets.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="option"
+                            aria-selected={false}
+                            disabled={disabled}
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                            }}
+                            onClick={() => addValue(option.value)}
+                            className={presetChipClassName}
+                          >
+                            <Plus
+                              className="size-2.5 shrink-0 text-[var(--v2-text-muted,#707070)] [stroke-width:1.75]"
+                              aria-hidden
+                            />
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
 
-                  {isCustomDraft ? (
-                    <button
-                      type="button"
-                      role="option"
-                      aria-selected={false}
-                      disabled={disabled}
-                      onMouseDown={(e) => {
-                        e.preventDefault();
-                      }}
-                      onClick={() => addValue(inputValue)}
-                      className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-2 rounded-none px-4 py-2 text-left text-base text-semantic-text-link outline-none transition-colors cursor-pointer select-none hover:bg-semantic-bg-ui"
-                    >
-                      Create &ldquo;{trimmedInput}&rdquo;
-                    </button>
-                  ) : null}
-                </div>
-              )}
+                    {isCustomDraft ? (
+                      <button
+                        type="button"
+                        role="option"
+                        aria-selected={false}
+                        disabled={disabled}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                        }}
+                        onClick={() => addValue(inputValue)}
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-semantic-text-link outline-none transition-colors cursor-pointer select-none hover:bg-semantic-bg-ui"
+                      >
+                        Create &ldquo;{trimmedInput}&rdquo;
+                      </button>
+                    ) : null}
+                  </div>
+                )}
+              </AutoHeight>
             </div>
           )}
         </div>
 
         {helperText && !isOpen ? (
-          <div className="mt-1.5 flex items-center gap-1.5">
+          <div className="mt-2 flex items-center gap-1.5">
             <Info className="size-[18px] shrink-0 text-[var(--v2-text-muted,#707070)]" />
             <p
               id={helperId}
-              className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+              className="m-0 text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]"
             >
               {helperText}
             </p>

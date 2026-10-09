@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ToastPrimitives from "@radix-ui/react-toast";
 import { cva, type VariantProps } from "class-variance-authority";
-import { X, CheckCircle2, XCircle, AlertTriangle, Info } from "lucide-react";
+import { X, Check, AlertTriangle, Info } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -18,7 +18,7 @@ const ToastViewport = React.forwardRef(
     <ToastPrimitives.Viewport
       ref={ref}
       className={cn(
-        "fixed top-0 z-[9999999] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+        "fixed top-0 z-[9999999] flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[448px]",
         className
       )}
       {...props}
@@ -28,7 +28,10 @@ const ToastViewport = React.forwardRef(
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full flex-col items-stretch overflow-hidden rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)] transition-[transform,opacity] duration-200 [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none data-[state=open]:motion-safe:[animation-duration:200ms] data-[state=closed]:motion-safe:[animation-duration:120ms] data-[state=closed]:[animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] motion-reduce:data-[swipe=end]:animate-[v2-fade-out_100ms_ease-in] data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out data-[swipe=end]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:slide-out-to-right-1 data-[swipe=end]:motion-safe:slide-out-to-right-full data-[state=open]:motion-safe:slide-in-from-top-1 data-[state=open]:sm:motion-safe:slide-in-from-bottom-1",
+  "group pointer-events-auto relative flex w-full flex-col items-stretch overflow-hidden rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] transition-[transform,opacity] duration-200 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none " +
+    // Open: rise 16px from 0.96 on a spring (ζ 0.84, about 480ms) with a separate 240ms fade, as Arc's toast does.
+    // Close: sink 8px to 0.97 and fade over 180ms; a swipe throws it sideways instead (no scale, no sink).
+    "data-[state=open]:motion-safe:[animation-name:enter,v2-fade-in] data-[state=open]:motion-safe:[animation-duration:500ms,240ms] data-[state=open]:motion-safe:[animation-timing-function:linear(0.0000_0%,0.0270_4%,0.0940_8%,0.1839_12%,0.2842_16%,0.3864_20%,0.4846_24%,0.5753_28%,0.6564_32%,0.7271_36%,0.7874_40%,0.8378_44%,0.8792_48%,0.9125_52%,0.9388_56%,0.9592_60%,0.9747_64%,0.9862_68%,0.9944_72%,1.0001_76%,1.0038_80%,1.0061_84%,1.0073_88%,1.0077_92%,1.0076_96%,1_100%),var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] data-[state=closed]:motion-safe:[animation-duration:180ms] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] motion-reduce:data-[swipe=end]:animate-[v2-fade-out_100ms_ease-in] data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out data-[swipe=end]:motion-safe:animate-out data-[state=open]:motion-safe:zoom-in-[0.96] data-[state=closed]:motion-safe:zoom-out-[0.97] data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:slide-out-to-top-2 data-[state=closed]:sm:motion-safe:slide-out-to-bottom-2 data-[state=closed]:data-[swipe=end]:motion-safe:[--tw-exit-scale:1] data-[state=closed]:data-[swipe=end]:motion-safe:[--tw-exit-translate-y:0px] data-[swipe=end]:motion-safe:slide-out-to-right-full data-[state=open]:motion-safe:slide-in-from-top-4 data-[state=open]:sm:motion-safe:slide-in-from-bottom-4",
   {
     variants: {
       variant: {
@@ -84,7 +87,7 @@ const ToastAction = React.forwardRef(
     <ToastPrimitives.Action
       ref={ref}
       className={cn(
-        "inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] transition-colors hover:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-8 shrink-0 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)] transition-[color,background-color,transform] duration-150 motion-reduce:transition-colors motion-safe:active:scale-[0.98] [@media(hover:hover)]:hover:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -104,13 +107,13 @@ const ToastClose = React.forwardRef(
     <ToastPrimitives.Close
       ref={ref}
       className={cn(
-        "inline-flex size-6 shrink-0 items-center justify-center rounded-md p-0 text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus:outline-none focus:ring-2 focus:ring-semantic-border-focus",
+        "inline-flex size-8 shrink-0 items-center justify-center rounded-md p-0 text-[var(--v2-text-muted,#707070)] transition-[color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:[transition-duration:160ms,160ms,120ms] motion-reduce:transition-colors [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] motion-safe:active:scale-[0.96] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary",
         className
       )}
       toast-close=""
       {...props}
     >
-      <X className="h-3 w-3" />
+      <X className="size-4" strokeWidth={2} />
     </ToastPrimitives.Close>
   )
 );
@@ -127,7 +130,7 @@ const ToastTitle = React.forwardRef(
     <ToastPrimitives.Title
       ref={ref}
       className={cn(
-        "m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]",
+        "m-0 text-sm font-medium leading-[1.4] text-[var(--v2-text-primary,#484848)]",
         className
       )}
       {...props}
@@ -147,7 +150,7 @@ const ToastDescription = React.forwardRef(
     <ToastPrimitives.Description
       ref={ref}
       className={cn(
-        "m-0 text-xs tracking-[0.048px] text-[var(--v2-text-muted,#707070)] group-data-[v2-toast-variant=success]:text-semantic-success-text group-data-[v2-toast-variant=error]:text-semantic-error-text group-data-[v2-toast-variant=destructive]:text-semantic-error-text group-data-[v2-toast-variant=warning]:text-semantic-warning-text group-data-[v2-toast-variant=info]:text-semantic-info-text",
+        "m-0 text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] group-data-[v2-toast-variant=success]:text-semantic-success-text group-data-[v2-toast-variant=error]:text-semantic-error-text group-data-[v2-toast-variant=destructive]:text-semantic-error-text group-data-[v2-toast-variant=warning]:text-semantic-warning-text group-data-[v2-toast-variant=info]:text-semantic-info-text",
         className
       )}
       {...props}
@@ -382,9 +385,9 @@ function useToast() {
 // Variant icons mapping
 const variantIcons = {
   default: null,
-  success: CheckCircle2,
-  error: XCircle,
-  destructive: XCircle,
+  success: Check,
+  error: X,
+  destructive: X,
   warning: AlertTriangle,
   info: Info,
 };
@@ -412,7 +415,8 @@ function Toaster() {
   const { toasts } = useToast();
 
   return (
-    <ToastProvider>
+    // Arc: auto-dismiss after 4.5s, and a swipe past 80px throws the toast away.
+    <ToastProvider duration={4500} swipeThreshold={80}>
       {toasts.map(function ({
         id,
         title,
@@ -427,32 +431,28 @@ function Toaster() {
           <Toast
             key={id}
             variant={variant}
-            className={cn("sm:w-[384px] max-w-full", variant ?? "default")}
+            className={cn("sm:w-[26rem] max-w-full", variant ?? "default")}
             {...props}
           >
-            <div
-              className={cn(
-                "flex w-full items-center gap-4 p-4",
-                (description || action) &&
-                  "border-b-[0.4px] border-solid border-inherit"
+            {/* Arc's layout: 30px status chip, copy column, 32px dismiss, 16/14px padding, 12px gap. */}
+            <div className="flex w-full items-start gap-3 py-3.5 pl-4 pr-3.5">
+              {Icon && (
+                <span className="grid size-[30px] shrink-0 place-items-center rounded-full border border-solid border-[color-mix(in_oklab,currentColor_24%,transparent)] bg-[color-mix(in_oklab,currentColor_10%,transparent)]">
+                  <Icon className="size-4" strokeWidth={2.25} aria-hidden />
+                </span>
               )}
-            >
-              {Icon && <Icon className="size-5 shrink-0" />}
-              <div className="min-w-0 flex-1">
+              <div className="grid min-w-0 flex-1 gap-0.5 pt-[5px]">
                 {title && <ToastTitle>{title}</ToastTitle>}
-              </div>
-              <ToastClose aria-label="Dismiss notification" />
-            </div>
-            {(description || action) && (
-              <div className="flex w-full items-center gap-3 px-4 py-3">
                 {description && (
-                  <ToastDescription className="min-w-0 flex-1">
-                    {description}
-                  </ToastDescription>
+                  <ToastDescription>{description}</ToastDescription>
                 )}
-                {action}
+                {action && <div className="mt-2 flex">{action}</div>}
               </div>
-            )}
+              <ToastClose
+                aria-label="Dismiss notification"
+                className="-mr-0.5 -mt-px"
+              />
+            </div>
           </Toast>
         );
       })}

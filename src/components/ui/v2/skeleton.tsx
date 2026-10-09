@@ -18,7 +18,10 @@ import { cn } from "@/lib/utils";
 const skeletonVariants = cva("", {
   variants: {
     animation: {
-      pulse: "animate-pulse motion-reduce:animate-none",
+      // Arc's pulse: 1.8s in-out, opacity 1 -> .5 -> 1 (Tailwind's `pulse` keyframes), 11 beats then rest (~20s) so a
+      // stalled load stops fidgeting. `--v2-skeleton-delay` staggers neighbours; Arc uses 90ms per block.
+      pulse:
+        "animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)] [animation-duration:1.8s] [animation-timing-function:cubic-bezier(0.65,0,0.35,1)] [animation-iteration-count:11] [animation-fill-mode:both]",
       shimmer:
         "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary,#FFFFFF)_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:1.6s] motion-safe:after:[animation-timing-function:linear] motion-safe:after:[animation-iteration-count:infinite] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)]",
       none: "",

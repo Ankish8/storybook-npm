@@ -134,7 +134,7 @@ describe("PageHeader", () => {
   // Vertical spacing (padding-based; no min-h — avoids clipped subheads in nested headers)
   it("applies vertical padding instead of min-height", () => {
     render(<PageHeader title="Title" data-testid="header" />);
-    expect(screen.getByTestId("header")).toHaveClass("py-4");
+    expect(screen.getByTestId("header")).toHaveClass("py-5");
     expect(screen.getByTestId("header").className).not.toMatch(
       /min-h-\[76px\]/
     );
@@ -144,7 +144,7 @@ describe("PageHeader", () => {
   it("applies correct title styling", () => {
     render(<PageHeader title="Title" />);
     const title = screen.getByRole("heading", { name: "Title" });
-    expect(title).toHaveClass("text-base");
+    expect(title).toHaveClass("text-lg");
     expect(title).toHaveClass("font-medium");
     expect(title).toHaveClass("text-[var(--v2-text-primary,#484848)]");
   });
@@ -152,7 +152,7 @@ describe("PageHeader", () => {
   it("applies correct description styling", () => {
     render(<PageHeader title="Title" description="Description" />);
     const description = screen.getByText("Description");
-    expect(description).toHaveClass("text-xs");
+    expect(description).toHaveClass("text-sm");
     expect(description).toHaveClass("text-[var(--v2-text-muted,#707070)]");
   });
 
@@ -249,7 +249,7 @@ describe("PageHeader", () => {
       expect(header).toHaveClass("items-center");
       expect(header.className).not.toMatch(/(?:^|\s)flex-col(?:\s|$)/);
       expect(header.className).not.toMatch(/sm:flex-row/);
-      expect(header).toHaveClass("py-4");
+      expect(header).toHaveClass("py-5");
     });
 
     it("renders horizontal layout actions inline at every breakpoint", () => {
@@ -308,7 +308,7 @@ describe("PageHeader", () => {
         <PageHeader title="Title" layout="vertical" data-testid="header" />
       );
       expect(screen.getByTestId("header")).toHaveClass("flex-col");
-      expect(screen.getByTestId("header")).toHaveClass("py-4");
+      expect(screen.getByTestId("header")).toHaveClass("py-5");
     });
 
     it("applies correct action spacing for horizontal layout", () => {

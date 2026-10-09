@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { Skeleton } from "./skeleton";
 import { Skeleton as V1 } from "../skeleton";
@@ -166,6 +167,7 @@ export const AllShapes: Story = {
 };
 function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
   const [loading, setLoading] = useState(true);
+  const reducedMotion = useReducedMotion();
   return (
     <section className="w-[360px] max-w-full space-y-4">
       <h3 className="m-0 text-base font-medium">Account summary</h3>
@@ -173,23 +175,50 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
         aria-busy={loading}
         className="flex items-center gap-4 rounded-lg border border-solid border-semantic-border-layout p-5"
       >
-        {loading ? (
-          <>
-            <span className="sr-only">Loading account</span>
-            <Skeleton {...args} shape="circle" width={48} height={48} />
-            <div className="min-w-0 flex-1 space-y-3">
-              <Skeleton {...args} shape="line" width="80%" height={16} />
-              <Skeleton {...args} shape="line" width="60%" height={12} />
-            </div>
-          </>
-        ) : (
-          <div>
-            <h4 className="m-0 text-sm font-medium">Example account</h4>
-            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
-              Your profile is ready.
-            </p>
-          </div>
-        )}
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={loading ? "loading" : "loaded"}
+            className="flex w-full items-center gap-4"
+            initial={{ opacity: 0, y: reducedMotion ? 0 : 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+          >
+            {loading ? (
+              <>
+                <span className="sr-only">Loading account</span>
+                <Skeleton {...args} shape="circle" width={48} height={48} />
+                <div className="min-w-0 flex-1 space-y-3">
+                  <Skeleton
+                    {...args}
+                    style={
+                      { "--v2-skeleton-delay": "60ms" } as React.CSSProperties
+                    }
+                    shape="line"
+                    width="80%"
+                    height={16}
+                  />
+                  <Skeleton
+                    {...args}
+                    style={
+                      { "--v2-skeleton-delay": "120ms" } as React.CSSProperties
+                    }
+                    shape="line"
+                    width="60%"
+                    height={12}
+                  />
+                </div>
+              </>
+            ) : (
+              <div>
+                <h4 className="m-0 text-sm font-medium">Example account</h4>
+                <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
+                  Your profile is ready.
+                </p>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
       <Button variant="outline" onClick={() => setLoading(!loading)}>
         {loading ? "Show loaded content" : "Reload profile"}

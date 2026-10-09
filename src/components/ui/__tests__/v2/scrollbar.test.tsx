@@ -103,3 +103,54 @@ it("snaps step scrolling when reduced motion is requested", () => {
     preference.mockRestore();
   }
 });
+
+it("preserves the grabbed point when dragging the thumb", () => {
+  const { container } = render(
+    <Scrollbar showControls={false}>
+      <span>Content</span>
+    </Scrollbar>
+  );
+  const view = screen.getByRole("region");
+  const rail = container.querySelector(".self-stretch") as HTMLDivElement;
+  const thumb = rail.firstElementChild as HTMLDivElement;
+  Object.defineProperties(view, {
+    clientHeight: { value: 200 },
+    scrollHeight: { value: 1000 },
+    scrollTop: { value: 0, writable: true },
+  });
+  Object.defineProperty(rail, "clientHeight", { value: 200 });
+  rail.getBoundingClientRect = () => ({
+    top: 0,
+    bottom: 200,
+    height: 200,
+    left: 0,
+    right: 16,
+    width: 16,
+    x: 0,
+    y: 0,
+    toJSON() {},
+  });
+  thumb.getBoundingClientRect = () => ({
+    top: 0,
+    bottom: 40,
+    height: 40,
+    left: 0,
+    right: 8,
+    width: 8,
+    x: 0,
+    y: 0,
+    toJSON() {},
+  });
+  rail.hasPointerCapture = () => true;
+  fireEvent.scroll(view);
+  fireEvent(
+    rail,
+    new MouseEvent("pointerdown", { bubbles: true, button: 0, clientY: 10 })
+  );
+  expect(view.scrollTop).toBe(0);
+  fireEvent(
+    rail,
+    new MouseEvent("pointermove", { bubbles: true, button: 0, clientY: 40 })
+  );
+  expect(view.scrollTop).toBe(150);
+});

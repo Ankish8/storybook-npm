@@ -7,12 +7,12 @@ import { PhoneInput, type PhoneInputProps } from "./phone-input";
 import { PhoneInput as PhoneInputV1 } from "../phone-input";
 import { Button } from "./button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./dialog";
+  ModalRoot,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+} from "./modal";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -116,14 +116,14 @@ function CountryPicker({
   onPick: (country: (typeof COUNTRIES)[number]) => void;
 }) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent size="sm">
-        <DialogHeader>
-          <DialogTitle>Select a country</DialogTitle>
-          <DialogDescription>
+    <ModalRoot open={open} onOpenChange={onOpenChange}>
+      <ModalContent size="sm">
+        <ModalHeader>
+          <ModalTitle>Select a country</ModalTitle>
+          <ModalDescription>
             Update the country flag and dial code in this example.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
         <div className="grid gap-2 p-6">
           {COUNTRIES.map((c) => (
             <Button
@@ -139,8 +139,8 @@ function CountryPicker({
             </Button>
           ))}
         </div>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </ModalRoot>
   );
 }
 function useLiveArgs(args: Args): Args {
@@ -266,15 +266,19 @@ const meta: Meta<Args> = {
             [
               "Height and radius",
               "42px / 4px",
-              "48px / 8px (recorded October 1 check)",
+              "44px / 8px (Arc interaction review)",
             ],
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value/code; example label 14px medium and helper 12px",
+              "Inter 14px value/code; example label 14px medium and helper 12px",
             ],
             ["Hover", "Default border", "#C0C3CA enabled border"],
-            ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px halo"],
+            [
+              "Focus",
+              "Thin teal shadow",
+              "Primary border emphasis; no outer glow",
+            ],
             ["Error", "Red border", "Red border and soft 4px halo"],
             [
               "Disabled",
@@ -304,7 +308,7 @@ const meta: Meta<Args> = {
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Validation", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -441,14 +445,14 @@ export const AllSizes: Story = {
   name: "Height and width",
   parameters: gallery(
     ["width"],
-    "PhoneInput has one recorded 48px height. These examples fix 420px and 280px widths; other Controls apply."
+    "PhoneInput has one 44px height. These examples fix 420px and 280px widths; other Controls apply."
   ),
   render: (args) => (
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
           <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-            48px height · {width}px container
+            44px height · {width}px container
           </p>
           <PreviewPhone
             {...args}

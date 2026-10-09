@@ -185,30 +185,60 @@ describe("CreatableSelect v2 refresh", () => {
     const field = screen.getByRole("combobox").parentElement as HTMLElement;
     expect(field).toHaveAttribute("data-state", "open");
     expect(field.className).toContain(
-      "data-[state=open]:border-[var(--color-secondary-600,#27ABB8)]"
+      "data-[state=open]:border-semantic-primary"
     );
+    expect(field.className).toContain("data-[state=open]:shadow-none");
     expect(field.className).toContain(
-      "data-[state=open]:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
-    );
-    expect(field.className).toContain(
-      "data-[state=open]:hover:border-[var(--color-secondary-600,#27ABB8)]"
+      "data-[state=open]:hover:border-semantic-primary"
     );
   });
 
-  it("keeps the CSS-anchored panel growing from the top-left (it cannot flip)", async () => {
+  it("keeps the CSS-anchored panel growing from the top edge, 8px below the field (it cannot flip)", async () => {
     const user = userEvent.setup();
     render(<CreatableSelect options={OPTIONS} />);
     await user.click(screen.getByRole("button"));
-    const panel = screen.getByRole("listbox").parentElement as HTMLElement;
+    const panel = screen
+      .getByRole("listbox")
+      .closest(".absolute") as HTMLElement;
+    // Arc's combobox popover: 260ms rise of 6px from .97, floating shadow.
     expect(panel).toHaveClass(
-      "origin-top-left",
-      "motion-safe:slide-in-from-top-1",
+      "origin-top",
+      "mt-2",
+      "motion-safe:slide-in-from-top-[6px]",
       "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.98]"
+      "motion-safe:zoom-in-[0.97]",
+      "motion-safe:[animation-duration:260ms]",
+      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+    );
+    expect(screen.getByRole("listbox")).toHaveClass(
+      "p-[5px]",
+      "max-h-[min(300px,40vh)]"
     );
   });
 
-  it("gives option rows a 4px radius and pops the selected check in", async () => {
+  it("tints the field on hover, press and while open, dims it at 50% when disabled, and turns the chevron on Arc's spring", async () => {
+    const user = userEvent.setup();
+    render(<CreatableSelect options={OPTIONS} />);
+    const closed = screen.getByRole("button");
+    expect(closed).toHaveClass(
+      "px-3",
+      "gap-2",
+      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
+      "enabled:active:bg-semantic-bg-ui",
+      "disabled:opacity-50"
+    );
+    await user.click(closed);
+    const field = screen.getByRole("combobox").parentElement as HTMLElement;
+    expect(field).toHaveClass("data-[state=open]:bg-semantic-bg-ui");
+    const chevron = field.querySelector("svg");
+    expect(chevron).toHaveClass(
+      "rotate-180",
+      "[transition-duration:580ms]",
+      "[stroke-width:1.75]"
+    );
+  });
+
+  it("gives option rows a 4px radius, Arc's 36px rows and an inline check", async () => {
     const user = userEvent.setup();
     render(<CreatableSelect options={OPTIONS} value="b" />);
     await user.click(screen.getByRole("button"));
@@ -216,11 +246,15 @@ describe("CreatableSelect v2 refresh", () => {
     const beta = screen.getByRole("option", { name: "Beta" });
     expect(alpha).toHaveClass("rounded-sm");
     expect(alpha).not.toHaveClass("rounded-md");
-    expect(beta.querySelector("svg")).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:zoom-in-[0.85]",
-      "motion-safe:[animation-duration:180ms]"
+    expect(alpha).toHaveClass(
+      "min-h-9",
+      "px-3",
+      "justify-between",
+      "[transition-duration:80ms]"
     );
+    expect(beta.className).not.toContain("font-medium");
+    expect(beta.querySelector("svg")).toHaveClass("size-4", "shrink-0");
+    expect(beta.querySelector("svg")?.parentElement).toBe(beta);
   });
 
   it("rings a row only when the arrow keys moved the highlight, not the mouse", async () => {

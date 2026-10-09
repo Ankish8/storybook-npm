@@ -1,5 +1,5 @@
 import * as React from "react";
-import { UploadCloud, FileText, X } from "lucide-react";
+import { ArrowUp, CircleAlert, FileText, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 export interface FileUploadProps extends Omit<
@@ -59,6 +59,25 @@ function dragWillBeRejected(
     );
   });
 }
+const MB = 1024 * 1024;
+/** Arc's size format: bytes under 1 KB, whole KB under 1 MB, then MB with one decimal under 10. */
+function formatFileSize(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < MB) return `${Math.round(bytes / 1024)} KB`;
+  const mb = bytes / MB;
+  return `${mb >= 10 ? Math.round(mb) : Number(mb.toFixed(1))} MB`;
+}
+/**
+ * Arc's three sheets of paper, the target's one illustration. The sheets fan out on hover and wider while a file is over the
+ * target; the arrow on the front sheet lifts. Arc's spring (bounce .15, 580ms) is sampled as --arc-spring on the target.
+ */
+const sheetBase =
+  "absolute inset-0 box-border grid place-items-end justify-items-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary pb-[5px] text-[var(--v2-text-muted,#707070)] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_3px_8px_rgba(0,0,0,0.04)] [transform-origin:50%_100%] [transform:translate(var(--x),var(--y))_rotate(var(--r))] [transition:transform_580ms_var(--arc-spring),color_240ms_cubic-bezier(0.22,1,0.36,1),border-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] before:absolute before:left-[7px] before:top-2 before:h-0.5 before:w-4 before:rounded-sm before:bg-current before:opacity-30 before:content-[''] after:absolute after:left-[7px] after:top-[13px] after:h-0.5 after:w-[11px] after:rounded-sm after:bg-current after:opacity-30 after:content-[''] [button[data-drag=over]_&]:text-[var(--v2-text-secondary,#5E5E5E)] [button[data-drag=over]_&]:border-[var(--color-primary-100)]";
+const hoverFan =
+  "[@media(hover:hover)]:[button:enabled:not([data-drag]):hover_&]:";
+const sheetBack = `${sheetBase} [--r:-10deg] [--x:-9px] [--y:2px] ${hoverFan}[--r:-15deg] ${hoverFan}[--x:-13px] [button[data-drag=over]_&]:[--r:-22deg] [button[data-drag=over]_&]:[--x:-20px] [button[data-drag=over]_&]:[--y:-2px]`;
+const sheetSide = `${sheetBase} [--r:10deg] [--x:9px] [--y:2px] ${hoverFan}[--r:15deg] ${hoverFan}[--x:13px] [button[data-drag=over]_&]:[--r:22deg] [button[data-drag=over]_&]:[--x:20px] [button[data-drag=over]_&]:[--y:-2px]`;
+const sheetFront = `${sheetBase} [--r:0deg] [--x:0px] [--y:0px] ${hoverFan}[--y:-2px] [button[data-drag=over]_&]:[--y:-8px]`;
 const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
   (
     {
@@ -88,6 +107,11 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
     const dragDepth = React.useRef(0);
     const input = React.useRef<HTMLInputElement>(null);
     const id = React.useId();
+    const zone = React.useRef<HTMLButtonElement>(null);
+    const edge = React.useRef<SVGRectElement>(null);
+    // The edge is a drawn stroke fitted to its perimeter (pathLength = 2 x the dash count), so the dashes meet evenly and a
+    // drag can close them into one line. 120 is the estimate until the first measurement.
+    const [edgeUnits, setEdgeUnits] = React.useState(120);
     const files = value ?? local;
     const change = (next: File[]) => {
       if (value === undefined) setLocal(next);
@@ -123,6 +147,45 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
       );
       change(unique);
     };
+    React.useLayoutEffect(() => {
+      const rect = edge.current;
+      if (!rect || typeof rect.getTotalLength !== "function") return;
+      const fit = () => {
+        const length = rect.getTotalLength();
+        if (length > 0) setEdgeUnits(2 * Math.max(1, Math.round(length / 7)));
+      };
+      fit();
+      if (typeof ResizeObserver === "undefined") return;
+      const observer = new ResizeObserver(fit);
+      observer.observe(rect.ownerSVGElement ?? rect);
+      return () => observer.disconnect();
+    }, []);
+    // While a file is over the target it breathes (scale 1 -> 1.012, 2.2s, repeating); reduced motion keeps it still.
+    const breathing = dragging && !dragReject && !disabled;
+    React.useEffect(() => {
+      const node = zone.current;
+      if (
+        !breathing ||
+        !node ||
+        typeof node.animate !== "function" ||
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      )
+        return;
+      const animation = node.animate(
+        [
+          { transform: "scale(1)" },
+          { transform: "scale(1.012)" },
+          { transform: "scale(1)" },
+        ],
+        {
+          duration: 2200,
+          iterations: Infinity,
+          easing: "cubic-bezier(0.65, 0, 0.35, 1)",
+        }
+      );
+      return () => animation.cancel();
+    }, [breathing]);
+    const invalid = Boolean(error || message);
     return (
       <div
         ref={ref}
@@ -179,84 +242,131 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           }}
         />
         <button
+          ref={zone}
           type="button"
           disabled={disabled}
           aria-label={`Choose ${label.toLowerCase()}`}
           aria-describedby={id + "-helper"}
+          data-drag={
+            dragging && !disabled ? (dragReject ? "reject" : "over") : undefined
+          }
+          data-invalid={invalid || undefined}
           onClick={() => input.current?.click()}
           className={cn(
-            "flex w-full flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-semantic-border-layout bg-semantic-bg-primary p-6 text-center transition-[background-color,border-color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-[background-color,border-color] hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
+            // Arc target: 26px above / 34px below / 20px sides; the edge is the SVG stroke below, not a CSS border. Hover and press
+            // lift the surface (press never scales); a file over it tints it and closes the dashes.
+            "group/dz relative flex w-full flex-col items-stretch justify-center rounded-xl bg-semantic-bg-primary px-5 pb-[34px] pt-[26px] text-center [--arc-spring:linear(0,.0258,.09,.1763,.2732,.3724,.4683,.5573,.6376,.7082,.7689,.8202,.8628,.8976,.9256,.9476,.9648,.9778,.9875,.9945,.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [&>*]:pointer-events-none [transition:background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-hover enabled:active:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)]",
             dragging &&
               !disabled &&
               (dragReject
-                ? "border-semantic-error-primary bg-semantic-error-surface"
-                : "border-semantic-border-accent bg-semantic-brand-surface motion-safe:scale-[1.01]"),
-            (error || message) && "border-semantic-error-primary"
+                ? "bg-semantic-error-surface"
+                : "bg-semantic-brand-surface")
           )}
         >
-          <span className="flex size-10 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary">
-            <UploadCloud
-              className="size-5 text-[var(--v2-text-secondary,#5E5E5E)]"
-              aria-hidden="true"
+          <svg
+            aria-hidden="true"
+            className="pointer-events-none absolute left-[0.5px] top-[0.5px] h-[calc(100%-1px)] w-[calc(100%-1px)] overflow-visible"
+          >
+            <rect
+              ref={edge}
+              width="100%"
+              height="100%"
+              rx={11.5}
+              pathLength={edgeUnits}
+              className="fill-none stroke-semantic-border-layout [stroke-dasharray:1_1] [stroke-dashoffset:0] [stroke-width:1] [transition:stroke_160ms_cubic-bezier(0.22,1,0.36,1),stroke-dasharray_240ms_cubic-bezier(0.22,1,0.36,1),stroke-dashoffset_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] [@media(hover:hover)]:[button:enabled:not([data-drag]):hover_&]:stroke-[var(--color-primary-100)] [button[data-invalid]_&]:stroke-semantic-error-primary [button[data-drag=over]_&]:stroke-semantic-border-accent [button[data-drag=reject]_&]:stroke-semantic-error-primary [button[data-drag]_&]:[stroke-dasharray:2_0] [button[data-drag]_&]:[stroke-dashoffset:0.25]"
             />
-          </span>
-          <span className="text-sm font-medium text-semantic-text-link">
-            Click to upload
-            <span className="font-normal text-[var(--v2-text-muted,#707070)]">
-              {" "}
-              or drag and drop
+          </svg>
+          <span
+            aria-hidden="true"
+            className="relative mx-auto mb-3.5 mt-2.5 block h-11 w-9"
+          >
+            <span className={sheetBack} />
+            <span className={sheetSide} />
+            <span className={sheetFront}>
+              <ArrowUp
+                size={14}
+                strokeWidth={2}
+                className="[transition:transform_580ms_var(--arc-spring)] motion-reduce:[transition:none] [button[data-drag=over]_&]:-translate-y-[3px]"
+              />
             </span>
           </span>
-          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+          <span className="block text-sm font-medium leading-[1.4] text-semantic-text-link">
+            Click to upload
+          </span>
+          <span className="mt-1.5 block text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)]">
+            or drag and drop
+          </span>
+          <span className="block pt-1.5 text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]">
             {accept || "Any file type"} · up to{" "}
             {Math.round(maxSize / 1024 / 1024)} MB
           </span>
         </button>
         <p
           id={id + "-helper"}
-          role={error || message ? "alert" : undefined}
+          role={invalid ? "alert" : undefined}
           className={cn(
-            "m-0 mt-2 text-xs",
-            (error || message) &&
-              "motion-safe:animate-in motion-safe:fade-in-0",
-            error || message
-              ? "text-semantic-error-text"
-              : "text-[var(--v2-text-muted,#707070)]"
+            "m-0",
+            invalid
+              ? "flex items-start gap-1.5 pt-3 text-sm leading-[1.4] text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-[0.35em] motion-safe:[animation-duration:240ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]"
+              : "mt-2 text-xs text-[var(--v2-text-muted,#707070)]"
           )}
         >
-          {error || message || helperText}
+          {invalid && (
+            <CircleAlert
+              className="mt-[3px] shrink-0"
+              size={14}
+              strokeWidth={2.25}
+              aria-hidden="true"
+            />
+          )}
+          <span className="min-w-0 flex-1">
+            {error || message || helperText}
+          </span>
         </p>
         {files.length > 0 && (
-          <ul className="m-0 mt-4 flex list-none flex-col gap-2 p-0">
+          <ul className="m-0 flex list-none flex-col p-0 [--arc-smooth:linear(0,.0729,.2134,.3711,.5148,.6316,.7277,.8015,.8554,.8966,.9266,.9477,.9632,.974,.9819,.9874,.9912,.9939,.9958,.9971,1)]">
             {files.map((file, index) => (
               <li
                 key={file.name + file.size + index}
-                className="flex min-w-0 items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 motion-safe:[animation-duration:180ms] motion-safe:[animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]"
+                // The row opens its height from zero (grid-template-rows 0fr -> 1fr, smooth spring) while it drops in with a short
+                // fade and rise; the gap above each row lives inside the clipped li so it opens from a true zero.
+                className="grid min-w-0 grid-rows-[1fr] [transition:grid-template-rows_650ms_var(--arc-smooth)] [@starting-style]:grid-rows-[0fr] motion-reduce:[transition:none]"
               >
-                <FileText
-                  aria-hidden="true"
-                  className="size-5 shrink-0 text-[var(--v2-text-muted,#707070)]"
-                />
-                <div className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-medium">
-                    {file.name}
-                  </span>
-                  <span className="block text-xs text-[var(--v2-text-muted,#707070)]">
-                    {Math.ceil(file.size / 1024)} KB
-                  </span>
+                <div className="min-h-0 min-w-0 overflow-hidden">
+                  <div className="mt-2 grid min-h-[58px] min-w-0 grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-x-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary py-2 pl-[9px] pr-2 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-[22px] motion-safe:zoom-in-[0.94] motion-safe:[animation-duration:420ms] motion-safe:[animation-timing-function:var(--arc-smooth)]">
+                    <span className="grid size-10 place-items-center text-[var(--v2-text-secondary,#5E5E5E)]">
+                      <FileText
+                        aria-hidden="true"
+                        size={20}
+                        strokeWidth={1.75}
+                      />
+                    </span>
+                    <div className="min-w-0">
+                      <span
+                        className="block truncate text-sm font-medium leading-[1.4]"
+                        title={file.name}
+                      >
+                        {file.name}
+                      </span>
+                      <span className="mt-px block text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)] [font-variant-numeric:tabular-nums]">
+                        {formatFileSize(file.size)}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      disabled={disabled}
+                      aria-label={`Remove ${file.name}`}
+                      className="h-8 w-8"
+                      onClick={() => {
+                        change(files.filter((_, i) => i !== index));
+                        setMessage("");
+                      }}
+                    >
+                      <X />
+                    </Button>
+                  </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  disabled={disabled}
-                  aria-label={`Remove ${file.name}`}
-                  onClick={() => {
-                    change(files.filter((_, i) => i !== index));
-                    setMessage("");
-                  }}
-                >
-                  <X />
-                </Button>
               </li>
             ))}
           </ul>

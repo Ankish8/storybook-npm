@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import {
   Pagination,
   PaginationContent,
@@ -132,7 +132,7 @@ describe("PaginationLink", () => {
     );
     const link = screen.getByTestId("link");
     // ghost variant classes from buttonVariants
-    expect(link).toHaveClass("text-[var(--v2-text-muted,#707070)]");
+    expect(link).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
   });
 
   it("applies outline variant when isActive", () => {
@@ -467,7 +467,7 @@ describe("PaginationWidget item count", () => {
 });
 
 describe("Pagination polish", () => {
-  it("keeps page numbers a stable width and presses every link to 0.97", () => {
+  it("keeps page numbers a stable 12px width and presses only the arrows, to 0.96", () => {
     render(
       <Pagination>
         <PaginationContent>
@@ -484,18 +484,32 @@ describe("Pagination polish", () => {
       </Pagination>
     );
 
-    for (const link of [
-      screen.getByText("7"),
+    const number = screen.getByText("7");
+    expect(number).toHaveClass("tabular-nums", "text-xs", "font-normal");
+    expect(number).toHaveClass("active:scale-100");
+    expect(number).not.toHaveClass("active:scale-[0.96]");
+    for (const arrow of [
       screen.getByLabelText("Go to previous page"),
       screen.getByLabelText("Go to next page"),
     ]) {
-      expect(link).toHaveClass(
-        "tabular-nums",
-        "active:scale-[0.97]",
-        "[transition-duration:180ms]"
-      );
-      expect(link).not.toHaveClass("active:scale-[0.98]");
+      expect(arrow).toHaveClass("tabular-nums", "active:scale-[0.96]");
+      expect(arrow).not.toHaveClass("active:scale-[0.97]");
     }
+  });
+
+  it("dims disabled arrows to 40% with a not-allowed cursor and no press", () => {
+    render(
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious disabled href="#" />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+    const arrow = screen.getByLabelText("Go to previous page");
+    expect(arrow).toHaveClass("opacity-40", "cursor-not-allowed");
+    expect(arrow).not.toHaveClass("active:scale-[0.96]");
   });
 
   it("gates the hover fill and text colour to hover-capable pointers", () => {
@@ -512,16 +526,85 @@ describe("Pagination polish", () => {
     const link = screen.getByText("2");
     expect(link).toHaveClass(
       "[@media(hover:hover)]:hover:bg-semantic-bg-ui",
-      "[@media(hover:hover)]:hover:text-[var(--v2-text-secondary,#5E5E5E)]"
+      "[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
     );
     expect(link).not.toHaveClass("hover:bg-semantic-bg-ui");
-    expect(link).not.toHaveClass(
-      "hover:text-[var(--v2-text-secondary,#5E5E5E)]"
-    );
+    expect(link).not.toHaveClass("hover:text-[var(--v2-text-primary,#484848)]");
   });
 
   it("uses tabular numerals in the summary", () => {
     render(<PaginationInfo currentPage={2} pageSize={10} totalItems={120} />);
     expect(screen.getByText(/Showing/)).toHaveClass("tabular-nums");
   });
+});
+
+it("blocks activation and tab focus for disabled previous and next links", () => {
+  const click = vi.fn();
+  render(
+    <Pagination>
+      <PaginationContent>
+        <PaginationItem>
+          <PaginationPrevious disabled href="/previous" onClick={click} />
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationNext disabled href="/next" onClick={click} />
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  );
+  const previous = screen.getByRole("link", { name: "Go to previous page" });
+  const next = screen.getByRole("link", { name: "Go to next page" });
+  expect(previous).toHaveAttribute("tabindex", "-1");
+  expect(next).toHaveAttribute("tabindex", "-1");
+  fireEvent.click(previous);
+  fireEvent.click(next);
+  expect(click).not.toHaveBeenCalled();
+});
+
+it("moves the page highlight inside its own list when selection changes", async () => {
+  const geometry = vi
+    .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+    .mockImplementation(function () {
+      const element = this as HTMLElement;
+      const x =
+        element.dataset.slot === "pagination-link" &&
+        element.textContent === "2"
+          ? 140
+          : 100;
+      return {
+        x,
+        y: 20,
+        left: x,
+        top: 20,
+        right: x + 32,
+        bottom: 52,
+        width: 32,
+        height: 32,
+        toJSON() {},
+      };
+    });
+  try {
+    const sample = (page: number) => (
+      <PaginationContent data-testid="moving-pages">
+        <PaginationItem>
+          <PaginationLink isActive={page === 1}>1</PaginationLink>
+        </PaginationItem>
+        <PaginationItem>
+          <PaginationLink isActive={page === 2}>2</PaginationLink>
+        </PaginationItem>
+      </PaginationContent>
+    );
+    const { rerender } = render(sample(1));
+    const list = screen.getByTestId("moving-pages");
+    expect(list.style.getPropertyValue("--v2-page-x")).toBe("0px");
+    rerender(sample(2));
+    await waitFor(() =>
+      expect(list.style.getPropertyValue("--v2-page-x")).toBe("40px")
+    );
+    expect(list.style.getPropertyValue("--v2-page-width")).toBe("32px");
+    expect(list).toHaveAttribute("data-page-indicator", "true");
+    expect(screen.getAllByRole("listitem")).toHaveLength(2);
+  } finally {
+    geometry.mockRestore();
+  }
 });

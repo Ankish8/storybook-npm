@@ -28,13 +28,13 @@ const UnreadSeparator = React.forwardRef(
     <div
       ref={ref}
       className={cn(
-        "flex items-center gap-4 my-2 font-[family-name:var(--font-v2,Inter,sans-serif)]",
+        "flex items-center gap-3 my-2 font-[family-name:var(--font-v2,Inter,sans-serif)]",
         className
       )}
       {...props}
     >
       <div className="flex-1 h-px bg-semantic-border-layout" />
-      <span className="text-xs text-[var(--v2-text-muted,#707070)] bg-semantic-bg-ui px-2 shrink-0">
+      <span className="shrink-0 bg-semantic-bg-ui px-2 text-xs font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)]">
         {label ?? `${count} unread message${count !== 1 ? "s" : ""}`}
       </span>
       <div className="flex-1 h-px bg-semantic-border-layout" />

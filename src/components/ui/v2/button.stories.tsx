@@ -1,5 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import { useArgs } from "storybook/preview-api";
 import { expect, fn, userEvent, within } from "storybook/test";
 import { Button } from "./button";
 import { Button as ButtonV1 } from "../button";
@@ -9,7 +10,7 @@ import { gallery } from "../../../storybook/v2-preview";
 const FIGMA_V2_BUTTON_DESIGN_URL =
   "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=924-6438";
 
-const VARIANTS = [
+const LEGACY_VARIANTS = [
   "default",
   "primary",
   "secondary",
@@ -19,6 +20,14 @@ const VARIANTS = [
   "destructive",
   "success",
   "dashed",
+] as const;
+
+const VARIANTS = [
+  "primary",
+  "secondary",
+  "ghost",
+  "link",
+  "destructive",
 ] as const;
 
 function buttonStoryProps(args: React.ComponentProps<typeof Button>) {
@@ -97,20 +106,39 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
     </tr>
   </thead>
   <tbody>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 32 · default 40 · lg 48</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 36 · default 44 · lg 50</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Radius</td><td style="padding: 12px 16px;">4px</td><td style="padding: 12px 16px;">8px</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Inter 14/20; 500 neutral labels, 600 filled actions (12px sm)</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Skeuomorphic border + shadow, gradient when pressed</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">Light-blue surface</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Ghost / Link</td><td style="padding: 12px 16px;">Muted text / blue link</td><td style="padding: 12px 16px;">Blue text / dark text</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Inter 14px / 1.4; 500 on every variant</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Flat primary fill; 91% opacity on hover, 84% while pressed</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">White surface with neutral hover fill</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Ghost / Link</td><td style="padding: 12px 16px;">Muted text / blue link</td><td style="padding: 12px 16px;">Ghost: muted text with a subtle hover fill. Link: blue, underlined and borderless</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Focus ring</td><td style="padding: 12px 16px;">2px ring, 2px offset</td><td style="padding: 12px 16px;">1px outline, 3px offset</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Minimum width</td><td style="padding: 12px 16px;">64 / 80 / 96px</td><td style="padding: 12px 16px;">None (hugs content, per Figma)</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Minimum width</td><td style="padding: 12px 16px;">64 / 80 / 96px</td><td style="padding: 12px 16px;">None (hugs content)</td></tr>
   </tbody>
 </table>
 
 ## Text hierarchy
 
-Neutral labels use v2's softer gray palette. Headings use charcoal, body text uses medium gray and supporting text uses a lighter gray. These v2-only text colors follow the October 2 visual refinement; brand action backgrounds and v1 colors stay unchanged.
+Labels use medium weight (500) at 14px. Secondary actions use a neutral foreground; Ghost uses muted neutral text. Link is blue and underlined, with no surface or border. Supporting example text keeps the softer v2 hierarchy. Button states follow the October 7 Arc comparison; primary stays 343E55 and the radius stays 8px.
+
+## v1 compatibility
+
+Use five styles for new work: Primary, Secondary, Ghost, Link and Destructive. Existing calls keep working:
+
+| Existing variant | v2 style |
+| --- | --- |
+| Omitted / default / primary | Primary |
+| secondary / outline | Secondary |
+| ghost / link / destructive | Matching canonical style |
+| success / dashed | Supported legacy extensions |
+
+All six size names, icons, loadingText and asChild remain supported. Changing the import to v2 opts into its visual styling and 36/44/50px heights; it does not require rewriting variant props. The v1 component itself is unchanged.
+
+## Interactions
+
+Press feedback uses a quick compression and a gentle spring return. Wide actions compress less than compact ones. Primary hover and press use opacity instead of a gradient; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
+
+Loading keeps the original width and displays a centered spinner. Set \`loadingText\` to opt into an inline spinner with an explicit status label. Loading sets \`aria-busy\` and \`aria-disabled\`, blocks repeat activation, and keeps focus. Disabled actions use 52% opacity. Reduced motion removes scale, movement and blur; short fades remain. We retain a visible keyboard focus outline, unlike the reference.
 
 ## Design Tokens
 
@@ -125,28 +153,39 @@ Neutral labels use v2's softer gray palette. Headings use charcoal, body text us
   </thead>
   <tbody>${[
     tokenRow("Primary", "--semantic-primary", "343E55", "#343E55"),
-    tokenRow("Primary hover", "--semantic-primary-hover", "2F384D", "#2F384D"),
+    tokenRow("Surface", "--v2-button-surface", "white", "#ffffff"),
     tokenRow(
-      "Pressed gradient start",
-      "--color-primary-300",
-      "777E8D",
-      "#777E8D"
+      "Hover / pressed surface",
+      "--v2-button-surface-muted",
+      "oklch(0.978 0 0)",
+      "oklch(0.978 0 0)"
     ),
-    tokenRow("Disabled", "--semantic-disabled-primary", "A2A6B1", "#A2A6B1"),
     tokenRow(
-      "Secondary surface",
-      "--semantic-info-surface",
-      "ECF1FB",
-      "#ECF1FB"
+      "Border",
+      "--v2-button-border",
+      "oklch(0.935 0 0)",
+      "oklch(0.935 0 0)"
     ),
-    tokenRow("Destructive", "--semantic-error-primary", "F04438", "#F04438"),
-    tokenRow("Success", "--semantic-success-primary", "17B26A", "#17B26A"),
     tokenRow(
-      "Skeuomorphic border",
-      "--border-skeuomorphic",
-      "rgba(255,255,255,0.12)",
-      "#343E55"
+      "Foreground",
+      "--v2-button-foreground",
+      "oklch(0.15 0 0)",
+      "oklch(0.15 0 0)"
     ),
+    tokenRow(
+      "Ghost",
+      "--v2-button-secondary",
+      "oklch(0.46 0 0)",
+      "oklch(0.46 0 0)"
+    ),
+    tokenRow(
+      "Destructive",
+      "--v2-button-danger",
+      "oklch(0.54 0.21 25)",
+      "oklch(0.54 0.21 25)"
+    ),
+    tokenRow("Success", "--semantic-success-hover", "079455", "#079455"),
+    tokenRow("Hover shadow", "--v2-button-shadow", "rgba(0,0,0,0.035)"),
     tokenRow("Font", "--font-v2", "Inter", undefined),
     tokenRow("Heading text", "--v2-text-primary", "484848", "#484848"),
     tokenRow(
@@ -166,12 +205,12 @@ Neutral labels use v2's softer gray palette. Headings use charcoal, body text us
   },
   tags: ["autodocs"],
   args: {
-    variant: "default",
+    variant: "primary",
     size: "default",
     children: "Button",
     disabled: false,
     loading: false,
-    loadingText: "Saving...",
+    loadingText: "",
     leftIcon: false,
     rightIcon: false,
     onClick: fn(),
@@ -185,7 +224,7 @@ Neutral labels use v2's softer gray palette. Headings use charcoal, body text us
     },
     size: {
       control: "select",
-      options: ["sm", "default", "lg", "icon", "icon-sm", "icon-lg"],
+      options: ["sm", "default", "lg"],
       description: "The size of the button",
     },
     disabled: {
@@ -194,11 +233,13 @@ Neutral labels use v2's softer gray palette. Headings use charcoal, body text us
     },
     loading: {
       control: "boolean",
-      description: "Shows a spinner, disables the button and sets aria-busy",
+      description:
+        "Shows a spinner and blocks activation while keeping keyboard focus",
     },
     loadingText: {
       control: "text",
-      description: "Text shown during loading",
+      description:
+        "Optional inline loading label. Leave empty for the centered spinner.",
     },
     leftIcon: {
       control: "boolean",
@@ -227,32 +268,25 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {};
-export const Default: Story = { args: { variant: "default" } };
 export const Primary: Story = {
   args: { variant: "primary", children: "Primary" },
 };
 export const Secondary: Story = {
   args: { variant: "secondary", children: "Secondary" },
 };
-export const Outline: Story = {
-  args: { variant: "outline", children: "Outline" },
-};
 export const Ghost: Story = { args: { variant: "ghost", children: "Ghost" } };
-export const Link: Story = { args: { variant: "link", children: "Link" } };
+export const Link: Story = {
+  args: { variant: "link", children: "Learn more" },
+};
 export const Destructive: Story = {
-  args: { variant: "destructive", children: "Delete" },
-};
-export const Success: Story = {
-  args: { variant: "success", children: "Confirm" },
-};
-export const Dashed: Story = {
-  args: { variant: "dashed", children: "Add item" },
+  args: { variant: "destructive", children: "Delete", leftIcon: true },
+  argTypes: { leftIcon: { mapping: { true: <Trash2 />, false: undefined } } },
 };
 export const Small: Story = { args: { size: "sm" } };
 export const Large: Story = { args: { size: "lg" } };
 export const Disabled: Story = { args: { disabled: true } };
 export const Loading: Story = {
-  args: { loading: true, loadingText: "Saving..." },
+  args: { loading: true, children: "Upload file" },
 };
 export const WithIcons: Story = {
   name: "With icons",
@@ -260,14 +294,39 @@ export const WithIcons: Story = {
 };
 export const IconOnly: Story = {
   name: "Icon only",
-  args: { size: "icon", variant: "outline", "aria-label": "Add item" },
-  parameters: gallery(
-    ["children", "leftIcon", "rightIcon"],
-    "An accessible icon button. Controls update its palette, size, disabled and loading states."
-  ),
+  args: { size: "icon", variant: "secondary", "aria-label": "Add item" },
+  parameters: {
+    ...gallery(
+      ["children", "leftIcon", "rightIcon", "loadingText"],
+      "A centered, square icon button. Switch between 36, 44 and 50px, then try its loading and disabled states."
+    ),
+    layout: "centered",
+  },
+  argTypes: {
+    size: {
+      options: ["icon-sm", "icon", "icon-lg"],
+      control: {
+        type: "select",
+        labels: {
+          "icon-sm": "Small · 36px",
+          icon: "Default · 44px",
+          "icon-lg": "Large · 50px",
+        },
+      },
+    },
+  },
   render: (args) => (
     <Button
       {...buttonStoryProps(args)}
+      size={
+        args.size === "sm"
+          ? "icon-sm"
+          : args.size === "lg"
+            ? "icon-lg"
+            : args.size?.startsWith("icon")
+              ? args.size
+              : "icon"
+      }
       leftIcon={undefined}
       rightIcon={undefined}
     >
@@ -277,14 +336,17 @@ export const IconOnly: Story = {
 };
 export const AllVariants: Story = {
   name: "All variants",
-  parameters: gallery(
-    ["variant"],
-    "Compare palettes. Label, size, icon, disabled and loading controls apply across all variants."
-  ),
+  parameters: {
+    ...gallery(
+      ["variant"],
+      "Five distinct styles. Default and Outline remain supported aliases; see v1 compatibility for all existing names."
+    ),
+    layout: "centered",
+  },
   render: (args) => (
-    <div className="flex max-w-full flex-wrap items-start gap-6">
+    <div className="mx-auto grid w-full max-w-[520px] grid-cols-2 items-start gap-x-6 gap-y-7 sm:grid-cols-3">
       {VARIANTS.map((variant) => (
-        <div key={variant} className="flex flex-col items-start gap-2">
+        <div key={variant} className="flex flex-col items-center gap-2">
           <span className="text-xs text-[var(--v2-text-muted,#707070)]">
             {variant[0].toUpperCase() + variant.slice(1)}
           </span>
@@ -296,27 +358,36 @@ export const AllVariants: Story = {
 };
 export const AllSizes: Story = {
   name: "All sizes",
-  parameters: gallery(
-    ["size"],
-    "Text and icon buttons at each height. Label and icon controls apply to the text buttons; palette, disabled and loading controls apply to both rows."
-  ),
+  parameters: {
+    ...gallery(
+      ["size"],
+      "Text and icon buttons at each height. Label and icon controls apply to the text buttons; palette, disabled and loading controls apply to both rows."
+    ),
+    layout: "centered",
+  },
   render: (args) => (
-    <div className="flex max-w-full flex-col items-start gap-6">
-      <div className="flex flex-wrap items-end gap-6">
+    <div className="mx-auto flex w-full max-w-[520px] flex-col gap-7">
+      <div className="grid w-full grid-cols-3 items-end gap-6">
         {(["sm", "default", "lg"] as const).map((size) => (
-          <div key={size} className="flex flex-col items-start gap-2">
+          <div
+            key={size}
+            className="flex min-w-0 flex-col items-center gap-2 text-center"
+          >
             <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-              {size} · {size === "sm" ? 32 : size === "lg" ? 48 : 40}px
+              {size} · {size === "sm" ? 36 : size === "lg" ? 50 : 44}px
             </span>
             <Button {...buttonStoryProps(args)} size={size} />
           </div>
         ))}
       </div>
-      <div className="flex flex-wrap items-end gap-6">
+      <div className="grid w-full grid-cols-3 items-end gap-6">
         {(["icon-sm", "icon", "icon-lg"] as const).map((size) => (
-          <div key={size} className="flex flex-col items-start gap-2">
+          <div
+            key={size}
+            className="flex min-w-0 flex-col items-center gap-2 text-center"
+          >
             <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-              {size} · {size === "icon-sm" ? 32 : size === "icon-lg" ? 48 : 40}
+              {size} · {size === "icon-sm" ? 36 : size === "icon-lg" ? 50 : 44}
               px
             </span>
             <Button
@@ -385,11 +456,11 @@ export const States: Story = {
   ),
 };
 export const V1VsV2: Story = {
-  name: "v1 vs v2",
+  name: "v1 compatibility",
   parameters: {
     ...gallery(
       ["variant", "size"],
-      "The same props rendered by each version, at small, default and large sizes. Content, icon, disabled and loading controls apply to both columns."
+      "All nine v1 names still work. Default maps to Primary; Outline maps to Secondary. Success and Dashed remain legacy extensions. Content, icon, disabled and loading controls apply to both versions."
     ),
     layout: "padded",
   },
@@ -403,7 +474,7 @@ export const V1VsV2: Story = {
         <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
           v2 (ui/v2/button)
         </div>
-        {VARIANTS.map((variant) => (
+        {LEGACY_VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
             <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
               {variant}
@@ -469,6 +540,80 @@ export const Usage: Story = {
       </div>
     </div>
   ),
+};
+
+function SaveFlowRender() {
+  const [args, updateArgs] = useArgs<React.ComponentProps<typeof Button>>();
+  const timer = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined
+  );
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+  React.useEffect(() => {
+    if (!args.loading) {
+      clearTimeout(timer.current);
+      timer.current = undefined;
+    }
+  }, [args.loading]);
+
+  function save() {
+    if (timer.current || args.loading || args.disabled) return;
+    buttonStoryProps(args).onClick();
+    clearTimeout(timer.current);
+    updateArgs({ loading: true });
+    timer.current = setTimeout(() => {
+      timer.current = undefined;
+      updateArgs({ loading: false, children: "Saved" });
+    }, 1100);
+  }
+
+  return (
+    <div className="flex w-[400px] max-w-full flex-col items-start gap-5 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+      <div className="space-y-1">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          Save a draft
+        </p>
+        <p className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
+          Try a click, Enter or Space. The action keeps focus while it saves.
+        </p>
+      </div>
+      <div className="flex max-w-full flex-wrap items-center gap-3">
+        <Button {...buttonStoryProps(args)} onClick={save} />
+        <Button
+          variant="ghost"
+          size="sm"
+          disabled={args.loading || args.disabled}
+          onClick={() =>
+            updateArgs({ loading: false, children: "Save changes" })
+          }
+        >
+          Reset
+        </Button>
+      </div>
+      <p
+        role="status"
+        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
+      >
+        {args.loading
+          ? "Saving your draft…"
+          : args.children === "Saved"
+            ? "Draft saved. Reset to try again."
+            : "Preview changes and Controls stay synchronized."}
+      </p>
+    </div>
+  );
+}
+
+export const SaveFlow: Story = {
+  name: "Save flow",
+  args: { children: "Save changes", loadingText: "" },
+  parameters: {
+    ...gallery(
+      [],
+      "Click Save changes to try the label transition, width spring and loading feedback. Label, loading, palette, size and icon controls stay live. Reset repeats the flow."
+    ),
+    layout: "centered",
+  },
+  render: SaveFlowRender,
 };
 
 export const Interaction: Story = {

@@ -10,6 +10,7 @@ import {
   type Placement,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Check, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -214,6 +215,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
     );
 
     const containerRef = React.useRef<HTMLDivElement | null>(null);
+    const reducedMotion = useReducedMotion() ?? false;
 
     const { refs, floatingStyles, placement } = useFloating({
       open: isOpen,
@@ -471,10 +473,15 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
         className={cn(searchFilterVariants({ size }), className)}
         {...props}
       >
-        <div ref={setAnchorRef} className="relative">
+        <div
+          ref={setAnchorRef}
+          className="group relative"
+          data-filled={displaySearchValue ? "true" : undefined}
+        >
+          {/* Arc: an 18px glass inset 12px, muted at rest and full contrast while the field is focused or holds text. */}
           <Search
-            strokeWidth={1.2}
-            className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-[var(--v2-text-muted,#707070)]"
+            aria-hidden="true"
+            className="pointer-events-none absolute left-[13px] top-1/2 size-[18px] -translate-y-1/2 text-[var(--v2-text-muted,#707070)] transition-[color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] group-focus-within:text-[var(--v2-text-primary,#484848)] group-data-[filled=true]:text-[var(--v2-text-primary,#484848)]"
           />
           <Input
             ref={searchInputRef}
@@ -493,7 +500,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             // (`aria-expanded`). The extra `hover` selector outranks the grey hover
             // border from Input (0,4,0 vs 0,3,0).
             className={cn(
-              "pl-10 pr-9 aria-expanded:border-[var(--color-secondary-600,#27ABB8)] aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]",
+              "pl-[38px] pr-9 aria-expanded:border-semantic-primary aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
               inputClassName
             )}
             {...searchInputProps}
@@ -518,16 +525,62 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
               inputOnChange?.(event);
             }}
           />
-          {displaySearchValue && !disabled && !searchDisabled ? (
-            <button
-              type="button"
-              aria-label="Clear search"
-              className="absolute right-3 top-1/2 flex size-5 -translate-y-1/2 items-center justify-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-semantic-text-secondary focus-visible:outline-offset-[3px]"
-              onClick={handleClearSearch}
-            >
-              <X className="size-4" />
-            </button>
-          ) : null}
+          {/* Arc: a 24px clear button in a slot inset 12px; it scales up out of a 2px blur on a snappy spring
+              and leaves the same way. Reduced motion keeps only a fade. */}
+          <AnimatePresence initial={false}>
+            {displaySearchValue && !disabled && !searchDisabled ? (
+              <motion.button
+                key="clear"
+                type="button"
+                aria-label="Clear search"
+                className="absolute right-[13px] top-1/2 -mt-3 grid size-6 place-items-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-[background-color,color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-semantic-text-secondary focus-visible:outline-offset-[3px]"
+                onClick={handleClearSearch}
+                initial={
+                  reducedMotion
+                    ? { opacity: 0 }
+                    : { opacity: 0, scale: 0.8, filter: "blur(2px)" }
+                }
+                animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                exit={
+                  reducedMotion
+                    ? { opacity: 0, transition: { duration: 0 } }
+                    : {
+                        opacity: 0,
+                        scale: 0.8,
+                        filter: "blur(2px)",
+                        transition: {
+                          duration: 0.12,
+                          ease: [0.22, 1, 0.36, 1],
+                        },
+                      }
+                }
+                whileTap={
+                  reducedMotion
+                    ? undefined
+                    : {
+                        scale: 0.96,
+                        transition: {
+                          duration: 0.12,
+                          ease: [0.22, 1, 0.36, 1],
+                        },
+                      }
+                }
+                transition={
+                  reducedMotion
+                    ? { duration: 0.12 }
+                    : {
+                        type: "spring",
+                        visualDuration: 0.26,
+                        bounce: 0.12,
+                        opacity: { duration: 0.16 },
+                        filter: { duration: 0.16 },
+                      }
+                }
+              >
+                <X className="size-4" aria-hidden="true" />
+              </motion.button>
+            ) : null}
+          </AnimatePresence>
         </div>
         {isOpen &&
           typeof document !== "undefined" &&

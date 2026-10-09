@@ -1,8 +1,17 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Alert, AlertTitle, AlertDescription } from "../../v2/alert";
+import { MotionGlobalConfig } from "motion/react";
 import { Bell } from "lucide-react";
 import { assertNoBootstrapMarginBleed } from "../utils/bootstrap-compat";
+
+// Presence semantics are real; skip interpolation because jsdom cannot measure auto heights.
+beforeEach(() => {
+  MotionGlobalConfig.skipAnimations = true;
+});
+afterEach(() => {
+  MotionGlobalConfig.skipAnimations = false;
+});
 
 describe("Alert", () => {
   // Basic rendering
@@ -73,6 +82,40 @@ describe("Alert", () => {
     expect(element).toHaveClass("text-sm");
     expect(element).toHaveClass("rounded-lg");
     expect(element).toHaveClass("border");
+  });
+
+  it("matches Arc's type and spacing: 14px/500 title, 12px description 4px below, 18px icon, 1px resting shadow", () => {
+    render(
+      <Alert data-testid="alert">
+        <AlertTitle>Saved</AlertTitle>
+        <AlertDescription>Your updates are ready.</AlertDescription>
+      </Alert>
+    );
+    expect(screen.getByTestId("alert")).toHaveClass(
+      "shadow-[0_1px_2px_rgba(0,0,0,0.035)]"
+    );
+    expect(screen.getByRole("heading", { name: "Saved" })).toHaveClass(
+      "text-sm",
+      "font-medium",
+      "leading-[1.4]"
+    );
+    expect(
+      screen.getByText("Your updates are ready.").closest("p")
+    ).toHaveClass("text-xs", "mt-1", "leading-[1.4]");
+    expect(screen.getByTestId("alert").querySelector("svg")).toHaveClass(
+      "size-[18px]"
+    );
+  });
+  it("keeps the alert box inside a presence wrapper so its padding never has to collapse", () => {
+    render(
+      <Alert data-testid="alert">
+        <AlertTitle>Saved</AlertTitle>
+      </Alert>
+    );
+    const box = screen.getByRole("alert");
+    expect(box).toBe(screen.getByTestId("alert"));
+    expect(box.parentElement).not.toBeNull();
+    expect(box.parentElement).not.toHaveAttribute("role");
   });
 
   // Icon rendering
@@ -147,7 +190,7 @@ describe("Alert", () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it("hides alert when close button is clicked (uncontrolled)", () => {
+  it("hides alert when close button is clicked (uncontrolled)", async () => {
     render(
       <Alert closable data-testid="alert">
         <AlertTitle>Close Me</AlertTitle>
@@ -155,11 +198,13 @@ describe("Alert", () => {
     );
     expect(screen.getByTestId("alert")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: /close/i }));
-    expect(screen.queryByTestId("alert")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByTestId("alert")).not.toBeInTheDocument()
+    );
   });
 
   // Controlled visibility
-  it("respects open prop (controlled mode)", () => {
+  it("respects open prop (controlled mode)", async () => {
     const { rerender } = render(
       <Alert open={true} data-testid="alert">
         <AlertTitle>Controlled</AlertTitle>
@@ -172,7 +217,9 @@ describe("Alert", () => {
         <AlertTitle>Controlled</AlertTitle>
       </Alert>
     );
-    expect(screen.queryByTestId("alert")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByTestId("alert")).not.toBeInTheDocument()
+    );
   });
 
   it("respects defaultOpen prop (uncontrolled mode)", () => {
@@ -390,7 +437,7 @@ describe("v2 presentations", () => {
       screen.getByRole("button", { name: "Continue" })
     );
   });
-  it("retains controlled dismissal in the overlay presentation", () => {
+  it("retains controlled dismissal in the overlay presentation", async () => {
     const onClose = vi.fn();
     const { rerender } = render(
       <Alert presentation="overlay" open closable onClose={onClose}>
@@ -405,10 +452,12 @@ describe("v2 presentations", () => {
         <AlertTitle>Notice</AlertTitle>
       </Alert>
     );
-    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+    );
   });
   it.each(["inline", "header", "overlay"] as const)(
-    "gives the %s close button a 24px target around a 16px icon without moving the layout",
+    "gives the %s close button Arc's 28px target around a 16px icon without moving the layout",
     (presentation) => {
       render(
         <Alert presentation={presentation} closable>
@@ -416,8 +465,8 @@ describe("v2 presentations", () => {
         </Alert>
       );
       const close = screen.getByRole("button", { name: "Close alert" });
-      // 24px hit area; -2px margin keeps the old 20px footprint so row height and icon centre are unchanged.
-      expect(close).toHaveClass("size-6", "-m-0.5");
+      // 28px hit area; the -5px / -6px margins keep it from adding row height or pushing the content.
+      expect(close).toHaveClass("size-7", "-my-[5px]", "-mr-1.5");
       expect(close).not.toHaveClass("size-5");
       expect(close.querySelector("svg")).toHaveClass("size-4");
       expect(close).toHaveAttribute("aria-label", "Close alert");
@@ -432,7 +481,8 @@ describe("v2 presentations", () => {
     );
     const close = screen.getByRole("button", { name: "Close alert" });
     expect(close).toHaveClass(
-      "[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)]",
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui"
     );
     expect(close).not.toHaveClass(
       "hover:text-[var(--v2-text-primary,#484848)]"

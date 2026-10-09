@@ -15,7 +15,7 @@ import { Switch as SwitchV1 } from "../switch";
 import { v2ComponentDocs } from "./story-docs";
 
 const SIZES = ["sm", "default", "lg"] as const;
-const DIMENSIONS = { sm: "32 × 18", default: "36 × 20", lg: "44 × 24" };
+const DIMENSIONS = { sm: "36 × 20", default: "42 × 24", lg: "48 × 28" };
 const STATE_COLUMNS = [
   { label: "Default", className: undefined, disabled: false },
   { label: "Hover", className: "pseudo-hover", disabled: false },
@@ -54,7 +54,7 @@ const meta: Meta<typeof Switch> = {
             [
               "Press and target",
               "—",
-              "Track scales to 96% on press; invisible 44 × 28 target for the default size",
+              "Thumb stretches while pressed and glides on a spring; invisible 50 × 32 target for the default size",
             ],
             [
               "Description",
@@ -64,9 +64,9 @@ const meta: Meta<typeof Switch> = {
             [
               "Track sizes (w × h)",
               "sm 36 × 20 / default 44 × 24 / lg 56 × 28",
-              "sm 32 × 18 / default 36 × 20 / lg 44 × 24px",
+              "sm 36 × 20 / default 42 × 24 (Arc) / lg 48 × 28px",
             ],
-            ["Thumb diameters", "16 / 20 / 24px", "14 / 16 / 20px"],
+            ["Thumb diameters", "16 / 20 / 24px", "14 / 18 / 22px"],
             ["Track radius", "Full pill", "12px"],
             ["Off surface", "#E9EAEB", "#EBECEE; hover #E9EAEB"],
             ["On surface", "#343E55", "#343E55; hover #2F384D"],
@@ -79,12 +79,12 @@ const meta: Meta<typeof Switch> = {
             [
               "Thumb shadow",
               "Large shadow",
-              "Soft 0 2px 8px shadow at 6% black",
+              "Hairline plus 1px and 2px soft shadows (Arc)",
             ],
             [
               "Labels and behavior",
               "Boolean selection and left/right labels",
-              "Same API; Inter labels",
+              "Same API; Inter 400 labels, 12px from the track",
             ],
           ],
           tokens: [
@@ -148,7 +148,7 @@ const meta: Meta<typeof Switch> = {
     size: {
       control: "select",
       options: SIZES,
-      description: "Small 32 × 18, default 36 × 20 or large 44 × 24px track.",
+      description: "Small 36 × 20, default 42 × 24 or large 48 × 28px track.",
     },
     label: { control: "text", description: "Visible, clickable label." },
     description: {

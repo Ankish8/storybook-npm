@@ -4,6 +4,7 @@ import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 import {
   AlertTriangle,
+  Check,
   CheckCircle2,
   Info as InfoIcon,
   X,
@@ -47,6 +48,15 @@ const ICONS = {
   info: InfoIcon,
   destructive: XCircle,
 };
+// v2 draws the status inside a round chip, so it uses glyphs without their own circle.
+const ICONS_V2 = {
+  default: null,
+  success: Check,
+  error: X,
+  warning: AlertTriangle,
+  info: InfoIcon,
+  destructive: X,
+};
 type ToastArgs = React.ComponentProps<typeof Toast> & {
   titleCopy: string;
   description: string;
@@ -86,10 +96,10 @@ function ToastBody({
         className={
           version === "v1"
             ? "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
-            : "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)]"
+            : "-mr-0.5 -mt-px inline-flex size-8 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)]"
         }
       >
-        <X className="size-3" />
+        <X className={version === "v1" ? "size-3" : "size-4"} />
       </button>
     ) : (
       <ToastClose aria-label="Dismiss notification" />
@@ -136,32 +146,21 @@ function ToastBody({
         {close}
       </>
     );
+  const IconV2 = ICONS_V2[variant];
   return (
-    <>
-      <div
-        className={cn(
-          "flex w-full items-center gap-4 p-4",
-          (args.description || args.showAction) &&
-            "border-b-[0.4px] border-solid border-inherit"
-        )}
-      >
-        {args.showIcon && Icon && <Icon className="size-5 shrink-0" />}
-        <div className="min-w-0 flex-1">
-          <Title>{args.titleCopy}</Title>
-        </div>
-        {close}
-      </div>
-      {(args.description || args.showAction) && (
-        <div className="flex w-full items-center gap-3 px-4 py-3">
-          {args.description && (
-            <Description className="min-w-0 flex-1">
-              {args.description}
-            </Description>
-          )}
-          {action}
-        </div>
+    <div className="flex w-full items-start gap-3 py-3.5 pl-4 pr-3.5">
+      {args.showIcon && IconV2 && (
+        <span className="grid size-[30px] shrink-0 place-items-center rounded-full border border-solid border-[color-mix(in_oklab,currentColor_24%,transparent)] bg-[color-mix(in_oklab,currentColor_10%,transparent)]">
+          <IconV2 className="size-4" strokeWidth={2.25} aria-hidden />
+        </span>
       )}
-    </>
+      <div className="grid min-w-0 flex-1 gap-0.5 pt-[5px]">
+        <Title>{args.titleCopy}</Title>
+        {args.description && <Description>{args.description}</Description>}
+        {action && <div className="mt-2 flex">{action}</div>}
+      </div>
+      {close}
+    </div>
   );
 }
 function LiveToast({
@@ -198,13 +197,13 @@ function LiveToast({
         type={args.type}
         open={args.open}
         onOpenChange={changeOpen}
-        className="w-[384px] max-w-full"
+        className="w-[26rem] max-w-full"
       >
         <ToastBody args={args} />
       </Toast>
       <ToastViewport
         className={cn(
-          "w-[416px] max-w-full",
+          "w-[448px] max-w-full",
           args.position === "top-right" &&
             "bottom-auto right-0 top-0 sm:bottom-auto sm:right-0 sm:top-0"
         )}
@@ -249,22 +248,22 @@ const meta: Meta<ToastArgs> = {
           name: "toast",
           exportName: "Toaster, toast, Toast, ToastAction",
           summary:
-            "Dismissible notifications with six semantic treatments, a header and a description/action row.",
+            "Dismissible notifications with six semantic treatments: a status chip, title and description, an optional action and a dismiss.",
           changes: [
             [
               "Structure",
               "One compact row",
-              "16px header; 12px / 16px description and action row",
+              "30px status chip, title and description column, 32px dismiss, action under the copy",
             ],
             [
               "Container",
               "5px corners, flat status borders",
-              "384px, 8px corners, 1px tint border and overlay shadow",
+              "416px, 8px corners, 1px tint border and Arc floating shadow",
             ],
             [
               "Typography",
               "14px semibold title",
-              "16px medium title, 12px description",
+              "14px medium title, 14px description",
             ],
             [
               "Status",
@@ -315,7 +314,7 @@ const meta: Meta<ToastArgs> = {
               "Success / error / warning / info text",
               "#067647 / #B42318 / #B54708 / #2F5398",
             ],
-            ["Corners / width", "8px / 384px literals", "8px / 384px"],
+            ["Corners / width", "8px / 384px literals", "8px / 416px"],
           ],
           guidance:
             "Mount one Toaster per application and call toast, toast.success/error/warning/info or toast({variant: 'destructive'}). Destructive uses the error palette and preserves all Root props. Provide meaningful action altText. Duration is Radix's visible lifetime; the existing store removal delay and limit remain unchanged. Overview uses controlled primitives so dismiss/timeout update open Controls; hook notifications in Usage are deliberately separate from that playground. Galleries are inline visual presentations with no global viewport or portal.",
@@ -481,7 +480,7 @@ function InlineToast({
           : toastVariantsV1({
               variant: variant === "destructive" ? "error" : variant,
             }),
-        "w-[384px] max-w-full",
+        version === "v2" ? "w-[26rem] max-w-full" : "w-[384px] max-w-full",
         state === "Focus" && "[&_button]:pseudo-focus-visible"
       )}
     >
@@ -539,7 +538,7 @@ export const States: Story = {
               {state}
             </span>
             {state === "Dismissed" ? (
-              <div className="flex min-h-[116px] w-[384px] items-center justify-center rounded-lg border border-dashed border-semantic-border-layout p-4">
+              <div className="flex min-h-[116px] w-[26rem] max-w-full items-center justify-center rounded-lg border border-dashed border-semantic-border-layout p-4">
                 <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
                   Notification closed · content unmounted
                 </p>
@@ -567,7 +566,7 @@ export const V1VsV2: Story = {
   },
   render: (args) => (
     <div className="max-w-full overflow-x-auto p-4">
-      <div className="grid min-w-[924px] grid-cols-[88px_384px_384px] items-start gap-6">
+      <div className="grid min-w-[956px] grid-cols-[88px_384px_416px] items-start gap-6">
         <div />
         {["v1 · ui/toast", "v2 · ui/v2/toast"].map((label) => (
           <span

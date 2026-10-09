@@ -5,10 +5,11 @@ import { cn } from "@/lib/utils";
 
 /**
  * Spinner variants for loading indicators.
- * Uses semantic color tokens for consistent theming.
+ * Uses semantic color tokens for consistent theming. One turn takes 700ms, linear (Arc's button spinner). Reduced
+ * motion keeps turning, slower, because a stopped spinner stops saying "busy".
  */
 const spinnerVariants = cva(
-  "animate-spin motion-reduce:[animation-duration:2s]",
+  "animate-spin [animation-duration:700ms] motion-reduce:[animation-duration:2s]",
   {
     variants: {
       size: {
@@ -33,18 +34,14 @@ const spinnerVariants = cva(
 );
 
 /**
- * SVG stroke widths that decrease as size increases for visual balance.
+ * Ring thickness in viewBox units. Arc's loader is a 1.5px ring on a 16px box, so the ratio (2.25 of 24) is constant
+ * and the ring scales with the spinner instead of thinning out.
  */
-const strokeWidths: Record<string, number> = {
-  sm: 3,
-  default: 3,
-  lg: 2.5,
-  xl: 2,
-};
+const STROKE_WIDTH = 2.25;
 
 /**
  * A loading spinner component with customizable size and color variants.
- * Uses a custom SVG circle with a visible track and animated arc.
+ * Draws Arc's loader: a three-quarter ring with no track, open on the right, turning clockwise.
  *
  * @example
  * ```tsx
@@ -73,8 +70,8 @@ const Spinner = React.forwardRef(
     }: SpinnerProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const strokeWidth = strokeWidths[size || "default"] ?? 3;
-    const radius = 10;
+    // The ring's outer edge sits on the 24-unit box, so the centre line is half a stroke inside it.
+    const radius = 12 - STROKE_WIDTH / 2;
     const circumference = 2 * Math.PI * radius;
 
     return (
@@ -91,25 +88,24 @@ const Spinner = React.forwardRef(
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Track circle */}
+          {/* v1 draws a track beneath the arc and callers' tests may count circles, so the element stays; Arc has no track, so it is invisible. */}
           <circle
             cx="12"
             cy="12"
             r={radius}
             stroke="currentColor"
-            strokeWidth={strokeWidth}
-            opacity="0.25"
+            strokeWidth={STROKE_WIDTH}
+            opacity="0"
           />
-          {/* Active arc */}
+          {/* A 270-degree arc: the dash starts at 4:30 so the gap is centred on the right, like a border with border-right-color: transparent. */}
           <circle
             cx="12"
             cy="12"
             r={radius}
             stroke="currentColor"
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            strokeDasharray={circumference}
-            strokeDashoffset={circumference * 0.75}
+            strokeWidth={STROKE_WIDTH}
+            strokeDasharray={`${circumference * 0.75} ${circumference}`}
+            transform="rotate(45 12 12)"
           />
         </svg>
         <span className="sr-only">{ariaLabel}</span>

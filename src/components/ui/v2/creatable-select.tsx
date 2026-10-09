@@ -1,11 +1,21 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import { animate, useReducedMotion } from "motion/react";
 import { ChevronDown, Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * Arc's chevron turns on a 580ms spring that settles with a hint of life; the
+ * sampled curve is Arc's own `--ease-spring`. Wrapped in `cn(...)` so the CLI
+ * prefixer transforms the literal. `creatable-multi-select` repeats it.
+ */
+const chevronSpringClassName = cn(
+  "[stroke-width:1.75] [transition-property:transform,color] [transition-duration:580ms] [transition-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] motion-reduce:transition-none"
+);
+
 const creatableSelectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between rounded-lg bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-11 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:opacity-50 disabled:shadow-none disabled:hover:border-semantic-border-layout",
   {
     variants: {
       state: {
@@ -13,9 +23,10 @@ const creatableSelectTriggerVariants = cva(
           // The open field is its own element (data-state open), and clicking the
           // list moves focus out of it, so `focus-within` alone lets the glow drop while
           // the panel is still open. The `hover` variant outranks the grey hover border.
-          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] data-[state=open]:border-[var(--color-secondary-600,#27ABB8)] data-[state=open]:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] data-[state=open]:hover:border-[var(--color-secondary-600,#27ABB8)]",
+          // Arc also tints the field on hover, press and while open (its muted surface).
+          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus-within:shadow-none data-[state=open]:border-semantic-primary data-[state=open]:bg-semantic-bg-ui data-[state=open]:shadow-none data-[state=open]:hover:border-semantic-primary",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
       },
     },
     defaultVariants: {
@@ -45,6 +56,52 @@ export const creatablePrimaryRoleHintRowClassName = cn(
 export const creatableToneHintRowClassName = cn(
   "flex shrink-0 items-center justify-between gap-2 px-4 py-2"
 );
+
+/**
+ * Arc's combobox follows its list height on a critically damped spring (about
+ * 400ms, no overshoot), so filtering never snaps the panel. The wrapper clips
+ * while it moves; the first measurement is applied without animation and
+ * reduced motion applies every change at once.
+ */
+function AutoHeight({ children }: { children: React.ReactNode }) {
+  const outerRef = React.useRef<HTMLDivElement>(null);
+  const innerRef = React.useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  React.useEffect(() => {
+    const outer = outerRef.current;
+    const inner = innerRef.current;
+    if (!outer || !inner || typeof ResizeObserver === "undefined") return;
+    let measured = false;
+    let controls: ReturnType<typeof animate> | undefined;
+    const observer = new ResizeObserver(() => {
+      const next = inner.offsetHeight;
+      if (!measured || reduceMotion) {
+        measured = true;
+        controls?.stop();
+        outer.style.height = `${next}px`;
+        return;
+      }
+      controls?.stop();
+      controls = animate(
+        outer,
+        { height: next },
+        { type: "spring", visualDuration: 0.4, bounce: 0 }
+      );
+    });
+    observer.observe(inner);
+    return () => {
+      observer.disconnect();
+      controls?.stop();
+    };
+  }, [reduceMotion]);
+
+  return (
+    <div ref={outerRef} className="overflow-hidden">
+      <div ref={innerRef}>{children}</div>
+    </div>
+  );
+}
 
 function restoreInputCursor(input: HTMLInputElement, cursorPosition: number) {
   window.requestAnimationFrame(() => {
@@ -297,7 +354,7 @@ const CreatableSelect = React.forwardRef(
               creatableSelectTriggerVariants({ state }),
               "cursor-text",
               disabled &&
-                "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:border-semantic-border-layout focus-within:shadow-none"
+                "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
             )}
             onClick={() => inputRef.current?.focus()}
           >
@@ -333,7 +390,7 @@ const CreatableSelect = React.forwardRef(
               }}
               maxLength={maxLength}
               onKeyDown={handleKeyDown}
-              className="flex-1 min-w-0 bg-transparent outline-none text-base text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)]"
+              className="flex-1 min-w-0 bg-transparent outline-none text-sm text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)]"
               placeholder={selectedLabel || placeholder}
               aria-expanded="true"
               aria-haspopup="listbox"
@@ -346,7 +403,12 @@ const CreatableSelect = React.forwardRef(
                 {search.length}/{maxLength}
               </span>
             ) : null}
-            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 rotate-180 transition-transform duration-200 [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:200ms]" />
+            <ChevronDown
+              className={cn(
+                "size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 rotate-180 motion-safe:animate-in spin-in-0 motion-safe:[animation-duration:580ms] motion-safe:[animation-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)]",
+                chevronSpringClassName
+              )}
+            />
           </div>
         ) : (
           <button
@@ -373,14 +435,14 @@ const CreatableSelect = React.forwardRef(
             >
               {selectedLabel || placeholder}
             </span>
-            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0" />
+            <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] opacity-70 shrink-0 [stroke-width:1.75]" />
           </button>
         )}
 
-        {/* Dropdown. CSS-anchored below the field (no flip), so it always grows from the
-            top-left corner; there is no placement to derive the origin from. */}
+        {/* Dropdown. CSS-anchored 8px below the field (no flip), so it always grows from the
+            top edge; there is no placement to derive the origin from. */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-1 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-md motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-1">
+          <div className="absolute left-0 top-full z-[9999] mt-2 w-full origin-top rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
             {creatableHint ? (
               <div className={creatablePrimaryRoleHintRowClassName}>
                 <span className="text-sm text-[var(--v2-text-muted,#707070)]">
@@ -390,78 +452,81 @@ const CreatableSelect = React.forwardRef(
               </div>
             ) : null}
 
-            {/* Options list */}
-            <div
-              ref={listRef}
-              id={listboxId}
-              role="listbox"
-              className="max-h-60 overflow-y-auto p-1"
-            >
-              {filtered.length === 0 && !isCustom && (
-                <div className="px-4 py-2 text-sm text-[var(--v2-text-muted,#707070)]">
-                  No options found
-                </div>
-              )}
-              {filtered.map((opt, i) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  role="option"
-                  aria-selected={opt.value === value}
-                  disabled={disabled || opt.disabled}
-                  onClick={() => !opt.disabled && handleSelect(opt.value)}
-                  onMouseEnter={() => {
-                    setHighlightIndex(i);
-                    setHighlightByKeyboard(false);
-                  }}
-                  className={cn(
-                    // 4px radius = panel 8px minus its 4px padding (concentric corners).
-                    "relative flex w-full items-center rounded-sm py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none",
-                    "hover:bg-semantic-bg-ui",
-                    opt.value === value &&
-                      "font-medium text-[var(--v2-text-primary,#484848)]",
-                    highlightIndex === i && "bg-semantic-bg-ui",
-                    highlightIndex === i &&
-                      highlightByKeyboard &&
-                      "ring-1 ring-inset ring-semantic-border-accent",
-                    opt.disabled &&
-                      "pointer-events-none opacity-50 cursor-not-allowed"
-                  )}
-                >
-                  {opt.label}
-                  {opt.value === value && (
-                    <span className="absolute right-2 flex size-4 items-center justify-center">
-                      <Check className="size-4 text-semantic-brand motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
+            {/* Options list. The panel height follows it on a spring while filtering. */}
+            <AutoHeight>
+              <div
+                ref={listRef}
+                id={listboxId}
+                role="listbox"
+                className="max-h-[min(300px,40vh)] overflow-y-auto p-[5px]"
+              >
+                {filtered.length === 0 && !isCustom && (
+                  <div className="p-3 text-sm text-[var(--v2-text-muted,#707070)]">
+                    No options found
+                  </div>
+                )}
+                {filtered.map((opt, i) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="option"
+                    aria-selected={opt.value === value}
+                    disabled={disabled || opt.disabled}
+                    onClick={() => !opt.disabled && handleSelect(opt.value)}
+                    onMouseEnter={() => {
+                      setHighlightIndex(i);
+                      setHighlightByKeyboard(false);
+                    }}
+                    className={cn(
+                      // 4px radius = panel 8px minus its 4px padding (concentric corners). Arc: 36px
+                      // rows with the check inline, an 80ms highlight, and no weight change on selection.
+                      "relative flex min-h-9 w-full items-center justify-between gap-3 rounded-sm px-3 py-2 text-left text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                      "hover:bg-semantic-bg-ui",
+                      opt.value === value &&
+                        "text-[var(--v2-text-primary,#484848)]",
+                      highlightIndex === i && "bg-semantic-bg-ui",
+                      highlightIndex === i &&
+                        highlightByKeyboard &&
+                        "ring-1 ring-inset ring-semantic-border-accent",
+                      opt.disabled &&
+                        "pointer-events-none opacity-50 cursor-not-allowed"
+                    )}
+                  >
+                    <span className="min-w-0 flex-1 break-words">
+                      {opt.label}
                     </span>
-                  )}
-                </button>
-              ))}
+                    {opt.value === value && (
+                      <Check className="size-4 shrink-0 text-semantic-primary [stroke-width:1.75]" />
+                    )}
+                  </button>
+                ))}
 
-              {/* Show custom creation option */}
-              {isCustom && (
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={false}
-                  disabled={disabled}
-                  onClick={handleCreate}
-                  onMouseEnter={() => {
-                    setHighlightIndex(filtered.length);
-                    setHighlightByKeyboard(false);
-                  }}
-                  className={cn(
-                    "flex w-full items-center gap-2 rounded-sm py-2 pl-4 pr-8 text-base outline-none cursor-pointer select-none",
-                    "text-semantic-text-link hover:bg-semantic-bg-ui",
-                    highlightIndex === filtered.length && "bg-semantic-bg-ui",
-                    highlightIndex === filtered.length &&
-                      highlightByKeyboard &&
-                      "ring-1 ring-inset ring-semantic-border-accent"
-                  )}
-                >
-                  Create &ldquo;{search.trim()}&rdquo;
-                </button>
-              )}
-            </div>
+                {/* Show custom creation option */}
+                {isCustom && (
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={false}
+                    disabled={disabled}
+                    onClick={handleCreate}
+                    onMouseEnter={() => {
+                      setHighlightIndex(filtered.length);
+                      setHighlightByKeyboard(false);
+                    }}
+                    className={cn(
+                      "flex min-h-9 w-full items-center gap-2 rounded-sm px-3 py-2 text-left text-sm leading-[1.4] tracking-[-0.01em] outline-none cursor-pointer select-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                      "text-semantic-text-link hover:bg-semantic-bg-ui",
+                      highlightIndex === filtered.length && "bg-semantic-bg-ui",
+                      highlightIndex === filtered.length &&
+                        highlightByKeyboard &&
+                        "ring-1 ring-inset ring-semantic-border-accent"
+                    )}
+                  >
+                    Create &ldquo;{search.trim()}&rdquo;
+                  </button>
+                )}
+              </div>
+            </AutoHeight>
           </div>
         )}
       </div>

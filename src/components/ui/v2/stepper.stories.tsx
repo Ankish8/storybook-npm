@@ -36,10 +36,22 @@ const meta: Meta<typeof Stepper> = {
           summary:
             "Progressive steps with numbered or icon markers in horizontal and vertical layouts.",
           changes: [
-            ["Small marker", "—", "20 ×20px; 0.4px border"],
-            ["Medium marker", "—", "24 ×24px; 0.4px border"],
-            ["Connector", "—", "2px; rounded ends"],
-            ["Labels", "—", "Semibold titles and regular supporting text"],
+            ["Small marker", "—", "24 ×24px; 1px inset border"],
+            [
+              "Medium marker",
+              "—",
+              "28 ×28px; 1px inset border, 4px halo on the current step",
+            ],
+            [
+              "Connector",
+              "—",
+              "2px; rounded ends; fills on a spring as steps complete",
+            ],
+            [
+              "Labels",
+              "—",
+              "14px medium titles and 12px supporting text; completed steps show a check",
+            ],
           ],
           tokens: [
             [

@@ -37,11 +37,15 @@ const ImageMedia = React.forwardRef(
       typeof maxHeight === "number" ? `${maxHeight}px` : maxHeight;
 
     return (
-      <div ref={ref} className={cn("relative", className)} {...props}>
+      <div
+        ref={ref}
+        className={cn("relative min-w-0 max-w-full", className)}
+        {...props}
+      >
         <img
           src={src}
           alt={alt}
-          className="w-full rounded-t object-cover"
+          className="block h-auto max-w-full w-full rounded-t object-contain"
           style={{ maxHeight: maxHeightStyle }}
         />
       </div>

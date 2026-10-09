@@ -42,12 +42,16 @@ describe("ContactListItem", () => {
       <ContactListItem name="Aditi Kumar" isSelected={true} />
     );
     expect(container.firstChild).toHaveClass("bg-semantic-bg-ui");
-    expect(container.firstChild).not.toHaveClass("hover:bg-semantic-bg-hover");
+    expect(container.firstChild).not.toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+    );
   });
 
   it("applies hover classes when isSelected=false (default)", () => {
     const { container } = render(<ContactListItem name="Aditi Kumar" />);
-    expect(container.firstChild).toHaveClass("hover:bg-semantic-bg-hover");
+    expect(container.firstChild).toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+    );
     expect(container.firstChild).not.toHaveClass("bg-semantic-bg-ui");
   });
 

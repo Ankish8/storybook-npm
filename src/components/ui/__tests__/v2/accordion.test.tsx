@@ -343,3 +343,54 @@ describe("Accordion measured content", () => {
     }
   });
 });
+
+it("moves keyboard focus through enabled rows and links each panel", () => {
+  render(
+    <Accordion>
+      <AccordionItem value="one">
+        <AccordionTrigger>One</AccordionTrigger>
+        <AccordionContent>First</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="disabled" disabled>
+        <AccordionTrigger>Unavailable</AccordionTrigger>
+        <AccordionContent>Hidden</AccordionContent>
+      </AccordionItem>
+      <AccordionItem value="last">
+        <AccordionTrigger>Last</AccordionTrigger>
+        <AccordionContent>Final</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+  const first = screen.getByRole("button", { name: "One" });
+  const last = screen.getByRole("button", { name: "Last" });
+  first.focus();
+  fireEvent.keyDown(first, { key: "ArrowDown" });
+  expect(last).toHaveFocus();
+  fireEvent.keyDown(last, { key: "Home" });
+  expect(first).toHaveFocus();
+  fireEvent.keyDown(first, { key: "End" });
+  expect(last).toHaveFocus();
+  const panel = document.getElementById(first.getAttribute("aria-controls")!);
+  expect(panel).toHaveAttribute("aria-labelledby", first.id);
+  expect(panel).toHaveAttribute("inert");
+  fireEvent.click(first);
+  expect(panel).not.toHaveAttribute("inert");
+});
+
+it("respects a consumer cancelling a toggle", () => {
+  render(
+    <Accordion>
+      <AccordionItem value="one">
+        <AccordionTrigger onClick={(event) => event.preventDefault()}>
+          Cancelled
+        </AccordionTrigger>
+        <AccordionContent>Content</AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Cancelled" }));
+  expect(screen.getByRole("button", { name: "Cancelled" })).toHaveAttribute(
+    "aria-expanded",
+    "false"
+  );
+});

@@ -261,14 +261,25 @@ describe("PhoneInput message reveal and country focus", () => {
     );
   });
 
-  it("reveals a validation message that appears later, with a 4px gap", () => {
-    const { rerender } = render(<PhoneInput />);
+  it("keeps a measured feedback frame across appearance, replacement and removal", () => {
+    const { container, rerender } = render(<PhoneInput />);
+    const frame = container.querySelector("[data-field-feedback]");
     rerender(<PhoneInput validation="Bad" />);
-    const message = screen.getByText("Bad");
-    const reveal = message.parentElement!;
-    expect(reveal.className).toContain("[@starting-style]:grid-rows-[0fr]");
-    expect(reveal.className).toContain("[transition-duration:240ms]");
-    expect(reveal.parentElement).toHaveClass("gap-1");
+    expect(screen.getByText("Bad").closest("[data-field-feedback]")).toBe(
+      frame
+    );
+    rerender(<PhoneInput validation="Please check this value" />);
+    expect(screen.queryByText("Bad")).not.toBeInTheDocument();
+    expect(
+      screen
+        .getByText("Please check this value")
+        .closest("[data-field-feedback]")
+    ).toBe(frame);
+    rerender(<PhoneInput />);
+    expect(container.querySelector("[data-field-feedback]")).toBe(frame);
+    expect(
+      screen.queryByText("Please check this value")
+    ).not.toBeInTheDocument();
   });
 
   it("gives the country button a visible focus-visible ring", () => {
@@ -281,5 +292,12 @@ describe("PhoneInput message reveal and country focus", () => {
       "focus-visible:outline-semantic-primary",
       "rounded-[10px]"
     );
+  });
+
+  it("insets the country trigger 3px and fills it on hover like Arc's phone input", () => {
+    render(<PhoneInput onCountryClick={() => {}} />);
+    const trigger = screen.getByTestId("phone-input-country");
+    expect(trigger).toHaveClass("my-[3px]", "ml-[3px]", "rounded-[10px]");
+    expect(trigger.className).toContain("hover:bg-semantic-bg-ui");
   });
 });

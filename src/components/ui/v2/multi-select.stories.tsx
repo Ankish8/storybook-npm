@@ -13,12 +13,12 @@ import {
 import { MultiSelect as MultiSelectV1 } from "../multi-select";
 import { Button } from "./button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./dialog";
+  ModalRoot,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+} from "./modal";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -233,22 +233,22 @@ const meta: Meta<Args> = {
             [
               "Trigger",
               "42px minimum / 4px radius",
-              "40px minimum / 8px radius; grows when chips wrap",
+              "44px minimum / 8px radius; grows when chips wrap",
             ],
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value; 14px medium label; 12px helper/error",
+              "Inter 14px value; 14px medium label; 12px helper/error",
             ],
             [
               "Selected chips",
               "Small corners",
-              "8px radius, 0.4px border and medium text",
+              "8px radius, 1px inset border, 12px regular text; blur in from 90%",
             ],
             [
               "Hover / focus",
               "Default border / thin teal shadow",
-              "#C0C3CA hover; #27ABB8 focus and soft 4px halo",
+              "Primary border emphasis; no outer glow",
             ],
             ["Error", "Red border", "Red border with soft 4px halo"],
             [
@@ -269,7 +269,7 @@ const meta: Meta<Args> = {
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             [
@@ -500,7 +500,7 @@ export const AllSizes: Story = {
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
           <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-            40px minimum · {width}px container
+            44px minimum · {width}px container
           </p>
           <PreviewMulti
             {...args}
@@ -686,20 +686,20 @@ function DialogExample(args: Args) {
   const live = args;
   const [open, setOpen] = React.useState(false);
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <ModalRoot open={open} onOpenChange={setOpen}>
       <Button
         disabled={args.disabled || args.loading}
         onClick={() => setOpen(true)}
       >
         Open dialog
       </Button>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Assign team skills</DialogTitle>
-          <DialogDescription>
+      <ModalContent>
+        <ModalHeader>
+          <ModalTitle>Assign team skills</ModalTitle>
+          <ModalDescription>
             Search and toggle options inside the dialog.
-          </DialogDescription>
-        </DialogHeader>
+          </ModalDescription>
+        </ModalHeader>
         <div className="space-y-5 p-6">
           <Example {...live} />
           <div className="flex justify-end">
@@ -708,8 +708,8 @@ function DialogExample(args: Args) {
             </Button>
           </div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </ModalContent>
+    </ModalRoot>
   );
 }
 export const InsideDialog: Story = {

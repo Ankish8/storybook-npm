@@ -43,8 +43,16 @@ const meta: Meta<typeof Breadcrumbs> = {
           summary:
             "Ancestor links, a current page and optional overflow navigation.",
           changes: [
-            ["Layout", "—", "Inline links, 2px gap, 34px link height"],
-            ["Labels", "—", "14px Inter, 8px padding, 18px icons"],
+            [
+              "Layout",
+              "—",
+              "Inline links, 6px gap, 4px / 2px link padding, 16px chevrons",
+            ],
+            [
+              "Labels",
+              "—",
+              "14px Inter at 1.4 line height; the current page is medium weight; links underline on hover",
+            ],
           ],
           tokens: [
             ["Ancestor", "--semantic-text-secondary", "343E55", "#343E55"],

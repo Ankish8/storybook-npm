@@ -101,10 +101,10 @@ describe("OtpInput feedback", () => {
       "caret-[var(--v2-text-secondary,#5E5E5E)]"
     );
     expect(slot.className).toContain(
-      "[transition-property:border-color,box-shadow,background-color,color,font-size]"
+      "[transition-property:border-color,background-color,color,font-size]"
     );
     expect(slot.className).toContain(
-      "[transition-duration:150ms,150ms,150ms,180ms,180ms]"
+      "[transition-duration:160ms,160ms,180ms,180ms]"
     );
   });
 

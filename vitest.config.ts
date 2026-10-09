@@ -22,5 +22,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+    // apps/docs has its own node_modules/react; its example demos must share this copy or hooks see a null dispatcher.
+    dedupe: ['react', 'react-dom'],
   },
 })

@@ -378,7 +378,7 @@ describe("Tabs", () => {
         "-mb-px",
         "data-[state=active]:border-semantic-primary"
       );
-      expect(trigger).not.toHaveClass("h-8");
+      expect(trigger).not.toHaveClass("h-9");
     });
 
     it("gates hover colour behind a hover-capable pointer so taps do not stick", () => {
@@ -414,7 +414,7 @@ describe("Tabs", () => {
       );
       expect(list.children).toHaveLength(2);
       const trigger = screen.getByRole("tab", { name: "Tab 1" });
-      expect(trigger).toHaveClass("h-8", "px-3", "rounded-md");
+      expect(trigger).toHaveClass("h-9", "min-w-[88px]", "px-3", "rounded-md");
       expect(trigger).not.toHaveClass("py-4");
       expect(trigger).not.toHaveClass("border-b-2");
     });
@@ -447,6 +447,32 @@ describe("Tabs", () => {
       expect(screen.getByRole("tab", { name: "B" })).toBeDisabled();
     });
 
+    it("gives the pill track Arc's 1px border and 4px gap around 36px tabs", () => {
+      renderList({ variant: "pill" });
+      expect(screen.getByRole("tablist")).toHaveClass("border", "gap-1", "p-1");
+    });
+
+    it("slides the incoming panel in from the side of the newly chosen tab", async () => {
+      const user = userEvent.setup();
+      render(
+        <Tabs defaultValue="a">
+          <TabsList aria-label="Direction">
+            <TabsTrigger value="a">A</TabsTrigger>
+            <TabsTrigger value="b">B</TabsTrigger>
+            <TabsTrigger value="c">C</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">Panel A</TabsContent>
+          <TabsContent value="b">Panel B</TabsContent>
+          <TabsContent value="c">Panel C</TabsContent>
+        </Tabs>
+      );
+      const root = screen.getByRole("tablist").parentElement as HTMLElement;
+      await user.click(screen.getByRole("tab", { name: "C" }));
+      expect(root.style.getPropertyValue("--v2-tab-dir")).toBe("1");
+      await user.click(screen.getByRole("tab", { name: "A" }));
+      expect(root.style.getPropertyValue("--v2-tab-dir")).toBe("-1");
+    });
+
     it("scopes the variant to its own list when lists are nested", () => {
       render(
         <Tabs defaultValue="outer">
@@ -462,9 +488,9 @@ describe("Tabs", () => {
           </TabsContent>
         </Tabs>
       );
-      expect(screen.getByRole("tab", { name: "Outer" })).toHaveClass("h-8");
+      expect(screen.getByRole("tab", { name: "Outer" })).toHaveClass("h-9");
       expect(screen.getByRole("tab", { name: "Inner" })).toHaveClass("py-4");
-      expect(screen.getByRole("tab", { name: "Inner" })).not.toHaveClass("h-8");
+      expect(screen.getByRole("tab", { name: "Inner" })).not.toHaveClass("h-9");
     });
   });
 });

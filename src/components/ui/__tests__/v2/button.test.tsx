@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Button, buttonVariants } from "../../v2/button";
 import {
   Button as ButtonV1,
@@ -20,8 +21,6 @@ const VARIANTS = [
 
 const SIZES = ["default", "sm", "lg", "icon", "icon-sm", "icon-lg"] as const;
 
-const SOLID = ["default", "primary", "destructive", "success"] as const;
-
 describe("Button (v2)", () => {
   it("renders children correctly", () => {
     render(<Button>Click me</Button>);
@@ -33,32 +32,25 @@ describe("Button (v2)", () => {
     const button = screen.getByRole("button");
     expect(button).toHaveClass("bg-semantic-primary");
     expect(button).toHaveClass("text-semantic-text-inverted");
-    expect(button).toHaveClass("h-10");
+    expect(button).toHaveClass("h-11");
   });
 
-  it.each([
-    ["default", ["bg-semantic-primary", "border-2"]],
-    ["primary", ["bg-semantic-primary", "border-2"]],
-    ["destructive", ["bg-semantic-error-primary", "border"]],
-    ["success", ["bg-semantic-success-primary", "border"]],
-    ["outline", ["bg-semantic-bg-primary", "border-semantic-border-layout"]],
-    ["secondary", ["bg-semantic-info-surface"]],
-    ["ghost", ["text-semantic-text-link", "bg-transparent"]],
-    ["link", ["text-[var(--v2-text-secondary,#5E5E5E)]", "hover:underline"]],
-    ["dashed", ["border-dashed", "bg-semantic-bg-primary"]],
-  ] as const)("renders %s variant", (variant, expectedClasses) => {
+  it.each(VARIANTS)("renders %s with a flat surface", (variant) => {
     render(<Button variant={variant}>Test</Button>);
     const button = screen.getByRole("button");
-    expectedClasses.forEach((cls) => expect(button).toHaveClass(cls));
+    expect(button).toHaveClass("shadow-none", "font-medium");
+    expect(button.className).not.toMatch(
+      /linear-gradient|skeuomorphic|inset_0/
+    );
   });
 
   it.each([
-    ["default", ["h-10", "px-4"]],
-    ["sm", ["h-8", "px-4", "text-xs"]],
-    ["lg", ["h-12", "px-4"]],
-    ["icon", ["h-10", "w-10", "p-0"]],
-    ["icon-sm", ["h-8", "w-8", "p-0"]],
-    ["icon-lg", ["h-12", "w-12", "p-0"]],
+    ["default", ["h-11", "px-4"]],
+    ["sm", ["h-9", "px-3"]],
+    ["lg", ["h-[50px]", "px-5"]],
+    ["icon", ["h-11", "w-11", "p-0"]],
+    ["icon-sm", ["h-9", "w-9", "p-0"]],
+    ["icon-lg", ["h-[50px]", "w-[50px]", "p-0"]],
   ] as const)("renders %s size", (size, expectedClasses) => {
     render(<Button size={size}>Test</Button>);
     const button = screen.getByRole("button");
@@ -69,7 +61,7 @@ describe("Button (v2)", () => {
     render(<Button size={size}>Test</Button>);
     const button = screen.getByRole("button");
     expect(button).toHaveClass("rounded-lg");
-    expect(button).toHaveClass("font-semibold");
+    expect(button).toHaveClass("font-medium");
     expect(button).toHaveClass(
       "font-[family-name:var(--font-v2,Inter,sans-serif)]"
     );
@@ -96,42 +88,16 @@ describe("Button (v2)", () => {
     expect(button).toHaveClass("focus-visible:outline-semantic-primary");
   });
 
-  describe("elevation", () => {
-    it.each(SOLID)(
-      "%s has the skeuomorphic shadow and drops it when pressed",
-      (variant) => {
-        render(<Button variant={variant}>Solid</Button>);
-        const button = screen.getByRole("button");
-        expect(button.className).toContain(
-          "shadow-[0_1px_2px_0_rgba(12,15,18,0.05),inset_0_0_0_1px_rgba(10,13,18,0.18)"
-        );
-        expect(button).toHaveClass("active:shadow-none");
-        expect(button.className).toContain(
-          "active:bg-[linear-gradient(270deg,"
-        );
-      }
-    );
-
-    it.each(["outline", "secondary"] as const)(
-      "%s has the soft shadow",
-      (variant) => {
-        render(<Button variant={variant}>Soft</Button>);
-        expect(screen.getByRole("button")).toHaveClass(
-          "shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)]"
-        );
-      }
-    );
-
-    it.each(["ghost", "link", "dashed"] as const)(
-      "%s has no shadow",
-      (variant) => {
-        render(<Button variant={variant}>Flat</Button>);
-        expect(screen.getByRole("button").className).not.toMatch(
-          /(^|\s)shadow-\[/
-        );
-      }
-    );
-  });
+  it.each(["default", "primary"] as const)(
+    "preserves the brand fill on %s",
+    (variant) => {
+      render(<Button variant={variant}>Save</Button>);
+      expect(screen.getByRole("button")).toHaveClass(
+        "bg-semantic-primary",
+        "border-semantic-primary"
+      );
+    }
+  );
 
   describe("disabled and loading", () => {
     it("is disabled when the disabled prop is set, without aria-busy", () => {
@@ -139,14 +105,17 @@ describe("Button (v2)", () => {
       const button = screen.getByRole("button");
       expect(button).toBeDisabled();
       expect(button).not.toHaveAttribute("aria-busy");
-      expect(button).toHaveClass("disabled:pointer-events-none");
+      expect(button).toHaveClass("disabled:opacity-[0.52]");
     });
 
-    it("is disabled and aria-busy when loading", () => {
+    it("is aria-disabled and aria-busy, retaining focus when loading", () => {
       render(<Button loading>Submit</Button>);
       const button = screen.getByRole("button");
-      expect(button).toBeDisabled();
+      expect(button).not.toBeDisabled();
       expect(button).toHaveAttribute("aria-busy", "true");
+      expect(button).toHaveAttribute("aria-disabled", "true");
+      button.focus();
+      expect(button).toHaveFocus();
     });
 
     it("shows a spinner and the loading text when provided", () => {
@@ -164,45 +133,57 @@ describe("Button (v2)", () => {
       expect(screen.getByRole("button")).toHaveTextContent("Loading");
     });
 
-    // A loading button is also :disabled, so variants whose disabled look
-    // differs from their loading look must restore it with aria-busy:.
-    it.each([
-      [
-        "outline",
-        [
-          "aria-busy:bg-semantic-bg-primary",
-          "aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
-        ],
-      ],
-      [
-        "secondary",
-        [
-          "aria-busy:bg-semantic-bg-ui",
-          "aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]",
-        ],
-      ],
-      ["success", ["aria-busy:bg-semantic-success-primary"]],
-      ["ghost", ["aria-busy:text-semantic-text-link"]],
-      ["link", ["aria-busy:text-[var(--v2-text-secondary,#5E5E5E)]"]],
-      ["dashed", ["aria-busy:opacity-100"]],
-    ] as const)(
-      "%s restores its normal look while loading",
-      (variant, expectedClasses) => {
-        render(<Button variant={variant}>Test</Button>);
+    it.each(["icon", "icon-sm", "icon-lg"] as const)(
+      "keeps %s loading centered without a visible text label",
+      (size) => {
+        const { container } = render(
+          <Button
+            size={size}
+            loading
+            loadingText="Saving…"
+            aria-label="Save changes"
+          >
+            <svg aria-hidden="true" />
+          </Button>
+        );
         const button = screen.getByRole("button");
-        expectedClasses.forEach((cls) => expect(button).toHaveClass(cls));
+        expect(button).toHaveAccessibleName("Save changes");
+        expect(
+          button.querySelector("[data-v2-button-content]")
+        ).toHaveAttribute("data-concealed", "true");
+        expect(container.querySelectorAll("svg")).toHaveLength(1);
       }
     );
 
-    it.each(["default", "primary", "destructive"] as const)(
-      "%s uses the same look for disabled and loading",
-      (variant) => {
-        render(<Button variant={variant}>Test</Button>);
-        expect(screen.getByRole("button").className).not.toContain(
-          "aria-busy:"
-        );
-      }
-    );
+    it("retains an accessible label for an icon-sized loading action with text children", () => {
+      render(
+        <Button size="icon" loading loadingText="Saving…">
+          Save
+        </Button>
+      );
+      expect(screen.getByRole("button")).toHaveAccessibleName("Saving…");
+    });
+
+    it.each(VARIANTS)("%s keeps its palette while loading", (variant) => {
+      const { rerender } = render(<Button variant={variant}>Test</Button>);
+      const before = screen.getByRole("button").className;
+      rerender(
+        <Button variant={variant} loading>
+          Test
+        </Button>
+      );
+      const button = screen.getByRole("button");
+      expect(button.className).toBe(before);
+      expect(button).toHaveClass("aria-busy:cursor-progress");
+      expect(button.querySelector("[data-v2-button-spinner]")).toHaveAttribute(
+        "data-loading",
+        "true"
+      );
+      expect(button.querySelector("[data-v2-button-content]")).toHaveAttribute(
+        "data-concealed",
+        "true"
+      );
+    });
 
     it("does not trigger click when disabled or loading", () => {
       const handleClick = vi.fn();
@@ -220,6 +201,120 @@ describe("Button (v2)", () => {
       screen.getByRole("button").click();
       expect(handleClick).not.toHaveBeenCalled();
     });
+
+    it("blocks pointer and keyboard activation and form submission while busy", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const onSubmit = vi.fn((event) => event.preventDefault());
+      render(
+        <form onSubmit={onSubmit}>
+          <Button loading type="submit" onClick={onClick}>
+            Save
+          </Button>
+          <input aria-label="Next field" />
+        </form>
+      );
+      const button = screen.getByRole("button");
+      button.focus();
+      await user.keyboard("{Enter} ");
+      fireEvent.click(button);
+      expect(button).toHaveFocus();
+      expect(onClick).not.toHaveBeenCalled();
+      expect(onSubmit).not.toHaveBeenCalled();
+      await user.tab();
+      expect(screen.getByRole("textbox")).toHaveFocus();
+    });
+
+    it("retains focus across the entire loading cycle", () => {
+      const { rerender } = render(<Button>Save</Button>);
+      const button = screen.getByRole("button");
+      button.focus();
+      rerender(
+        <Button loading loadingText="Saving…">
+          Save
+        </Button>
+      );
+      expect(button).toHaveFocus();
+      expect(button).toHaveAccessibleName("Saving…");
+      rerender(<Button>Saved</Button>);
+      expect(button).toHaveFocus();
+      expect(button).not.toHaveAttribute("aria-disabled");
+    });
+
+    it("blocks child callbacks and link navigation when asChild is busy", () => {
+      const onClick = vi.fn();
+      const childClick = vi.fn();
+      render(
+        <Button asChild loading loadingText="Opening…" onClick={onClick}>
+          <a href="#destination" onClick={childClick}>
+            Open
+          </a>
+        </Button>
+      );
+      const link = screen.getByRole("link");
+      expect(link).toHaveAccessibleName("Opening…");
+      expect(link).toHaveAttribute("aria-disabled", "true");
+      expect(fireEvent.click(link)).toBe(false);
+      expect(onClick).not.toHaveBeenCalled();
+      expect(childClick).not.toHaveBeenCalled();
+    });
+
+    it("honors aria-disabled supplied by a consumer", () => {
+      const onClick = vi.fn();
+      render(
+        <Button aria-disabled="true" onClick={onClick}>
+          Unavailable
+        </Button>
+      );
+      fireEvent.click(screen.getByRole("button"));
+      expect(onClick).not.toHaveBeenCalled();
+    });
+  });
+
+  it.each([true, "menu", "dialog", "listbox"] as const)(
+    "marks %s popup anchors as stationary",
+    (popup) => {
+      render(<Button aria-haspopup={popup}>Open menu</Button>);
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "data-popup-anchor",
+        "true"
+      );
+    }
+  );
+
+  it("recognizes popup metadata on a slotted child", () => {
+    render(
+      <Button asChild>
+        <button aria-haspopup="menu">Menu</button>
+      </Button>
+    );
+    expect(screen.getByRole("button")).toHaveAttribute(
+      "data-popup-anchor",
+      "true"
+    );
+  });
+
+  it.each([{ "data-state": "closed" }, { role: "combobox" }])(
+    "keeps non-menu popup anchors stationary: %j",
+    (props) => {
+      render(<Button {...props}>Open</Button>);
+      expect(screen.getByText("Open").closest("button")).toHaveAttribute(
+        "data-popup-anchor",
+        "true"
+      );
+    }
+  );
+
+  it.each([
+    [44, "0.96"],
+    [120, "0.97"],
+    [280, "0.985"],
+  ])("adjusts press depth to the rendered %ipx width", (width, expected) => {
+    render(<Button>Save</Button>);
+    const button = screen.getByRole("button");
+    Object.defineProperty(button, "offsetWidth", { value: width });
+    fireEvent.pointerDown(button);
+    expect(button.style.getPropertyValue("--v2-button-press")).toBe(expected);
   });
 
   describe("icons", () => {
@@ -242,9 +337,9 @@ describe("Button (v2)", () => {
       expect(screen.getByTestId("right-icon")).toBeInTheDocument();
     });
 
-    it("sizes nested svg icons to 18px", () => {
+    it("sizes nested svg icons to 16px", () => {
       render(<Button>Icon</Button>);
-      expect(screen.getByRole("button")).toHaveClass("[&_svg]:size-[18px]");
+      expect(screen.getByRole("button")).toHaveClass("[&_svg]:size-4");
     });
   });
 
@@ -253,7 +348,7 @@ describe("Button (v2)", () => {
     const button = screen.getByRole("button");
     expect(button).toHaveClass("custom-class");
     expect(button).toHaveClass("h-14");
-    expect(button).not.toHaveClass("h-10");
+    expect(button).not.toHaveClass("h-11");
   });
 
   it("forwards ref correctly", () => {
@@ -281,7 +376,7 @@ describe("Button (v2)", () => {
   });
 
   it("exposes buttonVariants for styling links as buttons", () => {
-    expect(buttonVariants({ variant: "outline", size: "sm" })).toContain("h-8");
+    expect(buttonVariants({ variant: "outline", size: "sm" })).toContain("h-9");
   });
 });
 
@@ -291,6 +386,40 @@ describe("Button (v2) — v1 parity", () => {
   // cva ignores unknown values, so a name v2 lacks returns the same classes as
   // a made-up one.
   const unknown = <T,>(value: string) => value as unknown as T;
+
+  it.each(SIZES)(
+    "maps legacy names to identical canonical styles at %s size",
+    (size) => {
+      const options = { size, className: "consumer-class" };
+      expect(buttonVariants({ ...options, variant: "default" })).toBe(
+        buttonVariants({ ...options, variant: "primary" })
+      );
+      expect(buttonVariants(options)).toBe(
+        buttonVariants({ ...options, variant: "primary" })
+      );
+      expect(buttonVariants({ ...options, variant: "outline" })).toBe(
+        buttonVariants({ ...options, variant: "secondary" })
+      );
+    }
+  );
+
+  it("keeps Link recognizable and Ghost unframed while retaining keyboard focus", () => {
+    const view = render(<Button variant="link">Learn more</Button>);
+    expect(screen.getByRole("button")).toHaveClass(
+      "border-0",
+      "underline",
+      "text-semantic-text-link",
+      "focus-visible:outline"
+    );
+    view.rerender(<Button variant="ghost">More</Button>);
+    // Arc keeps a 1px transparent border on Ghost so it matches Secondary's box.
+    expect(screen.getByRole("button")).toHaveClass(
+      "border-transparent",
+      "bg-transparent",
+      "focus-visible:outline"
+    );
+    expect(screen.getByRole("button")).not.toHaveClass("border-0");
+  });
 
   it.each(VARIANTS)("accepts the v1 variant %s", (variant) => {
     expect(buttonVariants({ variant })).not.toBe(
@@ -310,10 +439,7 @@ describe("Button (v2) — v1 parity", () => {
     );
   });
 
-  const withoutClasses = (html: string) =>
-    html.replace(/ class="[^"]*"/g, "").replace(/ aria-busy="true"/g, "");
-
-  it("renders the same markup as v1 (classes aside) with icons", () => {
+  it("preserves v1 content and icons with one accessible action", () => {
     const props = {
       leftIcon: <i data-testid="l" />,
       rightIcon: <i data-testid="r" />,
@@ -321,10 +447,13 @@ describe("Button (v2) — v1 parity", () => {
     };
     const v1 = render(<ButtonV1 {...props} />).container.innerHTML;
     const v2 = render(<Button {...props} />).container.innerHTML;
-    expect(withoutClasses(v2)).toBe(withoutClasses(v1));
+    expect(v1).toContain("Label");
+    expect(v2).toContain("Label");
+    expect(v2).toContain('data-v2-button-content=""');
+    expect(v2.match(/<button/g)).toHaveLength(1);
   });
 
-  it("renders the same markup as v1 (classes aside) while loading", () => {
+  it("preserves the loading label while v1 remains natively disabled", () => {
     const v1 = render(
       <ButtonV1 loading loadingText="Saving...">
         Save
@@ -335,6 +464,10 @@ describe("Button (v2) — v1 parity", () => {
         Save
       </Button>
     ).container.innerHTML;
-    expect(withoutClasses(v2)).toBe(withoutClasses(v1));
+    expect(v1).toContain('disabled=""');
+    expect(v1).toContain("Saving...");
+    expect(v2).not.toContain('disabled=""');
+    expect(v2).toContain('aria-disabled="true"');
+    expect(v2).toContain("Saving...");
   });
 });

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   Select,
@@ -237,10 +237,10 @@ describe("Select", () => {
   it("applies base styling classes to trigger", () => {
     renderSelect();
     const trigger = screen.getByTestId("trigger");
-    expect(trigger).toHaveClass("h-10");
+    expect(trigger).toHaveClass("h-11");
     expect(trigger).toHaveClass("w-full");
     expect(trigger).toHaveClass("rounded-lg");
-    expect(trigger).toHaveClass("px-4");
+    expect(trigger).toHaveClass("px-3");
     expect(trigger).toHaveClass("py-2");
   });
 
@@ -261,7 +261,7 @@ describe("Select", () => {
     );
 
     const trigger = screen.getByTestId("trigger");
-    expect(trigger).toHaveClass("gap-2");
+    expect(trigger).toHaveClass("gap-3");
     expect(trigger).toHaveClass("[&>span]:min-w-0");
     expect(trigger).toHaveClass("[&>span]:truncate");
 
@@ -530,14 +530,12 @@ describe("Select v2 refresh", () => {
     // Radix moves focus into the list, so the open look cannot rely on `focus:`.
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger.className).toContain(
-      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+      "aria-expanded:border-semantic-primary"
     );
-    expect(trigger.className).toContain(
-      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
-    );
+    expect(trigger.className).toContain("aria-expanded:shadow-none");
     // Must outrank the grey hover border (specificity 0,4,0 vs 0,3,0).
     expect(trigger.className).toContain(
-      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+      "enabled:aria-expanded:hover:border-semantic-primary"
     );
 
     await user.click(trigger);
@@ -551,15 +549,31 @@ describe("Select v2 refresh", () => {
     );
   });
 
-  it("rotates the chevron 180 degrees in 200ms with the spring curve", () => {
+  it("rotates the chevron 180 degrees on Arc's 580ms spring", () => {
     renderSelect();
     const chevron = screen.getByTestId("trigger").querySelector("svg");
     expect(chevron).toHaveClass(
-      "duration-200",
+      "[transition-duration:580ms]",
       "group-data-[state=open]/v2-select:rotate-180",
       "motion-reduce:transition-none"
     );
-    expect(chevron?.getAttribute("class")).toContain("--v2-ease-spring");
+    // The sampled curve is Arc's `--ease-spring`, which settles with a hint of overshoot.
+    expect(chevron?.getAttribute("class")).toContain(
+      "[transition-timing-function:linear(0,0.0258,"
+    );
+    // Stroke weight is CSS so the markup stays identical to v1.
+    expect(chevron).toHaveClass("[stroke-width:1.75]");
+  });
+
+  it("tints the field on hover, press and while open like Arc's muted surface", () => {
+    renderSelect();
+    const trigger = screen.getByTestId("trigger");
+    expect(trigger).toHaveClass(
+      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
+      "enabled:active:bg-semantic-bg-ui",
+      "aria-expanded:bg-semantic-bg-ui"
+    );
+    expect(trigger).toHaveClass("disabled:opacity-50");
   });
 
   it("fades and zooms the panel with motion-safe vars so the reset in animate-in cannot cancel them", async () => {
@@ -567,18 +581,47 @@ describe("Select v2 refresh", () => {
     renderSelect();
     await user.click(screen.getByTestId("trigger"));
     const panel = screen.getByRole("listbox");
+    // Arc: rises 6px and scales from .97 in 240ms; leaves 3px and .98 in 120ms.
     expect(panel).toHaveClass(
       "data-[state=open]:motion-safe:fade-in-0",
-      "data-[state=open]:motion-safe:zoom-in-[0.98]",
+      "data-[state=open]:motion-safe:zoom-in-[0.97]",
       "data-[state=closed]:motion-safe:fade-out-0",
       "data-[state=closed]:motion-safe:zoom-out-[0.98]",
-      "data-[side=bottom]:motion-safe:slide-in-from-top-1",
-      "data-[side=top]:motion-safe:slide-in-from-bottom-1"
+      "data-[side=bottom]:motion-safe:slide-in-from-top-[6px]",
+      "data-[side=top]:motion-safe:slide-in-from-bottom-[6px]",
+      "data-[side=bottom]:motion-safe:slide-out-to-top-[3px]",
+      "data-[state=open]:motion-safe:[animation-duration:240ms]",
+      "data-[state=closed]:motion-safe:[animation-duration:120ms]"
     );
     expect(panel).not.toHaveClass("data-[state=open]:fade-in-0");
-    // A bare `data-[side=bottom]:slide-in-from-top-1` ties with the open-state animate-in
-    // on specificity and loses on order, so the 4px slide would silently never run.
-    expect(panel).not.toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+    // A bare `data-[side=bottom]:slide-in-from-top-[6px]` ties with the open-state animate-in
+    // on specificity and loses on order, so the slide would silently never run.
+    expect(panel).not.toHaveClass("data-[side=bottom]:slide-in-from-top-[6px]");
+  });
+
+  it("opens 4px below the trigger with 6px panel padding and 2px list padding, like Arc", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    await user.click(screen.getByTestId("trigger"));
+    const panel = screen.getByRole("listbox");
+    expect(panel).toHaveClass("p-1.5");
+    expect(panel).toHaveClass(
+      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+    );
+    expect(panel).toHaveAttribute("data-side", "bottom");
+    expect(document.querySelector("[data-select-viewport]")).toHaveClass(
+      "py-0.5"
+    );
+  });
+
+  it("gives rows Arc's 36px minimum, 11px / 34px padding and no weight change on selection", async () => {
+    const user = userEvent.setup();
+    renderSelect({ selectProps: { defaultValue: "option2" } });
+    await user.click(screen.getByTestId("trigger"));
+    const option = screen.getByRole("option", { name: "Option 2" });
+    expect(option).toHaveClass("min-h-9", "pl-[11px]", "pr-[34px]");
+    expect(option).toHaveClass("[transition-duration:120ms]");
+    expect(option.className).not.toContain("font-medium");
   });
 
   it("gives rows a 4px radius concentric with the 8px panel", async () => {
@@ -599,7 +642,7 @@ describe("Select v2 refresh", () => {
     ).not.toContain("focus-visible:ring");
   });
 
-  it("pops the selected check in (fade + zoom 85 to 100, 180ms, spring, motion-safe only)", async () => {
+  it("pops the selected check in after 40ms, with a reduced-motion fallback", async () => {
     const user = userEvent.setup();
     renderSelect({ selectProps: { defaultValue: "option2" } });
     await user.click(screen.getByTestId("trigger"));
@@ -607,16 +650,66 @@ describe("Select v2 refresh", () => {
       .getByRole("option", { name: "Option 2" })
       .querySelector("svg");
     expect(check).not.toBeNull();
-    expect(check).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.85]",
-      "motion-safe:[animation-duration:180ms]"
+    const indicator = check?.parentElement;
+    expect(indicator).toHaveClass(
+      "[transition-delay:40ms]",
+      "[transition-duration:240ms]",
+      "[@starting-style]:scale-[0.6]",
+      "[@starting-style]:opacity-0",
+      "[@starting-style]:blur-[2px]",
+      "motion-reduce:[@starting-style]:scale-100"
     );
-    expect(check?.getAttribute("class")).toContain("--v2-ease-spring");
     expect(check).not.toHaveClass("animate-in");
     expect(
       screen.getByRole("option", { name: "Option 1" }).querySelector("svg")
     ).toBeNull();
+  });
+
+  describe("value roll", () => {
+    const animate = vi.fn(() => ({ onfinish: null, oncancel: null }));
+    beforeEach(() => {
+      animate.mockClear();
+      Object.defineProperty(HTMLElement.prototype, "animate", {
+        configurable: true,
+        writable: true,
+        value: animate,
+      });
+    });
+    afterEach(() => {
+      // jsdom has no Web Animations API; leave it that way for the other tests.
+      delete (HTMLElement.prototype as { animate?: unknown }).animate;
+    });
+
+    it("does not animate the first fill from a default value", async () => {
+      renderSelect({ selectProps: { defaultValue: "option2" } });
+      expect(screen.getByTestId("trigger")).toHaveTextContent("Option 2");
+      await Promise.resolve();
+      expect(animate).not.toHaveBeenCalled();
+    });
+
+    it("rises the new value from below and drops the old one up when a later option is chosen", async () => {
+      const user = userEvent.setup();
+      renderSelect({ selectProps: { defaultValue: "option1" } });
+      await user.click(screen.getByTestId("trigger"));
+      await user.click(screen.getByRole("option", { name: "Option 3" }));
+
+      await waitFor(() => expect(animate).toHaveBeenCalledTimes(2));
+      const [enter, leave] = animate.mock.calls as unknown as [
+        Keyframe[],
+        KeyframeAnimationOptions,
+      ][];
+      expect(enter[0][0]).toMatchObject({
+        opacity: 0,
+        transform: "translateY(0.35em)",
+        filter: "blur(4px)",
+      });
+      expect(enter[1]).toMatchObject({ duration: 240 });
+      expect(leave[0][1]).toMatchObject({ transform: "translateY(-0.3em)" });
+      expect(leave[1]).toMatchObject({ duration: 160 });
+      // The leaving copy is decorative.
+      expect(
+        screen.getByTestId("trigger").querySelector("[data-value-roll-ghost]")
+      ).toHaveAttribute("aria-hidden", "true");
+    });
   });
 });

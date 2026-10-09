@@ -1,8 +1,58 @@
 import * as React from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+
+/** Measures copy as it wraps or changes, so opening, replacement and closing all animate height. */
+function FieldFeedback({
+  active,
+  children,
+  className,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const content = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState<number | null>(null);
+  const reduced = useReducedMotion() ?? false;
+  React.useLayoutEffect(() => {
+    const node = content.current;
+    if (!node) return;
+    const measure = () => setHeight(node.getBoundingClientRect().height);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [children]);
+  return (
+    <motion.div
+      data-field-feedback=""
+      initial={false}
+      animate={{
+        height: active ? (height ?? "auto") : 0,
+        opacity: active ? 1 : 0,
+      }}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : {
+              // Arc: the row opens its height on a critically damped spring while the opacity follows in 160ms.
+              height: { type: "spring", visualDuration: 0.4, bounce: 0 },
+              opacity: { duration: 0.16 },
+            }
+      }
+      className="min-w-0 overflow-hidden"
+    >
+      <div ref={content} className={className}>
+        {children}
+      </div>
+    </motion.div>
+  );
+}
 
 const consecutiveSpaceInputTypes = new Set([
   "email",
@@ -28,29 +78,22 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
 }
 
 /**
- * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
- * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
- * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
- * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
- * its own fade.
- */
-/**
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,box-shadow,background-color] duration-150",
+  "relative flex items-center rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input hover:border-semantic-primary focus-within:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:border-[var(--color-secondary-600,#27ABB8)] focus-within:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input hover:border-semantic-primary focus-within:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary focus-within:shadow-none",
       },
       disabled: {
-        true: "cursor-not-allowed border-semantic-border-layout bg-semantic-bg-ui shadow-none hover:border-semantic-border-layout",
+        true: "cursor-not-allowed bg-semantic-bg-ui shadow-none hover:border-semantic-border-input",
         false: "",
       },
     },
@@ -65,20 +108,20 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:border-semantic-border-layout disabled:bg-semantic-bg-ui disabled:shadow-none",
+  "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.01em] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50 disabled:shadow-none",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:outline-none focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:outline-none focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
       size: {
-        default: "h-10 px-4 py-0 text-base file:text-base",
-        sm: "h-9 px-3 py-0 text-xs file:text-xs",
+        default: "h-11 px-3 py-0 text-sm leading-[1.4] file:text-sm",
+        sm: "h-9 px-3 py-0 text-xs leading-[1.4] file:text-xs",
       },
     },
     defaultVariants: {
@@ -102,7 +145,7 @@ export interface TextFieldProps
   extends
     Omit<React.ComponentProps<"input">, "size">,
     VariantProps<typeof textFieldInputVariants> {
-  /** Size of the text field — `default` (40px) or `sm` (36px, compact) */
+  /** Size of the text field — `default` (44px) or `sm` (36px, compact) */
   size?: "default" | "sm";
   /** Visual state of the text field */
   state?: "default" | "empty" | "error";
@@ -268,12 +311,17 @@ const TextField = React.forwardRef(
     // Reveal the message row only when it appears after the field did, never on first render
     // (a page of fields with helper text must not unfold on load).
     const hasMessage = Boolean(error || helperText || (showCount && maxLength));
-    const [hadMessage, setHadMessage] = React.useState(hasMessage);
-    const [revealMessage, setRevealMessage] = React.useState(false);
-    if (hasMessage !== hadMessage) {
-      setHadMessage(hasMessage);
-      setRevealMessage(hasMessage);
-    }
+    const reducedMotion = useReducedMotion() ?? false;
+    const copyMotion = {
+      initial: reducedMotion
+        ? (false as const)
+        : { opacity: 0, y: "0.35em", filter: "blur(4px)" },
+      animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+      transition: {
+        duration: reducedMotion ? 0 : 0.24,
+        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      },
+    };
 
     // Render the input element
     const inputElement = (
@@ -284,10 +332,10 @@ const TextField = React.forwardRef(
         className={cn(
           hasAddons
             ? cn(
-                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
+                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
                 size === "sm"
-                  ? "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs"
-                  : "text-base"
+                  ? "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4]"
+                  : "text-sm leading-[1.4]"
               )
             : cn(
                 textFieldInputVariants({ state: derivedState, size }),
@@ -295,7 +343,7 @@ const TextField = React.forwardRef(
                 derivedState === "error" &&
                   !disabled &&
                   !loading &&
-                  "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+                  "border-semantic-error-primary focus:shadow-none"
               ),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -352,7 +400,7 @@ const TextField = React.forwardRef(
     return (
       <div
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col gap-1",
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col",
           wrapperClassName
         )}
       >
@@ -361,7 +409,7 @@ const TextField = React.forwardRef(
           <label
             htmlFor={inputId}
             className={cn(
-              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
+              "mb-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -380,16 +428,17 @@ const TextField = React.forwardRef(
                 state: derivedState,
                 disabled: disabled || loading,
               }),
-              size === "sm" ? "h-9 px-3" : "h-10 px-4",
+              size === "sm" ? "h-9 px-3" : "h-11 px-3",
+              disabled && "opacity-50",
               inputContainerClassName,
               derivedState === "error" &&
                 !disabled &&
                 !loading &&
-                "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus-within:border-semantic-error-primary focus-within:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]"
+                "border-semantic-error-primary focus-within:shadow-none"
             )}
           >
             {prefix && (
-              <span className="text-base text-[var(--v2-text-muted,#707070)] mr-2 select-none">
+              <span className="text-sm text-[var(--v2-text-muted,#707070)] mr-2 select-none">
                 {prefix}
               </span>
             )}
@@ -409,26 +458,26 @@ const TextField = React.forwardRef(
             )}
             {/* Stays mounted so it can fade out as well as in. While hidden it drops its
                 aria-label (so it is not offered as "Clear input"), is not focusable or
-                clickable (visibility + pointer-events), and its -ml-4 cancels its own
-                16px so the input is exactly as wide as when no button is rendered. */}
+                clickable (visibility + pointer-events + tabindex -1), and its -ml-6 cancels its own
+                24px slot so the input is exactly as wide as when no button is rendered. */}
             {clearable && (
               <button
                 type="button"
                 onClick={handleClear}
                 className={cn(
-                  "relative flex-shrink-0 cursor-pointer text-[var(--v2-text-muted,#707070)] before:absolute before:-inset-2 before:content-[''] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,opacity,transform,margin-left,visibility] [transition-duration:150ms] [transition-timing-function:ease-out] motion-reduce:[transition-property:color,opacity,visibility]",
+                  "relative grid size-6 flex-shrink-0 cursor-pointer place-items-center rounded text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,background-color,opacity,transform,filter,margin-left,visibility] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:color,background-color,opacity,visibility]",
                   showClearButton
-                    ? "visible ml-2 scale-100 opacity-100"
-                    : "pointer-events-none invisible -ml-4 scale-[0.8] opacity-0 motion-reduce:scale-100"
+                    ? "visible ml-2 scale-100 opacity-100 blur-0 active:scale-[0.96] motion-reduce:active:scale-100"
+                    : "pointer-events-none invisible -ml-6 scale-[0.8] opacity-0 blur-[2px] motion-reduce:scale-100 motion-reduce:blur-0"
                 )}
                 aria-label={showClearButton ? "Clear input" : undefined}
-                tabIndex={-1}
+                tabIndex={showClearButton ? 0 : -1}
               >
                 <X className="size-4" />
               </button>
             )}
             {suffix && (
-              <span className="text-base text-[var(--v2-text-muted,#707070)] ml-2 select-none">
+              <span className="text-sm text-[var(--v2-text-muted,#707070)] ml-2 select-none">
                 {suffix}
               </span>
             )}
@@ -438,49 +487,50 @@ const TextField = React.forwardRef(
         )}
 
         {/* Helper text / Error message / Character count */}
-        {hasMessage && (
-          <div
-            className={cn(
-              "grid items-start",
-              showCount && maxLength
-                ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
-                : "grid-cols-[minmax(0,1fr)]",
-              revealMessage &&
-                "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
-            )}
-          >
-            {error ? (
-              <span
-                id={errorId}
-                aria-live="polite"
-                className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
-              >
-                {error}
-              </span>
-            ) : helperText ? (
-              <span
-                id={helperId}
-                className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs text-[var(--v2-text-muted,#707070)]"
-              >
-                {helperText}
-              </span>
-            ) : (
-              <span className="min-h-0 overflow-hidden" />
-            )}
-            {showCount && maxLength && (
-              <span
-                className={cn(
-                  "min-h-0 overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs",
-                  charCount > maxLength
-                    ? "text-semantic-error-text"
-                    : "text-[var(--v2-text-muted,#707070)]"
-                )}
-              >
-                {charCount}/{maxLength}
-              </span>
-            )}
-          </div>
-        )}
+        <FieldFeedback
+          active={hasMessage}
+          className={cn(
+            "grid items-start pt-2",
+            showCount && maxLength
+              ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
+              : "grid-cols-[minmax(0,1fr)]"
+          )}
+        >
+          {error ? (
+            <motion.span
+              {...copyMotion}
+              key={"error:" + error}
+              id={errorId}
+              aria-live="polite"
+              className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+            >
+              {error}
+            </motion.span>
+          ) : helperText ? (
+            <motion.span
+              {...copyMotion}
+              key={"helper:" + helperText}
+              id={helperId}
+              className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-muted,#707070)]"
+            >
+              {helperText}
+            </motion.span>
+          ) : (
+            <span className="min-h-0 overflow-hidden" />
+          )}
+          {showCount && maxLength && (
+            <span
+              className={cn(
+                "min-h-0 overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px]",
+                charCount > maxLength
+                  ? "text-semantic-error-text"
+                  : "text-[var(--v2-text-muted,#707070)]"
+              )}
+            >
+              {charCount}/{maxLength}
+            </span>
+          )}
+        </FieldFeedback>
       </div>
     );
   }

@@ -395,14 +395,10 @@ describe("SearchFilter v2 refresh", () => {
     const input = screen.getByRole("searchbox");
 
     expect(input).toHaveAttribute("aria-expanded", "false");
+    expect(input.className).toContain("aria-expanded:border-semantic-primary");
+    expect(input.className).toContain("aria-expanded:shadow-none");
     expect(input.className).toContain(
-      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
-    );
-    expect(input.className).toContain(
-      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
-    );
-    expect(input.className).toContain(
-      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+      "enabled:aria-expanded:hover:border-semantic-primary"
     );
 
     await user.click(input);
@@ -414,7 +410,7 @@ describe("SearchFilter v2 refresh", () => {
       <SearchFilter options={options} inputProps={{ className: "custom-x" }} />
     );
     const input = screen.getByRole("searchbox");
-    expect(input).toHaveClass("custom-x", "pl-10", "pr-9");
+    expect(input).toHaveClass("custom-x", "pl-[38px]", "pr-9");
   });
 
   it("gives rows a 4px radius and a keyboard-only ring", async () => {
@@ -491,4 +487,15 @@ describe("SearchFilter v2 refresh", () => {
       expect(panel).toHaveClass("data-[side=top]:slide-in-from-bottom-1");
     }
   );
+
+  it("insets an 18px glass and clear button like Arc's search field, and wakes the glass on focus", () => {
+    const { container } = render(
+      <SearchFilter options={options} defaultSearchValue="12" />
+    );
+    const svg = container.querySelector("svg")!;
+    expect(svg).toHaveClass("size-[18px]", "left-[13px]");
+    expect(svg.getAttribute("class")).toContain("group-focus-within:text-");
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(screen.getByLabelText("Clear search")).toHaveClass("size-6");
+  });
 });

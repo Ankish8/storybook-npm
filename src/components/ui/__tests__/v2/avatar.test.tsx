@@ -107,10 +107,10 @@ describe("Avatar", () => {
 
   it.each([
     ["xs", "size-6", "text-[10px]"],
-    ["sm", "size-[30px]", "text-xs"],
-    ["md", "size-10", "text-sm"],
-    ["lg", "size-12", "text-base"],
-    ["xl", "size-16", "text-lg"],
+    ["sm", "size-7", "text-[10px]"],
+    ["md", "size-9", "text-xs"],
+    ["lg", "size-12", "text-sm"],
+    ["xl", "size-[88px]", "text-[22px]"],
   ] as const)(
     "renders %s size with correct classes",
     (size, sizeClass, textClass) => {
@@ -122,8 +122,8 @@ describe("Avatar", () => {
 
   it("defaults to md size", () => {
     const { container } = render(<Avatar name="Test" />);
-    expect(container.firstChild).toHaveClass("size-10");
-    expect(container.firstChild).toHaveClass("text-sm");
+    expect(container.firstChild).toHaveClass("size-9");
+    expect(container.firstChild).toHaveClass("text-xs");
   });
 
   // --- Status indicator ---
@@ -316,8 +316,8 @@ describe("v2 AvatarGroup", () => {
       </AvatarGroup>
     );
 
-  it("overlaps the small sizes (xs, sm) by 4px so initials stay readable", () => {
-    for (const size of ["xs", "sm"] as const) {
+  it("overlaps every size by 6px, as Arc does", () => {
+    for (const size of ["xs", "sm", "md", "xl"] as const) {
       const { container, unmount } = render(
         <AvatarGroup size={size}>
           <Avatar>AK</Avatar>
@@ -325,23 +325,34 @@ describe("v2 AvatarGroup", () => {
         </AvatarGroup>
       );
       const group = container.firstElementChild as HTMLElement;
-      expect(group).toHaveClass("[&>*:not(:first-child)]:-ms-1");
-      expect(group).not.toHaveClass("[&>*:not(:first-child)]:-ms-2");
+      expect(group).toHaveClass("[&>*:not(:first-child)]:-ms-1.5");
       unmount();
     }
   });
 
-  it("overlaps avatars by 8px with a 2px surface ring", () => {
+  it("overlaps avatars with a 2px surface ring and a hairline outside it", () => {
     group();
     const root = screen.getByRole("group", { name: "Assigned to" });
     expect(root).toHaveClass(
       "inline-flex",
       "[&>*]:ring-2",
       "[&>*]:ring-semantic-bg-primary",
-      "[&>*:not(:first-child)]:-ms-2"
+      "[&>*:not(:first-child)]:-ms-1.5",
+      "[&>*]:shadow-[0_0_0_3px_var(--semantic-border-layout)]"
     );
     expect(screen.getAllByRole("img")).toHaveLength(4);
     expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
+  });
+  it("gives each avatar its place in the stack for the hover fan", () => {
+    group({ max: 3 });
+    const faces = screen.getAllByRole("img");
+    expect(faces.map((f) => f.style.getPropertyValue("--index"))).toEqual([
+      "0",
+      "1",
+      "2",
+      "3",
+    ]);
+    expect(faces[0].style.getPropertyValue("--count")).toBe("4");
   });
   it("collapses the rest into a +N tile when max is lower than the count", () => {
     group({ max: 2 });
@@ -369,7 +380,7 @@ describe("v2 AvatarGroup", () => {
   });
   it("sizes the +N tile like the avatars beside it", () => {
     const { unmount } = group({ max: 1, size: "lg" });
-    expect(screen.getByText("+3")).toHaveClass("size-12", "text-base");
+    expect(screen.getByText("+3")).toHaveClass("size-12", "text-sm");
     // The group size also reaches children that did not set their own.
     expect(screen.getByRole("img", { name: "Aditi Kumar" })).toHaveClass(
       "size-12"
@@ -394,7 +405,7 @@ describe("v2 AvatarGroup", () => {
         <Avatar name="Aditi Kumar" size="xl" />
       </AvatarGroup>
     );
-    expect(screen.getByRole("img")).toHaveClass("size-16");
+    expect(screen.getByRole("img")).toHaveClass("size-[88px]");
     expect(screen.getByTestId("g")).toHaveClass("[&>*]:ring-semantic-bg-ui");
     expect(screen.getByTestId("g")).not.toHaveClass(
       "[&>*]:ring-semantic-bg-primary"

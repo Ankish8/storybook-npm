@@ -27,9 +27,9 @@ describe("Switch v2", () => {
   });
 
   it.each([
-    ["default", "h-5", "w-9"],
-    ["sm", "h-[18px]", "w-8"],
-    ["lg", "h-6", "w-11"],
+    ["default", "h-6", "w-[42px]"],
+    ["sm", "h-5", "w-9"],
+    ["lg", "h-7", "w-12"],
   ] as const)("renders %s size", (size, heightClass, widthClass) => {
     render(<Switch size={size} data-testid="switch" />);
     const element = screen.getByTestId("switch");
@@ -105,31 +105,42 @@ describe("Switch v2", () => {
 });
 
 describe("Switch v2 hit area, press and description", () => {
-  it("adds an invisible 4px hit ring (36 x 20 -> 44 x 28 target) and a 0.96 press scale on the track", () => {
+  it("adds an invisible 4px hit ring (42 x 24 -> 50 x 32 target) and does not scale the track on press", () => {
     render(<Switch aria-label="Notifications" />);
     const track = screen.getByRole("switch");
     expect(track).toHaveClass(
       "relative",
+      "p-[3px]",
       "before:absolute",
-      "before:-inset-[6px]"
+      "before:-inset-1"
     );
+    expect(track.className).not.toMatch(/active:scale/);
+  });
+
+  it("fades the fill layer in over 240ms instead of recolouring the track", () => {
+    render(<Switch aria-label="Notifications" />);
+    const track = screen.getByRole("switch");
     expect(track).toHaveClass(
-      "enabled:active:scale-[0.96]",
-      "motion-reduce:enabled:active:scale-100"
+      "after:opacity-0",
+      "data-[state=checked]:after:opacity-100"
     );
     expect(track.className).toContain(
-      "[transition-duration:240ms,240ms,240ms,200ms]"
-    );
-    expect(track.className).toContain(
-      "enabled:active:[transition-duration:240ms,240ms,240ms,80ms]"
+      "after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1)"
     );
   });
 
-  it("does not stretch the thumb on press (rejected in V2-MOTION.md)", () => {
+  it("glides the thumb on a spring and stretches it while the track is pressed (reduced motion skips the stretch)", () => {
     render(<Switch aria-label="Notifications" />);
     const thumb = screen.getByRole("switch").firstElementChild!;
-    expect(thumb.className).not.toMatch(/active:/);
-    expect(thumb.className).not.toMatch(/(^|\s)(scale-x-|group-active)/);
+    expect(thumb).toHaveClass("h-[18px]", "w-[18px]", "data-[state=checked]:translate-x-[18px]");
+    expect(thumb.className).toContain("[transition:transform_490ms_var(--arc-glide)");
+    expect(thumb.className).toContain(
+      "motion-safe:[button:enabled:active_&]:w-[23px]"
+    );
+    expect(thumb.className).toContain(
+      "motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-[13px]"
+    );
+    expect(thumb.className).toContain("motion-reduce:[transition:background-color_120ms_ease-out]");
   });
 
   it("gates hover colour changes to devices that can hover", () => {

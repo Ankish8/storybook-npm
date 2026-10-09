@@ -143,12 +143,12 @@ describe("DateRangePicker", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("renders weekday headers in uppercase", () => {
+  it("renders two-letter weekday headers (Arc) rather than uppercase", () => {
     render(<DateRangePicker defaultOpen />);
 
-    expect(screen.getByText("SU")).toBeInTheDocument();
-    expect(screen.getByText("MO")).toBeInTheDocument();
-    expect(screen.queryByText("Su")).not.toBeInTheDocument();
+    expect(screen.getByText("Su")).toBeInTheDocument();
+    expect(screen.getByText("Mo")).toBeInTheDocument();
+    expect(screen.queryByText("SU")).not.toBeInTheDocument();
   });
 
   it("uses the info-surface token for the in-range highlight band", () => {
@@ -1054,7 +1054,7 @@ describe("DateRangePicker calendar refresh", () => {
 
     it("keeps the weekday header static while the day grid re-mounts", () => {
       renderOpen();
-      const weekdayRow = screen.getByText("SU").parentElement as HTMLElement;
+      const weekdayRow = screen.getByText("Su").parentElement as HTMLElement;
 
       fireEvent.click(screen.getByLabelText("Next month"));
 

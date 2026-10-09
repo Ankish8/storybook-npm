@@ -20,6 +20,6 @@ it("supports stacked mobile layout and content slots", () => {
       <span>Context</span>
     </PageFooter>
   );
-  expect(screen.getByTestId("footer")).toHaveClass("flex-col", "py-4");
+  expect(screen.getByTestId("footer")).toHaveClass("flex-col", "py-5");
   expect(screen.getByText("Context")).toBeInTheDocument();
 });

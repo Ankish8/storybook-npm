@@ -1,8 +1,58 @@
 import * as React from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { CircleAlert } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
+
+/** Measures copy as it wraps or changes, so opening, replacement and closing all animate height. */
+function FieldFeedback({
+  active,
+  children,
+  className,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const content = React.useRef<HTMLDivElement>(null);
+  const [height, setHeight] = React.useState<number | null>(null);
+  const reduced = useReducedMotion() ?? false;
+  React.useLayoutEffect(() => {
+    const node = content.current;
+    if (!node) return;
+    const measure = () => setHeight(node.getBoundingClientRect().height);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [children]);
+  return (
+    <motion.div
+      data-field-feedback=""
+      initial={false}
+      animate={{
+        height: active ? (height ?? "auto") : 0,
+        opacity: active ? 1 : 0,
+      }}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : {
+              // Arc: the row opens its height on a critically damped spring while the opacity follows in 160ms.
+              height: { type: "spring", visualDuration: 0.4, bounce: 0 },
+              opacity: { duration: 0.16 },
+            }
+      }
+      className="min-w-0 overflow-hidden"
+    >
+      <div ref={content} className={className}>
+        {children}
+      </div>
+    </motion.div>
+  );
+}
 
 // Collapses runs of the space character (U+0020) so only a single space is allowed
 // between segments. Newlines and other whitespace are unchanged.
@@ -22,29 +72,22 @@ const countNonWhitespaceChars = (value: string): number =>
   normalizeTextareaSpaces(value).length;
 
 /**
- * Message row that appears after the field was already on screen: it grows from 0fr to 1fr
- * (the grid-rows trick, so the height is auto) and its -4px margin eases back to 0 so the
- * parent's 4px gap does not jump either. `@starting-style` plays on mount, which is how a
- * mount-time transition is done in CSS. Reduced motion snaps the height; the message keeps
- * its own fade.
- */
-/**
  * Textarea variants for different visual states
  */
 const textareaVariants = cva(
-  "w-full max-w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none",
+  "w-full max-w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.16px] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-60 disabled:shadow-none",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-semantic-primary focus:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
       size: {
-        default: "px-4 py-2.5 text-sm",
-        sm: "px-3 py-2 text-xs",
-        lg: "px-4 py-2.5 text-base",
+        default: "min-h-[110px] px-3 py-3 text-sm leading-[1.4]",
+        sm: "px-3 py-2 text-xs leading-[1.4]",
+        lg: "px-3 py-3 text-base leading-[1.4]",
       },
     },
     defaultVariants: {
@@ -230,12 +273,17 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     // Reveal the message row only when it appears after the field did, never on first render
     // (a page of fields with helper text must not unfold on load).
     const hasMessage = Boolean(error || helperText || (showCount && maxLength));
-    const [hadMessage, setHadMessage] = React.useState(hasMessage);
-    const [revealMessage, setRevealMessage] = React.useState(false);
-    if (hasMessage !== hadMessage) {
-      setHadMessage(hasMessage);
-      setRevealMessage(hasMessage);
-    }
+    const reducedMotion = useReducedMotion() ?? false;
+    const copyMotion = {
+      initial: reducedMotion
+        ? (false as const)
+        : { opacity: 0, y: "0.35em", filter: "blur(4px)" },
+      animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+      transition: {
+        duration: reducedMotion ? 0 : 0.24,
+        ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
+      },
+    };
 
     // Resize class map
     const resizeClasses: Record<string, string> = {
@@ -248,7 +296,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col gap-1",
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col",
           wrapperClassName
         )}
       >
@@ -257,7 +305,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           <label
             htmlFor={textareaId}
             className={cn(
-              "font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] text-[var(--v2-text-primary,#484848)]",
+              "mb-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]",
               labelClassName
             )}
           >
@@ -278,7 +326,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className,
             derivedState === "error" &&
               !disabled &&
-              "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+              "border-semantic-error-primary focus:shadow-none",
             resizeClasses[resize]
           )}
           disabled={disabled}
@@ -292,65 +340,70 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         />
 
         {/* Helper text / Error message / Character count */}
-        {hasMessage && (
-          <div
-            className={cn(
-              "grid items-start",
-              showCount && maxLength
-                ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
-                : "grid-cols-[minmax(0,1fr)]",
-              revealMessage &&
-                "grid-rows-[1fr] [@starting-style]:grid-rows-[0fr] [@starting-style]:-mt-1 transition-[grid-template-rows,margin-top] [transition-duration:240ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none"
-            )}
-          >
-            {error ? (
-              errorIcon ? (
-                <div
-                  id={errorId}
-                  role="alert"
-                  className="flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
-                >
-                  <CircleAlert
-                    className="size-3.5 shrink-0 text-semantic-error-text"
-                    aria-hidden
-                  />
-                  <span className="text-xs text-semantic-error-text">
-                    {error}
-                  </span>
-                </div>
-              ) : (
-                <span
-                  id={errorId}
-                  aria-live="polite"
-                  className="min-h-0 overflow-hidden break-words text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+        <FieldFeedback
+          active={hasMessage}
+          className={cn(
+            "grid items-start pt-2",
+            showCount && maxLength
+              ? "grid-cols-[minmax(0,1fr)_auto] gap-x-2"
+              : "grid-cols-[minmax(0,1fr)]"
+          )}
+        >
+          {error ? (
+            errorIcon ? (
+              <div
+                id={errorId}
+                role="alert"
+                className="flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden"
+              >
+                <CircleAlert
+                  className="size-3.5 shrink-0 text-semantic-error-text"
+                  aria-hidden
+                />
+                <motion.span
+                  {...copyMotion}
+                  key={error}
+                  className="text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
                 >
                   {error}
-                </span>
-              )
-            ) : helperText ? (
-              <span
-                id={helperId}
-                className="min-h-0 overflow-hidden break-words text-xs text-[var(--v2-text-muted,#707070)]"
-              >
-                {helperText}
-              </span>
+                </motion.span>
+              </div>
             ) : (
-              <span className="min-h-0 overflow-hidden" />
-            )}
-            {showCount && maxLength && (
-              <span
-                className={cn(
-                  "min-h-0 overflow-hidden text-xs",
-                  charCount > maxLength
-                    ? "text-semantic-error-text"
-                    : "text-[var(--v2-text-muted,#707070)]"
-                )}
+              <motion.span
+                {...copyMotion}
+                key={"error:" + error}
+                id={errorId}
+                aria-live="polite"
+                className="min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
               >
-                {charCount}/{maxLength}
-              </span>
-            )}
-          </div>
-        )}
+                {error}
+              </motion.span>
+            )
+          ) : helperText ? (
+            <motion.span
+              {...copyMotion}
+              key={"helper:" + helperText}
+              id={helperId}
+              className="min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-muted,#707070)]"
+            >
+              {helperText}
+            </motion.span>
+          ) : (
+            <span className="min-h-0 overflow-hidden" />
+          )}
+          {showCount && maxLength && (
+            <span
+              className={cn(
+                "min-h-0 overflow-hidden text-xs leading-[1.4] tracking-[-0.16px]",
+                charCount > maxLength
+                  ? "text-semantic-error-text"
+                  : "text-[var(--v2-text-muted,#707070)]"
+              )}
+            >
+              {charCount}/{maxLength}
+            </span>
+          )}
+        </FieldFeedback>
       </div>
     );
   }

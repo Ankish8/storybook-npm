@@ -101,6 +101,9 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
     // `releasedAt` lets a stale flag (a hold that left the button, so no click came) expire instead of
     // swallowing a later keyboard click.
     const heldRepeat = React.useRef(false);
+    // The press handler cancels the pointer's default, which also stops the browser from setting :active,
+    // so a held stepper is marked with data-pressed instead (Arc shows the same pressed fill and sunk glyph).
+    const [pressed, setPressed] = React.useState<1 | -1 | null>(null);
     const releasedAt = React.useRef(0);
 
     const stopRepeat = React.useCallback(() => {
@@ -139,6 +142,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
     };
 
     const endRepeat = () => {
+      setPressed(null);
       stopRepeat();
       if (heldRepeat.current && releasedAt.current === 0) {
         releasedAt.current = Date.now();
@@ -163,7 +167,10 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
         if (disabled) return;
         e.preventDefault();
         inputRef.current?.focus();
-        if ((e.button ?? 0) === 0) startRepeat(direction);
+        if ((e.button ?? 0) === 0) {
+          setPressed(direction);
+          startRepeat(direction);
+        }
       };
 
     const atMax = value >= max;
@@ -180,9 +187,11 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
       >
         <div
           className={cn(
-            "flex h-10 min-w-0 flex-1 items-center rounded-lg border border-solid border-semantic-border-layout overflow-hidden transition-[border-color,box-shadow] duration-150",
-            !disabled &&
-              "group-hover:[&:not(:focus-within)]:border-[var(--color-primary-100)] group-focus-within:border-semantic-border-accent group-focus-within:shadow-[0_0_4px_rgba(39,171,184,0.4)]"
+            "flex h-11 min-w-0 flex-1 items-center rounded-lg border border-solid border-semantic-border-layout overflow-hidden transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
+            // Arc: hover steps the hairline up to the input border, focus to the strong one; a disabled shell dims to 50%.
+            disabled
+              ? "bg-semantic-bg-ui opacity-50"
+              : "group-hover:[&:not(:focus-within)]:border-semantic-border-input group-focus-within:shadow-none"
           )}
         >
           <Input
@@ -197,7 +206,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
             disabled={disabled}
             aria-label={ariaLabel}
             hideNumberSpinners
-            className="rounded-none border-0 h-full min-w-0 flex-1 bg-semantic-bg-primary px-4 py-2.5 leading-[normal] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none"
+            className="rounded-none border-0 h-full min-w-0 flex-1 bg-semantic-bg-primary px-3 py-2.5 leading-[normal] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none disabled:opacity-100"
           />
           {/* Steppers: each chevron is a half-height tile (24 x 19 in the 38px field) so the pointer target is
               about 4x the 12px icon; markup otherwise matches Advanced Settings `ValidatedNumberSpinner`
@@ -211,8 +220,9 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerLeave={endRepeat}
               onPointerCancel={endRepeat}
               onClick={handleStepClick(stepUp)}
+              data-pressed={pressed === 1 ? "" : undefined}
               aria-label={incrementAriaLabel ?? "Increase value"}
-              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color,transform] [transition-duration:180ms,150ms,180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),ease-out,var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:[transition-duration:80ms,150ms,80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
             >
               <ChevronUp className="size-3" />
             </button>
@@ -224,8 +234,9 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               onPointerLeave={endRepeat}
               onPointerCancel={endRepeat}
               onClick={handleStepClick(stepDown)}
+              data-pressed={pressed === -1 ? "" : undefined}
               aria-label={decrementAriaLabel ?? "Decrease value"}
-              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color,transform] [transition-duration:180ms,150ms,180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),ease-out,var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:[transition-duration:80ms,150ms,80ms] active:scale-[0.96] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
             >
               <ChevronDown className="size-3" />
             </button>

@@ -134,6 +134,17 @@ describe("Skeleton animation", () => {
     expect(container.firstChild).not.toHaveClass("overflow-hidden");
   });
 
+  it("pulses like Arc: 1.8s in-out, 11 beats, then rests", () => {
+    const { container } = render(<Skeleton />);
+    const el = container.firstChild as HTMLElement;
+    expect(el).toHaveClass(
+      "[animation-duration:1.8s]",
+      "[animation-timing-function:cubic-bezier(0.65,0,0.35,1)]",
+      "[animation-iteration-count:11]",
+      "[animation-fill-mode:both]"
+    );
+  });
+
   it("accepts animation=pulse explicitly with the same classes as the default", () => {
     const { container: a } = render(<Skeleton />);
     const { container: b } = render(<Skeleton animation="pulse" />);

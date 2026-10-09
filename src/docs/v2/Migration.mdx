@@ -8,11 +8,11 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 ## 1. Configure an unprefixed Tailwind build
 
-v2 needs a Tailwind build with an empty prefix, the library's semantic colors and the Inter font. Additive v2 tokens include the font, border and four neutral text roles; existing v1 token values remain unchanged. Text utilities also provide their own fallback colors.
+v2 needs a Tailwind build with an empty prefix, the library's semantic colors and the Timeless Sans font (Inter is the fallback). The Timeless licence does not allow this package to ship the font files, so each app downloads them from timeless.co and serves them itself. Additive v2 tokens include the font, border and four neutral text roles; existing v1 token values remain unchanged. Text utilities also provide their own fallback colors.
 
 ```css
 :root {
-  --font-v2: 'Inter', sans-serif;
+  --font-v2: 'Timeless Sans', 'Inter', sans-serif;
   --v2-text-primary: #484848;
   --v2-text-secondary: #5E5E5E;
   --v2-text-muted: #707070;
@@ -26,7 +26,7 @@ The Storybook preview loads Inter from Google Fonts. Applications can use their 
 ## 2. Install the components used on that screen
 
 ```bash
-npx myoperator-ui add v2-button v2-text-field v2-select v2-dialog
+npx myoperator-ui add v2-button v2-text-field v2-select v2-modal
 ```
 
 The CLI installs each component's dependencies into the same namespace. Installing in a prefixed project prints the unprefixed-build requirement.

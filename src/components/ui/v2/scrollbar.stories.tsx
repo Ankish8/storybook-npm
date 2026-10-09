@@ -89,9 +89,17 @@ const meta: Meta<Args> = {
           summary:
             "A native scroll viewport with the v2 rail, draggable thumb and optional arrow controls.",
           changes: [
-            ["Rail", "—", "16px wide/high"],
-            ["Thumb", "—", "8px wide/high; 8px corners"],
-            ["Arrow controls", "—", "32px along the scroll axis"],
+            [
+              "Rail",
+              "—",
+              "Subtle: 11px overlay that fades in while scrolling or hovering; dark: 16px solid rail",
+            ],
+            [
+              "Thumb",
+              "—",
+              "5px pill, 7px under the pointer, 28px minimum; edges fade by up to 28px",
+            ],
+            ["Arrow controls", "—", "32px along the scroll axis (optional)"],
             [
               "Variants",
               "—",

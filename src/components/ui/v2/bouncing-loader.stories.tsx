@@ -40,8 +40,8 @@ const meta: Meta<typeof BouncingLoader> = {
     },
   },
   args: {
-    size: 8,
-    spacing: 6,
+    size: 6,
+    spacing: 4,
     color: "var(--semantic-text-placeholder)",
     "aria-label": "Preparing a response",
   },

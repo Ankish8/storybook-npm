@@ -63,8 +63,10 @@ function Example({
     props.state === "error" && !props.disabled ? errorMessage : helperText;
   return (
     <div
-      style={{ width }}
-      className="max-w-full space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      // `width` is a ceiling, not a fixed size: a grid column sizes itself to its widest child, so a fixed pixel
+      // width here made the column (and the page) wider than a phone-width frame.
+      style={{ width: "100%", maxWidth: width }}
+      className="space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       {label && (
         <p
@@ -185,15 +187,15 @@ const meta: Meta<Args> = {
           summary:
             "Choose a saved role or type a custom one and press Enter. The selected value is controlled; the open draft is internal and reported through onInputValueChange.",
           changes: [
-            ["Trigger", "42px height / 4px radius", "40px height / 8px radius"],
-            ["Value type", "Inherited font", "Inter 16px / 400"],
+            ["Trigger", "42px height / 4px radius", "44px height / 8px radius"],
+            ["Value type", "Inherited font", "Inter 14px / 400"],
             [
               "Host label / helper",
               "Host styling",
               "14px / 500 label; 12px helper",
             ],
             ["Hover", "Thin stroke", "C0C3CA border"],
-            ["Focus", "Teal stroke", "27ABB8 border and soft 4px halo"],
+            ["Focus", "Teal stroke", "Primary border emphasis; no outer glow"],
             [
               "Error",
               "Red border",
@@ -214,7 +216,7 @@ const meta: Meta<Args> = {
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
             ["Family", "--font-v2", "Inter"],
@@ -342,7 +344,7 @@ export const AllVariants: Story = {
       </header>
       <div className="grid gap-6 md:grid-cols-2">
         {VARIANTS.map((state) => (
-          <section key={state} className="space-y-3">
+          <section key={state} className="min-w-0 space-y-3">
             <p className="m-0 text-xs font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
@@ -357,7 +359,7 @@ export const HeightAndWidth: Story = {
   name: "Height and width",
   parameters: gallery(
     ["width"],
-    "One 40px field height at two widths. Each field remains independently editable."
+    "One 44px field height at two widths. Each field remains independently editable."
   ),
   render: (args) => (
     <div className="w-full max-w-[820px] space-y-5">
@@ -366,14 +368,18 @@ export const HeightAndWidth: Story = {
           Field proportions
         </p>
         <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
-          40px high at both widths, with 8px corners.
+          44px high at both widths, with 8px corners.
         </p>
       </header>
       <div className="flex flex-wrap items-start gap-6">
         {[420, 280].map((width) => (
-          <section key={width} className="space-y-3">
+          <section
+            key={width}
+            style={{ width }}
+            className="max-w-full space-y-3"
+          >
             <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
-              {width}px wide · 40px high
+              {width}px wide · 44px high
             </p>
             <Preview {...args} key={`${width}-${args.value}`} width={width} />
           </section>

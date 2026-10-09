@@ -29,10 +29,10 @@ describe("Tag (v2)", () => {
     );
   });
   it.each([
-    ["sm", "h-5"],
-    ["default", "h-6"],
-    ["lg", "h-[30px]"],
-  ] as const)("uses the recorded %s size", (size, height) => {
+    ["sm", "h-6"],
+    ["default", "h-7"],
+    ["lg", "h-8"],
+  ] as const)("uses the Arc-derived %s size", (size, height) => {
     render(<Tag size={size}>Event</Tag>);
     expect(screen.getByText("Event").parentElement).toHaveClass(
       height,
@@ -122,15 +122,18 @@ describe("Tag (v2)", () => {
       );
       return screen.getByRole("button", { name: "Remove event" });
     };
-    it("has a 24px hit area around an unchanged 12px icon", () => {
+    it("has a 24px hit area around a 14px icon on a 22px plate", () => {
       const button = renderRemovable();
-      expect(button).toHaveClass("size-6");
-      expect(button.querySelector("svg")).toHaveClass("size-3");
+      expect(button).toHaveClass("size-6", "before:inset-px");
+      expect(button.querySelector("svg")).toHaveClass("size-3.5");
+      // Stroke weight is CSS, so the markup stays identical to v1.
+      expect(button.querySelector("svg")).toHaveClass("[stroke-width:1.75]");
     });
-    it("keeps the old 12px layout footprint so the tag does not grow", () => {
+    it("lays out as Arc's 22px circle, 3px from the label and 4px from the edge", () => {
       const button = renderRemovable();
-      // -6px on every side cancels the extra 12px of hit area (24 - 12).
-      expect(button).toHaveClass("-m-1.5");
+      // 24px box with -1px on the trailing side and -4px leading (6px flex gap - 4px = 2px, +1px inset = 3px).
+      expect(button).toHaveClass("-ml-1", "-mr-px");
+      expect(screen.getByText("Event").parentElement).toHaveClass("pr-1");
     });
     it("keeps its accessible name, type and click contract", async () => {
       const onRemove = vi.fn();
@@ -151,8 +154,16 @@ describe("Tag (v2)", () => {
         "before:opacity-0",
         "enabled:[@media(hover:hover)]:hover:before:opacity-[0.08]"
       );
-      expect(button).not.toHaveClass("hover:scale-[1.03]");
-      expect(button).toHaveClass("[@media(hover:hover)]:hover:scale-[1.03]");
+    });
+    it("dips to .96 on press and springs back over 580ms, with no hover scale (Arc)", () => {
+      const button = renderRemovable();
+      expect(button).toHaveClass(
+        "active:scale-[0.96]",
+        "[transition-duration:580ms]",
+        "active:[transition-duration:120ms]",
+        "motion-reduce:active:scale-100"
+      );
+      expect(button.className).not.toContain("hover:scale-");
     });
     it("draws its own focus ring instead of the browser default", () => {
       const button = renderRemovable();
@@ -168,7 +179,7 @@ describe("Tag (v2)", () => {
       expect(button).toHaveClass(
         "cursor-not-allowed",
         "opacity-50",
-        "[@media(hover:hover)]:hover:scale-100"
+        "active:scale-100"
       );
       expect(button).toHaveClass("size-6");
     });

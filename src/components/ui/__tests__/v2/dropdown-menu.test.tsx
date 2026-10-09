@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { act, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { createRef } from "react";
 import userEvent from "@testing-library/user-event";
 import {
@@ -67,6 +73,44 @@ describe("DropdownMenu", () => {
 
     await user.keyboard("{Escape}");
     expect(screen.queryByText("Item 1")).not.toBeInTheDocument();
+  });
+});
+
+describe("DropdownMenu focus return", () => {
+  const renderMenu = (onCloseAutoFocus?: (e: Event) => void) =>
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
+        <DropdownMenuContent onCloseAutoFocus={onCloseAutoFocus}>
+          <DropdownMenuItem>Item 1</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+
+  it("does not give focus back to the trigger after a mouse pick (no keyboard ring)", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(screen.getByText("Open Menu"));
+    await user.click(screen.getByText("Item 1"));
+    expect(screen.queryByText("Item 1")).not.toBeInTheDocument();
+    expect(screen.getByText("Open Menu")).not.toHaveFocus();
+  });
+
+  it("gives focus back to the trigger when the keyboard closes it", async () => {
+    const user = userEvent.setup();
+    renderMenu();
+    await user.click(screen.getByText("Open Menu"));
+    await user.keyboard("{ArrowDown}{Escape}");
+    expect(screen.getByText("Open Menu")).toHaveFocus();
+  });
+
+  it("still calls a consumer onCloseAutoFocus", async () => {
+    const user = userEvent.setup();
+    const spy = vi.fn();
+    renderMenu(spy);
+    await user.click(screen.getByText("Open Menu"));
+    await user.click(screen.getByText("Item 1"));
+    expect(spy).toHaveBeenCalled();
   });
 });
 
@@ -845,7 +889,7 @@ describe("DropdownMenu v2 refresh", () => {
       expect(row).toHaveClass("rounded-sm");
       expect(row).not.toHaveClass("rounded-none");
       // Row height and padding are untouched: 48px rows.
-      expect(row).toHaveClass("min-h-12");
+      expect(row).toHaveClass("min-h-9");
     }
   });
 
@@ -883,19 +927,58 @@ describe("DropdownMenu v2 refresh", () => {
     }
   });
 
-  it("fades and zooms the menu with motion-safe vars so the reset in animate-in cannot cancel them", async () => {
+  it("grows from the trigger edge: spring transform plus quick fade open, small fast close, motion-safe only", async () => {
     await openMenu(<DropdownMenuItem>Edit</DropdownMenuItem>);
     const menu = screen.getByRole("menu");
     expect(menu).toHaveClass(
-      "data-[state=open]:motion-safe:fade-in-0",
-      "data-[state=open]:motion-safe:zoom-in-[0.98]",
+      "data-[state=open]:motion-safe:animate-in",
+      "data-[state=open]:motion-safe:zoom-in-[0.97]",
+      "data-[state=open]:motion-safe:[animation-duration:580ms,160ms]",
+      "data-[state=closed]:motion-safe:animate-out",
       "data-[state=closed]:motion-safe:fade-out-0",
-      "data-[state=closed]:motion-safe:zoom-out-[0.98]",
-      "data-[side=bottom]:motion-safe:slide-in-from-top-1",
-      "data-[side=top]:motion-safe:slide-in-from-bottom-1"
+      "data-[state=closed]:motion-safe:zoom-out-[0.985]",
+      "data-[state=closed]:motion-safe:[animation-duration:130ms]",
+      "data-[side=bottom]:motion-safe:slide-in-from-top-[5px]",
+      "data-[side=top]:motion-safe:slide-in-from-bottom-[5px]"
+    );
+    // Reduced motion keeps only a short fade.
+    expect(menu).toHaveClass(
+      "motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out]"
     );
     expect(menu).not.toHaveClass("data-[state=open]:fade-in-0");
     expect(menu).not.toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+  });
+
+  it("uses the Arc surface: 5px inset, 12rem minimum and floating shadow", async () => {
+    await openMenu(<DropdownMenuItem>Edit</DropdownMenuItem>);
+    const menu = screen.getByRole("menu");
+    expect(menu).toHaveClass(
+      "p-[5px]",
+      "min-w-[min(12rem,var(--radix-dropdown-menu-content-available-width))]",
+      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+    );
+  });
+
+  it("moves one aria-hidden highlight to the focused row instead of tinting each row", async () => {
+    await openMenu(
+      <>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem destructive>Delete</DropdownMenuItem>
+      </>
+    );
+    const menu = screen.getByRole("menu");
+    const highlight = menu.querySelector("[data-menu-highlight]");
+    expect(highlight).toHaveAttribute("aria-hidden", "true");
+    // Rows give up their own focus tint while the menu owns the highlight.
+    expect(menu).toHaveClass("[&_[role^=menuitem]:focus]:bg-transparent");
+    expect(highlight).not.toHaveAttribute("data-tone");
+    fireEvent.focus(screen.getByRole("menuitem", { name: "Delete" }));
+    await waitFor(() =>
+      expect(menu.querySelector("[data-menu-highlight]")).toHaveAttribute(
+        "data-tone",
+        "danger"
+      )
+    );
   });
 
   it("keeps the group label on the recorded 14px / 500 / primary text role", async () => {

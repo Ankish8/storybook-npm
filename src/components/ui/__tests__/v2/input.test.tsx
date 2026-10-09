@@ -40,17 +40,28 @@ describe("Input (v2)", () => {
     );
     const input = screen.getByTestId("input");
     expect(input).toHaveClass("border-semantic-error-primary");
-    expect(input).toHaveClass("focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]");
+    // Focus adds no border change or glow of its own
+    expect(input.className).not.toContain(
+      "focus:border-semantic-error-primary"
+    );
+    expect(input.className).not.toContain("rgba(240,68,56");
   });
 
   it("applies base styling classes", () => {
     render(<Input data-testid="input" />);
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("h-10");
+    expect(input).toHaveClass("h-11");
     expect(input).toHaveClass("w-full");
     expect(input).toHaveClass("rounded-lg");
-    expect(input).toHaveClass("px-4");
+    expect(input).toHaveClass("px-3");
     expect(input).toHaveClass("py-0");
+    // Arc field: 14px / 1.4 with -0.01em tracking, 160ms standard-curve border transition, no ring
+    expect(input).toHaveClass("leading-[1.4]", "tracking-[-0.01em]");
+    expect(input).toHaveClass(
+      "transition-[border-color,background-color]",
+      "[transition-duration:160ms]",
+      "disabled:opacity-50"
+    );
   });
 
   it("is disabled when disabled prop is set", () => {

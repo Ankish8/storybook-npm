@@ -27,10 +27,13 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
         aria-pressed={interactive ? selected : undefined}
         aria-disabled={interactive ? disabled : undefined}
         className={cn(
-          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_1px_2px_0_rgba(12,15,18,0.05),inset_0_0_0_1px_rgba(10,13,18,0.18),inset_0_-2px_0_0_rgba(12,15,18,0.05)]",
+          // Arc's card: 1px border, 20px padding, no resting shadow. Border eases in 160ms, shadow 240ms, lift 260ms.
+          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] shadow-none [transition-property:border-color,box-shadow,transform] [transition-duration:160ms,240ms,260ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:border-color,box-shadow] motion-reduce:[transition-duration:120ms]",
+          // A pointed-at card floats 2px, so the raised shadow arrives with the lift. Touch and pen never lift; the
+          // press has no scale of its own (Arc has none).
           interactive &&
             !disabled &&
-            "cursor-pointer transition-[background-color,box-shadow,border-color] duration-150 ease-out hover:bg-[linear-gradient(290deg,color-mix(in_srgb,var(--semantic-border-layout)_40%,transparent)_0.89%,color-mix(in_srgb,var(--semantic-bg-primary)_40%,transparent)_36.25%)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.06)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
+            "cursor-pointer [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_6px_18px_rgba(0,0,0,0.065),0_1px_3px_rgba(0,0,0,0.035)] motion-reduce:[@media(hover:hover)_and_(pointer:fine)]:hover:translate-y-0 focus-visible:border-[var(--color-primary-100,#C0C3CA)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
           (variant === "icon" || variant === "action") && "w-[200px]",
           variant === "action" &&
             "border-dashed border-semantic-info-border shadow-none",
@@ -77,7 +80,7 @@ const UiCardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "m-0 text-base font-medium leading-5 text-[var(--v2-text-primary,#484848)]",
+      "m-0 text-lg font-medium leading-[1.1] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)]",
       className
     )}
     {...props}
@@ -91,7 +94,7 @@ const UiCardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "m-0 text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)]",
+      "m-0 text-sm font-normal leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)]",
       className
     )}
     {...props}
@@ -115,7 +118,11 @@ const UiCardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("mt-3 flex items-center justify-end gap-2", className)}
+    className={cn(
+      // Arc: byline left, action right. A lone child still sits at the end, as before.
+      "mt-5 flex items-center justify-between gap-3 [&>:only-child]:ml-auto",
+      className
+    )}
     {...props}
   />
 ));

@@ -103,7 +103,7 @@ const PageHeader = React.forwardRef(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-semantic-bg-ui transition-colors text-[var(--v2-text-primary,#484848)]"
+            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-semantic-bg-ui transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] text-[var(--v2-text-primary,#484848)]"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -156,9 +156,9 @@ const PageHeader = React.forwardRef(
     // Height is content-driven only — min-height (any breakpoint) clipped wrapped subheads in app shells.
     // ~76px single-row bar on lg is approximated with padding instead of min-h / fixed h.
     const heightClasses = {
-      horizontal: "py-4",
-      vertical: "py-4",
-      responsive: "py-4",
+      horizontal: "py-5",
+      vertical: "py-5",
+      responsive: "py-5",
     };
 
     // Render actions for desktop (all inline)
@@ -258,7 +258,7 @@ const PageHeader = React.forwardRef(
       <div
         ref={ref}
         className={cn(
-          "flex w-full bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          "flex w-full bg-semantic-bg-primary px-5 font-[family-name:var(--font-v2,Inter,sans-serif)]",
           layoutClasses[layout],
           heightClasses[layout],
           showBorder && "border-b border-solid border-semantic-border-layout",
@@ -281,7 +281,7 @@ const PageHeader = React.forwardRef(
           {/* Content Section: Title + Description */}
           <div className="min-h-0 flex-1 min-w-0">
             <div className="flex h-auto min-h-0 items-center gap-2">
-              <h1 className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-medium leading-[normal] text-[var(--v2-text-primary,#484848)] truncate">
+              <h1 className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-lg font-medium leading-[1.3] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)] truncate">
                 {title}
               </h1>
               {badge && <span className="flex-shrink-0">{badge}</span>}
@@ -292,7 +292,7 @@ const PageHeader = React.forwardRef(
               )}
             </div>
             {description && (
-              <p className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[normal] text-[var(--v2-text-muted,#707070)] font-normal mt-0.5 line-clamp-2">
+              <p className="m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)] font-normal mt-2 line-clamp-2">
                 {description}
               </p>
             )}

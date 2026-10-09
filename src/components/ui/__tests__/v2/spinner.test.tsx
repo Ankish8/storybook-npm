@@ -14,10 +14,11 @@ describe("Spinner", () => {
     expect(svg).toBeInTheDocument();
   });
 
-  it("renders two circle elements (track + arc)", () => {
+  it("keeps v1's two circles, with the track invisible (Arc's loader has no track)", () => {
     const { container } = render(<Spinner />);
     const circles = container.querySelectorAll("circle");
     expect(circles).toHaveLength(2);
+    expect(circles[0]).toHaveAttribute("opacity", "0");
   });
 
   it("applies default variant classes to SVG", () => {
@@ -111,22 +112,35 @@ describe("Spinner", () => {
   });
 
   describe("SVG structure", () => {
-    it("track circle has 0.25 opacity", () => {
+    it("draws a three-quarter ring that is open on the right", () => {
       const { container } = render(<Spinner />);
-      const circles = container.querySelectorAll("circle");
-      expect(circles[0]).toHaveAttribute("opacity", "0.25");
+      const ring = container.querySelectorAll("circle")[1] as SVGCircleElement;
+      const [dash, gap] = (ring.getAttribute("stroke-dasharray") ?? "")
+        .split(" ")
+        .map(Number);
+      expect(dash / gap).toBeCloseTo(0.75, 5);
+      expect(ring).toHaveAttribute("transform", "rotate(45 12 12)");
     });
 
-    it("active arc has strokeDasharray", () => {
-      const { container } = render(<Spinner />);
-      const circles = container.querySelectorAll("circle");
-      expect(circles[1]).toHaveAttribute("stroke-dasharray");
+    it("keeps butt caps and the same ring thickness at every size", () => {
+      for (const size of ["sm", "default", "lg", "xl"] as const) {
+        const { container, unmount } = render(<Spinner size={size} />);
+        const ring = container.querySelectorAll(
+          "circle"
+        )[1] as SVGCircleElement;
+        expect(ring).not.toHaveAttribute("stroke-linecap");
+        expect(ring).toHaveAttribute("stroke-width", "2.25");
+        unmount();
+      }
     });
 
-    it("active arc has strokeLinecap round", () => {
+    it("turns once every 700ms, slower under reduced motion", () => {
       const { container } = render(<Spinner />);
-      const circles = container.querySelectorAll("circle");
-      expect(circles[1]).toHaveAttribute("stroke-linecap", "round");
+      const svg = container.querySelector("svg");
+      expect(svg).toHaveClass(
+        "[animation-duration:700ms]",
+        "motion-reduce:[animation-duration:2s]"
+      );
     });
   });
 

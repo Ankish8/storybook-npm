@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Radio, RadioGroup } from "../../v2/radio";
+import { Radio, RadioGroup } from "../../v2/checkbox";
 describe("Radio", () => {
   it("connects the label and description to a native input", () => {
     render(<Radio label="Daily" description="Send every day" value="daily" />);
@@ -80,7 +80,7 @@ describe("Radio controls and selectable cards", () => {
     expect(html).not.toContain("aria-labelledby");
   });
 
-  it("adds an invisible 4px hit ring (16px -> 24px) and a 0.96 press scale", () => {
+  it("adds an invisible 5px hit ring (17px -> 27px) and a 0.88 press scale (100ms down, 580ms back)", () => {
     render(<Radio value="a" aria-label="A" />);
     const radio = screen.getByRole("radio");
     expect(radio).toHaveClass(
@@ -89,21 +89,33 @@ describe("Radio controls and selectable cards", () => {
       "before:-inset-[5px]"
     );
     expect(radio).toHaveClass(
-      "enabled:active:scale-[0.96]",
+      "enabled:active:scale-[0.88]",
       "motion-reduce:enabled:active:scale-100"
+    );
+    expect(radio.className).toContain(
+      "[transition-duration:160ms,160ms,160ms,580ms]"
+    );
+    expect(radio.className).toContain(
+      "enabled:active:[transition-duration:160ms,160ms,160ms,100ms]"
     );
   });
 
-  it("sizes the dot with background-size: 0, 6px selected, 8px pressed", () => {
+  it("fills the 17px mark and grows a 7px dot from 40% on the snappy spring, with a faint dot while pressed", () => {
     render(<Radio value="a" aria-label="A" />);
     const radio = screen.getByRole("radio");
     expect(radio).toHaveClass(
-      "bg-[length:0px_0px]",
-      "checked:bg-[length:6px_6px]",
-      "checked:enabled:active:bg-[length:8px_8px]"
+      "size-[17px]",
+      "after:size-[7px]",
+      "after:scale-[0.4]",
+      "after:opacity-0",
+      "checked:bg-semantic-primary",
+      "checked:after:opacity-100",
+      "checked:after:scale-100",
+      "[&:not(:checked):enabled:active]:after:opacity-[0.22]"
     );
+    expect(radio.className).toContain("[--arc-snappy:linear(");
     expect(radio.className).toContain(
-      "enabled:active:[transition-duration:240ms,100ms,240ms,240ms,80ms]"
+      "checked:after:[transition:opacity_160ms_"
     );
   });
 
@@ -138,7 +150,8 @@ describe("Radio controls and selectable cards", () => {
     expect(starter).toHaveAccessibleDescription("Up to 3 agents");
     const card = starter.closest("label")!;
     expect(card).toHaveClass(
-      "p-4",
+      "p-3",
+      "items-center",
       "rounded-lg",
       "border",
       "border-semantic-border-layout"
@@ -159,11 +172,42 @@ describe("Radio controls and selectable cards", () => {
       "has-[:checked]:border-semantic-primary",
       "has-[:checked]:bg-semantic-primary-surface",
       "has-[:disabled]:bg-semantic-bg-ui",
-      "[transition-duration:150ms]"
+      "[transition-duration:160ms]"
     );
     expect(card.className).toContain("[@media(hover:hover)]:hover:");
-    expect(card.className).toContain("border-[var(--color-primary-100)]");
+    expect(card.className).toContain("bg-semantic-bg-ui");
     expect(card.className).not.toMatch(/\/\d+/);
+  });
+
+  it("draws the selected card with one highlight layer owned by the group", () => {
+    const { container } = render(
+      <RadioGroup aria-label="Plan" defaultValue="a">
+        <Radio variant="card" value="a" label="A" />
+        <Radio variant="card" value="b" label="B" />
+      </RadioGroup>
+    );
+    const group = screen.getByRole("radiogroup");
+    const highlight = group.querySelector('span[aria-hidden="true"]')!;
+    expect(highlight).toHaveClass("absolute", "border-semantic-primary");
+    expect(highlight).toHaveStyle({ opacity: "1" });
+    // the selected card hands its selected style to the highlight
+    const cardA = screen.getByRole("radio", { name: "A" }).closest("label")!;
+    expect(cardA.className).not.toContain(
+      "has-[:checked]:border-semantic-primary"
+    );
+    expect(container.querySelectorAll("[data-radio-card]")).toHaveLength(2);
+  });
+
+  it("does not draw a highlight for plain circle radios", () => {
+    render(
+      <RadioGroup aria-label="Plan" defaultValue="a">
+        <Radio value="a" label="A" />
+      </RadioGroup>
+    );
+    const highlight = screen
+      .getByRole("radiogroup")
+      .querySelector('span[aria-hidden="true"]')!;
+    expect(highlight).toHaveStyle({ opacity: "0" });
   });
 
   it("disables a card through its radio", () => {

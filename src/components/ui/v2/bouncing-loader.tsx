@@ -4,14 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const DOT_KEYS = [0, 1, 2] as const;
-const DOT_DELAYS_SEC = [0, 0.2, 0.4] as const;
+const DOT_DELAYS_SEC = [0, 0.16, 0.32] as const;
 const ANIMATION_NAME = "bouncing-typing-wave";
+// Arc's typing indicator: three 6px dots breathe in turn, each rising 3px as it brightens from .35 to full opacity.
+// Reduced motion shows them still at .6.
 const KEYFRAMES_CSS = `
 @keyframes ${ANIMATION_NAME} {
-  0%, 60%, 100% { transform: translate3d(0, 0, 0); }
-  30% { transform: translate3d(0, -6px, 0); }
+  0%, 60%, 100% { opacity: 0.35; transform: translate3d(0, 0, 0); }
+  30% { opacity: 1; transform: translate3d(0, -3px, 0); }
 }
-@media (prefers-reduced-motion: reduce) { [data-v2-bounce-dot] { animation: none !important; } }`;
+@media (prefers-reduced-motion: reduce) { [data-v2-bounce-dot] { animation: none !important; opacity: 0.6; } }`;
 
 function toCssLength(value: number | string, unit: string): string {
   if (typeof value === "string") {
@@ -23,7 +25,7 @@ function toCssLength(value: number | string, unit: string): string {
 // `bouncing-loader` and `bouncing-loader__dot` are v1 hook classes: consumer stylesheets and tests may target
 // them, so a drop-in replacement keeps them even though they carry no styling of their own.
 const bouncingLoaderVariants = cva(
-  "bouncing-loader inline-flex shrink-0 min-w-0 items-center justify-center leading-[0] align-middle gap-[var(--bouncing-loader-spacing,0.375rem)]"
+  "bouncing-loader inline-flex shrink-0 min-w-0 items-center justify-center leading-[0] align-middle gap-[var(--bouncing-loader-spacing,4px)]"
 );
 
 export interface BouncingLoaderProps
@@ -75,9 +77,9 @@ const BouncingLoader = React.forwardRef<HTMLSpanElement, BouncingLoaderProps>(
           <span
             key={i}
             data-v2-bounce-dot=""
-            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))]"
+            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,6px)] w-[var(--bouncing-loader-size,6px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))]"
             style={{
-              animation: `${ANIMATION_NAME} 1.4s cubic-bezier(0.4, 0, 0.2, 1) ${DOT_DELAYS_SEC[i]}s infinite`,
+              animation: `${ANIMATION_NAME} 1.2s cubic-bezier(0.65, 0, 0.35, 1) ${DOT_DELAYS_SEC[i]}s infinite`,
             }}
             aria-hidden
           />

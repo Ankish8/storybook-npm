@@ -1,3 +1,4 @@
+import * as React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -33,7 +34,7 @@ describe("Checkbox v2", () => {
   });
 
   it.each([
-    ["default", "h-5", "w-5"],
+    ["default", "h-[18px]", "w-[18px]"],
     ["sm", "h-4", "w-4"],
     ["lg", "h-6", "w-6"],
   ] as const)("renders %s size", (size, heightClass, widthClass) => {
@@ -135,9 +136,13 @@ describe("Checkbox v2", () => {
     expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
-  it("renders no icon when unchecked", () => {
+  it("renders no visible icon when unchecked (the mark stays mounted, undrawn, so a change can reverse)", () => {
     const { container } = render(<Checkbox />);
-    expect(container.querySelector("svg")).not.toBeInTheDocument();
+    const svg = container.querySelector("svg")!;
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    for (const path of svg.querySelectorAll("path")) {
+      expect(path).toHaveClass("opacity-[0]", "[stroke-dashoffset:1]");
+    }
   });
 
   describe("id prop", () => {
@@ -258,61 +263,151 @@ describe("Checkbox v2", () => {
 });
 
 describe("Checkbox v2 tactile feedback and description", () => {
-  it("draws the check with a stroke-dashoffset transition that starts from a mount-time @starting-style", () => {
+  it("draws the check with a stroke-dashoffset transition on the snappy spring, in a force-mounted indicator", () => {
     render(<Checkbox checked aria-label="Select" />);
     const box = screen.getByRole("checkbox");
     const tick = box.querySelector("svg")!;
-    const tickClass = tick.getAttribute("class")!;
-    expect(tickClass).toContain("[&>path]:[stroke-dasharray:24_30]");
-    expect(tickClass).toContain(
-      "[@starting-style]:[&>path]:[stroke-dashoffset:26]"
+    expect(tick).toHaveAttribute("viewBox", "0 0 18 18");
+    const check = tick.querySelector('path[d="M4.25 9.25 L7.25 12.25 L13.75 5.75"]')!;
+    const checkClass = check.getAttribute("class")!;
+    expect(checkClass).toContain("[stroke-dasharray:1]");
+    expect(checkClass).toContain("[stroke-dashoffset:1]");
+    expect(checkClass).toContain(
+      "[transition:stroke-dashoffset_350ms_var(--arc-snappy),opacity_160ms_cubic-bezier(0.22,1,0.36,1)]"
     );
-    expect(tickClass).toContain(
-      "[&>path]:[transition:stroke-dashoffset_150ms_linear_15ms]"
-    );
-    expect(tickClass).toContain("motion-reduce:[&>path]:[transition:none]");
+    expect(checkClass).toContain("[[data-state=checked]_&]:[stroke-dashoffset:0]");
+    expect(checkClass).toContain("motion-reduce:[transition:opacity_120ms_ease-out]");
     expect(box).toHaveAttribute("data-state", "checked");
   });
 
-  it("draws the minus with its own dash length", () => {
-    render(<Checkbox checked="indeterminate" aria-label="Select all" />);
-    const tickClass = screen
-      .getByRole("checkbox")
-      .querySelector("svg")!
-      .getAttribute("class")!;
-    expect(tickClass).toContain("[&>path]:[stroke-dasharray:15_20]");
-    expect(tickClass).toContain(
-      "[@starting-style]:[&>path]:[stroke-dashoffset:17]"
-    );
-  });
-
-  it("pops the box in from 70% when it becomes selected, only with motion allowed", () => {
+  it("keeps the mark mounted when unchecked so a change can reverse", () => {
     render(<Checkbox aria-label="Select" />);
-    expect(screen.getByRole("checkbox")).toHaveClass(
-      "data-[state=checked]:motion-safe:animate-in",
-      "data-[state=checked]:motion-safe:zoom-in-[0.7]",
-      "data-[state=indeterminate]:motion-safe:zoom-in-[0.7]",
-      "data-[state=checked]:motion-safe:[animation-duration:200ms]"
+    const box = screen.getByRole("checkbox");
+    expect(box).toHaveAttribute("data-state", "unchecked");
+    expect(box.querySelectorAll("svg path")).toHaveLength(2);
+  });
+
+  it("draws the minus with the same normalized path length", () => {
+    render(<Checkbox checked="indeterminate" aria-label="Select all" />);
+    const dash = screen
+      .getByRole("checkbox")
+      .querySelector('path[d="M4.75 9 L9 9 L13.25 9"]')!;
+    expect(dash).toHaveAttribute("pathLength", "1");
+    const dashClass = dash.getAttribute("class")!;
+    expect(dashClass).toContain("[stroke-dasharray:1]");
+    expect(dashClass).toContain(
+      "[[data-state=indeterminate]_&]:[stroke-dashoffset:0]"
     );
   });
 
-  it("adds an invisible 4px hit ring (box 20px -> 28px target) and a 0.96 press scale", () => {
+  it("keeps the shell stationary on selection and supports an uncontrolled mixed mark", () => {
+    render(<Checkbox defaultChecked="indeterminate" aria-label="Select" />);
+    const box = screen.getByRole("checkbox");
+    expect(box).toHaveAttribute("data-state", "indeterminate");
+    expect(box).toHaveAttribute("aria-checked", "mixed");
+    expect(box.className).not.toContain(
+      "data-[state=checked]:motion-safe:zoom"
+    );
+  });
+
+  it("fills on a layer that grows from 60% (snappy spring) instead of recolouring the shell", () => {
+    render(<Checkbox aria-label="Select" />);
+    const box = screen.getByRole("checkbox");
+    expect(box).toHaveClass(
+      "after:absolute",
+      "after:opacity-0",
+      "after:scale-[0.6]",
+      "data-[state=checked]:after:opacity-100",
+      "data-[state=checked]:after:scale-100"
+    );
+    expect(box.className).toContain("[--arc-snappy:linear(");
+    expect(box.className).toContain(
+      "data-[state=checked]:after:[transition:opacity_120ms_"
+    );
+  });
+
+  it("grows the hit ring to a 44px target on coarse pointers, per size", () => {
+    const { rerender } = render(<Checkbox aria-label="Select" />);
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "[@media(pointer:coarse)]:before:-inset-[14px]"
+    );
+    rerender(<Checkbox aria-label="Select" size="sm" />);
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "[@media(pointer:coarse)]:before:-inset-[15px]"
+    );
+    rerender(<Checkbox aria-label="Select" size="lg" />);
+    expect(screen.getByRole("checkbox")).toHaveClass(
+      "[@media(pointer:coarse)]:before:-inset-[11px]"
+    );
+  });
+
+  describe("accessible name fallback", () => {
+    it("names an unlabelled checkbox 'Checkbox'", () => {
+      render(<Checkbox />);
+      expect(
+        screen.getByRole("checkbox", { name: "Checkbox" })
+      ).toBeInTheDocument();
+    });
+
+    it("leaves a checkbox named by its own label, aria-label or aria-labelledby alone", () => {
+      const { rerender } = render(<Checkbox label="Accept terms" />);
+      expect(screen.getByRole("checkbox")).toHaveAccessibleName("Accept terms");
+      rerender(<Checkbox aria-label="Select row" />);
+      expect(screen.getByRole("checkbox")).toHaveAccessibleName("Select row");
+      rerender(
+        <>
+          <span id="n">Named elsewhere</span>
+          <Checkbox aria-labelledby="n" />
+        </>
+      );
+      expect(screen.getByRole("checkbox")).toHaveAccessibleName(
+        "Named elsewhere"
+      );
+    });
+
+    it("does not override an outside <label htmlFor> or a wrapping <label>", () => {
+      const { rerender } = render(
+        <>
+          <label htmlFor="c1">Outside label</label>
+          <Checkbox id="c1" />
+        </>
+      );
+      expect(screen.getByRole("checkbox")).toHaveAccessibleName(
+        "Outside label"
+      );
+      rerender(
+        <label>
+          Wrapping label
+          <Checkbox />
+        </label>
+      );
+      expect(screen.getByRole("checkbox")).toHaveAccessibleName(
+        "Wrapping label"
+      );
+    });
+
+    it("still forwards the ref", () => {
+      const ref = React.createRef<HTMLButtonElement>();
+      render(<Checkbox ref={ref} aria-label="x" />);
+      expect(ref.current).toBe(screen.getByRole("checkbox"));
+    });
+  });
+
+  it("adds an invisible 6px hit ring (box 18px -> 28px target) and a 0.95 press scale (120ms down, 580ms back)", () => {
     render(<Checkbox aria-label="Select" />);
     const box = screen.getByRole("checkbox");
     expect(box).toHaveClass(
       "relative",
       "before:absolute",
-      "before:-inset-[5px]"
+      "before:-inset-[6px]"
     );
     expect(box).toHaveClass(
-      "enabled:active:scale-[0.96]",
+      "enabled:active:scale-[0.95]",
       "motion-reduce:enabled:active:scale-100"
     );
+    expect(box.className).toContain("[transition-duration:160ms,160ms,580ms]");
     expect(box.className).toContain(
-      "[transition-duration:150ms,150ms,150ms,200ms]"
-    );
-    expect(box.className).toContain(
-      "enabled:active:[transition-duration:150ms,150ms,150ms,80ms]"
+      "enabled:active:[transition-duration:160ms,160ms,120ms]"
     );
   });
 
@@ -333,7 +428,7 @@ describe("Checkbox v2 tactile feedback and description", () => {
     expect(box).toHaveAccessibleDescription("Twice a month at most");
     const description = screen.getByText("Twice a month at most");
     expect(description.id).toBe(box.id + "-description");
-    expect(description).toHaveClass("text-xs", "leading-4", "mt-1");
+    expect(description).toHaveClass("text-xs", "leading-[1.4]", "mt-0.5");
   });
 
   it("merges the description id into an existing aria-describedby", () => {

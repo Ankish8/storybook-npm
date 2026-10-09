@@ -167,9 +167,9 @@ describe("Textarea", () => {
 
   // 9. All size variants render correct classes
   it.each([
-    ["default", "px-4", "py-2.5", "text-sm"],
+    ["default", "px-3", "py-3", "text-sm"],
     ["sm", "px-3", "py-2", "text-xs"],
-    ["lg", "px-4", "py-2.5", "text-base"],
+    ["lg", "px-3", "py-3", "text-base"],
   ] as const)(
     "renders %s size variant with correct classes",
     (size, pxClass, pyClass, textClass) => {
@@ -366,13 +366,25 @@ describe("Textarea message reveal", () => {
     );
   });
 
-  it("reveals an error that appears after the field", () => {
-    const { rerender } = render(<Textarea />);
+  it("keeps a measured feedback frame across appearance, replacement and removal", () => {
+    const { container, rerender } = render(<Textarea />);
+    const frame = container.querySelector("[data-field-feedback]");
     rerender(<Textarea error="Required" />);
-    const row = screen.getByText("Required").parentElement!;
-    expect(row).toHaveClass("grid-rows-[1fr]");
-    expect(row.className).toContain("[@starting-style]:grid-rows-[0fr]");
-    expect(row.className).toContain("[transition-duration:240ms]");
+    expect(screen.getByText("Required").closest("[data-field-feedback]")).toBe(
+      frame
+    );
+    rerender(<Textarea error="Please check this value" />);
+    expect(screen.queryByText("Required")).not.toBeInTheDocument();
+    expect(
+      screen
+        .getByText("Please check this value")
+        .closest("[data-field-feedback]")
+    ).toBe(frame);
+    rerender(<Textarea />);
+    expect(container.querySelector("[data-field-feedback]")).toBe(frame);
+    expect(
+      screen.queryByText("Please check this value")
+    ).not.toBeInTheDocument();
   });
 
   it("keeps the counter on the right of the message row", () => {
@@ -380,5 +392,19 @@ describe("Textarea message reveal", () => {
     const row = screen.getByText("Hint").parentElement!;
     expect(row).toHaveClass("grid-cols-[minmax(0,1fr)_auto]");
     expect(screen.getByText("0/50")).toBeInTheDocument();
+  });
+
+  it("follows Arc: 110px minimum, 12px inset, 14px/1.4, border-only focus and a 8px label gap", () => {
+    render(<Textarea label="Notes" data-testid="textarea" />);
+    const textarea = screen.getByTestId("textarea");
+    expect(textarea).toHaveClass(
+      "min-h-[110px]",
+      "leading-[1.4]",
+      "[transition-duration:160ms]",
+      "disabled:opacity-60"
+    );
+    expect(textarea).toHaveClass("enabled:hover:border-semantic-primary");
+    expect(textarea.className).not.toContain("rgba(240,68,56");
+    expect(screen.getByText("Notes")).toHaveClass("mb-2", "leading-[1.4]");
   });
 });

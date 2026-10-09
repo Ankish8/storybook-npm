@@ -6,24 +6,35 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
+ * Arc's chevron turns on a 580ms spring that settles with a hint of life. The
+ * sampled curve is Arc's own `--ease-spring`; the shared v2 spring is critically
+ * damped and a touch quicker, so this one is spelled out. Wrapped in `cn(...)`
+ * so the CLI prefixer transforms the literal.
+ */
+const chevronSpringClassName = cn(
+  "[stroke-width:1.75] [transition-property:transform,color] [transition-duration:580ms] [transition-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] motion-reduce:transition-none"
+);
+
+/**
  * SelectTrigger variants matching TextField styling. Radix exposes the
  * placeholder state on this trigger and discards classes on SelectValue.
  * A local color variable keeps caller text-color classes able to override
  * both empty and selected values.
  */
 const selectTriggerVariants = cva(
-  "flex h-10 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-4 py-2 text-left text-base font-normal text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-11 w-full items-center justify-between gap-3 rounded-lg bg-semantic-bg-primary px-3 py-2 text-left text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:opacity-50 disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
         default:
           // Radix moves focus into the open list, so `focus:` alone would drop the
-          // teal border the moment the panel opens. `aria-expanded` keeps it, and
+          // primary border the moment the panel opens. `aria-expanded` keeps it, and
           // the extra `hover` selector outranks the grey hover border (specificity
           // 0,4,0 vs 0,3,0) so the trigger does not flicker back under the cursor.
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] aria-expanded:border-[var(--color-secondary-600,#27ABB8)] aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)] enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]",
+          // Arc also tints the field on hover, press and while open (its muted surface).
+          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus:shadow-none aria-expanded:border-semantic-primary aria-expanded:bg-semantic-bg-ui aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none ",
       },
     },
     defaultVariants: {
@@ -45,6 +56,107 @@ const SelectItemLayoutContext = React.createContext<{
   truncateOptionText: boolean;
 }>({ truncateOptionText: false });
 
+/**
+ * Arc rolls the shown value in the direction of the list: a later option rises
+ * from below, an earlier one drops from above, both through a soft blur, while
+ * the previous copy leaves the other way. Radix fills the value node through a
+ * portal, so the change is read off the DOM; the leaving copy is a short-lived
+ * ghost. Direction comes from the open list when it is mounted and defaults to
+ * "rising" otherwise. Reduced motion keeps a short crossfade.
+ */
+const VALUE_ROLL_EASE_IN = "cubic-bezier(0.16, 1, 0.3, 1)";
+const VALUE_ROLL_EASE_OUT = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+function visibleText(node: HTMLElement) {
+  let text = "";
+  node.childNodes.forEach((child) => {
+    if (child instanceof HTMLElement && child.dataset.valueRollGhost != null)
+      return;
+    text += child.textContent ?? "";
+  });
+  return text;
+}
+
+function useValueRoll(ref: React.RefObject<HTMLSpanElement | null>) {
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof MutationObserver === "undefined") return;
+    let previous = visibleText(node);
+
+    const observer = new MutationObserver(() => {
+      const next = visibleText(node);
+      if (next === previous) return;
+      const before = previous;
+      previous = next;
+      // The first fill (Radix portals the selected text in after mount) is not a change.
+      if (!before || !next || typeof node.animate !== "function") return;
+
+      const reduce =
+        typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduce) {
+        node.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: 120,
+          easing: VALUE_ROLL_EASE_OUT,
+        });
+        return;
+      }
+
+      const listId = node.closest("button")?.getAttribute("aria-controls");
+      const rows = listId
+        ? Array.from(
+            document
+              .getElementById(listId)
+              ?.querySelectorAll('[role="option"]') ?? []
+          ).map((row) => row.textContent)
+        : [];
+      const from = rows.indexOf(before);
+      const to = rows.indexOf(next);
+      const direction = to < from ? -1 : 1;
+
+      node.animate(
+        [
+          {
+            opacity: 0,
+            transform: `translateY(${direction * 0.35}em)`,
+            filter: "blur(4px)",
+          },
+          { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+        ],
+        { duration: 240, easing: VALUE_ROLL_EASE_IN }
+      );
+
+      const ghost = document.createElement("span");
+      ghost.dataset.valueRollGhost = "";
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.textContent = before;
+      ghost.style.cssText =
+        "position:absolute;inset:0;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis";
+      node.appendChild(ghost);
+      const leaving = ghost.animate(
+        [
+          { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+          {
+            opacity: 0,
+            transform: `translateY(${direction * -0.3}em)`,
+            filter: "blur(2px)",
+          },
+        ],
+        { duration: 160, easing: VALUE_ROLL_EASE_OUT, fill: "forwards" }
+      );
+      leaving.onfinish = () => ghost.remove();
+      leaving.oncancel = () => ghost.remove();
+    });
+
+    observer.observe(node, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+    return () => observer.disconnect();
+  }, [ref]);
+}
+
 const SelectValue = React.forwardRef(
   (
     {
@@ -52,16 +164,31 @@ const SelectValue = React.forwardRef(
       ...props
     }: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Value>,
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Value>>
-  ) => (
-    <SelectPrimitive.Value
-      ref={ref}
-      className={cn(
-        "[&[data-placeholder]]:text-[var(--v2-text-placeholder,#707070)]",
-        className
-      )}
-      {...props}
-    />
-  )
+  ) => {
+    const innerRef = React.useRef<HTMLSpanElement | null>(null);
+    const setRef = React.useCallback(
+      (node: HTMLSpanElement | null) => {
+        innerRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref)
+          (ref as React.MutableRefObject<HTMLSpanElement | null>).current =
+            node;
+      },
+      [ref]
+    );
+    useValueRoll(innerRef);
+
+    return (
+      <SelectPrimitive.Value
+        ref={setRef}
+        className={cn(
+          "relative [&[data-placeholder]]:text-[var(--v2-text-placeholder,#707070)]",
+          className
+        )}
+        {...props}
+      />
+    );
+  }
 );
 SelectValue.displayName = SelectPrimitive.Value.displayName;
 
@@ -86,7 +213,12 @@ const SelectTrigger = React.forwardRef(
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDown className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-70 transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none group-data-[state=open]/v2-select:rotate-180" />
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 text-[var(--v2-text-muted,#707070)] opacity-70 group-data-[state=open]/v2-select:rotate-180",
+            chevronSpringClassName
+          )}
+        />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
@@ -104,12 +236,12 @@ const SelectScrollUpButton = React.forwardRef(
     <SelectPrimitive.ScrollUpButton
       ref={ref}
       className={cn(
-        "flex cursor-default items-center justify-center py-1",
+        "flex h-7 cursor-default items-center justify-center",
         className
       )}
       {...props}
     >
-      <ChevronUp className="size-4 text-[var(--v2-text-muted,#707070)]" />
+      <ChevronUp className="size-4 text-[var(--v2-text-muted,#707070)] [stroke-width:1.75]" />
     </SelectPrimitive.ScrollUpButton>
   )
 );
@@ -126,12 +258,12 @@ const SelectScrollDownButton = React.forwardRef(
     <SelectPrimitive.ScrollDownButton
       ref={ref}
       className={cn(
-        "flex cursor-default items-center justify-center py-1",
+        "flex h-7 cursor-default items-center justify-center",
         className
       )}
       {...props}
     >
-      <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)]" />
+      <ChevronDown className="size-4 text-[var(--v2-text-muted,#707070)] [stroke-width:1.75]" />
     </SelectPrimitive.ScrollDownButton>
   )
 );
@@ -216,6 +348,8 @@ const SelectContent = React.forwardRef(
       className,
       children,
       position = "popper",
+      sideOffset = 4,
+      collisionPadding = 12,
       onViewportScrollEnd,
       hideScrollButtons,
       truncateOptionText = false,
@@ -281,18 +415,21 @@ const SelectContent = React.forwardRef(
         <SelectPrimitive.Content
           ref={ref}
           className={cn(
-            "relative z-[9999] max-h-96 w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-md",
-            "origin-[var(--radix-select-content-transform-origin)] data-[state=open]:motion-safe:[animation-duration:200ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] data-[state=closed]:[animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]",
+            "relative z-[9999] max-h-[min(320px,var(--radix-select-content-available-height))] w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout p-1.5 shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]",
+            // Arc: 240ms enter on its ease-enter curve (rises 6px, scales from .97), 120ms exit on its standard curve (half the travel, .98).
+            "origin-[var(--radix-select-content-transform-origin)] data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_120ms_ease-in]",
             "data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out",
             "data-[state=closed]:motion-safe:fade-out-0 data-[state=open]:motion-safe:fade-in-0",
-            "data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=open]:motion-safe:zoom-in-[0.98]",
-            "data-[side=bottom]:motion-safe:slide-in-from-top-1 data-[side=left]:motion-safe:slide-in-from-right-1",
-            "data-[side=right]:motion-safe:slide-in-from-left-1 data-[side=top]:motion-safe:slide-in-from-bottom-1",
-            position === "popper" &&
-              "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+            "data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=open]:motion-safe:zoom-in-[0.97]",
+            "data-[side=bottom]:motion-safe:slide-in-from-top-[6px] data-[side=left]:motion-safe:slide-in-from-right-[6px]",
+            "data-[side=right]:motion-safe:slide-in-from-left-[6px] data-[side=top]:motion-safe:slide-in-from-bottom-[6px]",
+            "data-[side=bottom]:motion-safe:slide-out-to-top-[3px] data-[side=left]:motion-safe:slide-out-to-right-[3px]",
+            "data-[side=right]:motion-safe:slide-out-to-left-[3px] data-[side=top]:motion-safe:slide-out-to-bottom-[3px]",
             className
           )}
           position={position}
+          sideOffset={sideOffset}
+          collisionPadding={collisionPadding}
           {...props}
         >
           {!hideScrollButtons && <SelectScrollUpButton />}
@@ -300,7 +437,7 @@ const SelectContent = React.forwardRef(
             ref={setViewport}
             data-select-viewport=""
             className={cn(
-              "p-1",
+              "py-0.5",
               position === "popper" &&
                 "h-[var(--radix-select-trigger-height)] w-full"
             )}
@@ -362,16 +499,20 @@ const SelectItem = React.forwardRef(
           // 4px radius = panel 8px minus its 4px padding, so row and panel corners stay concentric.
           // No keyboard-only ring here on purpose: Radix focuses the highlighted row on pointer move too,
           // so the focus-visible pseudo-class is also true for a mouse hover (verified in Chrome) and cannot tell them apart.
-          "relative flex w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-4 pr-8 text-base text-[var(--v2-text-secondary,#5E5E5E)] outline-none",
-          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:font-medium data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
+          "relative flex min-h-9 w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-[11px] pr-[34px] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+          // Selection is told by the check and colour only; Arc never changes the weight, so labels do not reflow.
+          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}
         {...props}
       >
-        <span className="absolute right-2 flex size-4 items-center justify-center">
-          <SelectPrimitive.ItemIndicator>
-            <Check className="size-4 text-semantic-brand motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
+        <span className="absolute right-2.5 top-2.5 flex size-4 items-center justify-center">
+          <SelectPrimitive.ItemIndicator
+            // Arc: the check pops in after 40ms, from .6 scale through a 2px blur, 240ms on its enter curve.
+            className="flex transition-[opacity,transform,filter] [transition-delay:40ms] [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[transition-duration:120ms] motion-reduce:[transition-delay:0ms] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
+          >
+            <Check className="size-4 text-semantic-primary [stroke-width:1.75]" />
           </SelectPrimitive.ItemIndicator>
         </span>
         <span
@@ -379,7 +520,7 @@ const SelectItem = React.forwardRef(
             truncate && typeof children === "string" ? children : undefined
           }
           className={cn(
-            "min-w-0 flex-1 leading-normal",
+            "min-w-0 flex-1 leading-[inherit]",
             truncate ? "truncate" : "whitespace-normal break-words"
           )}
         >

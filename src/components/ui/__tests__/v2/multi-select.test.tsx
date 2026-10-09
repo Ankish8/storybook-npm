@@ -8,7 +8,7 @@ import {
   flattenMultiSelectOptions,
   type MultiSelectOption,
 } from "../../v2/multi-select";
-import { Dialog, DialogContent, DialogTitle } from "../../v2/dialog";
+import { ModalRoot, ModalContent, ModalTitle } from "../../v2/modal";
 
 // jsdom has no layout, so floating-ui never flips. Let a test force the placement
 // the hook reports; everything else passes straight through to the real hook.
@@ -659,21 +659,21 @@ describe("MultiSelect", () => {
     expect(screen.getByTitle(longLabel)).toHaveClass("truncate");
   });
 
-  // Inside a Radix Dialog the focus trap must not steal focus from the
+  // Inside a Radix ModalRoot the focus trap must not steal focus from the
   // body-portaled search input (regression: typing did nothing).
   it("keeps the search input typable inside a Dialog", async () => {
     const user = userEvent.setup();
     render(
-      <Dialog open>
-        <DialogContent>
-          <DialogTitle>Assign</DialogTitle>
+      <ModalRoot open>
+        <ModalContent>
+          <ModalTitle>Assign</ModalTitle>
           <MultiSelect
             options={defaultOptions}
             searchable
             placeholder="Select"
           />
-        </DialogContent>
-      </Dialog>
+        </ModalContent>
+      </ModalRoot>
     );
 
     await user.click(screen.getByRole("combobox"));
@@ -691,19 +691,19 @@ describe("MultiSelect", () => {
   // which fires on the element inside the dialog and so never passes through
   // the menu. jsdom leaves `relatedTarget` null on a plain focus() call, so the
   // browser's event is reconstructed here.
-  it("survives the Dialog focus trap's focusout handler", async () => {
+  it("survives the ModalRoot focus trap's focusout handler", async () => {
     const user = userEvent.setup();
     render(
-      <Dialog open>
-        <DialogContent>
-          <DialogTitle>Assign</DialogTitle>
+      <ModalRoot open>
+        <ModalContent>
+          <ModalTitle>Assign</ModalTitle>
           <MultiSelect
             options={defaultOptions}
             searchable
             placeholder="Select"
           />
-        </DialogContent>
-      </Dialog>
+        </ModalContent>
+      </ModalRoot>
     );
 
     const trigger = screen.getByRole("combobox");
@@ -1007,13 +1007,11 @@ describe("MultiSelect v2 refresh", () => {
 
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger.className).toContain(
-      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+      "aria-expanded:border-semantic-primary"
     );
+    expect(trigger.className).toContain("aria-expanded:shadow-none");
     expect(trigger.className).toContain(
-      "aria-expanded:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]"
-    );
-    expect(trigger.className).toContain(
-      "enabled:aria-expanded:hover:border-[var(--color-secondary-600,#27ABB8)]"
+      "enabled:aria-expanded:hover:border-semantic-primary"
     );
 
     await user.click(trigger);
@@ -1036,17 +1034,22 @@ describe("MultiSelect v2 refresh", () => {
     expect(panel).toHaveAttribute("data-side", "bottom");
     expect(panel).toHaveAttribute("data-align", "start");
     expect(panel.style.transformOrigin).toBe("top left");
-    expect(panel).toHaveClass("data-[side=bottom]:slide-in-from-top-1");
+    expect(panel).toHaveClass("data-[side=bottom]:slide-in-from-top-[6px]");
     expect(panel).not.toHaveClass("origin-top-left");
     // fade/zoom must be motion-safe too: a bare `fade-in-0` is overridden by the
     // motion-safe `animate-in` reset (--tw-enter-* back to initial) and does nothing.
     expect(panel).toHaveClass(
       "motion-safe:animate-in",
       "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.98]"
+      "motion-safe:zoom-in-[0.97]",
+      "motion-safe:[animation-duration:260ms]"
     );
     expect(panel).not.toHaveClass("fade-in-0");
-    expect(panel).not.toHaveClass("zoom-in-[0.98]");
+    expect(panel).not.toHaveClass("zoom-in-[0.97]");
+    // Arc's floating shadow.
+    expect(panel).toHaveClass(
+      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+    );
   });
 
   it.each([
@@ -1066,7 +1069,7 @@ describe("MultiSelect v2 refresh", () => {
       expect(panel).toHaveAttribute("data-align", align);
       expect(panel.style.transformOrigin).toBe(origin);
       // The slide class for each side is present; the data attribute selects it.
-      expect(panel).toHaveClass("data-[side=top]:slide-in-from-bottom-1");
+      expect(panel).toHaveClass("data-[side=top]:slide-in-from-bottom-[6px]");
     }
   );
 
@@ -1085,19 +1088,21 @@ describe("MultiSelect v2 refresh", () => {
     expect(option).toHaveClass("hover:bg-semantic-bg-ui");
   });
 
-  it("pops the selected check in", async () => {
+  it("draws the selected check left to right, with a reduced-motion fade", async () => {
     const user = userEvent.setup();
     render(<MultiSelect options={defaultOptions} defaultValue={["option2"]} />);
     await user.click(screen.getByRole("combobox"));
     const check = screen
       .getByRole("option", { name: "Option 2" })
       .querySelector("svg");
-    expect(check).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-[0.85]",
-      "motion-safe:[animation-duration:180ms]"
+    const path = check?.querySelector("path");
+    expect(path).toHaveAttribute("d", "M4 12.5 9 17.5 20 6.5");
+    expect(path).toHaveClass(
+      "[stroke-dasharray:1]",
+      "[@starting-style]:[stroke-dashoffset:1]",
+      "motion-reduce:[@starting-style]:[stroke-dashoffset:0]"
     );
+    expect(path?.getAttribute("class")).toContain("stroke-dashoffset_240ms");
     expect(
       screen.getByRole("option", { name: "Option 1" }).querySelector("svg")
     ).toBeNull();
@@ -1127,14 +1132,17 @@ describe("MultiSelect v2 refresh", () => {
   it("gives Clear all a 24px neutral hover plate, not a red hover", () => {
     render(<MultiSelect options={defaultOptions} value={["option1"]} />);
     const clear = screen.getByRole("button", { name: "Clear all" });
+    // Arc: a 22px plate around a 14px icon that pops in from .6 and dips to .96 on press.
     expect(clear).toHaveClass(
-      "p-1",
-      "-m-0.5",
-      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+      "size-[22px]",
+      "[@media(hover:hover)]:hover:bg-semantic-bg-ui",
+      "active:scale-[0.96]",
+      "[@starting-style]:scale-[0.6]",
+      "[@starting-style]:blur-[2px]"
     );
     expect(clear.className).not.toContain("error");
     // The icon inherits the span colour so hover can darken it.
-    expect(clear.querySelector("svg")).toHaveClass("size-4");
+    expect(clear.querySelector("svg")).toHaveClass("size-3.5");
     expect(clear.querySelector("svg")?.getAttribute("class")).not.toContain(
       "text-["
     );
@@ -1175,11 +1183,12 @@ describe("MultiSelect v2 refresh", () => {
     render(<Controlled />);
     const first = screen.getByRole("button", { name: "Remove Option 1" })
       .parentElement as HTMLElement;
+    // Arc: a new chip grows in from .9 through a 4px blur (a transition from @starting-style).
     expect(first).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:fade-in-0",
-      "motion-safe:zoom-in-90",
-      "motion-safe:[animation-duration:150ms]"
+      "[@starting-style]:scale-90",
+      "[@starting-style]:blur-[4px]",
+      "[@starting-style]:opacity-0",
+      "motion-reduce:[@starting-style]:scale-100"
     );
 
     await user.click(screen.getByRole("button", { name: "add" }));
@@ -1190,5 +1199,47 @@ describe("MultiSelect v2 refresh", () => {
     expect(
       screen.getByRole("button", { name: "Remove Option 2" })
     ).toBeInTheDocument();
+  });
+
+  it("sizes the trigger, chips and rows like Arc's multi-select", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect options={defaultOptions} value={["option1"]} />);
+    const trigger = screen.getByRole("combobox");
+    // 44px minimum, 5px / 11px / 12px padding, 8px gap, muted tint on hover / press / open.
+    expect(trigger).toHaveClass(
+      "min-h-11",
+      "py-[5px]",
+      "pl-3",
+      "pr-[11px]",
+      "gap-2",
+      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
+      "aria-expanded:bg-semantic-bg-ui",
+      "disabled:opacity-50"
+    );
+    // The chip: 12px regular text, 4px / 8px padding, 1px inset border, 9rem cap; it whitens while the field is hot.
+    const chip = screen.getByRole("button", { name: "Remove Option 1" })
+      .parentElement as HTMLElement;
+    expect(chip).toHaveClass(
+      "text-xs",
+      "font-normal",
+      "px-2",
+      "py-1",
+      "max-w-[9rem]",
+      "ring-1",
+      "ring-inset",
+      "group-aria-expanded/ms:bg-semantic-bg-primary"
+    );
+    expect(chip.parentElement).toHaveClass("gap-x-[5px]", "min-h-[26px]");
+
+    await user.click(trigger);
+    const row = screen.getByRole("option", { name: "Option 1" });
+    // 38px rows, 11px padding, 80ms highlight, and no weight change when selected.
+    expect(row).toHaveClass(
+      "min-h-[38px]",
+      "px-[11px]",
+      "[transition-duration:80ms]",
+      "hover:bg-semantic-bg-ui"
+    );
+    expect(row.className).not.toContain("font-medium");
   });
 });

@@ -48,7 +48,7 @@ const meta: Meta<typeof OtpInput> = {
           tokens: [
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Focus", "--semantic-border-accent", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
           ],
           guidance:
@@ -186,7 +186,7 @@ export const States: Story = {
               state === "Hover"
                 ? "min-w-0 space-y-2 [&_input:enabled:not(:focus)]:border-[var(--color-primary-100)]"
                 : state === "Focus"
-                  ? "min-w-0 space-y-2 [&_input:first-child]:!border-semantic-border-accent [&_input:first-child]:!shadow-[0_0_4px_rgba(39,171,184,0.4)]"
+                  ? "min-w-0 space-y-2 [&_input:first-child]:!border-semantic-primary [&_input:first-child]:!shadow-none"
                   : "min-w-0 space-y-2"
             }
           >

@@ -300,19 +300,19 @@ const meta: Meta<ExampleArgs> = {
             [
               "Header",
               "48px, semibold inherited font",
-              "60px, uppercase Inter 14px / 500",
+              "44px, sentence-case Inter 14px / 500 in muted text",
             ],
             [
               "Body density",
               "Padding-based density",
-              "Small 48px · medium 54px · large 60px minimum row heights",
+              "Small 48px · medium 52px · large 60px minimum row heights",
             ],
-            ["Cell padding", "16px horizontally", "24px horizontally"],
+            ["Cell padding", "16px horizontally", "16px horizontally"],
             ["Surface", "Neutral header", "Primary surface #EBECEE"],
             [
               "Table behavior",
               "Composed markup, loading, wrapping and sticky cells",
-              "Same exports, props and behavior; optional stickyHeader keeps headers in view. Sortable headers set aria-sort and show a 12px arrow (or, with the opt-in sortable prop, a faint two-way glyph on unsorted columns)",
+              "Same exports, props and behavior; optional stickyHeader keeps headers in view. Sortable headers set aria-sort and show a 16px arrow that flips on a spring (with the opt-in sortable prop it also appears faintly on hover over unsorted columns)",
             ],
           ],
           tokens: [

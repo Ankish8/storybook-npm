@@ -12,12 +12,12 @@ import { SelectField as SelectFieldV1 } from "../select-field";
 import { Button } from "./button";
 import { Input } from "./input";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "./dialog";
+  ModalRoot,
+  ModalContent,
+  ModalDescription,
+  ModalHeader,
+  ModalTitle,
+} from "./modal";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -177,11 +177,11 @@ const meta: Meta<Args> = {
           summary:
             "A complete labelled select with live search, grouping, validation, action items and viewport pagination.",
           changes: [
-            ["Trigger", "42px / 4px", "40px / 8px"],
+            ["Trigger", "42px / 4px", "44px / 8px"],
             [
               "Typography",
               "Inherited font",
-              "Inter 16px value; 14px medium label; 12px supporting text",
+              "Inter 14px value; 14px medium label; 12px supporting text; 8px between label, field and text",
             ],
             ["Hover", "Default border", "#C0C3CA enabled border"],
             ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px halo"],
@@ -635,14 +635,14 @@ function ActionItem(args: Args) {
       <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         The action opens a dialog while preserving the previous selection.
       </p>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent size="sm">
-          <DialogHeader>
-            <DialogTitle>Add a method</DialogTitle>
-            <DialogDescription>
+      <ModalRoot open={open} onOpenChange={setOpen}>
+        <ModalContent size="sm">
+          <ModalHeader>
+            <ModalTitle>Add a method</ModalTitle>
+            <ModalDescription>
               Create a local option in this example.
-            </DialogDescription>
-          </DialogHeader>
+            </ModalDescription>
+          </ModalHeader>
           <form
             className="space-y-5 p-6"
             onSubmit={(e) => {
@@ -684,8 +684,8 @@ function ActionItem(args: Args) {
               </Button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </ModalContent>
+      </ModalRoot>
     </div>
   );
 }

@@ -383,7 +383,7 @@ describe("TableHead", () => {
     );
   });
 
-  it("draws a 12px arrow for a sorted column and turns it over for desc", () => {
+  it("draws a 16px arrow for a sorted column and turns it over for desc", () => {
     const { rerender } = render(
       <Table>
         <TableHeader>
@@ -397,7 +397,7 @@ describe("TableHead", () => {
     const glyph = screen.getByText("↑");
     expect(glyph.parentElement).toHaveAttribute("aria-hidden", "true");
     const arrow = screen.getByRole("columnheader").querySelector("svg");
-    expect(arrow).toHaveClass("size-3");
+    expect(arrow).toHaveClass("size-4", "opacity-100");
     expect(arrow).not.toHaveClass("rotate-180");
 
     rerender(
@@ -434,7 +434,7 @@ describe("TableHead", () => {
     expect(head).not.toHaveAttribute("aria-sort");
   });
 
-  it("shows a faint two-way glyph, without text, on a sortable but unsorted column", () => {
+  it("keeps a hidden arrow that shows faintly on hover, without text, on a sortable but unsorted column", () => {
     render(
       <Table>
         <TableHeader>
@@ -450,9 +450,9 @@ describe("TableHead", () => {
 
     const head = screen.getByTestId("head");
     const icon = head.querySelector("svg");
-    expect(icon).toHaveClass("size-3", "opacity-40");
+    expect(icon).toHaveClass("size-4", "opacity-0");
     expect(icon).toHaveClass(
-      "[@media(hover:hover)]:group-hover/head:opacity-100"
+      "[@media(hover:hover)]:group-hover/head:opacity-60"
     );
     expect(head).toHaveTextContent("Unsorted");
     expect(head).not.toHaveTextContent("↑");

@@ -622,23 +622,40 @@ describe("SelectField", () => {
 });
 
 describe("SelectField v2 refresh", () => {
-  it("inherits the open-trigger hold, 4px rows and the check pop from Select", async () => {
+  it("inherits the open-trigger hold, 4px rows and the popped check from Select", async () => {
     const user = userEvent.setup();
     render(<SelectField options={defaultOptions} defaultValue="option2" />);
     const trigger = screen.getByRole("combobox");
 
     expect(trigger.className).toContain(
-      "aria-expanded:border-[var(--color-secondary-600,#27ABB8)]"
+      "aria-expanded:border-semantic-primary"
     );
     await user.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");
 
     const selected = screen.getByRole("option", { name: "Option 2" });
     expect(selected).toHaveClass("rounded-sm");
-    expect(selected.querySelector("svg")).toHaveClass(
-      "motion-safe:animate-in",
-      "motion-safe:zoom-in-[0.85]"
+    expect(selected.querySelector("svg")?.parentElement).toHaveClass(
+      "[transition-delay:40ms]",
+      "[@starting-style]:scale-[0.6]",
+      "motion-reduce:[@starting-style]:scale-100"
     );
+  });
+
+  it("spaces label, field and supporting text 8px apart like Arc", () => {
+    const { container } = render(
+      <SelectField
+        label="Role"
+        helperText="Pick one"
+        options={defaultOptions}
+      />
+    );
+    expect(container.firstChild).toHaveClass("gap-2");
+    expect(screen.getByText("Role")).toHaveClass(
+      "leading-[1.4]",
+      "font-medium"
+    );
+    expect(screen.getByText("Pick one")).toHaveClass("leading-[1.4]");
   });
 
   it("keeps the error trigger red while open", () => {

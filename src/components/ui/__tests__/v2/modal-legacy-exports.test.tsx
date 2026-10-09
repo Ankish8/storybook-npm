@@ -1,7 +1,13 @@
+import type * as React from "react";
+import { Trash2 } from "lucide-react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { DeleteConfirmationModal } from "../../v2/delete-confirmation-modal";
+import {
+  ConfirmationModal,
+  DeleteConfirmationModal,
+  Modal,
+} from "../../v2/modal";
 import { Button } from "../../v2/button";
 
 describe("DeleteConfirmationModal", () => {
@@ -247,23 +253,106 @@ describe("DeleteConfirmationModal", () => {
   });
 });
 
-describe("DeleteConfirmationModal close control", () => {
-  it("keeps a 24px control with a 32px hit area and a 16px icon", () => {
-    render(<DeleteConfirmationModal open />);
-    const close = screen.getByRole("button", { name: "Close" });
-    expect(close).toHaveClass(
-      "size-6",
-      "relative",
-      "before:absolute",
-      "before:-inset-1"
+describe("DeleteConfirmationModal is the v1 name for Modal with requireText", () => {
+  // Radix and React generate ids that differ between two renders; everything else must be identical.
+  const normalised = (element: React.ReactElement) => {
+    const { unmount } = render(element);
+    const html = screen
+      .getByRole("dialog")
+      .outerHTML.replace(
+        /(radix-)?(?:[:«]r?[0-9a-z]+[:»]|_r_[0-9a-z]+_)/g,
+        "ID"
+      );
+    unmount();
+    return html;
+  };
+
+  it("renders exactly what the equivalent Modal renders", () => {
+    const alias = normalised(
+      <DeleteConfirmationModal
+        open
+        itemName="webhook"
+        description="This cannot be undone."
+        deleteButtonText="Remove"
+      />
     );
-    expect(close.querySelector("svg")).toHaveClass("size-4");
-    expect(close).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+    const unified = normalised(
+      <Modal
+        open
+        variant="destructive"
+        size="xs"
+        icon={<Trash2 strokeWidth={1.75} aria-hidden />}
+        title="Are you sure you want to delete this webhook?"
+        description="This cannot be undone."
+        requireText="DELETE"
+        requireTextLabel='Enter "DELETE" in uppercase to confirm'
+        inputId="delete-confirmation-input"
+        srDescription="Delete confirmation dialog - this action cannot be undone"
+        confirmButtonText="Remove"
+      />
+    );
+    expect(alias).toBe(unified);
   });
 
-  it("stays pinned with its sticky header", () => {
+  it("uses the destructive style and a trash icon tile", () => {
     render(<DeleteConfirmationModal open />);
-    const header = screen.getByRole("button", { name: "Close" }).closest("div");
-    expect(header).toHaveClass("sticky", "top-0");
+    const media = screen
+      .getByRole("dialog")
+      .querySelector("[data-slot=modal-media]");
+    expect(media).toHaveClass("bg-semantic-error-surface");
+    expect(media?.querySelector("svg")).toHaveClass("lucide-trash-2");
   });
+
+  it("keeps v1's wording even for a lowercase phrase", () => {
+    render(<DeleteConfirmationModal open confirmText="remove" />);
+    expect(
+      screen.getByText('Enter "remove" in uppercase to confirm')
+    ).toBeInTheDocument();
+  });
+
+  it("forwards its ref to the dialog content", () => {
+    const ref = { current: null as HTMLDivElement | null };
+    render(<DeleteConfirmationModal ref={ref} open />);
+    expect(ref.current).toBe(screen.getByRole("dialog"));
+  });
+
+  it("uses shadcn's destructive layout: small, centred, two equal actions", () => {
+    render(<DeleteConfirmationModal open />);
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toHaveAttribute("data-size", "xs");
+    expect(dialog.querySelector("[data-slot=modal-header]")).toHaveClass(
+      "text-center"
+    );
+    expect(dialog.querySelector("[data-slot=modal-footer]")).toHaveClass(
+      "group-data-[layout=stack]/modal:grid-cols-2"
+    );
+  });
+
+  it("ConfirmationModal is the same component as Modal", () => {
+    expect(ConfirmationModal).toBe(Modal);
+  });
+
+  it("has no close button, like the unified modal", () => {
+    render(<DeleteConfirmationModal open />);
+    expect(
+      screen.queryByRole("button", { name: "Close" })
+    ).not.toBeInTheDocument();
+  });
+});
+
+it("cancels an uncontrolled delete and resets the entered confirmation", async () => {
+  const user = userEvent.setup();
+  render(
+    <DeleteConfirmationModal
+      itemName="record"
+      trigger={<Button>Open delete</Button>}
+    />
+  );
+  await user.click(screen.getByRole("button", { name: "Open delete" }));
+  const input = screen.getByRole("textbox");
+  await user.type(input, "DELETE");
+  await user.click(screen.getByRole("button", { name: "Cancel" }));
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Open delete" }));
+  expect(screen.getByRole("textbox")).toHaveValue("");
 });

@@ -42,25 +42,26 @@ const HOVER_FILL = "[@media(hover:hover)]:hover:bg-semantic-bg-hover";
 
 // 32px hit area (36px on touch-sized viewports) around the 16px chevron; the
 // old 24px button was below the minimum comfortable target.
-const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] transition-colors max-sm:size-9 ${HOVER_FILL}`;
+// Arc header controls: a fill on hover (160ms), a quick press (.92 over 120ms) and a spring release (580ms).
+const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.92] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,color] motion-reduce:enabled:active:scale-100 max-sm:size-9 ${HOVER_FILL}`;
 // Month and year share one pill so the two read as a pair.
 const CALENDAR_PILL = `inline-flex h-8 items-center gap-1 rounded-lg border border-solid border-semantic-border-layout px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors ${HOVER_FILL}`;
 const CALENDAR_PILL_CHEVRON =
-  "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform duration-200 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none";
+  "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform [transition-duration:580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
 
 // The range band is a ::before on the 36px cell wrapper rather than a child
 // node, so a week row can cap both of its ends (and the range's own ends)
-// without extra DOM. 32px tall from `sm` (the day circle is 32px there), the
-// full 36px below it where the circle is 36px.
+// without extra DOM. 30px tall from `sm` (Arc: the day circle is the 36px cell
+// inset 3px), the full 36px below it where the circle is 36px.
 const BAND_BASE =
-  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:right-0 before:content-[''] sm:before:inset-y-0.5";
+  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:right-0 before:content-[''] sm:before:inset-y-[3px]";
 // At the range's own start/end the band begins at the circle's outer edge
 // instead of the cell edge (the cell is wider than the circle), so it emerges
 // from the circle without a pale halo. Week-row wraps stay flush with the grid.
 const BAND_START_AT_CIRCLE =
-  "before:left-[calc(50%-1.125rem)] sm:before:left-[calc(50%-1rem)]";
+  "before:left-[calc(50%-1.125rem)] sm:before:left-[calc(50%-15px)]";
 const BAND_END_AT_CIRCLE =
-  "before:right-[calc(50%-1.125rem)] sm:before:right-[calc(50%-1rem)]";
+  "before:right-[calc(50%-1.125rem)] sm:before:right-[calc(50%-15px)]";
 const BAND_RANGE = "before:bg-semantic-info-surface";
 // Lighter than the committed band and edged with dashes, so a not-yet-chosen
 // end reads as provisional. Below `sm` the rows touch, so the preview is
@@ -79,7 +80,7 @@ const MONTH_MOTION_DIRECTION = {
 
 type MonthDirection = keyof typeof MONTH_MOTION_DIRECTION | null;
 
-const weekDays = ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
+const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTH_SHORT_NAMES = [
   "Jan",
   "Feb",
@@ -110,14 +111,14 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-10 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-11 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
   {
     variants: {
       state: {
         default:
-          "border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:border-[var(--color-secondary-600,#27ABB8)] focus:shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+          "border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:shadow-none",
         error:
-          "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:border-semantic-error-primary focus:shadow-[0_0_4px_0_rgba(240,68,56,0.4)]",
+          "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
       },
     },
     defaultVariants: {
@@ -718,8 +719,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           aria-modal="false"
           aria-labelledby={`${triggerId}-calendar-heading`}
           className={cn(
-            "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] origin-top-left motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
-            "flex flex-col rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-lg text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            // Arc panel: grows in from 95% and 8px above on the snappy spring (350ms), settling like the trigger it came from.
+            "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.95] motion-safe:slide-in-from-top-2 origin-top-left motion-safe:[animation-duration:350ms] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [animation-timing-function:var(--arc-snappy)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
+            "flex flex-col rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -739,7 +741,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
         >
           <div className="flex flex-col sm:flex-row">
             {presets.length > 0 && (
-              <div className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-3 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-36 sm:flex-col sm:border-r">
+              <div className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-2.5 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-[9.25rem] sm:flex-col sm:border-r">
                 {presets.map((preset, presetIndex) => {
                   const presetDisabled =
                     clampRange(preset.getRange(), effectiveMinDate, maxDate) ===
@@ -753,7 +755,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                       disabled={presetDisabled}
                       aria-current={presetSelected ? "true" : undefined}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-2 py-2 text-left text-sm transition-colors max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:w-full sm:py-1.5",
+                        "shrink-0 whitespace-nowrap rounded px-3 py-2 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
                         FOCUS_RING,
                         presetSelected
                           ? "bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
@@ -778,8 +780,8 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
               ("September" + chevron + 32px arrows) needs ~268px: any narrower
               and the popover would resize as you page between months.
             */}
-            <div className="min-w-0 flex-1 p-3 touch-pan-y sm:min-w-[300px]">
-              <div className="mb-3 flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1 p-2.5 touch-pan-y sm:min-w-[300px]">
+              <div className="mb-1 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   aria-label="Previous month"
@@ -944,7 +946,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                 {weekDays.map((day) => (
                   <div
                     key={day}
-                    className="flex h-9 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)] sm:h-8"
+                    className="flex h-9 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)] sm:h-7"
                   >
                     {day}
                   </div>
@@ -1038,7 +1040,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         aria-current={isToday ? "date" : undefined}
                         disabled={!!isDisabled}
                         className={cn(
-                          "relative z-[1] flex h-9 w-full max-w-9 items-center justify-center rounded-full text-xs transition-colors sm:h-8 sm:max-w-8",
+                          "relative z-[1] flex h-9 w-full max-w-9 items-center justify-center rounded-full text-sm [font-variant-numeric:tabular-nums] [transition-property:color,background-color,transform] [transition-duration:160ms,160ms,120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-90 motion-reduce:[transition-property:color,background-color] motion-reduce:enabled:active:scale-100 sm:h-[30px] sm:max-w-[30px]",
                           FOCUS_RING,
                           "focus-visible:z-10",
                           isSelectedEdge
@@ -1073,8 +1075,15 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                         }}
                       >
                         {day.getDate()}
-                        {isToday && !isSelectedEdge && (
-                          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 size-1 rounded-full bg-semantic-primary" />
+                        {isToday && (
+                          <span
+                            className={cn(
+                              "absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full max-sm:bottom-[5px]",
+                              isSelectedEdge
+                                ? "bg-semantic-text-inverted"
+                                : "bg-semantic-primary"
+                            )}
+                          />
                         )}
                       </button>
                     </div>
@@ -1115,9 +1124,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           aria-invalid={props["aria-invalid"] ?? state === "error"}
           className={cn(
             dateRangePickerTriggerVariants({ state }),
-            open &&
-              state !== "error" &&
-              "border-[var(--color-secondary-600,#27ABB8)] shadow-[0_0_4px_0_rgba(39,171,184,0.4)]",
+            open && state !== "error" && "border-semantic-primary shadow-none",
             !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
             showClear && "pr-9",
             triggerClassName

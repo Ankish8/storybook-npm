@@ -30,14 +30,14 @@ const meta: Meta<Args> = {
               "Inherited Source Sans",
               "Inter; existing 12px label",
             ],
-            ["Spacing", "16px gap and vertical margins", "Preserved"],
+            ["Spacing", "16px gap and vertical margins", "12px gap, 20px above / 14px below (Arc day separator)"],
             ["API", "ReactNode label and native root attributes", "Preserved"],
           ],
           tokens: [
             ["Text", "--semantic-text-muted", "#717680", "#717680"],
             ["Lines", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Type", "--font-v2", "12px regular"],
-            ["Spacing", "gap / vertical margin", "16px"],
+            ["Type", "--font-v2", "12px medium, 1.4 leading"],
+            ["Spacing", "gap / padding", "12px gap; 20px top, 14px bottom"],
           ],
           guidance:
             "The component displays the supplied label; it does not format or compute dates. Use compact labels in narrow message columns. Width and previous-day controls configure the surrounding example.",

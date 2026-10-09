@@ -191,7 +191,7 @@ const meta: Meta<Args> = {
             [
               "Controls",
               "36px default icon controls",
-              "32px default links and previous/next controls",
+              "36px page links and previous/next controls; 12px tabular page numbers; the selected page sits on a bordered mark that glides between pages. Only the arrows press (0.96)",
             ],
             [
               "Spacing",

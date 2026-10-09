@@ -66,8 +66,10 @@ function Example({
   const error = props.state === "error" && !props.disabled;
   return (
     <div
-      style={{ width }}
-      className="max-w-full space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      // `width` is a ceiling, not a fixed size: a grid column sizes itself to its widest child, so a fixed 420px
+      // here made the column (and the page) wider than a phone-width frame.
+      style={{ width: "100%", maxWidth: width }}
+      className="space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       {label && (
         <p
@@ -186,20 +188,49 @@ const meta: Meta<Args> = {
             [
               "Trigger",
               "42px minimum / 4px corners",
-              "40px minimum / 8px corners; wraps selected chips",
+              "44px minimum / 8px corners; wraps selected chips",
             ],
             [
               "Type",
               "Inherited type",
-              "Inter 16px values; host label 14px / 500; helper 12px",
+              "Inter 14px values; host label 14px / 500; helper 12px",
             ],
             [
               "Selected chips",
               "4px corners / regular text",
-              "8px corners, subtle border, 14px medium",
+              "8px corners, 1px border, 28px tall, 14px regular; suggestions are 36px chips with the same 8px corners",
+            ],
+            [
+              "Field surface",
+              "Grey tint on hover, press and while open",
+              "Stays white, so the grey chips are always visible; the border shows hover and focus",
+            ],
+            [
+              "Text position",
+              "Placeholder and summary sat 4px above the middle",
+              "Centred in the field, level with the chips",
+            ],
+            [
+              "Open field, nothing selected",
+              "Blank",
+              "Keeps the placeholder until a value is chosen",
+            ],
+            [
+              "Typing a suggestion's name",
+              "Created a look-alike chip beside the suggestion (and could create a disabled option)",
+              "Selects the suggestion, any case; disabled options stay unavailable",
+            ],
+            [
+              "Character counter",
+              "Muted at every count",
+              "Turns red at the limit, because typing stops there",
             ],
             ["Hover", "Thin stroke", "C0C3CA border"],
-            ["Focus", "Outer focus ring", "27ABB8 border and soft 4px halo"],
+            [
+              "Focus",
+              "Outer focus ring",
+              "Primary border emphasis; no outer glow",
+            ],
             ["Error", "Red border", "F04438 border and soft halo"],
             [
               "Disabled",
@@ -225,14 +256,14 @@ const meta: Meta<Args> = {
             ["Helper", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
             ["Family", "--font-v2", "Inter"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Open with a click, Enter or Space. Select a preset or type a custom value and press Enter. Remove a chip with its button, or Backspace on an empty draft. maxItems applies to selections; maxLengthPerItem applies to custom drafts and preserves preset IDs. Label, error message, width and transformation switches are host example settings.",
+            "Open with a click, Enter or Space. Select a preset or type a custom value and press Enter. Remove a chip with its button, or Backspace on an empty draft. maxItems applies to selections; maxLengthPerItem applies to custom drafts and preserves preset IDs; it counts the way the browser's maxlength does (UTF-16 units), so an emoji or a Devanagari conjunct can count as more than one. Label, error message, width and transformation switches are host example settings.",
         }),
       },
     },
@@ -365,7 +396,7 @@ export const AllVariants: Story = {
       </header>
       <div className="grid gap-6 md:grid-cols-2">
         {VARIANTS.map((state) => (
-          <section key={state} className="space-y-3">
+          <section key={state} className="min-w-0 space-y-3">
             <p className="m-0 text-xs font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
               {state}
             </p>
@@ -384,7 +415,7 @@ export const HeightAndWidth: Story = {
   name: "Height and width",
   parameters: gallery(
     ["width"],
-    "40px minimum height at two widths. Chips wrap within the field; summary mode keeps a text treatment."
+    "44px minimum height at two widths. Chips wrap within the field; summary mode keeps a text treatment."
   ),
   render: (args) => (
     <div className="w-full max-w-[820px] space-y-5">
@@ -393,15 +424,19 @@ export const HeightAndWidth: Story = {
           Field proportions
         </p>
         <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
-          Empty and one-line fields are 40px high. Wrapping chips can increase
+          Empty and one-line fields are 44px high. Wrapping chips can increase
           height.
         </p>
       </header>
       <div className="flex flex-wrap items-start gap-6">
         {[420, 280].map((width) => (
-          <section key={width} className="space-y-3">
+          <section
+            key={width}
+            style={{ width }}
+            className="max-w-full space-y-3"
+          >
             <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
-              {width}px wide · 40px minimum
+              {width}px wide · 44px minimum
             </p>
             <Preview
               {...args}

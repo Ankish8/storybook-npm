@@ -33,8 +33,8 @@ describe("BouncingLoader", () => {
     const animations = dots.map((dot) => dot.style.animation);
     expect(animations[0]).toContain("bouncing-typing-wave");
     expect(animations[0]).toContain("0s");
-    expect(animations[1]).toContain("0.2s");
-    expect(animations[2]).toContain("0.4s");
+    expect(animations[1]).toContain("0.16s");
+    expect(animations[2]).toContain("0.32s");
   });
 
   it("supports custom size, spacing, color, and className", () => {

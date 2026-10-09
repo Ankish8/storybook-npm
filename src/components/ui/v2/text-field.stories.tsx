@@ -98,12 +98,12 @@ const meta: Meta<typeof TextField> = {
             [
               "Messages",
               "Pop in",
-              "Glide open (240ms), polite live region; clear button fades with a 32px target",
+              "Measured height spring, replacement copy rise/blur, polite live region; clear button fades with a 32px target",
             ],
             [
               "Height and radius",
               "Default 42px / compact 36px; 4px radius",
-              "Default 40px / compact 36px; 8px radius",
+              "Default 44px / compact 36px; 8px radius",
             ],
             [
               "Typography",
@@ -113,13 +113,13 @@ const meta: Meta<typeof TextField> = {
             [
               "Value text",
               "16px default / 12px compact",
-              "16px default / 12px compact",
+              "14px default / 12px compact",
             ],
             ["Hover border", "Default border", "#C0C3CA on enabled fields"],
             [
               "Focus",
               "Thin teal shadow",
-              "#27ABB8 border and a soft 4px shadow",
+              "Primary border emphasis; no outer glow",
             ],
             [
               "Error",
@@ -155,7 +155,7 @@ const meta: Meta<typeof TextField> = {
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -243,7 +243,7 @@ const meta: Meta<typeof TextField> = {
     size: {
       control: "select",
       options: SIZES,
-      description: "Default 40px or compact 36px control height.",
+      description: "Default 44px or compact 36px control height.",
     },
     type: {
       control: "select",
@@ -417,14 +417,14 @@ export const AllSizes: Story = {
   name: "All sizes",
   parameters: gallery(
     ["size"],
-    "Default is 40px high; compact is 36px. All other controls apply to both samples, including icons, validation and the counter."
+    "Default is 44px high; compact is 36px. All other controls apply to both samples, including icons, validation and the counter."
   ),
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col gap-6">
       {SIZES.map((size) => (
         <section key={size} className="space-y-2">
           <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-            {size === "sm" ? "Compact · 36px" : "Default · 40px"}
+            {size === "sm" ? "Compact · 36px" : "Default · 44px"}
           </p>
           <PreviewTextField
             {...args}

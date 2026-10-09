@@ -270,11 +270,11 @@ describe("DateTimePicker", () => {
 
     const trigger = screen.getByLabelText("Date and time").parentElement;
 
-    expect(trigger).toHaveClass("h-10");
+    expect(trigger).toHaveClass("h-11");
     expect(trigger).toHaveClass("rounded-lg");
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2");
-    expect(trigger).toHaveClass("text-base");
+    expect(trigger).toHaveClass("text-sm");
     expect(trigger).toHaveClass("border-semantic-border-input");
     expect(trigger).toHaveClass("text-[var(--v2-text-placeholder,#707070)]");
   });
@@ -1259,7 +1259,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
     within(screen.getByLabelText(list)).getByText(label);
 
   describe("calendar", () => {
-    it("marks today with a 4px primary dot and no ring, keeping aria-current", () => {
+    it("marks today with a 4px dot under the number (it follows the number colour) and no ring, keeping aria-current", () => {
       vi.useFakeTimers({ toFake: ["Date"] });
       vi.setSystemTime(may(20));
       render(<DateTimePicker defaultOpen defaultValue={{ date: may(12) }} />);
@@ -1267,22 +1267,49 @@ describe("DateTimePicker calendar and time list refresh", () => {
       const today = day(may(20));
       expect(today).toHaveAttribute("aria-current", "date");
       expect(today.className).not.toContain("ring-");
-      const dot = today.querySelector("span");
+      const dot = today.querySelector("span span");
       expect(dot).toHaveClass(
         "size-1",
         "rounded-full",
-        "bg-semantic-primary",
-        "bottom-0.5"
+        "bg-current",
+        "top-[calc(100%+4px)]"
       );
-      // The selected day keeps its filled circle and shows no dot.
-      expect(day(may(12))).toHaveClass("bg-semantic-primary");
-      expect(day(may(12)).querySelector("span")).toBeNull();
+      // The selected day is filled by the disc layer (its number turns inverse) and shows no dot unless it is today.
+      expect(day(may(12))).toHaveClass("text-semantic-text-inverted");
+      expect(day(may(12)).querySelector("span span")).toBeNull();
+      const disc = dialog().querySelector(
+        'span[aria-hidden="true"].bg-semantic-primary'
+      );
+      expect(disc).toHaveStyle({ opacity: "1" });
     });
 
-    it("sizes day cells 32px, 36px on small screens", () => {
+    it("glides the selected disc between days", () => {
+      const { rerender } = render(
+        <DateTimePicker defaultOpen value={{ date: may(12) }} />
+      );
+      const disc = () =>
+        dialog().querySelector(
+          'span[aria-hidden="true"].bg-semantic-primary'
+        ) as HTMLElement;
+      const before = disc().style.transform;
+      expect(disc().className).toContain("[--arc-morph:linear(");
+      expect(disc().className).toContain(
+        "[transition:transform_506ms_var(--arc-morph)"
+      );
+      rerender(<DateTimePicker defaultOpen value={{ date: may(13) }} />);
+      expect(disc().style.transform).not.toBe(before);
+    });
+
+    it("sizes day cells as squares of the column width (Arc) with a 14px number and a .94 press", () => {
       renderOpen();
 
-      expect(day(may(20))).toHaveClass("size-8", "max-sm:size-9");
+      expect(day(may(20))).toHaveClass(
+        "aspect-square",
+        "w-full",
+        "text-sm",
+        "enabled:active:scale-[0.94]",
+        "motion-reduce:enabled:active:scale-100"
+      );
     });
 
     it("gates every hover utility behind (hover: hover) so touch never sticks", () => {
@@ -1366,11 +1393,12 @@ describe("DateTimePicker calendar and time list refresh", () => {
       ).not.toHaveClass("rotate-180");
     });
 
-    it("renders weekday labels uppercase through CSS without changing their text", () => {
+    it("renders two-letter weekday labels (Arc) without uppercase styling", () => {
       renderOpen();
 
       const label = screen.getByText("Su");
-      expect(label).toHaveClass("uppercase");
+      expect(label).not.toHaveClass("uppercase");
+      expect(label).toHaveClass("h-6", "text-xs", "font-medium");
       expect(label.parentElement).not.toBe(dayGrid());
     });
 
@@ -1467,15 +1495,14 @@ describe("DateTimePicker calendar and time list refresh", () => {
       );
     });
 
-    it("pads, fades and snaps each list, with 32px rows (36px for coarse pointers)", () => {
+    it("pads, fades and snaps each list, with Arc's 36px rows", () => {
       renderOpen();
       openStartTime();
       const list = screen.getByLabelText("Start Time hours");
 
       // Spacers let the first and last row reach the centre of the 168px list.
       expect(list).toHaveClass(
-        "py-[68px]",
-        "[@media(pointer:coarse)]:py-[66px]",
+        "py-[66px]",
         "overflow-y-auto",
         "[scroll-snap-type:y_proximity]"
       );
@@ -1485,11 +1512,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
       expect(list).toHaveStyle({ maxHeight: "168px" });
 
       const row = option("Start Time hours", "09");
-      expect(row).toHaveClass(
-        "h-8",
-        "[@media(pointer:coarse)]:h-9",
-        "[scroll-snap-align:center]"
-      );
+      expect(row).toHaveClass("h-9", "[scroll-snap-align:center]");
       // Selected row = the existing info-surface fill + medium weight.
       expect(option("Start Time hours", "10")).toHaveClass(
         "bg-semantic-info-surface",

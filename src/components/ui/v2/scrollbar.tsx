@@ -28,11 +28,24 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
     const viewport = React.useRef<HTMLDivElement>(null);
     const rail = React.useRef<HTMLDivElement>(null);
     const vertical = orientation === "vertical";
+    const grabOffset = React.useRef<number | null>(null);
     const [metrics, setMetrics] = React.useState({
       ratio: 1,
       offset: 0,
       length: 0,
+      position: 0,
+      max: 0,
     });
+    // Arc: the bar shows while scrolling (and lingers 900ms), while dragging, and on hover; it fades away at rest.
+    const [scrolling, setScrolling] = React.useState(false);
+    const [dragging, setDragging] = React.useState(false);
+    const hideTimer = React.useRef<number | undefined>(undefined);
+    React.useEffect(() => () => window.clearTimeout(hideTimer.current), []);
+    const wake = React.useCallback(() => {
+      setScrolling(true);
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = window.setTimeout(() => setScrolling(false), 900);
+    }, []);
     const measure = React.useCallback(() => {
       const el = viewport.current;
       if (!el) return;
@@ -47,18 +60,42 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
             : rail.current.clientWidth
           : 0,
         offset: total > visible ? position / (total - visible) : 0,
+        position,
+        max: Math.max(0, total - visible),
       });
     }, [vertical]);
     React.useEffect(() => {
       measure();
       const el = viewport.current;
       if (!el) return;
+      if (typeof ResizeObserver === "undefined") return;
       const observer = new ResizeObserver(measure);
       observer.observe(el);
       if (rail.current) observer.observe(rail.current);
       if (el.firstElementChild) observer.observe(el.firstElementChild);
       return () => observer.disconnect();
     }, [measure, children]);
+    // A mouse wheel over a horizontal strip moves it sideways, but only while there is room, so the page still scrolls at the ends.
+    React.useEffect(() => {
+      const el = viewport.current;
+      if (!el || vertical) return;
+      const wheel = (event: WheelEvent) => {
+        if (event.ctrlKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY))
+          return;
+        const max = el.scrollWidth - el.clientWidth;
+        const at = Math.abs(el.scrollLeft);
+        if (
+          max <= 0 ||
+          (event.deltaY < 0 && at <= 0) ||
+          (event.deltaY > 0 && at >= max - 0.5)
+        )
+          return;
+        event.preventDefault();
+        el.scrollLeft += event.deltaY;
+      };
+      el.addEventListener("wheel", wheel, { passive: false });
+      return () => el.removeEventListener("wheel", wheel);
+    }, [vertical]);
     const step = (direction: number) => {
       const el = viewport.current;
       if (!el) return;
@@ -83,13 +120,14 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
       const cursor = vertical ? event.clientY : event.clientX;
       const thumbLength = Math.min(
         length,
-        Math.max(32, length * metrics.ratio)
+        Math.max(28, length * metrics.ratio)
       );
       const proportion = Math.max(
         0,
         Math.min(
           1,
-          (cursor - start - thumbLength / 2) / (length - thumbLength || 1)
+          (cursor - start - (grabOffset.current ?? thumbLength / 2)) /
+            (length - thumbLength || 1)
         )
       );
       const max = vertical
@@ -101,7 +139,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
     };
     const thumbLength = Math.min(
       metrics.length,
-      Math.max(32, metrics.length * metrics.ratio)
+      Math.max(28, metrics.length * metrics.ratio)
     );
     const thumbOffset = Math.max(
       0,
@@ -117,7 +155,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
         }
         onClick={() => step(direction)}
         className={cn(
-          "flex shrink-0 items-center justify-center transition-colors duration-150 text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover disabled:opacity-40",
+          "flex shrink-0 items-center justify-center transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none text-[var(--v2-text-muted,#707070)] hover:bg-semantic-bg-hover disabled:opacity-40",
           vertical ? "h-8 w-4" : "h-4 w-8"
         )}
       >
@@ -134,11 +172,17 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
         )}
       </button>
     );
+    // "subtle" floats over the content like Arc's overlay bar; "dark" keeps a solid rail beside it.
+    const overlay = variant !== "dark";
+    // Each edge fades out by the length of content hidden past it, up to 28px, so it grows in with the first pixels of scroll.
+    const fadeStart = Math.min(28, metrics.position);
+    const fadeEnd = Math.min(28, metrics.max - metrics.position);
     return (
       <div
         ref={ref}
+        data-scrolling={scrolling || dragging || undefined}
         className={cn(
-          "relative flex min-h-0 min-w-0 overflow-hidden",
+          "group/scrollbar relative flex min-h-0 min-w-0 overflow-hidden",
           !vertical && "flex-col",
           className
         )}
@@ -149,14 +193,21 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
           role="region"
           aria-label={ariaLabel}
           tabIndex={0}
+          style={
+            {
+              "--v2-fade-start": `${fadeStart}px`,
+              "--v2-fade-end": `${Math.max(0, fadeEnd)}px`,
+            } as React.CSSProperties
+          }
           className={cn(
             "min-h-0 min-w-0 flex-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
             vertical
-              ? "overflow-y-auto overflow-x-hidden"
-              : "overflow-x-auto overflow-y-hidden"
+              ? "overflow-y-auto overflow-x-hidden [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)]"
+              : "overflow-x-auto overflow-y-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)] [mask-image:linear-gradient(to_right,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)]"
           )}
           onScroll={(event) => {
             measure();
+            wake();
             onScroll?.(event);
           }}
         >
@@ -165,21 +216,82 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
         <div
           aria-hidden={metrics.ratio >= 1 || undefined}
           className={cn(
-            "flex shrink-0 items-center",
-            vertical ? "w-4 flex-col" : "h-4",
-            variant === "dark"
-              ? "border-solid border-semantic-border-layout bg-semantic-bg-ui"
-              : "bg-semantic-bg-primary",
-            variant === "dark" && (vertical ? "border-l" : "border-t")
+            "group/track flex items-center",
+            overlay
+              ? cn(
+                  "pointer-events-none absolute z-[1] opacity-0 transition-opacity [transition-duration:480ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                  "group-data-[scrolling=true]/scrollbar:pointer-events-auto group-data-[scrolling=true]/scrollbar:opacity-100 group-data-[scrolling=true]/scrollbar:[transition-duration:160ms]",
+                  "[@media(hover:hover)]:group-hover/scrollbar:pointer-events-auto [@media(hover:hover)]:group-hover/scrollbar:opacity-100 [@media(hover:hover)]:group-hover/scrollbar:[transition-duration:160ms]",
+                  vertical
+                    ? "inset-y-[3px] right-px flex-col"
+                    : "inset-x-[3px] bottom-px",
+                  // Without arrow buttons the track is Arc's 11px hit area; with them it is as wide as a button.
+                  showControls
+                    ? vertical
+                      ? "inset-y-0 w-4"
+                      : "inset-x-0 h-4"
+                    : vertical
+                      ? "w-[11px]"
+                      : "h-[11px]",
+                  // Nothing to scroll: keep the layout (so it can be measured) but never show or hit-test it.
+                  metrics.ratio >= 1 && "invisible"
+                )
+              : cn(
+                  "shrink-0 border-solid border-semantic-border-layout bg-semantic-bg-ui",
+                  vertical ? "w-4 flex-col border-l" : "h-4 border-t"
+                )
           )}
         >
           {showControls && control(-1)}
           <div
             ref={rail}
-            className="relative min-h-0 min-w-0 flex-1 self-stretch"
+            className="relative min-h-0 min-w-0 flex-1 self-stretch touch-none"
             onPointerDown={(event) => {
+              if (event.button !== 0) return;
+              event.preventDefault();
+              const thumb =
+                event.currentTarget.firstElementChild?.getBoundingClientRect();
+              const cursor = vertical ? event.clientY : event.clientX;
+              const start = thumb && (vertical ? thumb.top : thumb.left);
+              const end = thumb && (vertical ? thumb.bottom : thumb.right);
+              const onThumb =
+                start !== undefined &&
+                end !== undefined &&
+                cursor >= start &&
+                cursor <= end;
+              if (!onThumb && start !== undefined && end !== undefined) {
+                // Pressing the empty track pages toward the pointer, as in Arc.
+                const el = viewport.current;
+                if (!el) return;
+                const page =
+                  (vertical ? el.clientHeight : el.clientWidth) *
+                  0.9 *
+                  (cursor < start ? -1 : 1);
+                el.scrollBy({
+                  top: vertical ? page : 0,
+                  left: vertical ? 0 : page,
+                  behavior: window.matchMedia?.(
+                    "(prefers-reduced-motion: reduce)"
+                  ).matches
+                    ? "auto"
+                    : "smooth",
+                });
+                return;
+              }
+              grabOffset.current =
+                onThumb && start !== undefined ? cursor - start : null;
               event.currentTarget.setPointerCapture?.(event.pointerId);
+              setDragging(true);
               trackMove(event);
+            }}
+            onPointerUp={() => {
+              grabOffset.current = null;
+              setDragging(false);
+              wake();
+            }}
+            onPointerCancel={() => {
+              grabOffset.current = null;
+              setDragging(false);
             }}
             onPointerMove={(event) => {
               if (event.currentTarget.hasPointerCapture?.(event.pointerId))
@@ -188,8 +300,15 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
           >
             <div
               className={cn(
-                "absolute rounded-lg bg-semantic-text-placeholder",
-                vertical ? "left-1 w-2" : "top-1 h-2"
+                // The thumb is the hit area; its pill is 5px thick and thickens to 7px under the pointer.
+                "absolute after:absolute after:rounded-lg after:bg-[color-mix(in_oklab,var(--v2-text-primary,#484848)_30%,transparent)] after:transition-[width,height,background-color] after:[transition-duration:160ms] after:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:after:transition-none after:content-['']",
+                "[@media(hover:hover)]:group-hover/track:after:bg-[color-mix(in_oklab,var(--v2-text-primary,#484848)_46%,transparent)]",
+                dragging &&
+                  "after:bg-[color-mix(in_oklab,var(--v2-text-primary,#484848)_46%,transparent)]",
+                vertical
+                  ? "inset-x-0 after:inset-y-0 after:left-1/2 after:w-[5px] after:-translate-x-1/2 [@media(hover:hover)]:group-hover/track:after:w-[7px]"
+                  : "inset-y-0 after:inset-x-0 after:top-1/2 after:h-[5px] after:-translate-y-1/2 [@media(hover:hover)]:group-hover/track:after:h-[7px]",
+                dragging && (vertical ? "after:w-[7px]" : "after:h-[7px]")
               )}
               style={
                 vertical
