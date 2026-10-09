@@ -1,0 +1,20 @@
+<ModalRoot>                       {/* open, onOpenChange */}
+  <ModalTrigger />                {/* optional: opens the modal */}
+  <ModalContent size hideCloseButton>   {/* portal, overlay, surface, close button */}
+    <ModalHeader>
+      <ModalMedia />              {/* optional icon tile */}
+      <ModalTitle />
+      <ModalDescription />
+    </ModalHeader>
+    <ModalBody />                 {/* optional: form fields */}
+    <ModalFooter>
+      <ModalCancel />             {/* closes the modal */}
+      <ModalAction />             {/* confirms; does not close */}
+    </ModalFooter>
+  </ModalContent>
+</ModalRoot>
+
+{/* Or let one component draw all of it from props: */}
+<Modal title description icon size variant requireText onConfirm>
+  {fields}
+</Modal>

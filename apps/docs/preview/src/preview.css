@@ -1,0 +1,64 @@
+@font-face {
+  font-family: "Timeless Sans";
+  src: url("./fonts/timeless/TimelessSansVF.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+html,
+body {
+  margin: 0;
+  background: transparent;
+}
+body {
+  font-family: var(--font-v2, Inter, sans-serif);
+  /* Arc renders text with grayscale anti-aliasing; the macOS default (subpixel) reads heavier and darker. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-frame {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  padding: 24px;
+}
+.preview-frame[data-layout="centered"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 140px;
+}
+.preview-frame[data-layout="fullscreen"] {
+  padding: 0;
+}
+.preview-status {
+  margin: 0;
+  padding: 24px;
+  color: var(--v2-text-secondary);
+  font-size: 14px;
+}
+.preview-error {
+  margin: 0;
+  padding: 24px;
+  color: var(--semantic-error-text);
+  font-size: 14px;
+}
+
+#preview-root {
+  width: 100%;
+  min-width: 0;
+  margin-block: auto;
+}
+
+/* A component that reserves room below its content for an open menu keeps that content at the top: centring it would
+   move it down by half the reserve and push the menu past the frame's bottom edge. */
+html[data-popup] body {
+  align-items: flex-start;
+}
+html[data-popup] #preview-root {
+  margin-block: 0;
+}

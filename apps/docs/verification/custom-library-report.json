@@ -1,0 +1,4362 @@
+{
+  "date": "2026-10-05",
+  "shell": "custom Next.js UIArc reference",
+  "referenceReviewedWith": "Computer use in Chrome",
+  "pages": [
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/button",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/button-group",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/confirmation-modal",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/delete-confirmation-modal",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/checkbox",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/creatable-multi-select",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/creatable-select",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/date-range-picker",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/date-time-picker",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/file-upload",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/form-modal",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/input",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/multi-select",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/number-step-field",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/otp-input",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/phone-input",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/radio",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/readable-field",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/search-filter",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/select",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/select-field",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/switch",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/text-field",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/textarea",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/breadcrumbs",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/dropdown-menu",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/pagination",
+      "selected": "AllCompositions",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/stepper",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/tabs",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/alert",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/badge",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/bouncing-loader",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/empty-state",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/progress-indicator",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/shimmering-text",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/skeleton",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/spinner",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/tag",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/toast",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/tooltip",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/accordion",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/avatar",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/dialog",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/page-footer",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/page-header",
+      "selected": "AllVariations",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/panel",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/scrollbar",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/table",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/typography",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/ui-card",
+      "selected": "AllVariants",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/contact-list-item",
+      "selected": "AllCompositions",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/date-divider",
+      "selected": "AllLabels",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/image-media",
+      "selected": "Overview",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/reply-quote",
+      "selected": "AllCompositions",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/system-message",
+      "selected": "AllFormats",
+      "tocMissing": []
+    },
+    {
+      "errors": 0,
+      "overflow": false,
+      "path": "/components/unread-separator",
+      "selected": "AllCounts",
+      "tocMissing": []
+    }
+  ],
+  "stories": [
+    {
+      "component": "button",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Dashed",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Ghost",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "IconOnly",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Link",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Outline",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Primary",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Secondary",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Success",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "button",
+      "story": "WithIcons",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "IconsOnly",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "LabelsOnly",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "Primary",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "Toggle",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "ToggleLabels",
+      "error": 0
+    },
+    {
+      "component": "button-group",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "KeyboardInteraction",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "LongContent",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "confirmation-modal",
+      "story": "WithoutDescription",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "CustomConfirmText",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "CustomTitle",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "KeyboardInteraction",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "LongContent",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "delete-confirmation-modal",
+      "story": "WithoutDescription",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Checked",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "DisabledUnchecked",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Indeterminate",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "LabelLeft",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "LabelPositions",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "SeparateLabel",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Unchecked",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "WithDescription",
+      "error": 0
+    },
+    {
+      "component": "checkbox",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "CharacterGuard",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "CharacterLimit",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "DisabledPresets",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "EmptyOptions",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "ErrorState",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "HeightAndWidth",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "SelectionLimit",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "Summary",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "creatable-multi-select",
+      "story": "WithPreselectedValues",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "CharacterGuard",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "CharacterLimit",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "EmptyOptions",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "ErrorState",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "HeightAndWidth",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "WithDisabledOptions",
+      "error": 0
+    },
+    {
+      "component": "creatable-select",
+      "story": "WithPreselectedValue",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "CustomPresets",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "DateBounds",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Empty",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "HeightAndWidth",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Probe",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "NoPresets",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "PartialRange",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "PastDatesDisabled",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "date-range-picker",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "DateBounds",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "DateOnly",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "Empty",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "PartialValue",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "PastDatesDisabled",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "ReadOnly",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "TimeOnly",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "TimeRange",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "date-time-picker",
+      "story": "WithSeconds",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "ImagesOnly",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "MultipleFiles",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "file-upload",
+      "story": "WithFiles",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "CustomButtons",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "ExtraLarge",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Full",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "LongContent",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "MultipleFieldTypes",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "SaveDisabled",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "form-modal",
+      "story": "WithoutDescription",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Sizing",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "NumberInputs",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "ReadOnly",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "WithCheckIcon",
+      "error": 0
+    },
+    {
+      "component": "input",
+      "story": "WithValue",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Controlled",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "DetailedWhatsAppStyle",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "WithDisabledOptions",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "EmptyOptions",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "FormExample",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "GroupedDetailed",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "InsideDialog",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "InfiniteScroll",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "LoadingMore",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "LongOptionLabels",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Searchable",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "SelectAll",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "WithTags",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "MaxSelections",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Summary",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "multi-select",
+      "story": "ValidationStates",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "AtMaximum",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "AtMinimum",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "Minutes",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "number-step-field",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "ErrorFeedback",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "Filled",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "FourDigits",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "SixDigits",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "otp-input",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "WithCountrySelector",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "CustomFlagNode",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "WithMaxNumber",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "EmptyState",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "InForm",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "NoChevron",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "ReadOnly",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "USNumber",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "phone-input",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Cards",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Selected",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "radio",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "BaseUrl",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "DisabledHeaderAction",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "Secret",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "readable-field",
+      "story": "WithHeaderAction",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "EmptyResults",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "LongLabels",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "MinSearchLength",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "SearchDisabled",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "SearchModes",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Selected",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "TextSearch",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "search-filter",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "AuthenticationExample",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "EmptyOptions",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "LongList",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "LongOption",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "WithDisabledItems",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "WithGroups",
+      "error": 0
+    },
+    {
+      "component": "select",
+      "story": "WithSelectedValue",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "InterceptValue",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Controlled",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "ServerSideSearch",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "EmptyState",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "EndOfList",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "FormExample",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "LazyLoad",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "LoadingState",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "LoadingMore",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "LongOption",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "OnSelect",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Searchable",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "SearchableWithGroups",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "SearchableWithGroupsSeparator",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "ValidationStates",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "WebhookFormExample",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "WithGroups",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "WithHelperText",
+      "error": 0
+    },
+    {
+      "component": "select-field",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "DisabledOff",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "LabelLeft",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "LabelPositions",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Off",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "On",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "WithDescription",
+      "error": 0
+    },
+    {
+      "component": "switch",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "AllFeatures",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "CharacterCount",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Clearable",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Controlled",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Empty",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "FormExample",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "LoadingState",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Password",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "ReadOnly",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "SizeComparison",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "SmallSize",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "AddonStates",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "ValidationStates",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "WithIcons",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "WithPrefixSuffix",
+      "error": 0
+    },
+    {
+      "component": "text-field",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "AllStates",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "LargeSize",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "ReadOnly",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Required",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Resizable",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "SmallSize",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "SoftLimit",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "WithCharacterCount",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "WithError",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "WithHelperText",
+      "error": 0
+    },
+    {
+      "component": "textarea",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "breadcrumbs",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "breadcrumbs",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "breadcrumbs",
+      "story": "MorePages",
+      "error": 0
+    },
+    {
+      "component": "breadcrumbs",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "breadcrumbs",
+      "story": "WithIcons",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "AsChildLink",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Checkboxes",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "DisabledItems",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "IconTrigger",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "RadioGroups",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Submenus",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "WithDescriptionAndSuffix",
+      "error": 0
+    },
+    {
+      "component": "dropdown-menu",
+      "story": "WithShortcuts",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "Accessibility",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "ItemCountAlignments",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "AllCompositions",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "ComposedLinks",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "FewPages",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "FirstPageActive",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "IconsOnly",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "LastPageActive",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "PaginationInfoOnly",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "Widget",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "WidgetFewPages",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "WidgetFirstPage",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "WidgetLastPage",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "WithItemCount",
+      "error": 0
+    },
+    {
+      "component": "pagination",
+      "story": "WithMorePages",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Icons",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "stepper",
+      "story": "Vertical",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "AllLayouts",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "AutoWidth",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Controlled",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "FullWidthWithBadges",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Horizontal",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "ManualActivation",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Pill",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "PillWithCounts",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "Vertical",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "WithCounts",
+      "error": 0
+    },
+    {
+      "component": "tabs",
+      "story": "WithDisabledTab",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "AllPresentations",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Closable",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "ComplexExample",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "ControlledVisibility",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Header",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Info",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Overlay",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "ScreenshotReference",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Success",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "Warning",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "WithCustomIcon",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "WithSingleAction",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "WithTwoActions",
+      "error": 0
+    },
+    {
+      "component": "alert",
+      "story": "WithoutIcon",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Active",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "AsLink",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Dot",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Failed",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Information",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Outline",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Primary",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Secondary",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "VariantsAndSizes",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "Warning",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "WithDot",
+      "error": 0
+    },
+    {
+      "component": "badge",
+      "story": "WithIcons",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "LargerDots",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "bouncing-loader",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "InboxEmpty",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "SearchEmpty",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "WithIcon",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "NoButtons",
+      "error": 0
+    },
+    {
+      "component": "empty-state",
+      "story": "NoIcon",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "BottomLabel",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "Circle",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "HiddenLabel",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "Indeterminate",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "SemiCircle",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "progress-indicator",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "Importing",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "Paused",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "shimmering-text",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "AllShapes",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Animations",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Circle",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Rectangle",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Shimmer",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Subtle",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "skeleton",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "ExtraLarge",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Inverted",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Muted",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "spinner",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Accent",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "RemoveDisabled",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Dismissible",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "GroupWithOverflow",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Info",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Primary",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Removable",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Secondary",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Success",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "VariantsAndSizes",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "Warning",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "WithLabel",
+      "error": 0
+    },
+    {
+      "component": "tag",
+      "story": "WithIcons",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Destructive",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "DisabledAction",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Error",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Info",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "LongContent",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Success",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "Warning",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "WithoutAction",
+      "error": 0
+    },
+    {
+      "component": "toast",
+      "story": "WithoutDescription",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Bottom",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Left",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "LongContent",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Right",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "AllPositions",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "WithTitle",
+      "error": 0
+    },
+    {
+      "component": "tooltip",
+      "story": "WithoutArrow",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "AllModes",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "Bordered",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "Controlled",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "CustomContent",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "FAQ",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "MultipleMode",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "SingleMode",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "WithDisabledItem",
+      "error": 0
+    },
+    {
+      "component": "accordion",
+      "story": "WithoutChevron",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "CustomContent",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "ExtraLarge",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "ExtraSmall",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Filled",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Group",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "GroupSizes",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Medium",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Outline",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "CompositionExample",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Soft",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "WithCustomInitials",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "WithImage",
+      "error": 0
+    },
+    {
+      "component": "avatar",
+      "story": "WithStatus",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Default",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "ExtraLarge",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Full",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "KeyboardInteraction",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "LoadingAction",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "ScrollingContent",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "WithIcon",
+      "error": 0
+    },
+    {
+      "component": "dialog",
+      "story": "HideCloseButton",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Desktop",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Mobile",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "page-footer",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "Accessibility",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "AllVariations",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "HeaderWithActions",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "HeaderWithBackButton",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "HorizontalLayout",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "LongTitle",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "DosAndDonts",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "MobileView",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "MultipleActions",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "VerticalLayout",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "WithBadgeAndInfo",
+      "error": 0
+    },
+    {
+      "component": "page-header",
+      "story": "WithoutActions",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Sizes",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Collapsed",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Interactive",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Scrollable",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "WithCustomHeader",
+      "error": 0
+    },
+    {
+      "component": "panel",
+      "story": "WithFooter",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "Dark",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "Horizontal",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "scrollbar",
+      "story": "WithoutControls",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Sizes",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Borders",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Borderless",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "ContentWrapping",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "DosAndDonts",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "EmptyState",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "HeaderFunctionality",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "HighlightedRow",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Large",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Loading",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "VirtualizedScroll",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Medium",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "PaginationLoading",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Scroll",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Small",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "SortableHeaders",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "StickyColumn",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "StickyHeader",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "WebhookTable",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "WithStackedTags",
+      "error": 0
+    },
+    {
+      "component": "table",
+      "story": "Wrapped",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "AllColors",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "AllSizes",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Body",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Display",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Headline",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Label",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Title",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "typography",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Action",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "AllVariants",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Disabled",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "DisabledInteraction",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Metrics",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Selected",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Template",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "ui-card",
+      "story": "WithIcon",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "AllCompositions",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "LongName",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "NameOnly",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "Selected",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "contact-list-item",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "AllLabels",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "CalendarDate",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "LongLabel",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "date-divider",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "AllHeights",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "Compact",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "ContentStates",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "CssHeight",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "Tall",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "image-media",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "AllCompositions",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "Interaction",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "Interactive",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "LongText",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "States",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "reply-quote",
+      "story": "WithThumbnail",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "AllFormats",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "ContentStates",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "LongText",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "MultipleEmphasis",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "PlainText",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "system-message",
+      "story": "V1VsV2",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "Overview",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "AllCounts",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "CustomLabel",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "NoUnread",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "Singular",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "Usage",
+      "error": 0
+    },
+    {
+      "component": "unread-separator",
+      "story": "V1VsV2",
+      "error": 0
+    }
+  ],
+  "interactions": [
+    "Chrome search: query breadcrumbs and Enter navigation",
+    "Input preview typing synchronized to Controls",
+    "Rapid Controls typing synchronized to Input after optimistic acknowledgment fix",
+    "Reset restored empty input and control",
+    "Appearance width and density selections",
+    "390px mobile iframe",
+    "Expanded preview and Escape exit",
+    "Source code panel",
+    "Switch toggle synchronized both directions",
+    "Copy install, Copy page and Copy Markdown feedback succeeded"
+  ],
+  "limitations": [
+    "Storybook play hooks were not executed",
+    "Full mobile page and reduced motion were not established"
+  ]
+}

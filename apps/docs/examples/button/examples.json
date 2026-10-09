@@ -1,0 +1,49 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A button with a text label. It is the primary variant by default."
+    },
+    {
+      "id": "variants",
+      "title": "Variants",
+      "description": "Choose the emphasis with `variant`: solid for the main action, quieter outlined and ghost styles for the rest, and `destructive` for risky ones."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "`size` sets the height: 36, 44 and 50px."
+    },
+    {
+      "id": "icons",
+      "title": "With icons",
+      "description": "`leftIcon` and `rightIcon` place an icon beside the label. Icons are sized for you."
+    },
+    {
+      "id": "icon-only",
+      "title": "Icon only",
+      "description": "The `icon` sizes make a square button. Give it an `aria-label`, since there is no text."
+    },
+    {
+      "id": "loading",
+      "title": "Loading",
+      "description": "`loading` shows a spinner, blocks activation and keeps keyboard focus. `loadingText` replaces the label meanwhile."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled button cannot be focused or pressed."
+    },
+    {
+      "id": "as-child",
+      "title": "As a link",
+      "description": "`asChild` renders your own element, such as an anchor or a router link, with the button's styling."
+    },
+    {
+      "id": "full-width",
+      "title": "Full width",
+      "description": "Buttons are inline by default. Add `w-full` to fill the row."
+    }
+  ]
+}

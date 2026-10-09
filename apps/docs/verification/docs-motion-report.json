@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-06",
+  "inputTransition": {
+    "articleRight": 946,
+    "heading": "Input",
+    "routeOpacity": "0.760121",
+    "routeTransform": "none",
+    "tocLeft": 1002,
+    "tocTop": 105
+  },
+  "imageMediaTransition": {
+    "articleRight": 946,
+    "routeOpacity": "0.760233",
+    "routeTransform": "none",
+    "tocLeft": 1002,
+    "tocTop": 105
+  },
+  "keyboardTabs": "ArrowLeft restores Preview and focus",
+  "previewState": "Control text survives Preview to Code to Preview",
+  "scroll": "Design Tokens settles at 110px and becomes active",
+  "reducedMotion": "marker aligns exactly with selected item; route animation none",
+  "consoleErrors": []
+}

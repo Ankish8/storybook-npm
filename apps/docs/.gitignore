@@ -1,0 +1,7 @@
+node_modules/
+.next/
+tsconfig.tsbuildinfo
+public/preview/
+
+# Timeless font files: the licence forbids public repositories and redistribution, keep them local only
+**/fonts/timeless/

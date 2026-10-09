@@ -1,0 +1,25 @@
+/* Docs examples: one live demo per iframe, sized to its content (the parent reads the height we report). */
+body {
+  display: block;
+  min-height: 0;
+}
+#example-root {
+  width: 100%;
+  margin-block: 0;
+}
+.example-stage {
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 120px;
+  padding: 40px 24px;
+}
+.example-error {
+  margin: 0;
+  padding: 24px;
+  color: var(--semantic-error-text, #b42318);
+  font-size: 14px;
+}

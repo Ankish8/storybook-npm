@@ -1,0 +1,105 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A checkbox with a label. The label is clickable and names the box for assistive technology."
+    },
+    {
+      "id": "description",
+      "title": "With description",
+      "description": "Supporting text under the label, linked to the box with `aria-describedby`."
+    },
+    {
+      "id": "default-checked",
+      "title": "Default checked",
+      "description": "Use `defaultChecked` when you do not need to control the value."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Pass `checked` and `onCheckedChange` to own the state. `onCheckedChange` receives `true`, `false` or `\"indeterminate\"`."
+    },
+    {
+      "id": "indeterminate",
+      "title": "Indeterminate",
+      "description": "`checked=\"indeterminate\"` shows a dash for a partly selected set, such as a select-all box."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Small (16px), default (18px) and large (24px)."
+    },
+    {
+      "id": "label-position",
+      "title": "Label position",
+      "description": "Put the label on either side of the box."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled checkbox cannot be focused or changed."
+    },
+    {
+      "id": "invalid",
+      "title": "Invalid",
+      "description": "`error` shows a message under the checkbox, turns the box red and links the message with `aria-describedby`. `invalid` does the same without a message."
+    },
+    {
+      "id": "card",
+      "title": "Card",
+      "description": "`variant=\"card\"` makes the whole option a bordered, clickable card that tints when checked."
+    },
+    {
+      "id": "group",
+      "title": "Checkbox group",
+      "description": "`CheckboxGroup` keeps one list of values. Give each `Checkbox` a `value` and the group decides which are checked. Its label, description and error name and describe the whole set."
+    },
+    {
+      "id": "group-cards",
+      "title": "Group of cards",
+      "description": "A group works with the card variant, and each option can still be disabled."
+    },
+    {
+      "id": "parts",
+      "title": "Compose the parts",
+      "description": "Give `Checkbox` children to compose the parts yourself. `Content` is the clickable label, `Control` the box and `Indicator` the mark; `Description` and `Error` are linked to the box for you."
+    },
+    {
+      "id": "custom-indicator",
+      "title": "Custom indicator",
+      "description": "Pass your own children to `Checkbox.Indicator` to draw a different mark."
+    },
+    {
+      "id": "form",
+      "title": "Form integration",
+      "description": "Checkboxes and radios submit by name and value like native inputs: checked boxes under the group name, the selected radio under its group name."
+    },
+    {
+      "id": "radio-group",
+      "title": "Radio group",
+      "description": "`RadioGroup` and `Radio` pick exactly one option. The native radio semantics give arrow-key navigation and form submission."
+    },
+    {
+      "id": "radio-horizontal",
+      "title": "Horizontal radio group",
+      "description": "Lay the options out in a row with `orientation=\"horizontal\"`."
+    },
+    {
+      "id": "radio-cards",
+      "title": "Radio cards",
+      "description": "`variant=\"card\"` makes each option a card. One highlight glides to the selected card."
+    },
+    {
+      "id": "radio-error",
+      "title": "Radio group with error",
+      "description": "A group can show an error that marks every option invalid. Choose a size to clear it."
+    },
+    {
+      "id": "radio-anatomy",
+      "title": "Radio anatomy",
+      "description": "`Radio` takes the same parts as `Checkbox`. There is no `Indicator`, because the native input draws its own dot."
+    }
+  ]
+}

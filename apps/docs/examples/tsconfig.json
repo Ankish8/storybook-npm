@@ -1,0 +1,10 @@
+{
+  "extends": "../../../tsconfig.app.json",
+  "compilerOptions": {
+    "tsBuildInfoFile": "../node_modules/.tmp/examples.tsbuildinfo",
+    "baseUrl": "../../..",
+    "paths": { "@/*": ["./src/*"] }
+  },
+  "include": ["./**/*.tsx"],
+  "exclude": []
+}

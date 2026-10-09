@@ -1,0 +1,3 @@
+# Preview controls experiment
+
+User authorized an experiment with a right-side drawer that preserves preview visibility and interaction. Use a non-modal inspector without a backdrop. Put the example selector first, editable properties next, and reset in a fixed footer. Open via a Customize button in the preview toolbar. Hide the reading guide while open and reserve width for the preview. Use a compact bottom panel on small screens. Keep controls synchronized through the existing iframe protocol; preserve all canonical v2 components and stories. Verify edits, example selection, reset, Escape/focus restoration and responsive geometry in the browser. Keep all changes local.

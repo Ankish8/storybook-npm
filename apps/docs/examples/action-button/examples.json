@@ -1,0 +1,44 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Return the real promise from `onAction`. The button shows a pending state while it runs, then a success state, then returns to idle."
+    },
+    {
+      "id": "labels",
+      "title": "Custom labels",
+      "description": "`pendingLabel` and `successLabel` say what is happening and what happened. The idle `label` stays the accessible name."
+    },
+    {
+      "id": "variants",
+      "title": "Variants",
+      "description": "ActionButton takes the Button variants."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "The same three text sizes as Button."
+    },
+    {
+      "id": "error",
+      "title": "Failure and retry",
+      "description": "If the promise rejects the button returns to idle so the user can retry, and `onActionError` is the place for visible error UI. Failures are also announced to screen readers."
+    },
+    {
+      "id": "keep-success",
+      "title": "Keep the success state",
+      "description": "`resetAfterMs={0}` keeps the success state until the next action."
+    },
+    {
+      "id": "state",
+      "title": "Observe the state",
+      "description": "`onStateChange` reports `idle`, `pending` and `success` for surrounding UI. The component still owns the state."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled action button cannot be pressed."
+    }
+  ]
+}

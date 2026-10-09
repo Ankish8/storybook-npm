@@ -1,0 +1,45 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A main action joined to a menu of related alternatives. Pressing the label runs `onClick`; the chevron opens the `actions`.",
+      "minHeight": 260
+    },
+    {
+      "id": "variants",
+      "title": "Variants",
+      "description": "`primary` is a solid fill and `secondary` is outlined.",
+      "minHeight": 260
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Small, default and large, matching Button.",
+      "minHeight": 260
+    },
+    {
+      "id": "icons",
+      "title": "With icons",
+      "description": "`icon` goes on the main button and each action can have its own icon.",
+      "minHeight": 260
+    },
+    {
+      "id": "destructive",
+      "title": "Destructive and disabled actions",
+      "description": "Mark risky actions `destructive` and unavailable ones `disabled`.",
+      "minHeight": 260
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled menu",
+      "description": "`open` and `onOpenChange` let you control the menu; each action's `onSelect` runs when it is chosen.",
+      "minHeight": 260
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "Disabling the split button disables both halves."
+    }
+  ]
+}

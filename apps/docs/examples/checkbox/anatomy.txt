@@ -1,0 +1,20 @@
+<Checkbox>                 {/* field: holds state, name, value, size */}
+  <Checkbox.Content>       {/* the clickable <label> */}
+    <Checkbox.Control>     {/* the box (a Radix checkbox button) */}
+      <Checkbox.Indicator />   {/* the check or dash */}
+    </Checkbox.Control>
+    Label text
+  </Checkbox.Content>
+  <Checkbox.Description /> {/* supporting text, linked to the box */}
+  <Checkbox.Error />       {/* validation message, linked to the box */}
+</Checkbox>
+
+<RadioGroup label description error>
+  <Radio value="a">
+    <Radio.Content>
+      <Radio.Control />    {/* the native radio input, which draws its own dot */}
+      Label text
+    </Radio.Content>
+    <Radio.Description />
+  </Radio>
+</RadioGroup>

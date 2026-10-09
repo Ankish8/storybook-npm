@@ -1,0 +1,358 @@
+{
+  "date": "2026-10-05",
+  "pages": [
+    {
+      "height": 296,
+      "overflow": false,
+      "path": "/components/button",
+      "errors": 0
+    },
+    {
+      "height": 362,
+      "overflow": false,
+      "path": "/components/button-group",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/confirmation-modal",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/delete-confirmation-modal",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/checkbox",
+      "errors": 0
+    },
+    {
+      "height": 364,
+      "overflow": false,
+      "path": "/components/creatable-multi-select",
+      "errors": 0
+    },
+    {
+      "height": 356,
+      "overflow": false,
+      "path": "/components/creatable-select",
+      "errors": 0
+    },
+    {
+      "height": 588,
+      "overflow": false,
+      "path": "/components/date-range-picker",
+      "errors": 0
+    },
+    {
+      "height": 608,
+      "overflow": false,
+      "path": "/components/date-time-picker",
+      "errors": 0
+    },
+    {
+      "height": 564,
+      "overflow": false,
+      "path": "/components/file-upload",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/form-modal",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/input",
+      "errors": 0
+    },
+    {
+      "height": 288,
+      "overflow": false,
+      "path": "/components/multi-select",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/number-step-field",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/otp-input",
+      "errors": 0
+    },
+    {
+      "height": 454,
+      "overflow": false,
+      "path": "/components/phone-input",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/radio",
+      "errors": 0
+    },
+    {
+      "height": 328,
+      "overflow": false,
+      "path": "/components/readable-field",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/search-filter",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/select",
+      "errors": 0
+    },
+    {
+      "height": 288,
+      "overflow": false,
+      "path": "/components/select-field",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/switch",
+      "errors": 0
+    },
+    {
+      "height": 420,
+      "overflow": false,
+      "path": "/components/text-field",
+      "errors": 0
+    },
+    {
+      "height": 412,
+      "overflow": false,
+      "path": "/components/textarea",
+      "errors": 0
+    },
+    {
+      "height": 294,
+      "overflow": false,
+      "path": "/components/breadcrumbs",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/dropdown-menu",
+      "errors": 0
+    },
+    {
+      "height": 372,
+      "overflow": false,
+      "path": "/components/pagination",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/stepper",
+      "errors": 0
+    },
+    {
+      "height": 268,
+      "overflow": false,
+      "path": "/components/tabs",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/alert",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/badge",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/bouncing-loader",
+      "errors": 0
+    },
+    {
+      "height": 374,
+      "overflow": false,
+      "path": "/components/empty-state",
+      "errors": 0
+    },
+    {
+      "height": 342,
+      "overflow": false,
+      "path": "/components/progress-indicator",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/shimmering-text",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/skeleton",
+      "errors": 0
+    },
+    {
+      "height": 340,
+      "overflow": false,
+      "path": "/components/spinner",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/tag",
+      "errors": 0
+    },
+    {
+      "height": 336,
+      "overflow": false,
+      "path": "/components/toast",
+      "errors": 0
+    },
+    {
+      "height": 320,
+      "overflow": false,
+      "path": "/components/tooltip",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/accordion",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/avatar",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/dialog",
+      "errors": 0
+    },
+    {
+      "height": 378,
+      "overflow": false,
+      "path": "/components/page-footer",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/page-header",
+      "errors": 0
+    },
+    {
+      "height": 478,
+      "overflow": false,
+      "path": "/components/panel",
+      "errors": 0
+    },
+    {
+      "height": 752,
+      "overflow": false,
+      "path": "/components/scrollbar",
+      "errors": 0
+    },
+    {
+      "height": 778,
+      "overflow": false,
+      "path": "/components/table",
+      "errors": 0
+    },
+    {
+      "height": 711,
+      "overflow": false,
+      "path": "/components/typography",
+      "errors": 0
+    },
+    {
+      "height": 260,
+      "overflow": false,
+      "path": "/components/ui-card",
+      "errors": 0
+    },
+    {
+      "height": 564,
+      "overflow": false,
+      "path": "/components/contact-list-item",
+      "errors": 0
+    },
+    {
+      "height": 510,
+      "overflow": false,
+      "path": "/components/date-divider",
+      "errors": 0
+    },
+    {
+      "height": 329,
+      "overflow": false,
+      "path": "/components/image-media",
+      "errors": 0
+    },
+    {
+      "height": 736,
+      "overflow": false,
+      "path": "/components/reply-quote",
+      "errors": 0
+    },
+    {
+      "height": 299,
+      "overflow": false,
+      "path": "/components/system-message",
+      "errors": 0
+    },
+    {
+      "height": 438,
+      "overflow": false,
+      "path": "/components/unread-separator",
+      "errors": 0
+    }
+  ],
+  "verified": [
+    "Radix Example mouse selection",
+    "Radix Controls variant changes preview style",
+    "Appearance radio item changes width",
+    "Search typo buton finds Button first and Enter navigation works",
+    "Search input computed outline and box shadow are none",
+    "Confirmation modal closed 260px, open 640px, closed 260px",
+    "Calendar opens and reserves 640px",
+    "No canonical v1/v2 or story changes"
+  ],
+  "checks": [
+    "production build",
+    "docs and preview typechecks",
+    "catalog parity/source/search",
+    "8 model tests",
+    "2 React and registry tests"
+  ]
+}

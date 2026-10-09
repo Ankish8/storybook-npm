@@ -1,0 +1,93 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Pick a suggestion, or type your own and press Enter; typing a suggestion's name selects it instead of creating a copy. The component is controlled: keep the selected values in state and update them from `onValueChange`.",
+      "minHeight": 250
+    },
+    {
+      "id": "preselected",
+      "title": "Preselected values",
+      "description": "Pass the starting selection as `value`. A value that is not one of the options, like Warm here, is shown as typed.",
+      "minHeight": 200
+    },
+    {
+      "id": "values-and-labels",
+      "title": "Values and labels",
+      "description": "Each option has a stored `value` and a display `label`. Chips show the label, and `onValueChange` receives the values.",
+      "minHeight": 200
+    },
+    {
+      "id": "free-text",
+      "title": "Free text only",
+      "description": "Leave out `options` and it becomes a tag input: type, press Enter, and Backspace on an empty field removes the last tag.",
+      "minHeight": 190
+    },
+    {
+      "id": "create-hint",
+      "title": "Create hint",
+      "description": "`createHintText` adds a line with an Enter key hint at the top of the open panel, so people know they can add their own.",
+      "minHeight": 240
+    },
+    {
+      "id": "helper-text",
+      "title": "Helper text",
+      "description": "`helperText` sits under the field while it is closed and is linked to it with `aria-describedby`.",
+      "minHeight": 200
+    },
+    {
+      "id": "max-items",
+      "title": "Selection limit",
+      "description": "`maxItems` caps the selection. The panel states the limit and closes once it is reached; remove a chip to add another.",
+      "minHeight": 280
+    },
+    {
+      "id": "max-length",
+      "title": "Character limit",
+      "description": "`maxLengthPerItem` limits how long a created value can be and shows a live counter that turns red at the limit. Suggestions are stored whole. Set `showPerItemCharacterCounter={false}` to hide the counter.",
+      "minHeight": 200
+    },
+    {
+      "id": "restrict-characters",
+      "title": "Restrict characters",
+      "description": "`sanitizeInput` strips characters as they are typed and `normalizeInput` tidies what is left. `onInvalidCharacters` and `onValidInput` tell you when to show and clear a message.",
+      "minHeight": 150
+    },
+    {
+      "id": "track-draft",
+      "title": "Track the draft",
+      "description": "`onInputValueChange` reports the text being typed, so you can validate or search while it is still a draft.",
+      "minHeight": 200
+    },
+    {
+      "id": "summary",
+      "title": "Summary display",
+      "description": "`triggerDisplay=\"summary\"` shows the closed field as one comma-separated line instead of removable chips.",
+      "minHeight": 200
+    },
+    {
+      "id": "unavailable-options",
+      "title": "Unavailable options",
+      "description": "An option with `disabled: true` is left out of the suggestions, and typing its name does not create it.",
+      "minHeight": 200
+    },
+    {
+      "id": "error",
+      "title": "Error",
+      "description": "`state=\"error\"` draws the error border. Show your message under the field and point `aria-describedby` at it.",
+      "minHeight": 230
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "`disabled` keeps the selection visible but locks the field, its chips and its suggestions."
+    },
+    {
+      "id": "form",
+      "title": "In a form",
+      "description": "A required field: submitting with nothing selected shows the error state and message, and choosing a value clears it.",
+      "minHeight": 280
+    }
+  ]
+}

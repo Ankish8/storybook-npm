@@ -1,0 +1,61 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Control it with `open` and `onOpenChange`. `onConfirm` and `onCancel` are callbacks: the modal does not close itself when you confirm, so you decide when."
+    },
+    {
+      "id": "trigger",
+      "title": "With a trigger",
+      "description": "Pass a `trigger` and the modal manages its own open state. Escape and Cancel close it and focus returns to the trigger."
+    },
+    {
+      "id": "destructive",
+      "title": "Destructive",
+      "description": "`variant=\"destructive\"` styles the confirm action for risky changes. Pair it with `size=\"xs\"` and a trash icon for the compact, centred layout."
+    },
+    {
+      "id": "type-to-confirm",
+      "title": "Type to confirm",
+      "description": "`requireText` keeps the confirm action disabled until the user types that exact phrase. The field takes focus, and the phrase clears when the modal closes."
+    },
+    {
+      "id": "form",
+      "title": "Form",
+      "description": "Pass fields as children. The first field takes focus, `confirmDisabled` blocks saving while the form is invalid, and `showCloseButton` adds the corner close button."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "`xs` 320px, `sm` 384px (the default), `default` 512px, `lg` 672px, plus `xl` and `full`.",
+      "minHeight": 160
+    },
+    {
+      "id": "icon",
+      "title": "With an icon",
+      "description": "`icon` draws a 40px tile beside the title. There is no icon unless you pass one."
+    },
+    {
+      "id": "loading",
+      "title": "Loading",
+      "description": "`loading` shows a spinner on the confirm action and disables both buttons while work is in progress."
+    },
+    {
+      "id": "footer",
+      "title": "Custom footer",
+      "description": "`footer` replaces the Cancel and confirm actions, for example with a single button. `footer={null}` removes the footer entirely."
+    },
+    {
+      "id": "parts",
+      "title": "Compose the parts",
+      "description": "For a layout `Modal` does not cover, compose `ModalRoot`, `ModalContent`, `ModalHeader` and the rest. `ModalCancel` closes the modal; `ModalAction` does not."
+    },
+    {
+      "id": "legacy",
+      "title": "Migrating from v1",
+      "description": "`Dialog`, `FormModal`, `ConfirmationModal` and `DeleteConfirmationModal` are still exported from `@/components/ui/v2/modal` with their v1 props, so v1 code migrates by changing its import path."
+    }
+  ]
+}
