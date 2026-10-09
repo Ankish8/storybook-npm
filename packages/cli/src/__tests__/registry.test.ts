@@ -112,6 +112,7 @@ describe("Registry", () => {
         "react-markdown",
         "remark-gfm",
         "react-country-flag",
+        "motion", // ActionButton label, width and feedback transitions
         "tailwindcss-animate", // Required for animation classes (animate-in, animate-out, etc.)
       ];
 

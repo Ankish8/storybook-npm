@@ -12,6 +12,51 @@
 // ============================================================================
 
 export const COMPONENT_META = {
+  'v2-split-button': {
+    name: 'SplitButton',
+    description: 'A v2 Button main action joined to a collision-aware dropdown of related alternatives. Install v2-split-button to include v2-button and v2-dropdown-menu.',
+    dependencies: ['clsx', 'tailwind-merge@^2.6.0', 'lucide-react', 'motion@^14.0.0'],
+    props: [
+      { name: 'label', type: 'string', required: true, description: 'Main action label' },
+      { name: 'actions', type: 'SplitButtonAction[]', required: true, description: 'Related actions: label, onSelect, optional id, icon, disabled, destructive' },
+      { name: 'onClick', type: 'React.MouseEventHandler<HTMLButtonElement>', required: false, description: 'Runs the main action' },
+      { name: 'icon', type: 'React.ReactNode', required: false, description: 'Leading icon on the main action' },
+      { name: 'disabled', type: 'boolean', required: false, defaultValue: 'false', description: 'Disables both halves and closes the menu' },
+      { name: 'loading', type: 'boolean', required: false, defaultValue: 'false', description: 'Shows Button loading feedback, blocks both halves and retains main-action focus' },
+      { name: 'open', type: 'boolean', required: false, description: 'Controlled menu visibility, paired with onOpenChange' },
+      { name: 'onOpenChange', type: '(open: boolean) => void', required: false, description: 'Menu visibility change callback' },
+    ],
+    variants: [
+      { name: 'variant', options: ['primary', 'secondary', 'default', 'outline'], defaultValue: 'primary' },
+      { name: 'size', options: ['sm', 'default', 'lg'], defaultValue: 'default' },
+    ],
+    examples: [{ title: 'Export alternatives', code: 'import { SplitButton } from "@/components/ui/v2/split-button"\n\n<SplitButton label="Export CSV" onClick={exportCSV} actions={[{ label: "Export PDF", onSelect: exportPDF }]} />', description: 'Independent main action and alternatives; menu choices do not implicitly replace the main action' }],
+  },
+  'v2-action-button': {
+    name: 'ActionButton',
+    description: 'An opt-in v2 async action button with pending and success feedback, using the shared v2 Button styles. Install v2-action-button to include its v2-button dependency.',
+    dependencies: ['class-variance-authority', 'clsx', 'tailwind-merge@^2.6.0', 'lucide-react', 'motion@^14.0.0'],
+    props: [
+      { name: 'label', type: 'string', required: true, description: 'Idle label and stable accessible name' },
+      { name: 'onAction', type: '() => void | Promise<unknown>', required: true, description: 'The real task to await before showing success' },
+      { name: 'pendingLabel', type: 'string', required: false, defaultValue: 'Saving', description: 'Visible and announced while the task runs' },
+      { name: 'successLabel', type: 'string', required: false, defaultValue: 'Saved', description: 'Visible and announced after resolution' },
+      { name: 'errorLabel', type: 'string', required: false, defaultValue: 'Action failed. Please try again.', description: 'Screen-reader announcement after rejection' },
+      { name: 'resetAfterMs', type: 'number', required: false, defaultValue: '2400', description: 'Success duration; zero retains success' },
+      { name: 'onActionError', type: '(error: unknown) => void', required: false, description: 'Show visible error feedback; the action returns to idle for retry' },
+      { name: 'onStateChange', type: '(state: "idle" | "pending" | "success") => void', required: false, description: 'Observe the internally owned state' },
+      { name: 'disabled', type: 'boolean', required: false, defaultValue: 'false', description: 'Native disabled state' },
+      { name: 'variant', type: '"primary" | "secondary" | "ghost" | "link" | "destructive" | "default" | "outline" | "success" | "dashed"', required: false, defaultValue: 'primary', description: 'Shared v2 Button styles and compatibility aliases' },
+      { name: 'size', type: '"sm" | "default" | "lg"', required: false, defaultValue: 'default', description: 'Text button size; icon-only actions use Button' },
+    ],
+    variants: [
+      { name: 'variant', options: ['primary', 'secondary', 'ghost', 'link', 'destructive', 'default', 'outline', 'success', 'dashed'], defaultValue: 'primary' },
+      { name: 'size', options: ['sm', 'default', 'lg'], defaultValue: 'default' },
+    ],
+    examples: [
+      { title: 'Save action', code: 'import { ActionButton } from "@/components/ui/v2/action-button"\n\n<ActionButton label="Save changes" onAction={() => saveDraft()} onActionError={(error) => showError(error)} />', description: 'Await a real promise; preserve focus and prevent duplicate requests while pending' },
+    ],
+  },
   button: {
     name: 'Button',
     description: 'A customizable button component with variants, sizes, and icons. Supports loading states and can render as a child element using Radix Slot.',

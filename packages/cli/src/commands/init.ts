@@ -235,7 +235,8 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   --radius: 0.5rem;
 
   /* v2 design system (ui/v2) — additive, v1 components never read these */
-  --font-v2: "Inter", sans-serif;
+  /* Timeless Sans first, Inter when the app does not host it (the licence forbids shipping the files in this package). */
+  --font-v2: "Timeless Sans", "Inter", sans-serif;
   /* Softer neutral text applies only to v2; legacy semantic tokens stay intact. */
   --v2-text-primary: #484848;
   --v2-text-secondary: #5E5E5E;

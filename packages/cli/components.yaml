@@ -37,6 +37,8 @@ categories:
       - v2-unread-separator
       - v2-button
       - v2-button-group
+      - v2-action-button
+      - v2-split-button
 
   form:
     description: "Form inputs and controls"
@@ -68,7 +70,6 @@ categories:
       - v2-creatable-select
       - v2-creatable-multi-select
       - v2-number-step-field
-      - v2-radio
       - v2-otp-input
       - v2-file-upload
 
@@ -82,17 +83,14 @@ categories:
     description: "Popups, modals, menus"
     components:
       - dialog
-      - v2-dialog
       - dropdown-menu
       - v2-dropdown-menu
       - tooltip
       - v2-tooltip
       - delete-confirmation-modal
-      - v2-delete-confirmation-modal
       - confirmation-modal
-      - v2-confirmation-modal
       - form-modal
-      - v2-form-modal
+      - v2-modal
 
   feedback:
     description: "Status and notifications"
@@ -2249,6 +2247,7 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
 
   v2-tag:
     description: "Tag (v2 design); same API as tag"
@@ -2273,7 +2272,7 @@ components:
       - "tailwind-merge@^2.6.0"
 
   v2-checkbox:
-    description: "Checkbox (v2 design); same API as checkbox"
+    description: "V2 Checkbox and Radio in one file: Checkbox, CheckboxGroup, Radio and RadioGroup share one anatomy (label, description, error, card variant). Same Checkbox API as v1."
     category: form
     path: "v2/checkbox"
     unprefixed: true
@@ -2307,6 +2306,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+      - "motion@^14.0.0"
+
 
   v2-text-field:
     description: "V2 labelled input with icons, prefixes and validation"
@@ -2319,6 +2320,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+      - "motion@^14.0.0"
+
 
   v2-select:
     description: "V2 Radix select with current keyboard and scroll behavior"
@@ -2359,6 +2362,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+      - "motion@^14.0.0"
+
 
   v2-multi-select:
     description: "V2 multiselect with current search and selection behavior"
@@ -2412,10 +2417,10 @@ components:
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
 
-  v2-dialog:
-    description: "V2 dialog preserving focus, portals and scroll behavior"
+  v2-modal:
+    description: "V2 modal: shadcn-style compound parts plus an all-in-one Modal for dialogs, forms, confirmations and type-to-confirm. v1 Dialog, FormModal, ConfirmationModal and DeleteConfirmationModal names are still exported."
     category: overlay
-    path: "v2/dialog"
+    path: "v2/modal"
     unprefixed: true
     dependencies:
       - "@radix-ui/react-dialog@^1.1.15"
@@ -2424,31 +2429,7 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
-
-  v2-confirmation-modal:
-    description: "V2 confirmation modal preserving loading and confirmation behavior"
-    category: overlay
-    path: "v2/confirmation-modal"
-    unprefixed: true
-    dependencies:
-      - "lucide-react"
-      - "clsx"
-      - "tailwind-merge@^2.6.0"
     internalDependencies:
-      - v2-dialog
-      - v2-button
-
-  v2-delete-confirmation-modal:
-    description: "V2 destructive confirmation preserving confirmation input behavior"
-    category: overlay
-    path: "v2/delete-confirmation-modal"
-    unprefixed: true
-    dependencies:
-      - "lucide-react"
-      - "clsx"
-      - "tailwind-merge@^2.6.0"
-    internalDependencies:
-      - v2-dialog
       - v2-button
       - v2-input
 
@@ -2497,6 +2478,7 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
     internalDependencies:
       - v2-switch
 
@@ -2521,6 +2503,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
 
   v2-avatar:
     description: "Avatar (v2 design); same API as avatar"
@@ -2531,6 +2514,7 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
 
   v2-page-header:
     description: "PageHeader (v2 design); same API as page-header"
@@ -2565,6 +2549,8 @@ components:
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
+
 
   v2-panel:
     description: "Panel (v2 design); same API as panel"
@@ -2634,15 +2620,6 @@ components:
     internalDependencies:
       - v2-input
 
-  v2-radio:
-    description: "Radio from the v2 design system"
-    category: form
-    path: "v2/radio"
-    unprefixed: true
-    dependencies:
-      - "clsx"
-      - "tailwind-merge@^2.6.0"
-
   v2-typography:
     description: "Typography (v2 design); same API as typography"
     category: core
@@ -2676,15 +2653,17 @@ components:
       - "tailwindcss-animate"
 
   v2-button-group:
-    description: "ButtonGroup from the v2 design system"
+    description: "Joined actions with a shared spring highlight, animated feedback and optional menu; preserves v2 selection compatibility"
     category: core
     path: "v2/button-group"
     unprefixed: true
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
+      - "lucide-react"
     internalDependencies:
-      - v2-button
+      - v2-dropdown-menu
 
   v2-date-range-picker:
     description: "DateRangePicker (v2 design); same API as date-range-picker"
@@ -2776,18 +2755,6 @@ components:
     internalDependencies:
       - v2-input
 
-  v2-form-modal:
-    description: "Form modal composition using v2 dialog and buttons"
-    category: overlay
-    path: "v2/form-modal"
-    unprefixed: true
-    dependencies:
-      - "clsx"
-      - "tailwind-merge@^2.6.0"
-    internalDependencies:
-      - v2-dialog
-      - v2-button
-
   v2-progress-indicator:
     description: "Linear and circular progress indicators"
     category: feedback
@@ -2796,6 +2763,7 @@ components:
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
 
   v2-contact-list-item:
     description: "Contact row using v2 visual primitives"
@@ -2865,3 +2833,32 @@ components:
       - "tailwindcss-animate"
     internalDependencies:
       - v2-button
+
+  v2-action-button:
+    description: "An async action with pending and success feedback, built on v2 Button styling"
+    category: core
+    path: "v2/action-button"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+      - "motion@^14.0.0"
+    internalDependencies:
+      - v2-button
+
+  v2-split-button:
+    description: "A main action joined to a menu of related alternatives"
+    category: core
+    path: "v2/split-button"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+      - "motion@^14.0.0"
+    internalDependencies:
+      - v2-button
+      - v2-dropdown-menu
