@@ -98,7 +98,11 @@ Today a block differs from a component in the documentation only:
 - Unchanged on purpose: the source file (`src/components/ui/v2/<slug>.tsx`), its story and its title (`V2/Components/...`), the CLI key (`npx myoperator-ui add v2-<slug>`) and the v1 mapping. `check-catalog.mjs` requires the `V2/Components/` story title and the `v2-<slug>` CLI key, and consumers' install commands use that key, so moving a block does not touch them.
 - `apps/docs/scripts/check-catalog.mjs` spells out the list of blocks, so moving one is a reviewed decision. Run `npm run docs:check` after changing it.
 
-Blocks today: Creatable multi-select. Not done: Arc's "When to use / When not to use" and "Built from" sections.
+Blocks today (12): the six `Custom/Chat/*` components (Contact list item, Date divider, Image media, Reply quote, System message, Unread separator), Creatable multi-select, Creatable select, Search filter, Readable field, Page header and Page footer. The rule: a block is product-shaped or a composition (chat, product form patterns, page chrome) that Arc, HeroUI and shadcn would ship as a block or pattern rather than a primitive; the v1 Storybook's `Custom/*` titles were the starting evidence. Two judgement calls kept as components although v1 files them under Custom: OTP input and File upload (shadcn, HeroUI and Arc ship both as components). Not done: Arc's "When to use / When not to use" and "Built from" sections.
+
+### Storybook
+
+v2 is no longer in Storybook: `.storybook/main.ts` lists the v1 story directories explicitly and leaves out `src/components/ui/v2` and `src/docs/v2`, and `preview.ts` has no v2 container, CSS or decorator. The v2 story files stay in the repo because the docs site's preview runner renders them. If you add a new v1 story directory, add it to the list in `main.ts`.
 
 ## The preview frame and open menus
 
