@@ -41,7 +41,7 @@ describe("ContactListItem", () => {
     const { container } = render(
       <ContactListItem name="Aditi Kumar" isSelected={true} />
     );
-    expect(container.firstChild).toHaveClass("bg-semantic-bg-ui");
+    expect(container.firstChild).toHaveClass("bg-semantic-primary-surface");
     expect(container.firstChild).not.toHaveClass(
       "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
     );
@@ -52,7 +52,38 @@ describe("ContactListItem", () => {
     expect(container.firstChild).toHaveClass(
       "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
     );
-    expect(container.firstChild).not.toHaveClass("bg-semantic-bg-ui");
+    expect(container.firstChild).not.toHaveClass("bg-semantic-primary-surface");
+  });
+
+  it("has the library's 8px corner, so hover, selected and the focus outline are rounded", () => {
+    const { container } = render(<ContactListItem name="Aditi Kumar" />);
+    expect(container.firstChild).toHaveClass("rounded-lg");
+  });
+
+  it("tells a selected row from a hovered one, and a pressed row from both", () => {
+    const { container, rerender } = render(
+      <ContactListItem name="Aditi Kumar" />
+    );
+    const idle = container.firstChild as HTMLElement;
+    // Hover is the neutral grey; pressing darkens to the navy tint selection also uses.
+    expect(idle).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+    expect(idle).toHaveClass("active:bg-semantic-primary-surface");
+
+    rerender(<ContactListItem name="Aditi Kumar" isSelected />);
+    const selected = container.firstChild as HTMLElement;
+    expect(selected).toHaveClass("bg-semantic-primary-surface");
+    expect(selected).not.toHaveClass("bg-semantic-bg-ui");
+  });
+
+  it("fills the avatar white on a selected row so it does not vanish into the selection tint", () => {
+    const { container, rerender } = render(
+      <ContactListItem name="Aditi Kumar" />
+    );
+    const avatar = () => container.querySelector("[class*='rounded-full']");
+    expect(avatar()).not.toHaveClass("bg-semantic-bg-primary");
+    rerender(<ContactListItem name="Aditi Kumar" isSelected />);
+    expect(avatar()).toHaveClass("bg-semantic-bg-primary");
+    expect(avatar()).not.toHaveClass("bg-semantic-info-surface");
   });
 
   it("applies custom className", () => {

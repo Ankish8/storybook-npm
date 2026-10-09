@@ -26,6 +26,10 @@ export interface ContactListItemProps extends Omit<
  * ContactListItem displays a contact entry with avatar, name, optional subtitle,
  * and trailing content — used in contact directories, user lists, and search results.
  *
+ * The row has the library's 8px corner. Hover is the neutral grey; selected and pressed use the darker navy tint,
+ * so a selected row never reads as merely hovered. The avatar turns white on a selected row, because its tinted fill
+ * is nearly the colour of the selection and would disappear into it.
+ *
  * @example
  * ```tsx
  * <ContactListItem
@@ -66,15 +70,20 @@ const ContactListItem = React.forwardRef(
           }
         }}
         className={cn(
-          "flex items-center gap-3 px-3 py-3 cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          "flex items-center gap-3 rounded-lg px-3 py-3 cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
           isSelected
-            ? "bg-semantic-bg-ui"
-            : "[@media(hover:hover)]:hover:bg-semantic-bg-ui active:bg-semantic-bg-ui",
+            ? "bg-semantic-primary-surface"
+            : "[@media(hover:hover)]:hover:bg-semantic-bg-ui active:bg-semantic-primary-surface",
           className
         )}
         {...props}
       >
-        <Avatar name={name} src={avatarSrc} size="sm" />
+        <Avatar
+          name={name}
+          src={avatarSrc}
+          size="sm"
+          className={isSelected ? "bg-semantic-bg-primary" : undefined}
+        />
 
         <div className="flex-1 flex items-center justify-between min-w-0">
           <div className="flex flex-col min-w-0">
