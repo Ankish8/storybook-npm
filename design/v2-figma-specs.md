@@ -23,6 +23,11 @@ OTP Input 2000:11973 | Page Header 924:11749, 2188:7792 | 924:11830 | 924:11892 
 - Soft shadow (secondary/outline) = 4px 4px 40px 0 rgba(0,0,0,.02)
 
 ## BUTTON (set 924:6442; variants Primary,Secondary,Outline,Ghost,Destructive,Link,Dashed,Success x states Default,Hover,Pressed,Disabled,Loading x sizes Large,Medium,Small,Icon)
+
+**User override, 2026-10-07:** The historical Figma measurements below are superseded for Button by the Arc reference state refresh. Primary remains `--semantic-primary` (#343E55), radius remains 8px. Heights are 36/44/50px, 14px medium (500) labels, flat 1px borders, primary hover opacity .91 and pressed .84, neutral secondary/ghost surfaces, disabled opacity .52, and centered loading at the original width. Destructive is a neutral surface with red text/border; success extends that treatment using our green semantic token. The canonical choices are Primary, Secondary, Ghost, Link and Destructive. Default is a Primary alias; Outline is a Secondary alias. Success and Dashed remain supported legacy variants. Ghost and Link have no border; Link uses the existing link color with an underline. Keyboard focus remains visible. See [V2-BUTTON-INTERACTIONS-REVIEW.md](V2-BUTTON-INTERACTIONS-REVIEW.md). No Figma edit is claimed.
+
+Historical Figma values:
+
 Sizes: Large h48 / Medium h40 / Small h32 / Icon 40x40; px16 py10 gap8 radius8; icon 18x18. Label Large+Medium: 14/600/lh20/ls .014px; Small label: 12/600/ls .06px
 Focus ring: abs rect offset 3px, 1px solid #343E55
 Primary: border 2px SKB, bg #343E55, SKEU shadow, text #FFF | hover bg #2F384D | pressed bg linear-gradient(270deg,#777E8D 0%,#2F384D 100%) no shadow, h-1 | disabled+loading bg #A2A6B1 no border/shadow text #FFF
@@ -81,3 +86,11 @@ Gallery tab: my app tab id 1312414840 (url /bots/v2-gallery), figma tab 13124148
 - A1 values were checked against this recorded spec and the already verified web-panel diffs; Figma was not reopened.
 - Checkbox (Selection card, verified web-panel diff): sizes 16/20/24 square, radius 4, border 1; unchecked white/E9EAEB, hover F5F5F5/C0C3CA, focus border343E55 plus 2px EBECEE shadow, disabled borderF5F5F5. Checked/indeterminate fill and border343E55, iconswhite; hover fill2F384D (checked also border2F384D and 2px EBECEE shadow; indeterminate retains default border). Disabled selected fill/borderA2A6B1, no whole-control opacity. Check/minus glyphs12/14/16, stroke3; label sizes12/14/16 and weight600 preserve v1.
 - Switch (Selection card, verified web-panel diff): tracks32x18 / 36x20 / 44x24, radius12, transparent border2; thumbs14/16/20, checked translation14/16/20. On343E55, hover2F384D, disabledonA2A6B1. OffEBECEE, hoverE9EAEB. Focusoutline1px343E55 with offset3. Thumbwhite with shadow0 2px 8px rgba(0,0,0,.06); disabledon thumbEBECEE and disabledoff thumbF5F5F5. No whole-control opacity. Label sizes12/14/16 and weight600 preserve v1.
+
+## Button Group — user-directed Arc refresh, 2026-10-07
+
+This code direction supersedes the earlier v2 pill/toggle presentation; it is not a new Figma reading. Use a joined 8px outline or primary-filled surface, 36/44/50px outer heights, semantic primary and neutral v2 text. Related actions share a travelling inset highlight, fading dividers, content-only press feedback, animated reserved labels and an optional non-modal menu. Legacy value-based v2 selection props remain supported. There is no v1 Button Group replacement. Reference and current verification: `design/V2-BUTTON-GROUP-REVIEW.md`.
+
+## Existing v2 Arc review — user-directed override, 2026-10-07
+
+The user requested comparison and polish of every existing v2 component using Arc UI. This pass supersedes earlier field-focus glow guidance: fields use preserved MyOperator primary border emphasis with no teal outer glow. Existing primary colors, corner radii, API and v1 remain preserved. It also adds keyboard/focus/drag fixes and restrained dismissal, selection, progress and content feedback. The complete per-component record and limitations are in `design/V2-ARC-REVIEW.md` and `design/arc-review/*.json`. No new Figma reading or Figma edits were performed.

@@ -1,0 +1,295 @@
+[
+  {
+    "slug": "alert",
+    "referenceUrl": "https://uiarc.dev/components/alert",
+    "status": "changed",
+    "changes": [
+      "Dismissal now collapses height and padding with a damped spring instead of unmounting instantly.",
+      "Tone icon fades and scales subtly; reduced motion uses a short fade.",
+      "Body text is left aligned instead of justified; close button has subtle press feedback.",
+      "Title and description fade when their string or number content changes.",
+      "Arc-parity pass: Title 16px to 14px/500, icon 20px to 18px, 1px resting shadow, 1.4 line height; dismiss button 24px to 28px with a .96 press.",
+      "Arc-parity pass: Dismissal now collapses height and opacity in about 550ms; before, a closing alert left a ~34px invisible strip for about 700ms."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Alert visited with computer use. Clicked Reconnect: warning Sync paused\u2192success All changes synced; screenshot reviewed. Public example exposed no dismissal control, so reference dismissal remains documented rather than directly exercised. Added title/description fades.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "avatar",
+    "referenceUrl": "https://uiarc.dev/components/avatar",
+    "status": "changed",
+    "changes": [
+      "Presence dots spring into and out of place, with instant positioning under reduced motion.",
+      "Existing dimensions, photo rendering and failed-photo fallback retained.",
+      "Arc-parity pass: Sizes: sm 30px to 28px, md 40px to 36px, xl 64px to 88px (lg 48px); 1px border on every variant; initials 10/12/14/22px.",
+      "Arc-parity pass: Status dot 8-14px with a hairline ring; the group overlaps 6px at every size and fans out on hover."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Avatar visited with computer use; screenshot reviewed photo sizes and online/offline dots. Public example had no status-changing control, so status animation was not directly exercised.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "badge",
+    "referenceUrl": "https://uiarc.dev/components/badge",
+    "status": "changed",
+    "changes": [
+      "String and number labels rise and fade when changed; arbitrary React children and asChild remain supported.",
+      "Leading and trailing status icons are decorative and fixed in the inline layout.",
+      "Pill width now springs only when string/number content changes; reduced motion snaps sizing.",
+      "Arc-parity pass: Border .4px to 1px, weight 400 to 500, gap 8px to 5px, -0.01em tracking, heights 26/22/30px.",
+      "Arc-parity pass: 240ms colour easing and a 0.42s morph spring when the label changes."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Badge visited with computer use. Clicked Approve review: In review\u2192Approved and Reopen review appeared; before/after screenshots reviewed. Added content-dependent width spring after seeing the live resizing behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "bouncing-loader",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Default dots 8px to 6px, gap 6px to 4px, rise 6px to 3px.",
+      "1.2s cycle with a 0.16s stagger (was 0.2s); opacity runs .35 to 1."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "contact-list-item",
+    "referenceUrl": "https://uiarc.dev/components/chat-thread",
+    "status": "changed",
+    "changes": [
+      "Replaced strong sticky hover tint with subtle hover-capable surface and press feedback.",
+      "Subtitle truncates within the list width; selection is exposed through aria-pressed.",
+      "Host keyboard handlers compose with Enter/Space activation and can prevent it. Arc reference is related, not a standalone Contact List Item.",
+      "Arc-parity pass: Name 14px/500, subtitle and trailing text 12px, 1.4 line height; row height 64px to 60.4px; 160ms row transition."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Chat Thread visited with computer use; screenshot and live DOM reviewed attachments, day labels, grouped identities and read metadata. No standalone equivalent or dynamic typing/quote/unread controls were exposed in this example.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "date-divider",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Gap 16px to 12px, label weight 400 to 500, 20px above and 14px below."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "empty-state",
+    "referenceUrl": "https://uiarc.dev/components/empty-state",
+    "status": "changed",
+    "changes": [
+      "Copy is constrained to a readable 400px measure.",
+      "Titles use medium weight; description leading is balanced.",
+      "Action row wraps and remains centered on narrow previews.",
+      "Titles rise 3px and descriptions fade on content changes; reduced motion fades without movement.",
+      "Arc-parity pass: size=\"sm\" matches Arc: 48px icon tile with no shadow, 16px title, 14px description (max 18rem), 20px gaps; the tile settles in over 480ms.",
+      "Arc-parity pass: The default size keeps its 90px icon."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc EmptyState visited with computer use. Clicked Create view: No saved views\u2192View created and Undo; screenshots reviewed. Added restrained title/description changes to the current API.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "image-media",
+    "referenceUrl": "https://uiarc.dev/components/chat-thread",
+    "status": "changed",
+    "changes": [
+      "Attachments render as a block with object-contain, so height limits no longer crop the source image.",
+      "Container and image remain bounded by available width. Arc Chat Thread is a related attachment reference.",
+      "Arc-parity pass: No further change in the Arc-parity pass: Arc's gallery tile crops with object-fit cover, which would break the maxHeight contract, so it was left as is."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Chat Thread visited with computer use; screenshot and live DOM reviewed attachments, day labels, grouped identities and read metadata. No standalone equivalent or dynamic typing/quote/unread controls were exposed in this example.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "progress-indicator",
+    "referenceUrl": "https://uiarc.dev/components/progress",
+    "status": "changed",
+    "changes": [
+      "One damped spring drives both fill and displayed count for bars, circles and semicircles.",
+      "Removed separate CSS interpolation so visible fill and percentage agree.",
+      "Accessible numeric progress and percentage update immediately; reduced motion snaps directly to the new value.",
+      "Arc-parity pass: Bar track 8px/.2px to 7px/1px with a fill that slides in; value text 14px muted on a 0.4s spring.",
+      "Arc-parity pass: At 100% the fill turns success-coloured and a check appears."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Progress visited with computer use. Clicked Advance twice: accessible values 68\u219284\u2192100; screenshots caught the visible percentage settling behind the target and showed the success check at completion. Local implementation preserves the existing info palette; exact timing equivalence is unverified.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "reply-quote",
+    "referenceUrl": "https://uiarc.dev/components/chat-thread",
+    "status": "changed",
+    "changes": [
+      "Passive quotes no longer claim pointer or hover interactivity.",
+      "Clickable replies use a soft press tint with a brief color transition and existing keyboard focus treatment. Arc Chat Thread is a related reference.",
+      "Arc-parity pass: Sender and message text 14px with a 1.4 line height; hover and press use a 160ms Arc ease."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Chat Thread visited with computer use; screenshot and live DOM reviewed attachments, day labels, grouped identities and read metadata. No standalone equivalent or dynamic typing/quote/unread controls were exposed in this example.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "shimmering-text",
+    "referenceUrl": "https://uiarc.dev/components/text-shimmer",
+    "status": "changed",
+    "changes": [
+      "Replaced the white sweep with a readable charcoal band over a muted base.",
+      "Calmer linear 2.4-second sweep and aria-busy reflecting active state; reduced-motion fallback retained.",
+      "Arc-parity pass: Rebuilt as Arc's bell-shaped sweep: 1.8s per pass with a rest between, pausing when offscreen.",
+      "Arc-parity pass: Label swaps rise in with a blur and the width springs."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc TextShimmer visited with computer use. Clicked Finish: Start again and Summary ready became visible; screenshot reviewed restrained band and completed state. Exact sweep and label timing were not measured.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "skeleton",
+    "referenceUrl": "https://uiarc.dev/components/skeleton",
+    "status": "changed",
+    "changes": [
+      "Pulse supports a per-placeholder stagger delay via --v2-skeleton-delay.",
+      "Usage shows a restrained 60ms/120ms text wave; shape, size and animation APIs retained.",
+      "Usage waits for the outgoing placeholder/content to fade before revealing the new sample, avoiding overlap.",
+      "Arc-parity pass: Pulse is 1.8s with Arc's easing: 11 beats, then rest."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Skeleton visited with computer use. Observed automatic loading\u2192profile content; clicked Reload and saw loading status return. Screenshot reviewed placeholder composition. Updated Usage to crossfade without overlapping copies.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "spinner",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "A 700ms linear turn of a 270-degree ring with no track and butt ends, with the same stroke ratio at every size.",
+      "Under reduced motion it still turns, at 2s."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "system-message",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Text 13px to 12px with a 1.4 line height and -0.01em tracking."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "table",
+    "referenceUrl": "https://uiarc.dev/components/sortable-data-table",
+    "status": "changed",
+    "changes": [
+      "Keyed rows spring to their new positions when consumers reorder them.",
+      "Reduced motion disables row movement. Existing sorting arrows, table semantics, sticky headers and restrained hover are retained.",
+      "Arc-parity pass: Header row 60px to 44px, sentence case, 14px/500 muted; cell padding 24px to 16px; medium row 54px to 52px; lighter row borders.",
+      "Arc-parity pass: Sort arrow flips on a spring and rows reorder on a 0.4s spring."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc sortable table visited with computer use. Clicked Sort by Project: ascending header and reordered rows verified. Screenshot captured transient clipping in Arc during reorder; only position movement is adopted, not that clipping.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "tag",
+    "referenceUrl": "https://uiarc.dev/components/badge",
+    "status": "changed",
+    "changes": [
+      "1px border and a 22px dismiss circle with a 14px icon.",
+      "Press dips to .96 and springs back; the 1.03 hover scale is gone.",
+      "Heights are now 24px, 28px and 32px."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "typography",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Corrected ordinary label weights from semibold to medium across all three sizes, matching the established subtle hierarchy.",
+      "No standalone Arc Typography component exists; headline emphasis and primary/secondary/muted roles retained.",
+      "Arc-parity pass: Display and headline are medium (500) with 1.1 leading and -0.03em tracking; titles 1.3 leading; label and body 1.4 with -0.01em tracking."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "ui-card",
+    "referenceUrl": "https://uiarc.dev/components/card",
+    "status": "changed",
+    "changes": [
+      "Interactive cards have subtle 0.99 press scale and a damped easing curve.",
+      "Reduced motion keeps color feedback and removes press movement. Dimensions, rounded corners and selection palette retained.",
+      "Arc-parity pass: Padding 16px to 20px and no resting shadow; interactive cards lift 2px with a raised shadow and the gradient hover and press scale are gone.",
+      "Arc-parity pass: Title 18px at 1.1 line height."
+    ],
+    "verification": [
+      "Focused unit tests pass; shared display suite: 441 tests across 19 files.",
+      "Source reviewed; local browser visual review blocked by browser URL policy.",
+      "Live Arc Card visited with computer use. Clicked Save\u2192Saved and title\u2192quick look, then closed it; screenshots reviewed. Card-to-dialog morph is outside this existing UiCard API and was not added. A transient content overlap in Arc quick look was not copied.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "unread-separator",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Gap 12px; label 12px/500 with a 1.4 line height. The muted chip is kept."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  }
+]

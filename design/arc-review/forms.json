@@ -1,0 +1,360 @@
+[
+  {
+    "slug": "checkbox",
+    "referenceUrl": "https://uiarc.dev/components/checkbox",
+    "status": "changed",
+    "changes": [
+      "Keep the checkbox shell stationary when selection changes; draw the check or mixed dash inside it in 160ms.",
+      "Read mixed state from Radix data-state so defaultChecked=\"indeterminate\" renders the correct dash as well as controlled mixed state.",
+      "Use normalized SVG path lengths and disable stroke travel under reduced motion.",
+      "Arc-parity pass: Box 20px to 18px and label gap 8px to 14px; a fill layer grows from 60% on a 350ms spring and the mark draws itself.",
+      "Arc-parity pass: Press scale .96 to .95 (120ms down, 580ms back)."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Toggled Include archived projects off and on in live Arc; checked state and explanatory status updated; inspected the drawn check screenshot.",
+      "Remaining difference: Arc uses a 44px laid-out role target; our default shell is 20px with a 28px invisible target. Enlarging the invisible target further risks overlapping compact rows.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "creatable-multi-select",
+    "referenceUrl": "https://uiarc.dev/components/multi-select",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Animate newly mounted selected chips with the same brief fade and 90%-to-full scale as MultiSelect.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Arc tag-input geometry: 7px padding, 28px chips, 22px remove circles; 36px suggestion chips that dip to .97 on press.",
+      "Arc-parity pass: The panel height springs with the filtered list."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Exercised live Arc Multi-select: opened Focus areas and selected Accessibility; chip and selected menu check appeared while popup stayed open.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "creatable-select",
+    "referenceUrl": "https://uiarc.dev/components/combobox",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Draw selected menu checks instead of scaling the entire glyph; disable stroke travel under reduced motion.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Arc combobox field and panel treatment with an inline check.",
+      "Arc-parity pass: The panel height follows the filtered list on a spring (190px to 46px over about 450ms in the measurement)."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Exercised live Arc Combobox Owner field: typed li and No match; observed filtered list and explicit empty status; inspected open popup screenshot.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "date-range-picker",
+    "referenceUrl": "https://uiarc.dev/components/date-range-picker",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Day circle 32px to 30px, today as a dot, 30px range band, two-letter weekdays at 28px high, 32px presets, 10px panel padding, nav press .92.",
+      "Arc-parity pass: Arc shadow and spring entry. Arc's trigger morph, preset glide and Cancel/Apply footer are not carried over."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Opened live Arc Date range, selected Last 30 days and applied it; observed draft range versus committed trigger and two-month panel screenshot.",
+      "Remaining difference: existing popup/month transitions retained; Arc shared trigger-surface morph and per-part rolling date labels are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "date-time-picker",
+    "referenceUrl": "https://uiarc.dev/components/date-picker",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Day cells are squares (~40px) with 4px gaps and 14px numbers; the selected disc glides on a spring and today is a dot.",
+      "Arc-parity pass: Two-letter weekdays at 24px high, time rows 32px to 36px, Arc shadow and spring entry on the popovers."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Arc Date Picker is a partial reference; existing combined date/time API and month transitions retained.",
+      "Live computer-use observation: Opened live Arc Date picker, moved October to November and selected November 11; inspected calendar popup and changing date label.",
+      "Remaining difference: existing popup/month transitions retained; Arc shared trigger-surface morph and per-part rolling date labels are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "file-upload",
+    "referenceUrl": "https://uiarc.dev/components/file-dropzone",
+    "status": "changed",
+    "changes": [
+      "Lift the upload icon gently during an accepted drag, keeping invalid and disabled drops stationary.",
+      "Apply hover fill only on enabled controls on hover-capable devices.",
+      "Arc-parity pass: Drop target rebuilt to Arc's spacing (~196px tall); a dashed SVG edge closes on drag and a three-sheet illustration fans on hover and drag.",
+      "Arc-parity pass: File rows are a 58px grid with a height-open entrance; errors get an icon."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Opened live Arc File dropzone and retried its seeded failed launch-video.mov demo; observed Uploading 0% progress state and retry announcement. No user file uploaded.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "input",
+    "referenceUrl": "https://uiarc.dev/components/input",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Padding 16px to 12px, -0.14px tracking; hover now shows the dark primary border (it was light grey) with a 160ms border transition; glows removed.",
+      "Arc-parity pass: Message row opens on a 0.4s spring and the text rises in from a 4px blur."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Edited live Arc Project name to a then empty; observed normal helper versus required-error copy and inspected focused field screenshot.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "multi-select",
+    "referenceUrl": "https://uiarc.dev/components/multi-select",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Trigger padding 5/11/5/12px; chips 24px to 24.8px at 12px regular, 9rem cap, 1px inset border, blur-in entry.",
+      "Arc-parity pass: Clear button is a 22px plate; menu offset 8px with 38px rows and a check that draws left to right."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Exercised live Arc Focus areas menu and added Accessibility; observed chip addition, checked row and persistent popup screenshot.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "number-step-field",
+    "referenceUrl": "https://uiarc.dev/components/number-field",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Shell hover uses the input border and focus the primary one; disabled dims the whole shell.",
+      "Arc-parity pass: Stepper press fill deepens in 60ms and the chevron sinks to .82 in 90ms, then springs back over 580ms."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Pressed Increase Seats in live Arc; observed native numeric value 8 to 9, transient previous/current digit layers and updated price copy.",
+      "Remaining difference: native editable numbers are preserved; Arc overlay digit wheels and overscroll limit strain are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "otp-input",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Slot border uses the input border colour, the focus glow is gone and the border transition is 160ms.",
+      "Disabled dims to 50%. Slot size and the error shake are unchanged."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "phone-input",
+    "referenceUrl": "https://uiarc.dev/components/phone-input",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Measure feedback content height with ResizeObserver and spring the row through reveal, wrapped-copy replacement and removal.",
+      "Let replacement copy rise 3px and unblur over 180ms; reduced motion applies text and row changes immediately.",
+      "Keep existing feedback IDs, error roles and describedby links.",
+      "Arc-parity pass: Country trigger sits 3px inside the shell with a grey hover, 500-weight dial code and 16px chevron; divider 22px; number field 12px padding.",
+      "Arc-parity pass: No built-in country picker, so Arc's search-in-lid is not carried over."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Opened live Arc country picker, searched India, selected +91 and typed a dummy short number; inspected picker morph screenshot and disabled Send code. No code sent.",
+      "Remaining difference: country selection remains externally composed through onCountryClick; Arc built-in country-surface morph is not added to this API.",
+      "Copy replacement animates as a whole; Arc per-word diffing and numeric digit wheels are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "radio",
+    "referenceUrl": "https://uiarc.dev/components/radio-group",
+    "status": "changed",
+    "changes": [
+      "Mark 16px to 17px, 1px border, filled with a 7px dot that springs in; press scale .88.",
+      "Card variant: 12px padding, hover surface and one highlight that glides between cards."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "readable-field",
+    "referenceUrl": "https://uiarc.dev/components/inline-edit",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: 12px padding, dark hover and focus border, 160ms border transition."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Arc Inline Edit is a nearby reference, not a direct read-only copy-field counterpart; existing copy and regenerate behavior retained.",
+      "Live computer-use observation: Opened live Arc Inline edit reference; inspected its edit affordance. No direct read-only copy/regenerate counterpart is claimed.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "search-filter",
+    "referenceUrl": "https://uiarc.dev/components/search-field",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Arc-parity pass: Glass icon 18px at a 13px inset with text starting at 38px; it wakes to the primary colour on focus or when filled.",
+      "Arc-parity pass: Clear button is a 24px target that scales and blurs in and out on a snappy spring."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Typed review into live Arc Search projects; observed Clear search appearing. SearchField is a partial reference; searchable selection behavior additionally checked in live Combobox.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "select",
+    "referenceUrl": "https://uiarc.dev/components/select",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Draw selected menu checks instead of scaling the entire glyph; disable stroke travel under reduced motion.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Trigger padding 16px to 12px and gap 12px; chevron turns on a 580ms spring.",
+      "Arc-parity pass: Panel gets 6px padding and Arc's shadow, opens in 240ms rising 6px from .97 and exits in 120ms; rows are 36px with a 120ms highlight and a check that pops in.",
+      "Arc-parity pass: The trigger value rolls in the direction of the list."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Opened live Arc Team Select, inspected menu and selected check, then chose Engineering; observed trigger label replacement and popup dismissal.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "select-field",
+    "referenceUrl": "https://uiarc.dev/components/select",
+    "status": "changed",
+    "changes": [
+      "Inherit the primary border focus and drawn selected checks from the shared Select primitive.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Arc-parity pass: Label, field and helper gaps 4px to 8px with a 1.4 line height; inherits the Select changes."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Live computer-use observation: Same live Team Select interaction examined; shared Select primitive supplies the compound field behavior.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "switch",
+    "referenceUrl": "https://uiarc.dev/components/switch",
+    "status": "changed",
+    "changes": [
+      "Track 42x24px (small 36x20, large 48x28), 18px thumb gliding on a spring, no border.",
+      "The thumb stretches by 5px while pressed and the track no longer scales; label weight 400, gap 12px."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "text-field",
+    "referenceUrl": "https://uiarc.dev/components/input",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Align the default single-line control to 44px height and 14px text; retain explicit compact and OTP dimensions.",
+      "Measure feedback content height with ResizeObserver and spring the row through reveal, wrapped-copy replacement and removal.",
+      "Let replacement copy rise 3px and unblur over 180ms; reduced motion applies text and row changes immediately.",
+      "Keep existing feedback IDs, error roles and describedby links.",
+      "Arc-parity pass: Padding 16px to 12px and hover/focus borders match Input; glows removed; loading no longer dims the field.",
+      "Arc-parity pass: Clear button is a 24px target with a grey hover and a .96 press, and is now keyboard-reachable while visible (tabindex 0)."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Live Arc Input edited to empty and error copy appeared. Its labeled field is the closest equivalent to our composed TextField.",
+      "Copy replacement animates as a whole; Arc per-word diffing and numeric digit wheels are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "textarea",
+    "referenceUrl": "https://uiarc.dev/components/textarea",
+    "status": "changed",
+    "changes": [
+      "Replace the teal outer focus glow with primary border emphasis and no glow.",
+      "Measure feedback content height with ResizeObserver and spring the row through reveal, wrapped-copy replacement and removal.",
+      "Let replacement copy rise 3px and unblur over 180ms; reduced motion applies text and row changes immediately.",
+      "Keep existing feedback IDs, error roles and describedby links.",
+      "Arc-parity pass: 110px minimum height, 12px padding, disabled at 60% opacity as in Arc, plus the shared field look (hover border, no glow)."
+    ],
+    "verification": [
+      "Focused form tests: all 705 tests in 19 files pass.",
+      "Local browser visual review blocked by the existing localhost browser policy.",
+      "Compiled Tailwind class audit passes: no dead classes across the 16 edited form component sources.",
+      "Live computer-use observation: Typed a short note into live Arc Project note; observed helper copy appearing below the multiline field.",
+      "Copy replacement animates as a whole; Arc per-word diffing and numeric digit wheels are not reproduced.",
+      "Follow-up source typecheck passes; focused 705 tests in 19 files pass after new dimensions and measured-message behavior.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  }
+]

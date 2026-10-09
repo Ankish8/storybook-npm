@@ -17,6 +17,21 @@ Run it: `npm run verify:v1-v2-compat` (about 90 seconds). It exits non-zero when
 
 Each tool was mutation-tested against v2 Button (rename a prop, make a prop required, narrow a type, drop an export, drop a variant, stop reading `loadingText`): all were caught.
 
+## Merged components
+
+Four v1 components are folded into one v2 component, `ui/v2/modal`. The map is `design/verify/merged-components.json` and every gate reads it.
+
+| v1 file | Exports kept in `ui/v2/modal` | How v1 code migrates |
+|---------|-------------------------------|----------------------|
+| `ui/dialog` | `Dialog`, `DialogTrigger`, `DialogPortal`, `DialogOverlay`, `DialogClose`, `DialogContent`, `DialogHeader`, `DialogFooter`, `DialogTitle`, `DialogDescription`, `dialogContentVariants`, `DialogContentProps` (the `Modal*` parts under their old names) | Change the import path. To adopt the new names, `Dialog` becomes `ModalRoot` and `DialogX` becomes `ModalX`. |
+| `ui/form-modal` | `FormModal`, `FormModalProps` | Change the import path. To adopt `Modal`: fields become children, `onSave` becomes `onConfirm`, `saveButtonText` becomes `confirmButtonText`, `disableSave` becomes `confirmDisabled`, and pass `showCloseButton`. |
+| `ui/confirmation-modal` | `ConfirmationModal` (the same object as `Modal`), `ConfirmationModalProps` | Change the import path, or rename to `Modal`. Same props. |
+| `ui/delete-confirmation-modal` | `DeleteConfirmationModal`, `DeleteConfirmationModalProps`, with the fixed `#delete-confirmation-input` id and v1 wording | Change the import path. To adopt `Modal`: `variant="destructive"`, `requireText` instead of `confirmText`, `confirmButtonText` instead of `deleteButtonText`, and a title instead of `itemName`. |
+
+All four become `@/components/ui/v2/modal`. The v1 behaviours are kept: Dialog shows its close button unless `hideCloseButton`, adds a hidden fallback description, and keeps its `sm`/`default`/`lg`/`xl`/`full` widths. FormModal keeps its close button, its `sm` default and its first-field focus. Only the look changes (shadcn's dialog and alert dialog), plus one deliberate behaviour change: the all-in-one `Modal` (and so `ConfirmationModal` and `DeleteConfirmationModal`) shows no close button unless `showCloseButton` is set, because Cancel and Escape already dismiss it.
+
+The gates compare each v1 file against its owner, and a mapped file that does not exist is an error. Without the map the tools would skip these components (they look for a same-named v2 file) and v1's Dialog, FormModal and confirmation tests would pass by running against v1 itself.
+
 ## Result
 
 | Gate | Result |
@@ -37,6 +52,8 @@ Two real gaps were found and fixed in v2:
 - **useToast**: the toasts it returns can carry the new `destructive` variant (see below).
 
 ## Additive differences (nothing removed)
+
+- `Checkbox`: new optional `error`, `invalid`, `variant="card"`, `CheckboxGroup`, and children-based parts (`Checkbox.Content` / `.Control` / `.Indicator` / `.Description` / `.Error`). A `Checkbox` without children renders exactly as before. `Radio` and `RadioGroup` have no v1 version and now live in the same file (`ui/v2/checkbox`).
 
 - New accepted values: Avatar `variant="outline"`, Textarea `size="lg"`, Toast `variant="destructive"`. Code that uses only v1 values is unaffected. An exhaustive `Record<NonNullable<ToastProps["variant"]>, …>` written against v1 would need the extra key.
 - New accessibility attributes on the same elements: `aria-invalid` (DateRangePicker, DateTimePicker, CreatableSelect, CreatableMultiSelect), `aria-busy` while Button is loading, `aria-label` on the creatable multi-select combobox.

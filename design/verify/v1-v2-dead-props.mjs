@@ -38,11 +38,14 @@ function analyse(file) {
   return { declared, refs };
 }
 
+const merged = JSON.parse(fs.readFileSync(path.join(root, "design/verify/merged-components.json"), "utf8"));
 let total = 0, flagged = 0;
 for (const f of fs.readdirSync(uiDir).filter((x) => x.endsWith(".tsx") && !x.includes(".stories."))) {
   const n = f.replace(/\.tsx$/, "");
   if (only && n !== only) continue;
-  const v2p = path.join(uiDir, "v2", f);
+  // A v1 component folded into another v2 component (merged-components.json) is read from the file that owns it.
+  const v2p = path.join(uiDir, "v2", `${merged[n] ?? n}.tsx`);
+  if (merged[n] && !fs.existsSync(v2p)) throw new Error(`${n} is merged into v2/${merged[n]}.tsx, which does not exist`);
   if (!fs.existsSync(v2p)) continue;
   const a1 = analyse(path.join(uiDir, f)), a2 = analyse(v2p);
   const rows = [];

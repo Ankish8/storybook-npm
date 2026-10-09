@@ -125,7 +125,7 @@ export const SCENARIOS = [
       await p.mouse(sel, "up"); await sleep(260);
       return { pressed, released: await p.style(sel, "transform") };
     },
-    normal: (r) => scaleOf(r.pressed) === 0.98 && scaleOf(r.released) === 1,
+    normal: (r) => scaleOf(r.pressed) === 0.97 && scaleOf(r.released) === 1,
     reduced: (r) => scaleOf(r.pressed) === 1,
   },
   {
@@ -138,7 +138,7 @@ export const SCENARIOS = [
       await p.mouse(sel, "up");
       return { pressed };
     },
-    normal: (r) => scaleOf(r.pressed) === 0.97,
+    normal: (r) => scaleOf(r.pressed) === 0.96,
     reduced: (r) => scaleOf(r.pressed) === 1,
   },
   {
@@ -147,6 +147,31 @@ export const SCENARIOS = [
       const sel = "#storybook-root button:not([disabled])";
       await p.mouse(sel, "move"); await sleep(200);
       await p.mouse(sel, "down"); await sleep(450);
+      const pressed = await p.style(sel, "transform");
+      await p.mouse(sel, "up");
+      return { pressed };
+    },
+    normal: (r) => scaleOf(r.pressed) === 1,
+    reduced: (r) => scaleOf(r.pressed) === 1,
+  },
+  {
+    name: "button-save-flow", story: "v2-components-button--save-flow",
+    async run(p) {
+      const sel = "#storybook-root button:not([disabled])";
+      await p.evalv("window.__buttonFlow = []; document.querySelector('#storybook-root button').focus(); let start = performance.now(); const sample = () => { const b = document.querySelector('#storybook-root button'); window.__buttonFlow.push({ t: performance.now() - start, width: b.offsetWidth, busy: b.getAttribute('aria-busy') === 'true', focused: document.activeElement === b, disabled: b.disabled, opacity: getComputedStyle(b.querySelector('[data-v2-button-label]')).opacity }); if (performance.now() - start < 1800) requestAnimationFrame(sample); }; requestAnimationFrame(sample);");
+      await p.click(sel);
+      await sleep(1800);
+      return await p.evalv("({ frames: window.__buttonFlow, saved: document.querySelector('#storybook-root button').textContent.includes('Saved') })");
+    },
+    normal: (r) => r.saved && r.frames.some((f) => f.busy && f.focused && !f.disabled) && r.frames.some((f) => f.opacity > 0 && f.opacity < 1) && new Set(r.frames.map((f) => f.width)).size > 5,
+    reduced: (r) => r.saved && r.frames.some((f) => f.busy && f.focused && !f.disabled) && new Set(r.frames.map((f) => f.width)).size <= 3,
+  },
+  {
+    name: "button-popup-anchor", story: "v2-components-dropdownmenu--default",
+    async run(p) {
+      const sel = "#storybook-root button[aria-haspopup=menu]";
+      await p.mouse(sel, "move"); await sleep(200);
+      await p.mouse(sel, "down"); await sleep(250);
       const pressed = await p.style(sel, "transform");
       await p.mouse(sel, "up");
       return { pressed };

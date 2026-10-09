@@ -45,11 +45,6 @@
     "hasV1": true
   },
   {
-    "component": "radio",
-    "figma": "2650:18296",
-    "hasV1": false
-  },
-  {
     "component": "select",
     "figma": "2118:22190",
     "hasV1": true
@@ -85,18 +80,8 @@
     "hasV1": true
   },
   {
-    "component": "dialog",
-    "figma": "924:11664",
-    "hasV1": true
-  },
-  {
-    "component": "confirmation-modal",
+    "component": "modal",
     "figma": "924:10148",
-    "hasV1": true
-  },
-  {
-    "component": "delete-confirmation-modal",
-    "figma": "924:11626",
     "hasV1": true
   },
   {

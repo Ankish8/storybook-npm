@@ -22,7 +22,7 @@ The values below are our web translation, not Apple's published constants. No ru
 | Purpose | Value | Notes |
 | --- | --- | --- |
 | Colour feedback | 150ms, ease-out | Explicit properties; option highlights remain instant |
-| Button press / return | 80ms down / 200ms return | Scale 0.98, icon-only 0.97, links stay still |
+| Button press / return | 120ms down / 220ms return | Scale 0.97, compact 0.96, wide 0.985; links, popup anchors and busy actions stay still |
 | Small action press / return | 80ms down / 180–200ms return | Scale no lower than 0.96; tag hover 1.03 |
 | Toggle / accordion | 240ms, sampled spring | Shared settling curve; no overshoot |
 | Panel | 260ms, width/opacity only | Reduced motion snaps width and retains a fade |
@@ -36,7 +36,8 @@ The values below are our web translation, not Apple's published constants. No ru
 
 | Component | Interaction |
 | --- | --- |
-| Button (and Pagination links, built on it) | Press scale (0.98; icon sizes 0.97; link none), fast compression and softer return. Spinner keeps turning under reduced motion, slower |
+| Button (and Pagination links, built on it) | Press scale (0.97; icon sizes 0.96; link/popup anchors none), fast compression and softer return. Changing content rises through a soft blur (240ms in / 160ms out) and its width settles on a critically damped spring. Reduced motion uses 120ms fades. Default loading overlays a centered spinner without changing label width. Loading retains focus and blocks activation. Spinner keeps turning under reduced motion, slower |
+| Button Group | One measured highlight springs between actions; surrounding dividers fade, pressed content dips in place, reserved labels crossfade and other labels animate width. Optional menu uses the shared Dropdown motion. Reduced motion keeps fades and removes spatial movement |
 | Switch | Thumb glides, track colour fades, both 240ms |
 | Checkbox | Tick (or dash) pops in/out: fade + zoom 85 -> 100, 180ms |
 | Radio | Dot grows from the centre (`background-size` 0 -> 100%, as a gradient cannot be tweened) |
@@ -67,7 +68,7 @@ Policy: remove movement, retain short opacity and colour fades. Radix overlays u
 3. **Never use `duration-*` to time an animation on an element that has no `transition-*`.** Tailwind's `duration-*` also writes `transition-duration`; with no `transition-property` the CSS default is `all`, so every later change (a floating panel's `left` / `top` / `visibility`) transitions and the panel flies in from the corner. Keep the 150ms default, or use `[animation-duration:Nms]`.
 4. **Positioned panels (floating-ui) must use `transform: false`** before they get a zoom/slide keyframe. The `enter` keyframe writes `transform`, which would fight `translate(x, y)` positioning. The date pickers already did; multi-select and search-filter now do.
 5. **Animate `transform` and `opacity`**; list `transition-[...]` properties explicitly.
-6. **Preserve DOM/API.** The measured tab rail is a pseudo-element; the element structure stays unchanged (`button.test.tsx` pins loading markup to v1). A wrapper element for a nicer spinner fade was tried and reverted for that reason.
+6. **Preserve v1 and public APIs.** The measured tab rail is a pseudo-element. The user-approved October 7 Button refinement adds internal content wrappers to v2 only, allowing label/spinner crossfades and width motion. Decorative outgoing content is inert and aria-hidden. Focusable loading uses aria-disabled; explicitly disabled actions remain natively disabled.
 7. **Use explicit CSS timing properties.** `tailwindcss-animate` registers overlapping `ease-*` and `duration-*` utilities: arbitrary values can be ambiguous and silently omitted. Use `[transition-duration:240ms]`, `[transition-timing-function:var(...)]` and their animation equivalents. Verify emitted CSS.
 8. **Declare `tailwindcss-animate`** in `packages/cli/components.yaml` for any component that uses `animate-in/out`. The CLI build validator enforces it; without the plugin a consumer's animations silently do nothing.
 
@@ -86,7 +87,7 @@ The original probe measures CSS motion; the refinement adds geometry and interru
 ## Considered and left out
 
 - **Switch press-stretch, avatar and image entrances**: they add distracting movement. The tab rail is now implemented, consistent with measured indicators in the references above.
-- **Spinner fade-in on `Button loading`**: needs a wrapper element and breaks the v1 markup parity test.
+- **Earlier Button spinner fade omission**: superseded by the user-approved October 7 content wrappers. The spinner now fades with the incoming content; v1 stays untouched.
 - **Option-row hover transitions**: would make keyboard navigation feel laggy.
 
 ## Entry/exit utilities must be gated with `motion-safe:` too (2026-10-04)

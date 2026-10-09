@@ -1,0 +1,304 @@
+[
+  {
+    "slug": "accordion",
+    "referenceUrl": "https://uiarc.dev/components/accordion",
+    "status": "changed",
+    "changes": [
+      "Added enabled-row Arrow Up/Down and Home/End focus navigation.",
+      "Linked each trigger to its labelled panel and made collapsed content inert.",
+      "Reveal content travels 6px with the existing measured height transition; reduced motion removes travel.",
+      "Consumer click and key handlers can prevent the default toggle/navigation.",
+      "Arc-parity pass: Trigger is 50px high at 14px/500 with 8px vertical padding and a 20px gap; the plain variant runs edge to edge with hairlines.",
+      "Arc-parity pass: Chevron is 17px, muted until open, on a snappy spring; the answer opens on a height spring with a 240ms fade and a 2px blur settle; hover changes text colour, not background."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc switched from What is included to Can I use this in a product; screenshot showed only the new answer after settling.",
+      "Arrow Up on the second row moved focus to What is included.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "breadcrumbs",
+    "referenceUrl": "https://uiarc.dev/components/breadcrumb",
+    "status": "changed",
+    "changes": [
+      "Only newly appended crumbs enter with an 8px slide and fade; existing path stays still.",
+      "Reduced motion keeps path changes immediate; animations cancel on a new path update.",
+      "Arc-parity pass: Crumb padding 4/2px, gap 6px, 16px chevron at stroke 1.75; links underline on hover (160ms) instead of tinting the background.",
+      "Arc-parity pass: New crumbs animate in over 240ms with a blur."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc screenshot inspected the Projects / Arc launch / Design review path and child-page actions.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "confirmation-modal",
+    "referenceUrl": "https://uiarc.dev/components/dialog",
+    "status": "changed",
+    "changes": [
+      "Cancel now closes uncontrolled dialogs through the existing DialogClose primitive and restores trigger focus.",
+      "Kept the current compact layout, spring entrance and primary action styling.",
+      "Arc-parity pass: Inherits the new dialog surface and motion; padding 24px, 16px icon, buttons right-aligned instead of equal width.",
+      "Arc-parity pass: Initial focus lands on Cancel, the safe choice."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "delete-confirmation-modal",
+    "referenceUrl": "https://uiarc.dev/components/dialog",
+    "status": "changed",
+    "changes": [
+      "Cancel now closes uncontrolled delete dialogs and resets typed confirmation on close.",
+      "Kept explicit typed confirmation, error palette and existing dialog entrance.",
+      "Arc-parity pass: Inherits the new dialog surface and motion; padding aligned to 24px and the close button restyled."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "dialog",
+    "referenceUrl": "https://uiarc.dev/components/dialog",
+    "status": "changed",
+    "changes": [
+      "Backdrop blurs 7px and dims to .46; the panel opens on a spring (about 500ms) from scale .96 and 8px below, and leaves in 160ms.",
+      "Border 1.2px to 1px; title 16px to 18px; description 12px to 14px in the secondary colour.",
+      "Header gap 16px to 8px; close button is a 32px bordered control."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ],
+    "remainingDifferences": [
+      "MyOperator keeps its existing 4px/0.98 entrance rather than Arc 8px/0.96; dynamic title blur is not ported."
+    ]
+  },
+  {
+    "slug": "dropdown-menu",
+    "referenceUrl": "https://uiarc.dev/components/dropdown-menu",
+    "status": "changed",
+    "changes": [
+      "Compacted every command, submenu, checkbox and radio row to the live Arc 36px height and 14px type.",
+      "Kept MyOperator colour tokens and menu/item corner radii, immediate keyboard highlight, existing trigger-origin motion and Radix selection behavior.",
+      "Arc-parity pass: Surface gets 5px padding, a 12rem minimum width and Arc's floating shadow; it opens on a spring (580ms transform, 160ms fade) and closes in 130ms.",
+      "Arc-parity pass: Items stagger in at 35ms steps; one highlight glides between rows for the pointer and jumps for the keyboard.",
+      "Arc-parity pass: Rows are 36px with a 10px gap and 11px padding; sideOffset 4px to 6px."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Live Arc opened Project actions and inspected Edit project, Download brief and Archive with screenshot.",
+      "Read-only rendered geometry measured all three rows at 36px height and 14px text; keyboard Arrow Down focused Edit project.",
+      "43 focused menu tests pass; compiled class scan has zero dead classes.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "form-modal",
+    "referenceUrl": "https://uiarc.dev/components/dialog",
+    "status": "changed",
+    "changes": [
+      "Inherits the new dialog surface, spring open and backdrop.",
+      "Header right padding widened to fit the 32px close button."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "pagination",
+    "referenceUrl": "https://uiarc.dev/components/pagination",
+    "status": "changed",
+    "changes": [
+      "Disabled previous/next links now leave the tab order and prevent keyboard/programmatic activation.",
+      "Retained current page styling, tabular numerals and subtle press feedback.",
+      "Added a scoped measured current-page highlight that travels between links; reduced motion moves it instantly.",
+      "Kept existing number/ellipsis range and anchor API; decoration adds no list items or focus targets.",
+      "Arc-parity pass: Page numbers 12px/400 tabular; the selected mark is white with a border and a light shadow and moves on a spring.",
+      "Arc-parity pass: Only the arrows press (.96); disabled links are 40% opacity."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc selected Page 4: summary changed to 31\u201340 and screenshot showed the traveling current-page mark.",
+      "Selecting Page 1 made Previous page disabled.",
+      "36 pagination tests pass, including a measured-geometry highlight regression.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ],
+    "remainingDifferences": [
+      "Current mark glides; Arc belt-style number-window motion is not ported to the existing ellipsis API."
+    ]
+  },
+  {
+    "slug": "panel",
+    "referenceUrl": "https://uiarc.dev/components/drawer",
+    "status": "changed",
+    "changes": [
+      "Closing returns focus to the opener when the panel still owns focus.",
+      "Closed controls are inert while the width/opacity exit finishes.",
+      "Escape can be handled by the consumer before closing; nested scroll stays contained.",
+      "Retained the existing side-panel width animation and nonmodal layout.",
+      "Arc-parity pass: Header 24px padding, 18px title and a 32px bordered close; 1px border and Arc's floating shadow.",
+      "Arc-parity pass: Opens by springing the width over 460ms and closes in 240ms."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc opened Launch details from Open details; screenshot inspected the right-edge drawer and dimmed preview.",
+      "Focused control was Close drawer; read the live edge spring/drag-to-dismiss specification.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ],
+    "remainingDifferences": [
+      "Panel remains a nonmodal layout surface; Arc modal overlay and drag-to-dismiss are not added to its existing API."
+    ]
+  },
+  {
+    "slug": "scrollbar",
+    "referenceUrl": "https://uiarc.dev/components/scroll-area",
+    "status": "changed",
+    "changes": [
+      "Dragging keeps the grabbed point within the thumb instead of jumping to its centre.",
+      "Thumb hover uses a subtle token-based colour fade.",
+      "Measurement gracefully handles environments without ResizeObserver; native keyboard scrolling stays intact.",
+      "Arc-parity pass: \"subtle\" is a floating 11px track that fades in on scroll, hover or drag; 5px pill thumb (7px on hover), 28px minimum, edge fades, click-to-page.",
+      "Arc-parity pass: Horizontal wheel scrolls sideways. \"dark\" keeps its solid rail."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Opened live Arc Scroll area and inspected the labelled Team activity region and native-scrolling documentation.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "stepper",
+    "referenceUrl": "https://uiarc.dev/components/stepper",
+    "status": "changed",
+    "changes": [
+      "Completed connectors fill through a short transform transition in both orientations.",
+      "Completed markers use the primary fill; current marker has a distinct neutral surface and ring.",
+      "Colours settle smoothly and reduced motion removes transitions; numbered/icon modes remain supported.",
+      "Arc-parity pass: Marker 28px (small 24px) with a 4px halo on the current step; completed steps draw a check.",
+      "Arc-parity pass: 2px connector fills on a spring; horizontal steps are left-aligned in a grid."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc Continue on an empty workspace name showed the error marker/message; screenshot inspected completed/current/upcoming markers.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "tabs",
+    "referenceUrl": "https://uiarc.dev/components/tabs",
+    "status": "changed",
+    "changes": [
+      "Pill variant: tabs 32px to 36px high, track gets a 1px border, 4px gap, 88px minimum width, 14px/500.",
+      "The cursor moves on Arc's underdamped spring; the panel fades in over 240ms sliding 8px from the side of the chosen tab (margin 8px to 16px).",
+      "Disabled tabs use 50% opacity. The underline variant is unchanged."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ],
+    "remainingDifferences": [
+      "Existing measured rail/pill is animated; Arc directional panel slide and height morph are not ported."
+    ]
+  },
+  {
+    "slug": "toast",
+    "referenceUrl": "https://uiarc.dev/components/toast",
+    "status": "changed",
+    "changes": [
+      "Action and dismiss controls now have restrained press feedback and hover fades.",
+      "Dismiss outline appears for keyboard focus; pointer clicks no longer leave a focus ring.",
+      "Retained Radix swipe, timeout/hover behavior, queue and reduced-motion toast fade.",
+      "Arc-parity pass: 30px round status chip, 14px copy, action under the text and a 32px dismiss; width 26rem; default duration 4.5s.",
+      "Arc-parity pass: Enters 16px from scale .96 on a spring and leaves 8px down."
+    ],
+    "verification": [
+      "Focused component tests passed.",
+      "Source and API reviewed; local visual review blocked by browser URL policy.",
+      "All 16 assigned suites passed: 345 tests total.",
+      "TypeScript including stories passed; focused ESLint passed.",
+      "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
+      "Live Arc Save a draft displayed Draft saved with check and dismiss control; screenshot inspected the compact surface.",
+      "Dismiss notification removed the toast from the preview.",
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "tooltip",
+    "referenceUrl": "https://uiarc.dev/components/tooltip",
+    "status": "changed",
+    "changes": [
+      "Padding 6/16px to 12/16px, text 14px with 1.4 line height, max width 240px, 1px border, 8px offset.",
+      "Opens with a 3px rise from scale .97 over 160ms and closes in 120ms.",
+      "TooltipProvider opens after 250ms instead of Radix's 700ms (a delayDuration you pass still wins)."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ],
+    "remainingDifferences": [
+      "Existing tooltip opening remains origin-aware; Arc dynamic copy blur/size morph is not ported."
+    ]
+  },
+  {
+    "slug": "page-header",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Title 16px to 18px/500 with a 1.3 line height; description 12px to 14px with an 8px gap.",
+      "Padding 16px to 20px, so the bar grows from 73px to 92px tall; back-button hover is 160ms."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "page-footer",
+    "referenceUrl": null,
+    "status": "changed",
+    "changes": [
+      "Padding 12px top and bottom, 20px sides (20px all round on mobile); text 14px with a 1.4 line height."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  }
+]

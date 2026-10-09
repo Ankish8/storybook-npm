@@ -1,0 +1,52 @@
+[
+  {
+    "slug": "button",
+    "referenceUrl": "https://uiarc.dev/components/button",
+    "status": "changed",
+    "changes": [
+      "Letter-spacing is now -0.16px, as in Arc.",
+      "Ghost keeps a 1px transparent border, so it is the same width as Secondary (it was 2px narrower)."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "action-button",
+    "referenceUrl": "https://uiarc.dev/components/action-button",
+    "status": "changed",
+    "changes": [
+      "Default padding 16px to 20px (width 152.4px to 159.5px) and icon 16px to 17px.",
+      "Hover and press no longer change opacity; only the hover shadow changes. Disabled opacity .52 to .7.",
+      "Width and label morph use Arc's spring (.42s, bounce .16); letter stagger .016s; check mark draws with new timing."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "split-button",
+    "referenceUrl": "https://uiarc.dev/components/split-button",
+    "status": "changed",
+    "changes": [
+      "The main action and menu trigger are one bordered pill: 46px tall including the border, trigger 38px wide, full-height 1px divider.",
+      "Chevron turns on a 580ms spring; pressing the main action dips the whole pill.",
+      "The menu now uses the shared DropdownMenu surface."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  },
+  {
+    "slug": "button-group",
+    "referenceUrl": "https://uiarc.dev/components/button-group",
+    "status": "changed",
+    "changes": [
+      "Segment padding 16px to 14px; small segments use 14px text (was 12px); chevron segment 42px to 38px.",
+      "Hairline dividers, label crossfade with a 4px blur, width spring and a press dip."
+    ],
+    "verification": [
+      "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
+    ]
+  }
+]

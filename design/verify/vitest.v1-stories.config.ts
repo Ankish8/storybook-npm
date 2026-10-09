@@ -11,6 +11,7 @@ import path from "node:path";
 
 const root = path.resolve(__dirname, "../..");
 const uiDir = path.join(root, "src/components/ui");
+const merged: Record<string, string> = JSON.parse(fs.readFileSync(path.join(root, "design/verify/merged-components.json"), "utf8"));
 const toV2 = process.env.REPLAY_V2 === "1";
 
 const redirect = {
@@ -22,7 +23,11 @@ const redirect = {
     if (path.dirname(imp) !== uiDir || !imp.endsWith(".stories.tsx")) return null;
     const m = /^\.\/([a-z0-9-]+)$/.exec(source);
     if (!m) return null;
-    const target = path.join(uiDir, "v2", `${m[1]}.tsx`);
+    // A v1 component folded into another v2 component resolves to the file that now owns it. A mapped target
+    // that does not exist is an error: falling through would run the v1 test or story against v1 itself.
+    const owner = merged[m[1]] ?? m[1];
+    const target = path.join(uiDir, "v2", `${owner}.tsx`);
+    if (merged[m[1]] && !fs.existsSync(target)) throw new Error(`${m[1]} is merged into v2/${owner}.tsx, which does not exist`);
     return fs.existsSync(target) ? target : null;
   },
 };

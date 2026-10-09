@@ -1,0 +1,6 @@
+{
+  "dialog": "modal",
+  "form-modal": "modal",
+  "confirmation-modal": "modal",
+  "delete-confirmation-modal": "modal"
+}

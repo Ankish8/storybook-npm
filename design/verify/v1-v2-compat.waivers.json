@@ -21,5 +21,36 @@
     "gate": "v1-tests",
     "test": "text-field :: uses container with focus-within styling when has addons",
     "reason": "Queries the v1 class .focus-within:border-semantic-border-input-focus; v2 uses its own focus tokens. Same DOM, same behaviour."
+  },
+  {
+    "gate": "v1-tests",
+    "test": "spinner :: Spinner SVG structure track circle has 0.25 opacity",
+    "reason": "Arc-parity redesign: the spinner is now a single 270-degree ring with no faint track, so the v1 assertion on the track circle's opacity no longer applies. Role, label, sizes and props are unchanged; a hidden second circle keeps the v1 element structure."
+  },
+  {
+    "gate": "v1-tests",
+    "test": "spinner :: Spinner SVG structure active arc has strokeLinecap round",
+    "reason": "Arc-parity redesign: the ring uses butt line caps. Purely a stroke style; markup, role and props are unchanged."
+  },
+  {
+    "gate": "v1-tests",
+    "test": "bouncing-loader :: BouncingLoader applies the self-contained wave animation with staggered per-dot delay",
+    "reason": "Arc-parity redesign: the typing-dots cycle is 1.2s with a 0.16s stagger instead of 0.2s. Still staggered per dot; only the timing value differs."
+  },
+  {
+    "gate": "v1-tests",
+    "test": "checkbox :: Checkbox renders no icon when unchecked",
+    "reason": "Arc-parity redesign: the check mark is always mounted so it can draw in and out; it is invisible (fill scale 0.6, dash fully offset) when unchecked. Role, aria-checked and callbacks are unchanged."
+  },
+  {
+    "gate": "v1-tests",
+    "test": "date-range-picker :: DateRangePicker renders weekday headers in uppercase",
+    "reason": "Arc-parity redesign: weekday headers are two-letter title case ('Su', 'Mo') instead of 'SU', 'MO'. Same column order and count."
+  },
+  {
+    "gate": "stories",
+    "component": "text-field",
+    "match": "button[aria-label=Clear input tabindex=-1 type=button]",
+    "reason": "Intentional accessibility change in the Arc-parity pass: the clear button is now keyboard-reachable (tabindex 0) while it is visible, instead of tabindex -1. Label, type, click behaviour and the focus return to the input are unchanged."
   }
 ]

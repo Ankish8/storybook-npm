@@ -29,6 +29,15 @@ const ts = require("typescript");
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const uiDir = path.join(root, "src/components/ui");
 
+// v1 components folded into another v2 component (design/verify/merged-components.json). Their v1 exports are
+// compared against the v2 file that now owns them. A missing target is an error, never a silent skip.
+const merged = JSON.parse(fs.readFileSync(path.join(root, "design/verify/merged-components.json"), "utf8"));
+const v2Of = (n) => {
+  const target = merged[n] ?? n;
+  if (merged[n] && !fs.existsSync(path.join(uiDir, "v2", `${target}.tsx`))) throw new Error(`${n} is merged into v2/${target}.tsx, which does not exist`);
+  return target;
+};
+
 const argv = process.argv.slice(2);
 const opt = (k) => (argv.includes(`--${k}`) ? argv[argv.indexOf(`--${k}`) + 1] : undefined);
 const only = (opt("only") || "").split(",").filter(Boolean);
@@ -41,8 +50,8 @@ const waived = (f) => waivers.some((w) => w.gate === "types" && w.component === 
 // ---- program ---------------------------------------------------------------------------------------------
 const cfgPath = path.join(root, "tsconfig.app.json");
 const cfg = ts.getParsedCommandLineOfConfigFile(cfgPath, {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: (d) => { throw new Error(ts.flattenDiagnosticMessageText(d.messageText, "\n")); } });
-const names = fs.readdirSync(uiDir).filter((f) => f.endsWith(".tsx") && !f.includes(".stories.")).map((f) => f.replace(/\.tsx$/, "")).filter((n) => fs.existsSync(path.join(uiDir, "v2", `${n}.tsx`)));
-const rootFiles = names.flatMap((n) => [path.join(uiDir, `${n}.tsx`), path.join(uiDir, "v2", `${n}.tsx`)]);
+const names = fs.readdirSync(uiDir).filter((f) => f.endsWith(".tsx") && !f.includes(".stories.")).map((f) => f.replace(/\.tsx$/, "")).filter((n) => fs.existsSync(path.join(uiDir, "v2", `${v2Of(n)}.tsx`)));
+const rootFiles = [...new Set(names.flatMap((n) => [path.join(uiDir, `${n}.tsx`), path.join(uiDir, "v2", `${v2Of(n)}.tsx`)]))];
 const options = { ...cfg.options, noEmit: true, incremental: false, composite: false, tsBuildInfoFile: undefined };
 const program1 = ts.createProgram({ rootNames: rootFiles, options });
 const probePath = path.join(uiDir, "__compat_probe__.ts");
@@ -65,7 +74,7 @@ function buildProbe(prog) {
   const lines = [];
   const arity = (sym) => (sym.declarations || []).map((d) => d.typeParameters?.length || 0).reduce((a, b) => Math.max(a, b), 0);
   for (const n of names) {
-    lines.push(`import type * as A_${n.replace(/-/g, "_")} from "./${n}";`, `import type * as B_${n.replace(/-/g, "_")} from "./v2/${n}";`);
+    lines.push(`import type * as A_${n.replace(/-/g, "_")} from "./${n}";`, `import type * as B_${n.replace(/-/g, "_")} from "./v2/${v2Of(n)}";`);
     const sf = prog.getSourceFile(path.join(uiDir, `${n}.tsx`));
     const msym = sf && c.getSymbolAtLocation(sf);
     if (!msym) continue;
@@ -152,7 +161,7 @@ const summary = [];
 for (const name of names) {
   if (only.length && !only.includes(name)) continue;
   const e1 = exportsOf(path.join(uiDir, `${name}.tsx`));
-  const e2 = exportsOf(path.join(uiDir, "v2", `${name}.tsx`));
+  const e2 = exportsOf(path.join(uiDir, "v2", `${v2Of(name)}.tsx`));
   const local = [];
   const push = (f) => local.push({ component: name, ...f });
   for (const [exp, s1] of e1) {
