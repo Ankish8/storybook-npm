@@ -29,7 +29,6 @@ import {
   components,
   entryHref,
   uiComponents,
-  type ComponentCategory,
 } from "@docs/lib/catalog";
 
 const searchPages = [
@@ -65,9 +64,10 @@ export function LibraryShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [sidebarQuery, setSidebarQuery] = useState("");
-  const [collapsedGroups, setCollapsedGroups] = useState<
-    Set<ComponentCategory>
-  >(new Set());
+  // Keys are the category id, prefixed "block-" for the same category under Blocks.
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(
+    new Set()
+  );
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -213,10 +213,11 @@ export function LibraryShell({ children }: { children: ReactNode }) {
       (component) => pathname === entryHref(component)
     );
     if (!active) return;
+    const key = `${active.kind === "block" ? "block-" : ""}${active.category}`;
     setCollapsedGroups((previous) => {
-      if (!previous.has(active.category)) return previous;
+      if (!previous.has(key)) return previous;
       const next = new Set(previous);
-      next.delete(active.category);
+      next.delete(key);
       return next;
     });
   }, [pathname]);
@@ -305,12 +306,59 @@ export function LibraryShell({ children }: { children: ReactNode }) {
     }
   };
 
-  function toggleGroup(category: ComponentCategory) {
+  function toggleGroup(key: string) {
     setCollapsedGroups((previous) => {
       const next = new Set(previous);
-      if (next.has(category)) next.delete(category);
-      else next.add(category);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
+    });
+  }
+
+  /** The category groups of one sidebar section; `prefix` keeps a category's collapse state per section. */
+  function renderGroups(entries: typeof components, prefix: string) {
+    return categories.map((category) => {
+      const items = entries.filter((entry) => entry.category === category.id);
+      if (!items.length) return null;
+      const key = `${prefix}${category.id}`;
+      const expanded = !collapsedGroups.has(key);
+      return (
+        <div className="arc-nav-group" key={key}>
+          <button
+            type="button"
+            className="arc-group-toggle"
+            data-expanded={expanded}
+            aria-expanded={expanded}
+            aria-controls={`arc-group-${key}`}
+            onClick={() => toggleGroup(key)}
+          >
+            <span>{category.title}</span>
+            <span className="arc-group-count">{items.length}</span>
+            <ChevronDown size={13} aria-hidden="true" />
+          </button>
+          <div
+            className="arc-group-items"
+            id={`arc-group-${key}`}
+            hidden={!expanded}
+          >
+            {items.map((entry) => {
+              const active = pathname === entryHref(entry);
+              return (
+                <Link
+                  key={entry.slug}
+                  href={entryHref(entry)}
+                  prefetch={false}
+                  className="arc-nav-link"
+                  data-active={active}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {entry.title}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      );
     });
   }
 
@@ -493,50 +541,7 @@ export function LibraryShell({ children }: { children: ReactNode }) {
                 Components{" "}
                 <span className="arc-nav-count">{uiComponents.length}</span>
               </h2>
-              {categories.map((category) => {
-                const entries = filteredComponents.filter(
-                  (component) => component.category === category.id
-                );
-                if (!entries.length) return null;
-                const expanded = !collapsedGroups.has(category.id);
-                return (
-                  <div className="arc-nav-group" key={category.id}>
-                    <button
-                      type="button"
-                      className="arc-group-toggle"
-                      data-expanded={expanded}
-                      aria-expanded={expanded}
-                      aria-controls={`arc-group-${category.id}`}
-                      onClick={() => toggleGroup(category.id)}
-                    >
-                      <span>{category.title}</span>
-                      <span className="arc-group-count">{entries.length}</span>
-                      <ChevronDown size={13} aria-hidden="true" />
-                    </button>
-                    <div
-                      className="arc-group-items"
-                      id={`arc-group-${category.id}`}
-                      hidden={!expanded}
-                    >
-                      {entries.map((component) => {
-                        const active = pathname === entryHref(component);
-                        return (
-                          <Link
-                            key={component.slug}
-                            href={entryHref(component)}
-                            prefetch={false}
-                            className="arc-nav-link"
-                            data-active={active}
-                            aria-current={active ? "page" : undefined}
-                          >
-                            {component.title}
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
+              {renderGroups(filteredComponents, "")}
               {!filteredComponents.length && !filteredBlocks.length && (
                 <p className="arc-nav-empty" role="status">
                   No components found.
@@ -549,21 +554,7 @@ export function LibraryShell({ children }: { children: ReactNode }) {
                   <Blocks size={16} aria-hidden="true" />
                   Blocks <span className="arc-nav-count">{blocks.length}</span>
                 </h2>
-                {filteredBlocks.map((block) => {
-                  const active = pathname === entryHref(block);
-                  return (
-                    <Link
-                      key={block.slug}
-                      href={entryHref(block)}
-                      prefetch={false}
-                      className="arc-nav-link"
-                      data-active={active}
-                      aria-current={active ? "page" : undefined}
-                    >
-                      {block.title}
-                    </Link>
-                  );
-                })}
+                {renderGroups(filteredBlocks, "block-")}
               </section>
             )}
           </nav>

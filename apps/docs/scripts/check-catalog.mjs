@@ -31,7 +31,11 @@ const {
 );
 
 const slugs = components.map((component) => component.slug);
-assert.equal(slugs.length, 54, "Expected all 54 v2 components (v1 dialog, form-modal, confirmation-modal and delete-confirmation-modal are merged into modal; radio is part of checkbox).");
+assert.equal(
+  slugs.length,
+  54,
+  "Expected all 54 v2 components (v1 dialog, form-modal, confirmation-modal and delete-confirmation-modal are merged into modal; radio is part of checkbox)."
+);
 assert.equal(
   new Set(slugs).size,
   slugs.length,
@@ -123,15 +127,34 @@ assert.deepEqual(
 );
 // Blocks are ready-made product UI. Moving one is a deliberate, reviewed decision, so the list is spelled out.
 assert.deepEqual(
-  blocks.map((block) => block.slug),
-  ["creatable-multi-select"],
+  blocks.map((block) => block.slug).sort(),
+  [
+    // Chat: Custom/Chat/* in the v1 Storybook.
+    "contact-list-item",
+    "date-divider",
+    "image-media",
+    "reply-quote",
+    "system-message",
+    "unread-separator",
+    // Product form patterns.
+    "creatable-multi-select",
+    "creatable-select",
+    "readable-field",
+    "search-filter",
+    // Page chrome.
+    "page-footer",
+    "page-header",
+  ].sort(),
   "Unexpected set of blocks."
 );
 assert.equal(uiComponents.length + blocks.length, components.length);
 for (const block of blocks) {
   assert.equal(entryHref(block), `/blocks/${block.slug}`);
   for (const related of block.related ?? [])
-    assert(getComponent(related), `Unknown related slug on ${block.slug}: ${related}`);
+    assert(
+      getComponent(related),
+      `Unknown related slug on ${block.slug}: ${related}`
+    );
 }
 for (const component of uiComponents)
   assert.equal(entryHref(component), `/components/${component.slug}`);

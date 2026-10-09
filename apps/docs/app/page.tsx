@@ -43,18 +43,29 @@ export default function Home() {
               Ready-made product UI built for a specific job. Install one and
               adapt it to your screen.
             </p>
-            <div className="component-grid">
-              {blocks.map((block) => (
-                <Link
-                  key={block.slug}
-                  className="component-card"
-                  href={entryHref(block)}
-                >
-                  <strong>{block.title}</strong>
-                  <p>{block.description}</p>
-                </Link>
+            {categories
+              .filter((group) =>
+                blocks.some((block) => block.category === group.id)
+              )
+              .map((group) => (
+                <div key={group.id}>
+                  <h3 className="category-subtitle">{group.title}</h3>
+                  <div className="component-grid">
+                    {blocks
+                      .filter((block) => block.category === group.id)
+                      .map((block) => (
+                        <Link
+                          key={block.slug}
+                          className="component-card"
+                          href={entryHref(block)}
+                        >
+                          <strong>{block.title}</strong>
+                          <p>{block.description}</p>
+                        </Link>
+                      ))}
+                  </div>
+                </div>
               ))}
-            </div>
           </section>
         )}
         <aside className="arc-toc" aria-label="On this page">

@@ -2265,3 +2265,11 @@ body[data-controls-open="true"] .arc-toc {
   padding: 0 8px;
   background: white;
 }
+
+/* A category inside the Blocks section of the overview. */
+.category-subtitle {
+  margin: 24px 0 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #555;
+}

@@ -92,6 +92,7 @@ export const components: ComponentEntry[] = [
     category: "forms",
     description:
       "A searchable single-select with existing options and inline option creation.",
+    kind: "block",
   },
   {
     slug: "date-range-picker",
@@ -155,6 +156,7 @@ export const components: ComponentEntry[] = [
     category: "forms",
     description:
       "Read-only values with copy, secret masking and an optional header action.",
+    kind: "block",
   },
   {
     slug: "search-filter",
@@ -162,6 +164,7 @@ export const components: ComponentEntry[] = [
     category: "forms",
     description:
       "A searchable single-select field for phone numbers or text lists, composed with the v2 Input and dropdown row styling.",
+    kind: "block",
   },
   {
     slug: "select",
@@ -328,6 +331,7 @@ export const components: ComponentEntry[] = [
     category: "layout",
     description:
       "Page actions with supporting text in desktop and mobile layouts.",
+    kind: "block",
   },
   {
     slug: "page-header",
@@ -335,6 +339,7 @@ export const components: ComponentEntry[] = [
     category: "layout",
     description:
       "Page titles with descriptions, back navigation, optional badges and responsive actions.",
+    kind: "block",
   },
   {
     slug: "panel",
@@ -377,6 +382,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "A keyboard-accessible contact row with identity, secondary information and a trailing slot.",
+    kind: "block",
   },
   {
     slug: "date-divider",
@@ -384,6 +390,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "A date label between two flexible lines in a message timeline.",
+    kind: "block",
   },
   {
     slug: "image-media",
@@ -391,6 +398,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "An image inside a message, with native alt text and a configurable maximum height.",
+    kind: "block",
   },
   {
     slug: "reply-quote",
@@ -398,6 +406,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "A bounded quoted-message preview with a sender, one-line message and optional thumbnail.",
+    kind: "block",
   },
   {
     slug: "system-message",
@@ -405,6 +414,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "Centered event text in a conversation timeline, with optional emphasized phrases.",
+    kind: "block",
   },
   {
     slug: "unread-separator",
@@ -412,6 +422,7 @@ export const components: ComponentEntry[] = [
     category: "chat",
     description:
       "A divider indicating where unread messages begin, with count-based singular/plural labels.",
+    kind: "block",
   },
 ];
 
