@@ -157,3 +157,23 @@ it("activates the native quote with Enter and Space", async () => {
   await user.keyboard("{Enter} ");
   expect(click).toHaveBeenCalledTimes(2);
 });
+
+describe("ReplyQuote states", () => {
+  it("changes colour on hover and dips on press, which the resting #F5F5F5 never did", () => {
+    render(<ReplyQuote sender="Mira" message="Hello" onClick={() => {}} />);
+    const quote = screen.getByRole("button");
+    expect(quote).toHaveClass(
+      "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+    );
+    expect(quote).toHaveClass("active:scale-[0.985]");
+    // Hover must differ from the resting fill.
+    expect(quote.className).toContain("bg-[var(--semantic-bg-ui");
+    expect(quote.className).not.toContain("hover:bg-[var(--semantic-bg-ui");
+  });
+
+  it("is not interactive-styled when static", () => {
+    const { container } = render(<ReplyQuote sender="Mira" message="Hello" />);
+    expect(container.firstChild).not.toHaveClass("active:scale-[0.985]");
+    expect(container.firstChild).not.toHaveClass("cursor-pointer");
+  });
+});

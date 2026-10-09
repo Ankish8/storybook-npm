@@ -62,6 +62,11 @@ function ReplyQuoteInner({
   );
 }
 
+/**
+ * An interactive quote steps through three states: the resting #F5F5F5, a neutral grey on hover (the old hover used the
+ * resting token, so nothing changed), and the same grey with a small dip on press (a colour change alone is hidden by
+ * the hover rule, which also matches while the pointer is down).
+ */
 function replyQuoteClassName(
   className: string | undefined,
   hasThumbnail: boolean,
@@ -73,7 +78,7 @@ function replyQuoteClassName(
       ? "flex flex-row items-center gap-2"
       : "flex flex-col justify-start gap-0",
     isInteractive &&
-      "cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-[var(--semantic-bg-ui,#F5F5F5)] active:bg-[var(--semantic-info-surface,#ECF1FB)] focus-visible:ring-2 focus-visible:ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:ring-offset-1 focus-visible:outline-none border-t-0 border-r-0 border-b-0",
+      "cursor-pointer transition-[background-color,transform] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-semantic-bg-grey active:bg-semantic-bg-grey active:scale-[0.985] motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:ring-offset-1 focus-visible:outline-none border-t-0 border-r-0 border-b-0",
     className
   );
 }
