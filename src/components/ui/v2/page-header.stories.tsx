@@ -123,8 +123,16 @@ const meta: Meta<Args> = {
           summary:
             "Page titles with descriptions, back navigation, optional badges and responsive actions.",
           changes: [
-            ["Title", "18px semibold", "18px medium, 1.3 leading, -0.01em (Arc card title)"],
-            ["Description", "14px body", "14px muted, 1.4 leading, 8px gap (Arc card description)"],
+            [
+              "Title",
+              "18px semibold",
+              "18px medium, 1.3 leading, -0.01em (Arc card title)",
+            ],
+            [
+              "Description",
+              "14px body",
+              "14px muted, 1.4 leading, 8px gap (Arc card description)",
+            ],
             [
               "Padding",
               "16px with 18px desktop vertical override",
@@ -156,7 +164,8 @@ const meta: Meta<Args> = {
   },
   decorators: [
     (Story) => (
-      <div className="max-w-full rounded-lg border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]">
+      // The header draws its own bottom divider; the -mb-px lets the frame's border be that line instead of a second one.
+      <div className="max-w-full overflow-hidden rounded-lg border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] [&>*]:-mb-px">
         <Story />
       </div>
     ),
@@ -257,7 +266,7 @@ function Card({
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
-      <div className="rounded-lg border border-semantic-border-layout">
+      <div className="overflow-hidden rounded-lg border border-semantic-border-layout [&>*]:-mb-px">
         {children}
       </div>
     </section>
