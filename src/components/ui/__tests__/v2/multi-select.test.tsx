@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
 import * as React from "react";
 import type { Placement } from "@floating-ui/react-dom";
-import { render, screen, within, fireEvent, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  within,
+  fireEvent,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   MultiSelect,
@@ -46,7 +53,7 @@ describe("MultiSelect", () => {
           {...{ [state]: true }}
         />
       );
-      const remove = screen.getByRole("button", { name: "Remove Option 1" });
+      const remove = screen.getByLabelText("Remove Option 1");
       const clear = screen.getByRole("button", { name: "Clear all" });
       expect(remove).toHaveAttribute("tabindex", "-1");
       expect(clear).toHaveAttribute("aria-disabled", "true");
@@ -1112,7 +1119,7 @@ describe("MultiSelect v2 refresh", () => {
     render(
       <MultiSelect options={defaultOptions} value={["option1", "option2"]} />
     );
-    const remove = screen.getByRole("button", { name: "Remove Option 1" });
+    const remove = screen.getByLabelText("Remove Option 1");
     // 16px plate (12px icon) + `before:-inset-1` = 24px hit area, layout cancelled by -m-0.5.
     expect(remove).toHaveClass(
       "relative",
@@ -1152,9 +1159,9 @@ describe("MultiSelect v2 refresh", () => {
     render(
       <MultiSelect options={defaultOptions} value={["option1"]} disabled />
     );
-    expect(
-      screen.getByRole("button", { name: "Remove Option 1" }).className
-    ).not.toContain("hover:bg-");
+    expect(screen.getByLabelText("Remove Option 1").className).not.toContain(
+      "hover:bg-"
+    );
     expect(
       screen.getByRole("button", { name: "Clear all" }).className
     ).not.toContain("hover:bg-");
@@ -1181,7 +1188,7 @@ describe("MultiSelect v2 refresh", () => {
     }
     const user = userEvent.setup();
     render(<Controlled />);
-    const first = screen.getByRole("button", { name: "Remove Option 1" })
+    const first = screen.getByLabelText("Remove Option 1")
       .parentElement as HTMLElement;
     // Arc: a new chip grows in from .9 through a 4px blur (a transition from @starting-style).
     expect(first).toHaveClass(
@@ -1193,12 +1200,8 @@ describe("MultiSelect v2 refresh", () => {
 
     await user.click(screen.getByRole("button", { name: "add" }));
     // Same DOM node: React kept it mounted, so its CSS animation does not restart.
-    expect(
-      screen.getByRole("button", { name: "Remove Option 1" }).parentElement
-    ).toBe(first);
-    expect(
-      screen.getByRole("button", { name: "Remove Option 2" })
-    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Remove Option 1").parentElement).toBe(first);
+    expect(screen.getByLabelText("Remove Option 2")).toBeInTheDocument();
   });
 
   it("sizes the trigger, chips and rows like Arc's multi-select", async () => {
@@ -1217,7 +1220,7 @@ describe("MultiSelect v2 refresh", () => {
       "disabled:opacity-50"
     );
     // The chip: 12px regular text, 4px / 8px padding, 1px inset border, 9rem cap; it whitens while the field is hot.
-    const chip = screen.getByRole("button", { name: "Remove Option 1" })
+    const chip = screen.getByLabelText("Remove Option 1")
       .parentElement as HTMLElement;
     expect(chip).toHaveClass(
       "text-xs",
@@ -1241,5 +1244,763 @@ describe("MultiSelect v2 refresh", () => {
       "hover:bg-semantic-bg-ui"
     );
     expect(row.className).not.toContain("font-medium");
+  });
+});
+
+// An earlier suite restores every mock, which empties the shared matchMedia stub that
+// Tooltip reads; put a desktop-like one back (hover-capable, fine pointer).
+const installMatchMedia = (reducedMotion = false) => {
+  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
+    matches:
+      query === "(hover: hover)" ||
+      query === "(pointer: fine)" ||
+      (reducedMotion && query === "(prefers-reduced-motion: reduce)"),
+    media: query,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+    onchange: null,
+  })) as unknown as typeof window.matchMedia;
+};
+
+const fiveOptions: MultiSelectOption[] = [
+  { value: "a", label: "Apple" },
+  { value: "b", label: "Banana" },
+  { value: "c", label: "Cherry", disabled: true },
+  { value: "d", label: "Date" },
+  { value: "e", label: "Elderberry" },
+];
+
+describe("MultiSelect keyboard", () => {
+  beforeEach(() => {
+    installMatchMedia();
+    forced.placement = null;
+  });
+  const openWithArrow = async (
+    user: ReturnType<typeof userEvent.setup>,
+    key = "{ArrowDown}"
+  ) => {
+    const trigger = screen.getByRole("combobox");
+    trigger.focus();
+    await user.keyboard(key);
+    await screen.findByRole("listbox");
+    return trigger;
+  };
+
+  it("opens with ArrowDown and lands on the first row", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+  });
+
+  it("lands on the first picked row when there is one", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect label="Fruit" options={fiveOptions} defaultValue={["d"]} />
+    );
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Date" })).toHaveFocus()
+    );
+  });
+
+  it("opens with ArrowUp and lands on the last row", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await openWithArrow(user, "{ArrowUp}");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Elderberry" })).toHaveFocus()
+    );
+  });
+
+  it("opens with Enter and with Space, and either one closes it again", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    const trigger = await openWithArrow(user, "{Enter}");
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
+    );
+    await user.keyboard(" ");
+    expect(await screen.findByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("moves between rows with the arrows, wraps, and skips disabled rows", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Banana" })).toHaveFocus();
+    // Cherry is disabled: the next stop is Date.
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Date" })).toHaveFocus();
+    await user.keyboard("{ArrowUp}");
+    expect(screen.getByRole("option", { name: "Banana" })).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(screen.getByRole("option", { name: "Elderberry" })).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus();
+    await user.keyboard("{ArrowUp}");
+    expect(screen.getByRole("option", { name: "Elderberry" })).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus();
+  });
+
+  it("makes rows roving stops, not Tab stops", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect label="Fruit" options={fiveOptions} selectAllLabel="All" />
+    );
+    await user.click(screen.getByRole("combobox"));
+    for (const option of screen.getAllByRole("option")) {
+      expect(option).toHaveAttribute("tabindex", "-1");
+    }
+  });
+
+  it("toggles the focused row with Enter and with Space, keeping focus on it", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        onValueChange={onValueChange}
+      />
+    );
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("{Enter}");
+    expect(onValueChange).toHaveBeenLastCalledWith(["a"]);
+    expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus();
+    await user.keyboard(" ");
+    expect(onValueChange).toHaveBeenLastCalledWith([]);
+    expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus();
+  });
+
+  it("toggles a detailed row from the keyboard too", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <MultiSelect
+        label="Fruit"
+        optionVariant="detailed"
+        options={fiveOptions}
+        onValueChange={onValueChange}
+      />
+    );
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: /Apple/ })).toHaveFocus()
+    );
+    await user.keyboard("{Enter}");
+    expect(onValueChange).toHaveBeenLastCalledWith(["a"]);
+  });
+
+  it("jumps to the row whose label starts with what is typed", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("e");
+    expect(screen.getByRole("option", { name: "Elderberry" })).toHaveFocus();
+    await user.keyboard("{Home}");
+    // Disabled Cherry is not a match; the next "d" is Date.
+    await user.keyboard("d");
+    expect(screen.getByRole("option", { name: "Date" })).toHaveFocus();
+  });
+
+  it("moves from the rows into the search field and sends typing there", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} searchable />);
+    await openWithArrow(user);
+    const search = screen.getByPlaceholderText("Search...");
+    await waitFor(() => expect(search).toHaveFocus());
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus();
+    await user.keyboard("{ArrowUp}");
+    expect(search).toHaveFocus();
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    // Typing on a row goes to the search field instead.
+    await user.keyboard("ban");
+    expect(search).toHaveFocus();
+    expect(search).toHaveValue("ban");
+  });
+
+  it("Escape inside the list closes it and returns focus to the trigger", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    const trigger = await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("clears the search when Escape closes the list", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} searchable />);
+    await openWithArrow(user);
+    await user.keyboard("ban");
+    await user.keyboard("{Escape}");
+    await user.keyboard("{ArrowDown}");
+    await screen.findByRole("listbox");
+    expect(screen.getByPlaceholderText("Search...")).toHaveValue("");
+  });
+
+  it("keeps Escape from reaching a surrounding dialog's listener", async () => {
+    const user = userEvent.setup();
+    const outer = vi.fn();
+    document.addEventListener("keydown", outer, true);
+    try {
+      render(<MultiSelect label="Fruit" options={fiveOptions} />);
+      await openWithArrow(user);
+      await waitFor(() =>
+        expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+      );
+      outer.mockClear();
+      await user.keyboard("{Escape}");
+      expect(outer).not.toHaveBeenCalled();
+      expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    } finally {
+      document.removeEventListener("keydown", outer, true);
+    }
+  });
+
+  it("closes on Tab and puts focus back on the trigger, so the browser's own Tab moves on from there", async () => {
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    const trigger = await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    // user-event picks Tab's destination from the element that fired it, so fire the
+    // key directly and look at where focus is when the handler is done.
+    const notPrevented = fireEvent.keyDown(
+      screen.getByRole("option", { name: "Apple" }),
+      { key: "Tab" }
+    );
+    expect(notPrevented).toBe(true);
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("drops the last pick with Backspace or Delete on the trigger", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+        onValueChange={onValueChange}
+      />
+    );
+    screen.getByRole("combobox").focus();
+    await user.keyboard("{Backspace}");
+    expect(onValueChange).toHaveBeenLastCalledWith(["a"]);
+    await user.keyboard("{Delete}");
+    expect(onValueChange).toHaveBeenLastCalledWith([]);
+    await user.keyboard("{Backspace}");
+    expect(onValueChange).toHaveBeenCalledTimes(2);
+  });
+
+  it("ignores every key on a disabled field", async () => {
+    const onValueChange = vi.fn();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a"]}
+        onValueChange={onValueChange}
+        disabled
+      />
+    );
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "ArrowDown" });
+    fireEvent.keyDown(trigger, { key: "Backspace" });
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("hands focus back to a row that a re-sort moved", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        separateSelectedWithDivider
+      />
+    );
+    await openWithArrow(user);
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("{ArrowDown}{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Date" })).toHaveFocus();
+    // Picking Date moves it above the divider; focus must stay on it.
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("option", { name: "Date" })).toHaveFocus();
+  });
+});
+
+describe("MultiSelect semantics", () => {
+  beforeEach(() => installMatchMedia());
+  it("labels the list with the field label, or the placeholder without one", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(
+      <MultiSelect label="Fruit" options={fiveOptions} />
+    );
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toHaveAccessibleName("Fruit");
+    unmount();
+    render(<MultiSelect placeholder="Pick fruit" options={fiveOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toHaveAccessibleName("Pick fruit");
+  });
+
+  it("keeps chips out of the accessibility tree and reads the picks as the trigger's text", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "d"]}
+      />
+    );
+    const trigger = screen.getByRole("combobox");
+    // Nothing reachable inside the trigger: no nested buttons for assistive tech.
+    expect(within(trigger).queryAllByRole("button")).toHaveLength(0);
+    expect(trigger.querySelector("[aria-hidden='true']")).toHaveTextContent(
+      "Apple"
+    );
+    // The picks are the trigger's own text, the way a select's value is.
+    expect(trigger).toHaveTextContent("Selected: Apple, Date");
+  });
+
+  it("describes the field by its helper or error only, exactly as v1 did", () => {
+    const { rerender } = render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a"]}
+        helperText="Pick some"
+      />
+    );
+    const trigger = () => screen.getByRole("combobox");
+    expect(trigger()).toHaveAccessibleDescription("Pick some");
+    rerender(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a"]}
+        error="Required"
+      />
+    );
+    expect(trigger()).toHaveAccessibleDescription("Required");
+    rerender(
+      <MultiSelect label="Fruit" options={fiveOptions} defaultValue={["a"]} />
+    );
+    expect(trigger()).not.toHaveAttribute("aria-describedby");
+    expect(trigger()).not.toHaveAttribute("aria-labelledby");
+  });
+
+  it("places Clear all beside the trigger, as a real button", () => {
+    render(
+      <MultiSelect options={fiveOptions} label="Fruit" defaultValue={["a"]} />
+    );
+    const clear = screen.getByRole("button", { name: "Clear all" });
+    expect(clear.tagName).toBe("BUTTON");
+    expect(clear.closest("[role='combobox']")).toBeNull();
+    expect(screen.getByRole("combobox").contains(clear)).toBe(false);
+    // It sits clear of a 16px chevron: 36px from the edge, 45px with the separator.
+    expect(clear).toHaveClass("right-9");
+  });
+
+  it("moves Clear all past the separator when there is one", () => {
+    render(
+      <MultiSelect
+        options={fiveOptions}
+        defaultValue={["a"]}
+        showSeparatorBeforeChevron
+      />
+    );
+    expect(screen.getByRole("button", { name: "Clear all" })).toHaveClass(
+      "right-[45px]"
+    );
+  });
+
+  it("announces what a pick, a removal and a clear did", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <MultiSelect label="Fruit" options={fiveOptions} />
+    );
+    const live = () =>
+      container.querySelector("[aria-live='polite']") as HTMLElement;
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("option", { name: "Apple" }));
+    expect(live()).toHaveTextContent("Apple selected. 1 selected.");
+    await user.click(screen.getByRole("option", { name: "Banana" }));
+    expect(live()).toHaveTextContent("Banana selected. 2 selected.");
+    await user.click(screen.getByLabelText("Remove Apple"));
+    expect(live()).toHaveTextContent("Apple removed. 1 selected.");
+    await user.click(screen.getByRole("button", { name: "Clear all" }));
+    expect(live()).toHaveTextContent("Selection cleared.");
+  });
+
+  it("keeps the picks aligned with their chips when a picked value has no option yet", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        value={["missing", "b"]}
+      />
+    );
+    expect(screen.getByLabelText("Remove Banana")).toBeInTheDocument();
+    expect(screen.queryByLabelText(/Remove missing/)).not.toBeInTheDocument();
+  });
+
+  it("opens and closes the helper row without leaving a gap while it is empty", () => {
+    const { container, rerender } = render(
+      <MultiSelect label="Fruit" options={fiveOptions} />
+    );
+    const row = () =>
+      container.querySelector("[data-field-feedback]") as HTMLElement;
+    expect(row()).toHaveClass("-mt-2", "grid-rows-[0fr]");
+    rerender(
+      <MultiSelect label="Fruit" options={fiveOptions} error="Required" />
+    );
+    expect(row()).toHaveClass("grid-rows-[1fr]");
+    expect(row()).not.toHaveClass("-mt-2");
+    expect(screen.getByRole("alert")).toHaveTextContent("Required");
+    rerender(<MultiSelect label="Fruit" options={fiveOptions} />);
+    // The text goes at once, so nothing stale is read or found; the row eases shut.
+    expect(screen.queryByText("Required")).not.toBeInTheDocument();
+    expect(row()).toHaveClass("-mt-2", "grid-rows-[0fr]");
+  });
+});
+
+describe("MultiSelect maxVisible", () => {
+  beforeEach(() => installMatchMedia());
+  const four = ["a", "b", "d", "e"];
+
+  it("shows the first chips and counts the rest", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={four}
+        maxVisible={2}
+      />
+    );
+    expect(screen.getByLabelText("Remove Apple")).toBeInTheDocument();
+    expect(screen.getByLabelText("Remove Banana")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Remove Date")).not.toBeInTheDocument();
+    expect(document.querySelector("[data-overflow-count]")).toHaveTextContent(
+      "+2"
+    );
+  });
+
+  it("stays on one line: no wrapping, chips shrink instead", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={four}
+        maxVisible={2}
+      />
+    );
+    const chip = screen.getByLabelText("Remove Apple")
+      .parentElement as HTMLElement;
+    expect(chip).toHaveClass("shrink");
+    expect(chip.parentElement).toHaveClass("flex-nowrap", "overflow-hidden");
+    expect(chip.parentElement).not.toHaveClass("flex-wrap");
+    expect(document.querySelector("[data-overflow-count]")).toHaveClass(
+      "shrink-0",
+      "tabular-nums"
+    );
+  });
+
+  it("shows no count when everything fits, and wraps without the prop", () => {
+    const { rerender } = render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+        maxVisible={2}
+      />
+    );
+    expect(document.querySelector("[data-overflow-count]")).toBeNull();
+    rerender(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+      />
+    );
+    const chip = screen.getByLabelText("Remove Apple")
+      .parentElement as HTMLElement;
+    expect(chip.parentElement).toHaveClass("flex-wrap");
+    expect(document.querySelector("[data-overflow-count]")).toBeNull();
+  });
+
+  it("pulls the next chip in when a visible one is removed, and lowers the count", async () => {
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={four}
+        maxVisible={2}
+      />
+    );
+    await user.click(screen.getByLabelText("Remove Apple"));
+    expect(screen.queryByLabelText("Remove Apple")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Remove Date")).toBeInTheDocument();
+    expect(document.querySelector("[data-overflow-count]")).toHaveTextContent(
+      "+1"
+    );
+  });
+
+  it("names the hidden picks in the sr-only list too", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={four}
+        maxVisible={2}
+      />
+    );
+    expect(screen.getByRole("combobox")).toHaveTextContent(
+      "Selected: Apple, Banana, Date, Elderberry"
+    );
+  });
+
+  it("lets summaryLabel win over the chip limit", () => {
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={four}
+        maxVisible={2}
+        summaryLabel={(count) => `${count} picked`}
+      />
+    );
+    expect(screen.getByText("4 picked")).toBeInTheDocument();
+    expect(document.querySelector("[data-overflow-count]")).toBeNull();
+  });
+});
+
+describe("MultiSelect exit motion", () => {
+  interface FakeAnimation {
+    cancel: ReturnType<typeof vi.fn>;
+    onfinish: null | (() => void);
+    oncancel: null | (() => void);
+    keyframes: Keyframe[];
+  }
+  const animations: FakeAnimation[] = [];
+  const realAnimate = Element.prototype.animate;
+  const realMatchMedia = window.matchMedia;
+
+  const installAnimate = () => {
+    Element.prototype.animate = function (keyframes: unknown) {
+      const animation: FakeAnimation = {
+        cancel: vi.fn(),
+        onfinish: null,
+        oncancel: null,
+        keyframes: keyframes as Keyframe[],
+      };
+      animations.push(animation);
+      return animation as unknown as Animation;
+    } as unknown as typeof Element.prototype.animate;
+  };
+
+  beforeEach(() => {
+    installMatchMedia();
+    forced.placement = null;
+    animations.length = 0;
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      width: 80,
+      height: 26,
+      top: 0,
+      left: 0,
+      right: 80,
+      bottom: 26,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    });
+  });
+  afterEach(() => {
+    Element.prototype.animate = realAnimate;
+    window.matchMedia = realMatchMedia;
+    vi.restoreAllMocks();
+    // A copy left by a failed assertion must not leak into the next test.
+    document.querySelectorAll("[inert]").forEach((node) => node.remove());
+  });
+
+  it("holds a hollow copy of a removed chip while it closes, then lets go", async () => {
+    installAnimate();
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+      />
+    );
+    await user.click(screen.getByLabelText("Remove Apple"));
+    // The real chip is gone at once; only the aria-hidden copy lingers.
+    expect(screen.queryByLabelText("Remove Apple")).not.toBeInTheDocument();
+    const ghost = document.querySelector("[data-chip-ghost]") as HTMLElement;
+    expect(ghost).toHaveAttribute("aria-hidden", "true");
+    expect(ghost).toHaveTextContent("Apple");
+    expect(ghost.style.width).toBe("80px");
+    expect(animations).toHaveLength(1);
+    const [from, to] = animations[0].keyframes as Record<string, string>[];
+    expect(from).toMatchObject({ width: "80px", opacity: 1 });
+    expect(to).toMatchObject({ width: "0px", opacity: 0 });
+    // It sits where the chip was: before Banana.
+    expect(ghost.nextElementSibling).toBe(
+      screen.getByLabelText("Remove Banana").parentElement
+    );
+
+    act(() => animations[0].onfinish?.());
+    expect(document.querySelector("[data-chip-ghost]")).toBeNull();
+  });
+
+  it("holds the placeholder back until the last chips have closed", async () => {
+    installAnimate();
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        placeholder="Pick fruit"
+        defaultValue={["a"]}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: "Clear all" }));
+    expect(screen.queryByText("Pick fruit")).not.toBeInTheDocument();
+    act(() => animations[0].onfinish?.());
+    expect(screen.getByText("Pick fruit")).toBeInTheDocument();
+  });
+
+  it("gives no copy to a chip that was never on screen or under reduced motion", async () => {
+    installAnimate();
+    installMatchMedia(true);
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+      />
+    );
+    await user.click(screen.getByLabelText("Remove Apple"));
+    expect(document.querySelector("[data-chip-ghost]")).toBeNull();
+  });
+
+  it("does not hold a copy of a chip that jsdom could not measure", async () => {
+    installAnimate();
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockReturnValue({
+      width: 0,
+    } as DOMRect);
+    const user = userEvent.setup();
+    render(
+      <MultiSelect
+        label="Fruit"
+        options={fiveOptions}
+        defaultValue={["a", "b"]}
+      />
+    );
+    await user.click(screen.getByLabelText("Remove Apple"));
+    expect(document.querySelector("[data-chip-ghost]")).toBeNull();
+  });
+
+  it("leaves a fading, inert copy of the list behind when it closes", async () => {
+    installAnimate();
+    const user = userEvent.setup();
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    // floating-ui may have flipped the panel; the copy drifts back toward the trigger.
+    const side = screen.getByRole("listbox").getAttribute("data-side");
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+
+    const copy = document.querySelector("[inert]") as HTMLElement;
+    expect(copy).not.toBeNull();
+    expect(copy).toHaveAttribute("aria-hidden", "true");
+    expect(copy).not.toHaveAttribute("role");
+    expect(copy.querySelectorAll("[id]")).toHaveLength(0);
+    expect(copy.style.pointerEvents).toBe("none");
+    // Its own entry animation is switched off, so it does not fade in while leaving.
+    expect(copy.style.getPropertyValue("animation")).toBe("none");
+    expect(copy.style.getPropertyPriority("animation")).toBe("important");
+    const [from, to] = animations.at(-1)!.keyframes as Record<string, string>[];
+    expect(from).toMatchObject({ opacity: 1 });
+    expect(to).toMatchObject({ opacity: 0 });
+    expect(to.transform).toContain(
+      side === "top" ? "translateY(4px)" : "translateY(-4px)"
+    );
+
+    act(() => animations.at(-1)!.onfinish?.());
+    expect(document.querySelector("[inert]")).toBeNull();
+  });
+
+  it("leaves no copy without the Web Animations API or with reduced motion", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(
+      <MultiSelect label="Fruit" options={fiveOptions} />
+    );
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("combobox"));
+    expect(document.querySelector("[inert]")).toBeNull();
+    unmount();
+
+    installAnimate();
+    installMatchMedia(true);
+    render(<MultiSelect label="Fruit" options={fiveOptions} />);
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("combobox"));
+    expect(document.querySelector("[inert]")).toBeNull();
+  });
+});
+
+describe("MultiSelect in a dialog", () => {
+  beforeEach(() => installMatchMedia());
+  it("closes the list on Escape without closing the dialog", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <ModalRoot open onOpenChange={onOpenChange}>
+        <ModalContent>
+          <ModalTitle>Pick</ModalTitle>
+          <MultiSelect label="Fruit" options={fiveOptions} />
+        </ModalContent>
+      </ModalRoot>
+    );
+    const trigger = screen.getByRole("combobox");
+    trigger.focus();
+    await user.keyboard("{ArrowDown}");
+    await screen.findByRole("listbox");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Apple" })).toHaveFocus()
+    );
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(trigger).toHaveFocus();
   });
 });

@@ -203,6 +203,7 @@ const meta: Meta<Args> = {
         "searchPlaceholder",
         "closeOnEscape",
         "maxSelections",
+        "maxVisible",
         "showSelectionFooter",
         "selectAllLabel",
         "optionVariant",
@@ -257,9 +258,29 @@ const meta: Meta<Args> = {
               "Solid grey field and inactive chip controls",
             ],
             [
+              "Keyboard",
+              "Enter or Space opened the list; rows were only reachable by Tab",
+              "ArrowDown / ArrowUp open it and move between rows, Home / End jump, typing finds a row, Escape inside the list closes it and returns focus, Tab moves on, Backspace drops the last pick",
+            ],
+            [
+              "Chip remove and clear",
+              "Buttons nested inside the trigger button",
+              "Clear all is a real button beside the trigger; chip crosses are pointer-only and the picks are read out as text",
+            ],
+            [
+              "Many picks",
+              "Chips always wrap; the field grows",
+              "Same by default; maxVisible keeps one line with a rolling +N count",
+            ],
+            [
+              "Motion",
+              "Chips and the list appeared and vanished",
+              "A removed chip closes its width and the list fades out; helper and error rows open smoothly. Reduced motion skips both",
+            ],
+            [
               "Behavior",
               "Detailed aliases, grouped sections, limits, paging and dialog portal",
-              "Same current public props and behavior",
+              "Same current public props and behavior; Escape on a focused trigger still needs closeOnEscape",
             ],
           ],
           tokens: [
@@ -342,6 +363,11 @@ const meta: Meta<Args> = {
     searchPlaceholder: { control: "text" },
     closeOnEscape: { control: "boolean" },
     maxSelections: { control: { type: "number", min: 1, max: 12, step: 1 } },
+    maxVisible: {
+      control: { type: "number", min: 1, max: 6, step: 1 },
+      description:
+        'Chips shown before the rest become a "+N" count. Leave empty to let chips wrap.',
+    },
     showSelectionFooter: { control: "boolean" },
     selectAllLabel: { control: "text" },
     optionVariant: { control: "select", options: ["simple", "detailed"] },
@@ -388,6 +414,13 @@ export const Searchable: Story = { args: { searchable: true } };
 export const SelectAll: Story = {
   name: "Select all",
   args: { selectAllLabel: "All skills" },
+};
+export const ChipLimit: Story = {
+  name: "Chip limit",
+  args: {
+    value: ["react", "typescript", "node", "python"],
+    maxVisible: 2,
+  },
 };
 export const Summary: Story = {
   args: {

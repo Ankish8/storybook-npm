@@ -193,6 +193,179 @@ const SCROLL_END_THRESHOLD_PX = 48;
  */
 const POST_FETCH_MEASURE_DELAY_MS = 50;
 
+/** Rows the keyboard can land on: every option that is not disabled, select-all included. */
+const ENABLED_OPTION_SELECTOR =
+  '[role="option"]:not([aria-disabled="true"]):not(:disabled)';
+
+/** Keyboard stops of the open menu, in order: the search field, then each enabled row. */
+function menuFocusTargets(menu: HTMLElement): HTMLElement[] {
+  return Array.from(
+    menu.querySelectorAll<HTMLElement>(
+      `[data-multi-select-search], ${ENABLED_OPTION_SELECTOR}`
+    )
+  );
+}
+
+function focusMenuTarget(target: HTMLElement | undefined) {
+  if (!target) return;
+  // The panel is fixed and portaled, so only the list itself needs to scroll.
+  target.focus({ preventScroll: true });
+  target.scrollIntoView?.({ block: "nearest" });
+}
+
+/**
+ * Moves focus into the open menu. With a search field that is where typing
+ * belongs, so it wins; otherwise the first picked row (or the first row) is the
+ * sensible place to start, and ArrowUp starts from the end. A pointer open only
+ * focuses the search field, and not on touch, where it would raise the keyboard.
+ */
+function focusInMenu(menu: HTMLElement, where: "first" | "last" | "pointer") {
+  const search = menu.querySelector<HTMLElement>("[data-multi-select-search]");
+  if (where === "pointer") {
+    if (search && prefersFinePointer()) focusMenuTarget(search);
+    return;
+  }
+  const targets = menuFocusTargets(menu);
+  if (where === "last") {
+    focusMenuTarget(targets[targets.length - 1]);
+    return;
+  }
+  focusMenuTarget(
+    search ??
+      menu.querySelector<HTMLElement>(
+        `${ENABLED_OPTION_SELECTOR}[aria-selected="true"]`
+      ) ??
+      targets[0]
+  );
+}
+
+function prefersReducedMotion(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)")?.matches === true
+  );
+}
+
+/** A touch keyboard covering half the screen is not what someone opening a list wants. */
+function prefersFinePointer(): boolean {
+  return (
+    typeof window === "undefined" ||
+    typeof window.matchMedia !== "function" ||
+    window.matchMedia("(pointer: fine)")?.matches !== false
+  );
+}
+
+/**
+ * Chip surface. The enter transition is separate so the leaving copy (which is
+ * already on screen) does not replay it. Wrapped in `cn(...)` so the CLI
+ * prefixer transforms the literals.
+ */
+const CHIP_BASE_CLASSNAME = cn(
+  "inline-flex min-w-0 max-w-[9rem] items-center gap-1 rounded-lg bg-semantic-bg-ui px-2 py-1 text-xs font-normal leading-[1.4] text-[var(--v2-text-primary,#484848)] ring-1 ring-inset ring-semantic-border-layout group-aria-expanded/ms:bg-semantic-bg-primary [@media(hover:hover)]:group-[:hover:not(:disabled)]/ms:bg-semantic-bg-primary"
+);
+const CHIP_ENTER_CLASSNAME = cn(
+  "[transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
+);
+/** 16px plate (12px icon + 2px padding) with a 24px hit area; `-m-0.5` cancels the padding. */
+const CHIP_REMOVE_CLASSNAME = cn(
+  "relative -m-0.5 shrink-0 cursor-pointer rounded-sm p-0.5 transition-colors duration-150 before:absolute before:-inset-1 before:content-[''] focus:outline-none"
+);
+
+/** A chip that has just been removed, kept on screen for the moment it takes to close. */
+interface ChipGhostData {
+  id: number;
+  label: string;
+  width: number;
+  index: number;
+}
+
+/**
+ * The leaving half of a chip: a hollow copy that closes its width, fades and
+ * shrinks, then lets go. The real chip is gone from the DOM the instant the
+ * value changes, so assistive tech, tests and focus never see this one.
+ */
+function ChipGhost({
+  ghost,
+  onDone,
+}: {
+  ghost: ChipGhostData;
+  onDone: (id: number) => void;
+}) {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  React.useLayoutEffect(() => {
+    const node = ref.current;
+    if (!node || typeof node.animate !== "function") {
+      onDone(ghost.id);
+      return;
+    }
+    const animation = node.animate(
+      [
+        {
+          width: `${ghost.width}px`,
+          marginRight: "0px",
+          opacity: 1,
+          transform: "scale(1)",
+          filter: "blur(0px)",
+        },
+        {
+          width: "0px",
+          marginRight: "-5px",
+          opacity: 0,
+          transform: "scale(0.9)",
+          filter: "blur(3px)",
+        },
+      ],
+      {
+        duration: 200,
+        easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+        fill: "forwards",
+      }
+    );
+    animation.onfinish = () => onDone(ghost.id);
+    return () => animation.cancel();
+  }, [ghost.id, ghost.width, onDone]);
+
+  return (
+    <span
+      ref={ref}
+      aria-hidden="true"
+      data-chip-ghost=""
+      className={cn(CHIP_BASE_CLASSNAME, "pointer-events-none overflow-hidden")}
+      style={{ width: ghost.width }}
+    >
+      <span className="min-w-0 truncate">{ghost.label}</span>
+      <span className={CHIP_REMOVE_CLASSNAME}>
+        <X className="size-3" />
+      </span>
+    </span>
+  );
+}
+
+/**
+ * The "+N" count. A larger number rises into place and a smaller one drops in,
+ * so the change reads as counting rather than blinking.
+ */
+function OverflowCount({ value }: { value: number }) {
+  const [shown, setShown] = React.useState({ value, direction: 1 });
+  if (shown.value !== value) {
+    setShown({ value, direction: value > shown.value ? 1 : -1 });
+  }
+  return (
+    <span
+      key={value}
+      className={cn(
+        "inline-block motion-safe:animate-in motion-safe:fade-in-0 motion-safe:[animation-duration:200ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
+        shown.direction > 0
+          ? "motion-safe:slide-in-from-bottom-1"
+          : "motion-safe:slide-in-from-top-1"
+      )}
+    >
+      {value}
+    </span>
+  );
+}
+
 /**
  * MultiSelect trigger variants matching TextField styling
  */
@@ -264,10 +437,18 @@ export interface MultiSelectProps extends VariantProps<
   /** Flat options or grouped sections (`MultiSelectGroupedSection[]`) */
   options: MultiSelectOptionInput;
   /**
-   * When false (default), the list only closes on outside click (not Escape).
-   * Set true to also close on Escape.
+   * When false (default), a trigger that still has focus ignores Escape and the
+   * list closes on outside click. Escape always closes the list once focus is
+   * inside it (after ArrowDown, a search or a row), and returns focus to the
+   * trigger. Set true to close from the trigger on Escape as well.
    */
   closeOnEscape?: boolean;
+  /**
+   * Show at most this many chips in the trigger, then a "+N" count (hover it to
+   * read the rest). The trigger stays one line instead of growing a row per few
+   * chips. Omit to show every chip and let them wrap (the default).
+   */
+  maxVisible?: number;
   /** Enable search/filter functionality */
   searchable?: boolean;
   /** Search placeholder text */
@@ -395,6 +576,7 @@ const MultiSelect = React.forwardRef(
       truncateOptionText,
       showSeparatorBeforeChevron = false,
       closeOnEscape = false,
+      maxVisible,
     }: MultiSelectProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
@@ -403,6 +585,27 @@ const MultiSelect = React.forwardRef(
       React.useState<string[]>(defaultValue);
     // Dropdown open state
     const [isOpen, setIsOpen] = React.useState(false);
+    // Selecting moves no focus, so say what changed for assistive tech.
+    const [announcement, setAnnouncement] = React.useState("");
+    const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+    const setTriggerRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        triggerRef.current = node;
+        if (typeof ref === "function") ref(node);
+        else if (ref) {
+          (ref as React.MutableRefObject<HTMLButtonElement | null>).current =
+            node;
+        }
+      },
+      [ref]
+    );
+    /** Where focus lands once a keyboard-opened menu has been positioned (it is hidden until then). */
+    const pendingFocusRef = React.useRef<"first" | "last" | "pointer" | null>(
+      null
+    );
+    /** The row that had focus when it was toggled, so a re-sorted list can give it back. */
+    const focusValueRef = React.useRef<string | null>(null);
+    const typeaheadRef = React.useRef({ buffer: "", timer: 0 });
     // Search query — controlled when the caller passes `searchQuery` (server-side
     // filtering), uncontrolled otherwise.
     const [internalSearchQuery, setInternalSearchQuery] = React.useState("");
@@ -475,8 +678,11 @@ const MultiSelect = React.forwardRef(
       [refs]
     );
 
+    /** The last mounted menu, kept so closing can hand a copy to the exit animation. */
+    const menuNodeRef = React.useRef<HTMLDivElement | null>(null);
     const setDropdownRef = React.useCallback(
       (node: HTMLDivElement | null) => {
+        if (node) menuNodeRef.current = node;
         refs.setFloating(node);
       },
       [refs]
@@ -680,6 +886,11 @@ const MultiSelect = React.forwardRef(
         setInternalValue(newValues);
       }
       onValueChange?.(newValues);
+      setAnnouncement(
+        newValues.length === 0
+          ? "Selection cleared."
+          : `${newValues.length} selected.`
+      );
     };
 
     // Derive state from props
@@ -691,9 +902,6 @@ const MultiSelect = React.forwardRef(
     const listboxId = `${selectId}-listbox`;
     const helperId = `${selectId}-helper`;
     const errorId = `${selectId}-error`;
-
-    // Determine aria-describedby
-    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
     // Filter options by search query. Skipped when `searchQuery` is
     // controlled — the caller owns filtering then (typically server-side, so
@@ -775,47 +983,251 @@ const MultiSelect = React.forwardRef(
       selectedValues,
     ]);
 
-    // Get selected option labels
-    const selectedLabels = React.useMemo(() => {
-      return selectedValues
-        .map((v) => flatOptions.find((o) => o.value === v)?.label)
-        .filter(Boolean) as string[];
-    }, [selectedValues, flatOptions]);
+    // Selected values paired with their labels. A value without a matching option
+    // (not loaded yet) has nothing to show, and pairing keeps the rest aligned.
+    const selectedChips = React.useMemo(
+      () =>
+        selectedValues.flatMap((v) => {
+          const found = flatOptions.find((o) => o.value === v);
+          return found ? [{ value: v, label: found.label }] : [];
+        }),
+      [selectedValues, flatOptions]
+    );
+    const selectedLabels = selectedChips.map((chip) => chip.label);
+    const visibleCount =
+      maxVisible !== undefined && maxVisible > 0 ? maxVisible : undefined;
+    const shownChips = React.useMemo(
+      () =>
+        visibleCount ? selectedChips.slice(0, visibleCount) : selectedChips,
+      [selectedChips, visibleCount]
+    );
+    const hiddenChips = visibleCount ? selectedChips.slice(visibleCount) : [];
+    // Only the helper or error describes the field, exactly as in v1. The picks are
+    // read as the trigger's own text (the sr-only list below), the way a select's value is.
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
 
-    // Handle toggle selection
-    const toggleOption = (optionValue: string) => {
-      const newValues = selectedValues.includes(optionValue)
-        ? selectedValues.filter((v) => v !== optionValue)
-        : maxSelections && selectedValues.length >= maxSelections
-          ? selectedValues
-          : [...selectedValues, optionValue];
-
+    const commitValues = (newValues: string[]) => {
       if (!isControlled) {
         setInternalValue(newValues);
       }
       onValueChange?.(newValues);
     };
 
+    // Handle toggle selection
+    const toggleOption = (optionValue: string) => {
+      const wasSelected = selectedValues.includes(optionValue);
+      const newValues = wasSelected
+        ? selectedValues.filter((v) => v !== optionValue)
+        : maxSelections && selectedValues.length >= maxSelections
+          ? selectedValues
+          : [...selectedValues, optionValue];
+
+      const menu = refs.floating.current;
+      focusValueRef.current =
+        menu && menu.contains(document.activeElement) ? optionValue : null;
+
+      commitValues(newValues);
+      if (newValues !== selectedValues) {
+        const name =
+          flatOptions.find((o) => o.value === optionValue)?.label ??
+          optionValue;
+        setAnnouncement(
+          `${name} ${wasSelected ? "removed" : "selected"}. ${newValues.length} selected.`
+        );
+      }
+    };
+
+    const removeByValue = (valueToRemove: string) => {
+      if (disabled || loading) return;
+      const newValues = selectedValues.filter((v) => v !== valueToRemove);
+      commitValues(newValues);
+      const name =
+        flatOptions.find((o) => o.value === valueToRemove)?.label ??
+        valueToRemove;
+      setAnnouncement(`${name} removed. ${newValues.length} selected.`);
+    };
+
     // Handle remove tag
     const removeValue = (valueToRemove: string, e: React.MouseEvent) => {
       e.stopPropagation();
-      if (disabled || loading) return;
-      const newValues = selectedValues.filter((v) => v !== valueToRemove);
-      if (!isControlled) {
-        setInternalValue(newValues);
-      }
-      onValueChange?.(newValues);
+      removeByValue(valueToRemove);
     };
 
     // Handle clear all
     const clearAll = (e: React.MouseEvent) => {
       e.stopPropagation();
       if (disabled || loading) return;
-      if (!isControlled) {
-        setInternalValue([]);
-      }
-      onValueChange?.([]);
+      commitValues([]);
+      setAnnouncement("Selection cleared.");
     };
+
+    // A re-sorted list (selected rows first) moves DOM nodes, and a moved node loses
+    // focus. Hand it back to the row that had it so the next arrow key still works.
+    React.useLayoutEffect(() => {
+      const wanted = focusValueRef.current;
+      focusValueRef.current = null;
+      const menu = refs.floating.current;
+      if (
+        !wanted ||
+        !isOpen ||
+        !menu ||
+        menu.contains(document.activeElement)
+      ) {
+        return;
+      }
+      const row = Array.from(
+        menu.querySelectorAll<HTMLElement>(ENABLED_OPTION_SELECTOR)
+      ).find((node) => node.dataset.value === wanted);
+      focusMenuTarget(row);
+    }, [selectedValues, isOpen, refs.floating]);
+
+    // The chips that leave get a hollow copy that closes its width, so neighbours
+    // slide over instead of jumping. Widths are read after every render because the
+    // chip is already gone by the time anyone asks.
+    const [ghosts, setGhosts] = React.useState<ChipGhostData[]>([]);
+    const ghostIdRef = React.useRef(0);
+    const chipElsRef = React.useRef(new Map<string, HTMLElement>());
+    const chipMetaRef = React.useRef(
+      new Map<string, { label: string; width: number; index: number }>()
+    );
+    const dropGhost = React.useCallback(
+      (id: number) =>
+        setGhosts((current) => current.filter((ghost) => ghost.id !== id)),
+      []
+    );
+    React.useLayoutEffect(() => {
+      const previous = chipMetaRef.current;
+      const next = new Map<
+        string,
+        { label: string; width: number; index: number }
+      >();
+      if (!summaryLabel) {
+        shownChips.forEach((chip, index) => {
+          next.set(chip.value, {
+            label: chip.label,
+            width:
+              chipElsRef.current.get(chip.value)?.getBoundingClientRect()
+                .width ?? 0,
+            index,
+          });
+        });
+      }
+      chipMetaRef.current = next;
+      if (prefersReducedMotion()) return;
+      const leaving: ChipGhostData[] = [];
+      previous.forEach((meta, chipValue) => {
+        // Only a chip that was on screen and is really gone gets a ghost.
+        if (next.has(chipValue) || selectedValues.includes(chipValue)) return;
+        if (meta.width === 0) return;
+        leaving.push({ id: ++ghostIdRef.current, ...meta });
+      });
+      if (leaving.length > 0) setGhosts((current) => [...current, ...leaving]);
+    }, [shownChips, selectedValues, summaryLabel]);
+
+    const openMenu = (where: "first" | "last" | "pointer") => {
+      if (disabled || loading) return;
+      pendingFocusRef.current = where;
+      setIsOpen(true);
+    };
+
+    const closeMenu = React.useCallback(
+      (restoreFocus: boolean) => {
+        setIsOpen(false);
+        updateSearchQuery("");
+        if (restoreFocus) triggerRef.current?.focus({ preventScroll: true });
+      },
+      [updateSearchQuery]
+    );
+
+    const focusMenu = (where: "first" | "last" | "pointer") => {
+      const menu = refs.floating.current;
+      if (menu) focusInMenu(menu, where);
+    };
+
+    // The menu is hidden until floating-ui has placed it, and a hidden element
+    // cannot take focus, so the move waits for the first positioned render.
+    React.useEffect(() => {
+      const menu = refs.floating.current;
+      if (!isOpen || !isPositioned || !menu) return;
+      const where = pendingFocusRef.current;
+      if (where === null) return;
+      pendingFocusRef.current = null;
+      focusInMenu(menu, where);
+    }, [isOpen, isPositioned, refs.floating]);
+
+    // Escape closes the list whenever focus is inside it (or on the trigger with
+    // `closeOnEscape`). It listens on window, in the capture phase: a surrounding
+    // Radix dialog listens on document, and would otherwise close with the menu.
+    React.useEffect(() => {
+      if (!isOpen) return;
+      const handleEscape = (event: KeyboardEvent) => {
+        if (event.key !== "Escape") return;
+        const target = event.target;
+        if (!(target instanceof Node)) return;
+        const inMenu = Boolean(refs.floating.current?.contains(target));
+        const onTrigger = triggerRef.current === target;
+        if (!inMenu && !(onTrigger && closeOnEscape)) return;
+        event.stopPropagation();
+        closeMenu(inMenu);
+      };
+      window.addEventListener("keydown", handleEscape, true);
+      return () => window.removeEventListener("keydown", handleEscape, true);
+    }, [isOpen, closeOnEscape, closeMenu, refs.floating]);
+
+    // Closing unmounts the menu at once, so a copy of it leaves instead: it fades
+    // and drifts back toward the trigger, then removes itself. Skipped without the
+    // Web Animations API or under reduced motion.
+    React.useEffect(() => {
+      if (isOpen) return;
+      const node = menuNodeRef.current;
+      if (!node) return;
+      menuNodeRef.current = null;
+      const host = portalTarget;
+      if (
+        !host ||
+        typeof node.animate !== "function" ||
+        prefersReducedMotion()
+      ) {
+        return;
+      }
+      const ghost = node.cloneNode(true) as HTMLElement;
+      ghost.removeAttribute("id");
+      ghost.removeAttribute("role");
+      ghost.removeAttribute("aria-multiselectable");
+      ghost.querySelectorAll("[id]").forEach((el) => el.removeAttribute("id"));
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.setAttribute("inert", "");
+      // `!important`: the panel's own entry animation is declared that way, and
+      // replaying it on the copy would fade it in instead of out.
+      ghost.style.setProperty("animation", "none", "important");
+      ghost.style.pointerEvents = "none";
+      const side = node.dataset.side;
+      const drift =
+        side === "top"
+          ? "translateY(4px)"
+          : side === "left"
+            ? "translateX(4px)"
+            : side === "right"
+              ? "translateX(-4px)"
+              : "translateY(-4px)";
+      host.appendChild(ghost);
+      const remove = () => ghost.remove();
+      const animation = ghost.animate(
+        [
+          { opacity: 1, transform: "none" },
+          { opacity: 0, transform: `${drift} scale(0.98)` },
+        ],
+        {
+          // Ease-in: an exit should linger a moment, then go, rather than vanish up front.
+          duration: 140,
+          easing: "cubic-bezier(0.4, 0, 1, 1)",
+          fill: "forwards",
+        }
+      );
+      animation.onfinish = remove;
+      animation.oncancel = remove;
+      window.setTimeout(remove, 400);
+    }, [isOpen, portalTarget]);
 
     // Close dropdown when clicking outside (defer so opening click does not close immediately)
     React.useEffect(() => {
@@ -843,17 +1255,172 @@ const MultiSelect = React.forwardRef(
       };
     }, [isOpen, refs.floating, updateSearchQuery]);
 
-    // Handle keyboard navigation
+    // Trigger keys: ArrowDown / ArrowUp open the list and move into it, Enter and
+    // Space toggle it, Backspace / Delete drop the last pick (as a tag field does).
     const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === "Escape" && closeOnEscape) {
-        setIsOpen(false);
-        updateSearchQuery("");
-      } else if (e.key === "Enter" || e.key === " ") {
-        if (!isOpen) {
+      if (disabled || loading || e.target !== e.currentTarget) return;
+      switch (e.key) {
+        case "ArrowDown":
+        case "ArrowUp": {
           e.preventDefault();
-          setIsOpen(true);
+          const where = e.key === "ArrowDown" ? "first" : "last";
+          if (isOpen) focusMenu(where);
+          else openMenu(where);
+          break;
+        }
+        case "Enter":
+        case " ":
+          e.preventDefault();
+          if (isOpen) closeMenu(false);
+          else openMenu("first");
+          break;
+        case "Backspace":
+        case "Delete": {
+          const last = selectedValues[selectedValues.length - 1];
+          if (last === undefined) break;
+          e.preventDefault();
+          removeByValue(last);
+          break;
         }
       }
+    };
+
+    const handleTriggerClick = () => {
+      if (disabled || loading) return;
+      if (isOpen) setIsOpen(false);
+      else openMenu("pointer");
+    };
+
+    // Keys once focus is inside the menu. Rows are roving stops (tabIndex -1): arrows
+    // walk the search field and the enabled rows, Tab closes and moves on from the
+    // trigger, and typing jumps to a row (or into the search field).
+    const handleMenuKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      const menu = e.currentTarget;
+      const target = e.target as HTMLElement;
+      const inSearch = target.hasAttribute("data-multi-select-search");
+
+      if (e.key === "Tab") {
+        // Stop it reaching a surrounding focus trap, then let the browser's own Tab
+        // run from the trigger so focus carries on to the next field.
+        e.stopPropagation();
+        closeMenu(true);
+        return;
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        e.stopPropagation();
+        typeaheadRef.current.buffer = "";
+        const targets = menuFocusTargets(menu);
+        if (targets.length === 0) return;
+        const step = e.key === "ArrowDown" ? 1 : -1;
+        const index = targets.indexOf(target);
+        const next =
+          index === -1
+            ? step > 0
+              ? 0
+              : targets.length - 1
+            : (index + step + targets.length) % targets.length;
+        focusMenuTarget(targets[next]);
+        return;
+      }
+      if (inSearch) return;
+      if (e.key === "Home" || e.key === "End") {
+        e.preventDefault();
+        e.stopPropagation();
+        typeaheadRef.current.buffer = "";
+        const rows = menuFocusTargets(menu).filter(
+          (node) => !node.hasAttribute("data-multi-select-search")
+        );
+        focusMenuTarget(e.key === "Home" ? rows[0] : rows[rows.length - 1]);
+        return;
+      }
+      if (e.key.length !== 1 || e.key === " " || e.ctrlKey || e.metaKey) return;
+      const search = menu.querySelector<HTMLElement>(
+        "[data-multi-select-search]"
+      );
+      if (search) {
+        // The keystroke follows focus, so it lands in the field as typed.
+        search.focus({ preventScroll: true });
+        return;
+      }
+      // No search field: jump to the next row that starts with what was typed.
+      const typeahead = typeaheadRef.current;
+      window.clearTimeout(typeahead.timer);
+      typeahead.buffer += e.key.toLowerCase();
+      typeahead.timer = window.setTimeout(() => {
+        typeahead.buffer = "";
+      }, 500);
+      const rows = menuFocusTargets(menu);
+      const from = Math.max(rows.indexOf(target), 0);
+      const ordered = [...rows.slice(from + 1), ...rows.slice(0, from + 1)];
+      const match = ordered.find((row) =>
+        (row.textContent ?? "")
+          .trim()
+          .toLowerCase()
+          .startsWith(typeahead.buffer)
+      );
+      if (match) {
+        e.preventDefault();
+        focusMenuTarget(match);
+      }
+    };
+
+    /** Live chips, with a ghost of each removed one held in the slot it left. */
+    const renderChips = () => {
+      const nodes: React.ReactNode[] = shownChips.map((chip) => (
+        <span
+          key={chip.value}
+          ref={(node) => {
+            if (node) chipElsRef.current.set(chip.value, node);
+            else chipElsRef.current.delete(chip.value);
+          }}
+          // Keyed chips stay mounted across renders, so only a newly added chip plays
+          // its entry (Arc: grows in from .9 through a soft blur); existing ones do
+          // not re-animate.
+          className={cn(
+            CHIP_BASE_CLASSNAME,
+            CHIP_ENTER_CLASSNAME,
+            visibleCount && "shrink"
+          )}
+        >
+          <span
+            className="min-w-0 truncate"
+            title={typeof chip.label === "string" ? chip.label : undefined}
+          >
+            {chip.label}
+          </span>
+          <span
+            // Pointer-only: Backspace on the trigger and the rows in the list cover
+            // the keyboard, and a button inside the trigger button cannot be reached.
+            role="button"
+            tabIndex={-1}
+            aria-disabled={disabled || loading || undefined}
+            onClick={(e) => removeValue(chip.value, e)}
+            className={cn(
+              CHIP_REMOVE_CLASSNAME,
+              !(disabled || loading) &&
+                "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+            )}
+            aria-label={`Remove ${chip.label}`}
+          >
+            <X className="size-3" />
+          </span>
+        </span>
+      ));
+      [...ghosts]
+        .sort((a, b) => a.index - b.index)
+        .forEach((ghost) => {
+          nodes.splice(
+            Math.min(ghost.index, nodes.length),
+            0,
+            <ChipGhost
+              key={`ghost-${ghost.id}`}
+              ghost={ghost}
+              onDone={dropGhost}
+            />
+          );
+        });
+      return nodes;
     };
 
     return (
@@ -885,167 +1452,190 @@ const MultiSelect = React.forwardRef(
           ref={setAnchorRef}
           className="relative w-full min-w-0 flex flex-col gap-2"
         >
-          {/* Trigger */}
-          <button
-            ref={ref}
-            id={selectId}
-            type="button"
-            role="combobox"
-            aria-expanded={isOpen}
-            aria-haspopup="listbox"
-            aria-controls={listboxId}
-            aria-invalid={!!error}
-            aria-describedby={ariaDescribedBy}
-            disabled={disabled || loading}
-            onClick={() => !disabled && !loading && setIsOpen(!isOpen)}
-            onKeyDown={handleKeyDown}
-            className={cn(
-              multiSelectTriggerVariants({ state: derivedState }),
-              "text-left gap-2",
-              triggerClassName
-            )}
-          >
-            <div className="min-w-0 flex-1 flex flex-wrap items-center gap-x-[5px] gap-y-1 min-h-[26px]">
-              {selectedValues.length === 0 ? (
-                <span className="text-sm text-[var(--v2-text-placeholder,#707070)]">
-                  {placeholder}
-                </span>
-              ) : summaryLabel ? (
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="min-w-0 truncate text-sm text-[var(--v2-text-primary,#484848)]">
-                        {summaryLabel(selectedValues.length)}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <div className="flex flex-col gap-0.5">
-                        {selectedLabels.map((label, index) => (
-                          <span key={selectedValues[index]}>{label}</span>
-                        ))}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ) : (
-                selectedLabels.map((label, index) => (
-                  <span
-                    key={selectedValues[index]}
-                    // Keyed chips stay mounted across renders, so only a newly added
-                    // chip plays its entry (Arc: grows in from .9 through a soft blur);
-                    // existing ones do not re-animate.
-                    className="inline-flex min-w-0 max-w-[9rem] items-center gap-1 rounded-lg bg-semantic-bg-ui px-2 py-1 text-xs font-normal leading-[1.4] text-[var(--v2-text-primary,#484848)] ring-1 ring-inset ring-semantic-border-layout group-aria-expanded/ms:bg-semantic-bg-primary [@media(hover:hover)]:group-[:hover:not(:disabled)]/ms:bg-semantic-bg-primary [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
-                  >
-                    <span
-                      className="min-w-0 truncate"
-                      title={typeof label === "string" ? label : undefined}
-                    >
-                      {label}
-                    </span>
-                    <span
-                      role="button"
-                      tabIndex={disabled || loading ? -1 : 0}
-                      aria-disabled={disabled || loading || undefined}
-                      onClick={(e) => removeValue(selectedValues[index], e)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") {
-                          e.preventDefault();
-                          removeValue(
-                            selectedValues[index],
-                            e as unknown as React.MouseEvent
-                          );
-                        }
-                      }}
-                      // 16px plate (12px icon + 2px padding) with a 24px hit area (the
-                      // invisible `::before` reaches 4px past it). `-m-0.5` cancels the
-                      // padding so the chip keeps its size. The plate is one step darker
-                      // than the chip fill (`bg-semantic-bg-ui` would vanish into it).
-                      className={cn(
-                        "relative -m-0.5 shrink-0 cursor-pointer rounded-sm p-0.5 transition-colors duration-150 before:absolute before:-inset-1 before:content-[''] focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
-                        !(disabled || loading) &&
-                          "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
-                      )}
-                      aria-label={`Remove ${label}`}
-                    >
-                      <X className="size-3" />
-                    </span>
-                  </span>
-                ))
+          {/* Trigger. The clear button sits beside it, not inside: a button in a button
+              cannot be reached by keyboard or assistive tech. */}
+          <div className="relative w-full min-w-0">
+            <button
+              ref={setTriggerRef}
+              id={selectId}
+              type="button"
+              role="combobox"
+              aria-expanded={isOpen}
+              aria-haspopup="listbox"
+              aria-controls={listboxId}
+              aria-invalid={!!error}
+              aria-describedby={ariaDescribedBy}
+              disabled={disabled || loading}
+              onClick={handleTriggerClick}
+              onKeyDown={handleKeyDown}
+              // Space activates a button on keyup, and some browsers ignore a keydown
+              // preventDefault: without this the list would open and shut in one press.
+              onKeyUp={(e) => {
+                if (e.key === " " && e.target === e.currentTarget) {
+                  e.preventDefault();
+                }
+              }}
+              className={cn(
+                multiSelectTriggerVariants({ state: derivedState }),
+                "text-left gap-2",
+                triggerClassName
               )}
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              {showClearAll && selectedValues.length > 0 && (
-                <span
-                  role="button"
-                  tabIndex={disabled || loading ? -1 : 0}
-                  aria-disabled={disabled || loading || undefined}
-                  onClick={clearAll}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      clearAll(e as unknown as React.MouseEvent);
-                    }
-                  }}
-                  // Arc: a 22px plate around a 14px icon. It pops in from .6 scale
-                  // through a 2px blur and dips to .96 while pressed. Icon colour
-                  // comes from the span so hover can darken it.
-                  className={cn(
-                    "inline-flex size-[22px] cursor-pointer items-center justify-center rounded-sm text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
-                    !(disabled || loading) &&
-                      "[@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] motion-reduce:active:scale-100"
-                  )}
-                  aria-label="Clear all"
-                >
-                  <X className="size-3.5 [stroke-width:1.75]" />
+            >
+              {selectedChips.length > 0 && (
+                <span className="sr-only">
+                  Selected: {selectedLabels.join(", ")}
                 </span>
               )}
-              {showSeparatorBeforeChevron && (
-                <div
-                  className="w-px h-5 self-center border-l border-solid border-semantic-border-layout shrink-0"
-                  aria-hidden
-                />
-              )}
-              {loading ? (
-                <Loader2 className="size-4 animate-spin motion-reduce:[animation-duration:2s] text-[var(--v2-text-muted,#707070)]" />
-              ) : (
-                <ChevronDown
-                  className={cn(
-                    "size-4 shrink-0 text-[var(--v2-text-muted,#707070)]",
-                    chevronSpringClassName,
-                    isOpen && "rotate-180"
-                  )}
-                />
-              )}
-            </div>
-          </button>
-
-          {/* Helper / error sits between trigger and dropdown (normal flow), matching Figma */}
-          {(error || helperText) && (
-            <div className="flex justify-between items-start gap-2">
-              {error ? (
-                <div
-                  id={errorId}
-                  role="alert"
-                  className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
-                >
-                  <CircleAlert
-                    className="size-3.5 shrink-0 text-semantic-error-primary"
+              <div
+                // Chips are for the eye; the sr-only list above says the same in words.
+                aria-hidden={
+                  selectedChips.length > 0 && !summaryLabel ? true : undefined
+                }
+                className={cn(
+                  "min-w-0 flex-1 flex items-center gap-x-[5px] gap-y-1 min-h-[26px]",
+                  // A chip cap keeps one line: chips shrink and truncate instead of wrapping.
+                  visibleCount ? "flex-nowrap overflow-hidden" : "flex-wrap"
+                )}
+              >
+                {selectedChips.length === 0 ? (
+                  ghosts.length === 0 && (
+                    <span className="text-sm text-[var(--v2-text-placeholder,#707070)]">
+                      {placeholder}
+                    </span>
+                  )
+                ) : summaryLabel ? (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="min-w-0 truncate text-sm text-[var(--v2-text-primary,#484848)]">
+                          {summaryLabel(selectedValues.length)}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div className="flex flex-col gap-0.5">
+                          {selectedChips.map((chip) => (
+                            <span key={chip.value}>{chip.label}</span>
+                          ))}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ) : null}
+                {!summaryLabel && (
+                  <TooltipProvider delayDuration={200}>
+                    {renderChips()}
+                    {hiddenChips.length > 0 && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span
+                            data-overflow-count=""
+                            className={cn(
+                              CHIP_BASE_CLASSNAME,
+                              "shrink-0 gap-0 tabular-nums"
+                            )}
+                          >
+                            +<OverflowCount value={hiddenChips.length} />
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <div className="flex flex-col gap-0.5">
+                            {hiddenChips.map((chip) => (
+                              <span key={chip.value}>{chip.label}</span>
+                            ))}
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </TooltipProvider>
+                )}
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                {showClearAll && selectedValues.length > 0 && (
+                  // Holds the room the clear button (outside the trigger) sits in.
+                  <span aria-hidden="true" className="w-[22px] shrink-0" />
+                )}
+                {showSeparatorBeforeChevron && (
+                  <div
+                    className="w-px h-5 self-center border-l border-solid border-semantic-border-layout shrink-0"
                     aria-hidden
                   />
-                  <span className="min-w-0 break-words text-xs leading-[1.4] text-semantic-error-text">
-                    {error}
-                  </span>
+                )}
+                {loading ? (
+                  <Loader2 className="size-4 animate-spin motion-reduce:[animation-duration:2s] text-[var(--v2-text-muted,#707070)]" />
+                ) : (
+                  <ChevronDown
+                    className={cn(
+                      "size-4 shrink-0 text-[var(--v2-text-muted,#707070)]",
+                      chevronSpringClassName,
+                      isOpen && "rotate-180"
+                    )}
+                  />
+                )}
+              </div>
+            </button>
+            {showClearAll && selectedValues.length > 0 && (
+              <button
+                type="button"
+                aria-label="Clear all"
+                aria-disabled={disabled || loading || undefined}
+                tabIndex={disabled || loading ? -1 : 0}
+                onClick={clearAll}
+                // Arc: a 22px plate around a 14px icon. It pops in from .6 scale
+                // through a 2px blur and dips to .96 while pressed. Icon colour
+                // comes from the button so hover can darken it. It sits 36px from
+                // the edge (11px padding + 1px border + 16px chevron + 8px gap),
+                // 45px with the separator.
+                className={cn(
+                  "absolute top-1/2 inline-flex size-[22px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                  showSeparatorBeforeChevron ? "right-[45px]" : "right-9",
+                  !(disabled || loading) &&
+                    "[@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] motion-reduce:active:scale-100"
+                )}
+              >
+                <X className="size-3.5 [stroke-width:1.75]" />
+              </button>
+            )}
+          </div>
+
+          {/* Helper / error sits between trigger and dropdown (normal flow), matching Figma.
+              Always mounted so the row can open and close its height; the -mt-2 cancels the
+              column gap while it is empty. */}
+          <div
+            data-field-feedback=""
+            className={cn(
+              "grid [transition:grid-template-rows_220ms_cubic-bezier(0.22,1,0.36,1),margin-top_220ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+              error || helperText ? "grid-rows-[1fr]" : "-mt-2 grid-rows-[0fr]"
+            )}
+          >
+            <div className="min-h-0 overflow-hidden">
+              {(error || helperText) && (
+                <div className="flex justify-between items-start gap-2">
+                  {error ? (
+                    <div
+                      id={errorId}
+                      role="alert"
+                      className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+                    >
+                      <CircleAlert
+                        className="size-3.5 shrink-0 text-semantic-error-primary"
+                        aria-hidden
+                      />
+                      <span className="min-w-0 break-words text-xs leading-[1.4] text-semantic-error-text">
+                        {error}
+                      </span>
+                    </div>
+                  ) : helperText ? (
+                    <span
+                      id={helperId}
+                      className="min-w-0 break-words text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]"
+                    >
+                      {helperText}
+                    </span>
+                  ) : null}
                 </div>
-              ) : helperText ? (
-                <span
-                  id={helperId}
-                  className="min-w-0 break-words text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]"
-                >
-                  {helperText}
-                </span>
-              ) : null}
+              )}
             </div>
-          )}
+          </div>
 
           {isOpen &&
             portalTarget &&
@@ -1055,6 +1645,7 @@ const MultiSelect = React.forwardRef(
                   ref={setDropdownRef}
                   id={listboxId}
                   role="listbox"
+                  aria-label={label || placeholder}
                   aria-multiselectable="true"
                   data-side={placement.split("-")[0]}
                   data-align={placement.split("-")[1] ?? "center"}
@@ -1069,12 +1660,14 @@ const MultiSelect = React.forwardRef(
                     visibility: isPositioned ? undefined : "hidden",
                   }}
                   onMouseDown={(e) => e.stopPropagation()}
+                  onKeyDown={handleMenuKeyDown}
                 >
                   {/* Search input */}
                   {searchable && (
                     <div className="p-2 border-b border-solid border-semantic-border-layout">
                       <input
                         type="text"
+                        data-multi-select-search=""
                         placeholder={searchPlaceholder}
                         aria-label={searchPlaceholder}
                         value={searchQuery}
@@ -1090,7 +1683,7 @@ const MultiSelect = React.forwardRef(
                     <div
                       role="option"
                       aria-selected={allSelected}
-                      tabIndex={0}
+                      tabIndex={-1}
                       onClick={toggleSelectAll}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
@@ -1189,6 +1782,8 @@ const MultiSelect = React.forwardRef(
                             type="button"
                             role="option"
                             aria-selected={isSelected}
+                            data-value={option.value}
+                            tabIndex={-1}
                             disabled={isDisabled}
                             onClick={() =>
                               !isDisabled && toggleOption(option.value)
@@ -1218,7 +1813,8 @@ const MultiSelect = React.forwardRef(
                         const detailedRow = (
                           <div
                             role="option"
-                            tabIndex={isDisabled ? -1 : 0}
+                            tabIndex={-1}
+                            data-value={option.value}
                             aria-selected={isSelected}
                             aria-disabled={isDisabled}
                             data-disabled={isDisabled ? "" : undefined}
@@ -1321,6 +1917,11 @@ const MultiSelect = React.forwardRef(
               portalTarget
             )}
         </div>
+
+        {/* Says what a selection did; selecting moves no focus. */}
+        <span aria-live="polite" aria-atomic="true" className="sr-only">
+          {announcement}
+        </span>
 
         {/* Hidden input for form submission */}
         {name &&
