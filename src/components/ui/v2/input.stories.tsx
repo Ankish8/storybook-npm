@@ -67,16 +67,33 @@ const meta: Meta<typeof Input> = {
               "42px height, 4px radius",
               "44px height, 8px radius",
             ],
-            ["Typography", "Inherited 16px", "Inter 14/20 regular"],
-            ["Horizontal padding", "16px", "16px"],
-            ["Hover border", "Default border", "#C0C3CA on enabled fields"],
+            [
+              "Typography",
+              "16px, inherited family",
+              "Inter 14/1.4, -0.01em tracking, regular",
+            ],
+            ["Horizontal padding", "16px", "12px"],
+            [
+              "Hover",
+              "Border stayed the same",
+              "Border darkens to the primary colour over 160ms, on fine hover-capable pointers only",
+            ],
             [
               "Focus",
-              "Teal border and a thin 1px shadow",
-              "Primary border emphasis; no outer glow",
+              "Teal border and a 1px teal glow",
+              "No border change or glow; the caret marks the field",
             ],
-            ["Error focus", "Thin red shadow", "Soft 4px red shadow"],
-            ["Disabled", "Reduced opacity", "Solid grey surface and border"],
+            [
+              "Error",
+              "Red border with a faint red glow, kept on focus",
+              'Red border only, kept on hover and focus. aria-invalid="true" shows it too',
+            ],
+            ["Disabled", "50% opacity", "50% opacity on a solid grey surface"],
+            [
+              "Check icon",
+              "Appeared and disappeared instantly",
+              "Scales up from 0.8 and unblurs on focus; opacity only under reduced motion",
+            ],
             [
               "Typing behavior",
               "Number guards, spinner control, consecutive-space protection",
@@ -86,22 +103,16 @@ const meta: Meta<typeof Input> = {
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
-            ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus border", "--semantic-primary", "#343E55", "#343E55"],
+            ["Hover border", "--semantic-primary", "#343E55", "#343E55"],
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
-            [
-              "Placeholder",
-              "--semantic-text-placeholder",
-              "#A2A6B1",
-              "#A2A6B1",
-            ],
+            ["Placeholder", "--v2-text-placeholder", "#707070", "#707070"],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Font", "--font-v2", "Inter 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            'Pair Input with a visible label. `state="error"` controls its visual treatment; set `aria-invalid` and connect a helper with `aria-describedby` when showing validation. For labels, icons and counters as a complete field, use TextField. Numeric fields preserve `decimal`, `allowDecimal`, `preventNumberExponent` and `hideNumberSpinners`.',
+            'Pair Input with a visible label. `state="error"` or `aria-invalid="true"` shows the red border; connect a message with `aria-describedby` when showing validation. For a label, helper and error copy that animates, icons, a counter or a clear button as one field, use TextField. Numeric fields preserve `decimal`, `allowDecimal`, `preventNumberExponent` and `hideNumberSpinners`.',
         }),
       },
     },
@@ -534,9 +545,8 @@ export const Interaction: Story = {
       },
     },
   },
-  play: async ({ args, canvasElement, step }) => {
+  play: async ({ canvasElement, step }) => {
     clearAllMocks();
-    const dbg: string[] = [];
     const canvas = within(canvasElement);
     const input = canvas.getByRole("textbox", { name: "Example input" });
 
@@ -546,42 +556,7 @@ export const Interaction: Story = {
     });
 
     await step("Typing updates the value and calls onChange", async () => {
-      dbg.push("before=" + changeAction.mock.calls.length);
-      changeAction("manual");
-      dbg.push("manualCall=" + changeAction.mock.calls.length);
-      args.onChange?.({ target: { value: "viaArgs" } } as never);
-      dbg.push("viaArgs=" + changeAction.mock.calls.length);
-      await userEvent.type(input, "A");
-      dbg.push(
-        "afterA=" +
-          changeAction.mock.calls.length +
-          " val=" +
-          (input as HTMLInputElement).value
-      );
-      await userEvent.type(input, "da");
-      await new Promise((r) => setTimeout(r, 300));
-      dbg.push(
-        "after300=" +
-          changeAction.mock.calls.length +
-          " val=" +
-          (input as HTMLInputElement).value +
-          " onChange=" +
-          String(args.onChange).slice(0, 60) +
-          " name=" +
-          changeAction.getMockName()
-      );
-      const el = input as unknown as Record<string, unknown>;
-      const key = Object.keys(el).find((k) => k.startsWith("__reactProps"));
-      const rp = key ? (el[key] as Record<string, unknown>) : undefined;
-      dbg.push(
-        "rp.value=" +
-          JSON.stringify(rp?.value) +
-          " rp.onChange=" +
-          String(rp?.onChange).slice(0, 80) +
-          " typeofOnChange=" +
-          typeof rp?.onChange
-      );
-      throw new globalThis.Error("DEBUG " + dbg.join(" | "));
+      await userEvent.type(input, "Ada");
       await waitFor(() => expect(input).toHaveValue("Ada"));
       await expect(changeAction).toHaveBeenCalledTimes(3);
       await expect(changeAction).toHaveBeenLastCalledWith("Ada");

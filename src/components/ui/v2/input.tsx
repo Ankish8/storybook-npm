@@ -33,14 +33,15 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
  * Input variants for different visual states
  */
 const inputVariants = cva(
-  // Arc field: 44px, 12px inset, 14px/1.4 with -0.01em tracking; border colour is the only focus/hover answer
-  // (no ring or glow), eased over 160ms on Arc's standard curve; disabled dims to 50%.
+  // Arc field: 44px, 12px inset, 14px/1.4 with -0.01em tracking; border colour is the only hover answer
+  // (no ring or glow), eased over 160ms on Arc's standard curve and only on fine hover-capable pointers
+  // so a tap on touch never leaves the border stuck dark; disabled dims to 50%.
   "h-11 w-full box-border rounded-lg bg-semantic-bg-primary px-3 py-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none aria-[invalid=true]:border-semantic-error-primary [@media(hover:hover)_and_(pointer:fine)]:aria-[invalid=true]:enabled:hover:border-semantic-error-primary",
         error:
           "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
@@ -255,9 +256,19 @@ const Input = React.forwardRef(
     return (
       <div className="relative w-full">
         {inputEl}
-        {isFocused && (
-          <Check className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-semantic-brand pointer-events-none" />
-        )}
+        {/* Always mounted so it can ease in and out: it scales up from 0.8 and unblurs on focus, the same
+            exit TextField's clear button uses. Reduced motion keeps only the opacity change. */}
+        <Check
+          aria-hidden="true"
+          data-check-icon=""
+          data-visible={isFocused ? "" : undefined}
+          className={cn(
+            "pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-semantic-brand [transition-duration:160ms] [transition-property:opacity,transform,filter] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:opacity]",
+            isFocused
+              ? "scale-100 opacity-100 blur-0"
+              : "scale-[0.8] opacity-0 blur-[2px] motion-reduce:scale-100 motion-reduce:blur-0"
+          )}
+        />
       </div>
     );
   }

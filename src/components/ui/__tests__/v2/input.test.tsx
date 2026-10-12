@@ -246,4 +246,68 @@ describe("Input (v2)", () => {
     const input = screen.getByTestId("input");
     expect(input.className).not.toMatch(/inner-spin-button/);
   });
+  it("answers hover with the border only on fine, hover-capable pointers", () => {
+    render(<Input data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input.className).toContain(
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary"
+    );
+    // The un-gated utility would leave the border dark after a tap on touch
+    expect(input.className).not.toMatch(/(^|\s)enabled:hover:/);
+  });
+
+  it("shows the error border for aria-invalid without a state prop", () => {
+    render(<Input aria-invalid="true" data-testid="input" />);
+    const input = screen.getByTestId("input");
+    expect(input).toHaveClass(
+      "aria-[invalid=true]:border-semantic-error-primary"
+    );
+    // Hovering an invalid field must not swap the red for the neutral hover colour
+    expect(input.className).toContain(
+      "[@media(hover:hover)_and_(pointer:fine)]:aria-[invalid=true]:enabled:hover:border-semantic-error-primary"
+    );
+  });
+
+  describe("check icon", () => {
+    it("is not announced and does not take pointer events", () => {
+      render(<Input showCheckIcon data-testid="input" />);
+      const icon = document.querySelector("[data-check-icon]");
+      expect(icon).toHaveAttribute("aria-hidden", "true");
+      expect(icon).toHaveClass("pointer-events-none");
+    });
+
+    it("stays hidden until the field is focused, then eases back out on blur", async () => {
+      const user = userEvent.setup();
+      render(<Input showCheckIcon data-testid="input" />);
+      const icon = document.querySelector("[data-check-icon]") as Element;
+      expect(icon).not.toHaveAttribute("data-visible");
+      expect(icon).toHaveClass("opacity-0", "scale-[0.8]");
+
+      await user.click(screen.getByTestId("input"));
+      expect(icon).toHaveAttribute("data-visible");
+      expect(icon).toHaveClass("opacity-100", "scale-100");
+
+      await user.tab();
+      expect(icon).not.toHaveAttribute("data-visible");
+      expect(icon).toHaveClass("opacity-0");
+    });
+
+    it("keeps only the opacity change under reduced motion", () => {
+      render(<Input showCheckIcon data-testid="input" />);
+      const icon = document.querySelector("[data-check-icon]") as Element;
+      expect(icon).toHaveClass(
+        "motion-reduce:[transition-property:opacity]",
+        "motion-reduce:scale-100",
+        "motion-reduce:blur-0"
+      );
+    });
+
+    it("adds no wrapper or icon without showCheckIcon", () => {
+      render(<Input data-testid="input" />);
+      expect(document.querySelector("[data-check-icon]")).toBeNull();
+      expect(screen.getByTestId("input").parentElement).toBe(
+        document.body.firstElementChild
+      );
+    });
+  });
 });
