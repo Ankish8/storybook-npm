@@ -26,7 +26,9 @@ const meta: Meta<typeof NumberStepField> = {
         "min",
         "max",
         "step",
+        "largeStep",
         "suffix",
+        "state",
         "disabled",
         "onValueChange",
       ],
@@ -39,22 +41,52 @@ const meta: Meta<typeof NumberStepField> = {
             "A constrained numeric field with custom step controls and a unit suffix.",
           changes: [
             [
-              "Steppers",
-              "12px targets",
-              "24 × 19 hover tiles; hold to repeat (400ms, then every 60ms)",
+              "Typing",
+              "Every keystroke was clamped and a cleared field became 0",
+              "Typing keeps a draft: a valid number inside the limits applies at once; anything else is held and applied, clamped, on blur or Enter. Escape puts the old value back, and minus signs work below zero",
             ],
-            ["Field", "4px corners", "8px corners; 40px height"],
-            ["Focus", "1px halo", "Teal border and 4px glow"],
-            ["Typography", "Inherited", "Inter; 16px numeric value"],
+            [
+              "Digits",
+              "Plain text",
+              "Odometer wheels: a step rolls the digits in the direction of change, a new place opens its width, and typing shows the plain text",
+            ],
+            [
+              "Keyboard",
+              "Native arrow keys only",
+              "ArrowUp / ArrowDown, PageUp / PageDown and Shift+Arrow (largeStep, ten steps by default), Home / End to the limits",
+            ],
+            [
+              "Steppers",
+              '12px targets, always Tab stops, named "Increase value"',
+              "24 × 19 hover tiles (24px on touch) out of the Tab order, named after the field, ramping hold-to-repeat (400ms, then 150ms down to 40ms)",
+            ],
+            [
+              "At a limit",
+              "Nothing happened",
+              "The value tints and strains toward the limit, the refused chevron shakes, and a polite message names the limit. Reduced motion keeps the tint",
+            ],
+            [
+              "Field",
+              "4px corners",
+              "8px corners; 44px height (50px on touch)",
+            ],
+            ["Focus", "1px halo", "No glow; the caret marks the field"],
+            [
+              "Error and suffix",
+              "No error state; suffix required",
+              'state="error" (red border, aria-invalid); suffix is optional',
+            ],
           ],
           tokens: [
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
+            ["Hover border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
+            ["Limit tint", "--semantic-warning-text", "#B54708", "#B54708"],
+            ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Suffix", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
           ],
           guidance:
-            "Give the field an accessible name. Values stay integral and are clamped to min/max; step controls preserve focus so validation still runs on blur.",
+            "Give the field an accessible name; the steppers are named after it. Values stay integral and are clamped to min/max when typing ends. Step controls keep focus on the input so validation still runs on blur.",
         }),
       },
     },
@@ -74,7 +106,9 @@ const meta: Meta<typeof NumberStepField> = {
     min: { control: "number" },
     max: { control: "number" },
     step: { control: "number" },
+    largeStep: { control: "number" },
     suffix: { control: "text" },
+    state: { control: "select", options: ["default", "error"] },
     disabled: { control: "boolean" },
   },
   render: function Render(args) {
@@ -101,6 +135,14 @@ export const Minutes: Story = {
 export const Disabled: Story = { args: { disabled: true } };
 export const AtMinimum: Story = { args: { value: 0 } };
 export const AtMaximum: Story = { args: { value: 23 } };
+export const Error: Story = { args: { state: "error", value: 30, max: 59 } };
+export const Negative: Story = {
+  args: { value: 0, min: -10, max: 10, suffix: "°C" },
+};
+export const BareNumber: Story = {
+  name: "Without a suffix",
+  args: { suffix: undefined, value: 42, max: 99 },
+};
 function Sample(args: NumberStepFieldProps) {
   const [value, setValue] = useState(args.value);
   return (
