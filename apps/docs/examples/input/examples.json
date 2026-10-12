@@ -1,0 +1,74 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A single-line field. It needs a visible label or an `aria-label`; the placeholder is only a hint."
+    },
+    {
+      "id": "with-label",
+      "title": "Label and helper text",
+      "description": "Input is the bare control. Pair it with a `<label htmlFor>` and link helper copy through `aria-describedby`."
+    },
+    {
+      "id": "types",
+      "title": "Input types",
+      "description": "`type` passes straight to the native input, so the right keyboard and autofill come with it."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Pass `value` and `onChange` to own the text. Every native input attribute is forwarded."
+    },
+    {
+      "id": "error",
+      "title": "Error",
+      "description": "`state=\"error\"` turns the border red and keeps it red on hover and focus. Set `aria-invalid` and describe the problem in a message."
+    },
+    {
+      "id": "aria-invalid",
+      "title": "aria-invalid on its own",
+      "description": "`aria-invalid=\"true\"` shows the same red border without `state`, so a field validated by a form library looks right."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled and read-only",
+      "description": "A disabled field dims on a grey surface and leaves the tab order. A read-only field keeps its look, can be focused and its text can be copied."
+    },
+    {
+      "id": "check-icon",
+      "title": "Check icon",
+      "description": "`showCheckIcon` scales a check in while the field is focused and eases it out on blur."
+    },
+    {
+      "id": "numbers",
+      "title": "Numbers",
+      "description": "`type=\"number\"` refuses `e` by default and hides the native spinners. `allowDecimal`, `hideNumberSpinners` and `preventNumberExponent` change each rule."
+    },
+    {
+      "id": "spaces",
+      "title": "Consecutive spaces",
+      "description": "Text fields ignore a second space in a row and leave the caret where it is. Set `preventConsecutiveSpaces={false}` to keep every space."
+    },
+    {
+      "id": "with-button",
+      "title": "With a button",
+      "description": "The field fills the space its flex row gives it. Enter inside it submits the form, like any native input."
+    },
+    {
+      "id": "form",
+      "title": "In a form",
+      "description": "`name` and the native constraint attributes work as usual, so a plain form post or `FormData` reads the values."
+    },
+    {
+      "id": "widths",
+      "title": "Width",
+      "description": "Input is `w-full`: 44px high and as wide as its container."
+    },
+    {
+      "id": "text-field",
+      "title": "Complete field",
+      "description": "Need a label, helper text that animates in, an error, a counter or a clear button in one component? Use TextField, which shares the same field styling."
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Pick any number of options. The picks show as chips in the field. Keep them in state and update them from `onValueChange`, which receives the full list of values.",
+      "minHeight": 400
+    },
+    {
+      "id": "uncontrolled",
+      "title": "Uncontrolled",
+      "description": "Use `defaultValue` for the starting picks when you only need to hear about changes.",
+      "minHeight": 380
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "`value` is the source of truth, so anything can change it: here a button picks every option.",
+      "minHeight": 400
+    },
+    {
+      "id": "searchable",
+      "title": "Searchable",
+      "description": "`searchable` adds a search field to the list and focuses it on open (on a mouse, not on touch). Search matches the label, the caption and the group name.",
+      "minHeight": 470
+    },
+    {
+      "id": "groups",
+      "title": "Groups",
+      "description": "Pass sections instead of a flat list: `{ label, options }`. Group names head each block and are searchable too.",
+      "minHeight": 470
+    },
+    {
+      "id": "select-all",
+      "title": "Select all",
+      "description": "`selectAllLabel` pins a row at the top that picks every enabled option, shows a dash for a partial selection and clears when everything is picked.",
+      "minHeight": 420
+    },
+    {
+      "id": "selection-limit",
+      "title": "Selection limit",
+      "description": "`maxSelections` stops further picks and dims the rest. The footer counts them; hide it with `showSelectionFooter={false}`.",
+      "minHeight": 420
+    },
+    {
+      "id": "detailed",
+      "title": "Detailed rows",
+      "description": "`optionVariant=\"detailed\"` puts a checkbox in front of each row and shows `caption` on the right, for people, lines or numbers that need a second line of context.",
+      "minHeight": 380
+    },
+    {
+      "id": "max-visible",
+      "title": "Chip limit",
+      "description": "`maxVisible` keeps the field one line high: the chips past the limit become a \"+N\" count (hover it to read them). Without it, chips wrap and the field grows a row every few picks.",
+      "minHeight": 420
+    },
+    {
+      "id": "summary",
+      "title": "Summary",
+      "description": "`summaryLabel` swaps the chips for one line of text, such as \"3 lines selected\". Hover it to read the picks.",
+      "minHeight": 400
+    },
+    {
+      "id": "disabled-options",
+      "title": "Disabled options",
+      "description": "A disabled option cannot be picked and is skipped by the arrow keys. `disabledTooltip` says why on hover.",
+      "minHeight": 330
+    },
+    {
+      "id": "error",
+      "title": "Helper text and error",
+      "description": "`helperText` sits under the field and `error` replaces it in red. The row opens smoothly, and both are linked to the field for assistive technology.",
+      "minHeight": 340
+    },
+    {
+      "id": "loading",
+      "title": "Loading and paging",
+      "description": "`loading` shows a spinner while the first page is fetched. `onScrollEnd`, `hasMore` and `loadingMore` page more options in as the list is scrolled.",
+      "minHeight": 400
+    },
+    {
+      "id": "server-search",
+      "title": "Server-side search",
+      "description": "Set `searchQuery` and `onSearchQueryChange` and the field stops filtering for itself: you pass the options that match. Picked values that are not in the current results still show as chips.",
+      "minHeight": 470
+    },
+    {
+      "id": "in-dialog",
+      "title": "Inside a dialog",
+      "description": "The list is portaled to the page, so a dialog does not clip it, and it keeps working with the dialog's focus trap. Escape closes the list first and the dialog second.",
+      "minHeight": 560
+    },
+    {
+      "id": "form",
+      "title": "In a form",
+      "description": "`name` submits one entry per pick, so a plain form post or `FormData` reads them with `getAll`.",
+      "minHeight": 400
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "The field is a combobox: arrows move through the rows, typing jumps to a match, Escape returns to the field and Backspace drops the last pick.",
+      "minHeight": 460
+    }
+  ]
+}

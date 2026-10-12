@@ -45,6 +45,12 @@ describe("docs examples", () => {
         "button-group",
         "checkbox",
         "creatable-multi-select",
+        "date-range-picker",
+        "date-time-picker",
+        "file-upload",
+        "input",
+        "multi-select",
+        "number-step-field",
         "modal",
         "split-button",
       ].sort()

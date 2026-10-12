@@ -1,0 +1,59 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A bounded whole number with a unit. Keep the number in state and update it from `onValueChange`. Give the field an `aria-label`: the steppers are named after it."
+    },
+    {
+      "id": "hours-minutes",
+      "title": "Hours and minutes",
+      "description": "Two fields side by side make a delay. Each keeps its own limits; a step turns the digits like an odometer."
+    },
+    {
+      "id": "minimum",
+      "title": "Typing above a minimum",
+      "description": "Typing keeps a draft. A number inside the limits applies at once; one below the minimum is held while you type, so 25 can be typed above a minimum of 10. It is clamped when you leave the field or press Enter, and Escape puts the old value back."
+    },
+    {
+      "id": "negative",
+      "title": "Negative numbers",
+      "description": "Set `min` below zero and the field accepts a minus sign. With a minimum of zero or more it is refused."
+    },
+    {
+      "id": "step",
+      "title": "Step and large step",
+      "description": "`step` is how far a chevron or an arrow key moves, from a grid that starts at `min`. `largeStep` (ten steps by default) is how far PageUp, PageDown and Shift+Arrow move."
+    },
+    {
+      "id": "unbounded",
+      "title": "No maximum",
+      "description": "Without `max` the field has no upper limit, and a new place opens its width as the number gains a digit. A function of the value can pick the suffix."
+    },
+    {
+      "id": "no-suffix",
+      "title": "Without a suffix",
+      "description": "`suffix` is optional. Leave it out for a bare number."
+    },
+    {
+      "id": "error",
+      "title": "Error",
+      "description": "`state=\"error\"` turns the border red and sets `aria-invalid`. Describe the problem in a message and link it with `aria-describedby`."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled field dims on a grey surface; the input and both steppers leave the interaction."
+    },
+    {
+      "id": "labels",
+      "title": "Stepper labels",
+      "description": "By default the steppers read \"Increase <aria-label>\" and \"Decrease <aria-label>\". `incrementAriaLabel` and `decrementAriaLabel` say it in your own words."
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "The input answers the arrow, page, Home and End keys, so the chevrons are not Tab stops. At a limit a press strains the value, and the limit is announced politely."
+    }
+  ]
+}

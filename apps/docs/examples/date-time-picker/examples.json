@@ -1,0 +1,93 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A typed field with a calendar and a start time. Type the date, step a segment with the arrow keys, or use the calendar.",
+      "minHeight": 560
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Pass `value` and `onValueChange`. The value holds a `Date` and the times as `HH:mm:ss` strings, or empty strings until a time is chosen.",
+      "minHeight": 560
+    },
+    {
+      "id": "date-only",
+      "title": "Date only",
+      "description": "`variant=\"date-only\"` drops the time fields.",
+      "minHeight": 420
+    },
+    {
+      "id": "time-only",
+      "title": "Time only",
+      "description": "`variant=\"time-only\"` shows only the time, chosen from scrolling hour, minute and AM/PM lists.",
+      "minHeight": 340
+    },
+    {
+      "id": "time-range",
+      "title": "Start and end time",
+      "description": "Leave `showEndTime` on (the default for date and time) to choose a start and an end time on one day.",
+      "minHeight": 640
+    },
+    {
+      "id": "seconds",
+      "title": "Seconds",
+      "description": "`showSeconds` adds a seconds list. It also turns on by itself when the value already carries seconds.",
+      "minHeight": 560
+    },
+    {
+      "id": "minute-step",
+      "title": "Minute step",
+      "description": "`minuteStep` sets the spacing of the minute list, and `secondStep` does the same for seconds.",
+      "minHeight": 560
+    },
+    {
+      "id": "date-limits",
+      "title": "Date limits",
+      "description": "`minDate` and `maxDate` dim the days outside the window, and typed dates outside it are ignored. `disablePastDates` is a shortcut for a `minDate` of today.",
+      "minHeight": 560
+    },
+    {
+      "id": "close-on-select",
+      "title": "Close on select",
+      "description": "`closeOnSelect` closes the picker as soon as a day is chosen, which suits date-only fields.",
+      "minHeight": 420
+    },
+    {
+      "id": "week-start-locale",
+      "title": "Week start and locale",
+      "description": "`weekStartsOn={1}` starts the week on Monday. `locale` translates the calendar's month names, weekdays and day labels. The typed field stays day/month/year.",
+      "minHeight": 560
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "`sm`, `default` and `lg` set the width of the field (280, 336 and 360px); the height is 44px for all three. The calendar panel is a compact 288px at most, whatever the field's width.",
+      "minHeight": 560
+    },
+    {
+      "id": "validation",
+      "title": "Validation",
+      "description": "`error` shows a message under the field, turns the border red and sets `aria-invalid`. `required` adds an asterisk to the label.",
+      "minHeight": 560
+    },
+    {
+      "id": "form",
+      "title": "Form integration",
+      "description": "`name` adds a hidden input that submits the chosen date and time with the form.",
+      "minHeight": 560
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "The field is typed and stepped like a segmented input. Alt+ArrowDown, or Enter on the calendar button, moves focus into the calendar, which is one tab stop with arrow-key movement.",
+      "minHeight": 560
+    },
+    {
+      "id": "disabled-readonly",
+      "title": "Disabled and read only",
+      "description": "A disabled field cannot be focused. A read-only field can be focused and copied but not changed, and it does not open the calendar."
+    }
+  ]
+}

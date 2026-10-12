@@ -1,0 +1,89 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Click the target or drop a file on it. `accept` limits the types, and the chosen file shows as a row you can remove."
+    },
+    {
+      "id": "multiple",
+      "title": "Multiple files",
+      "description": "`multiple` keeps a list. A file added twice is listed once."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Pass `value` and `onFilesChange` to own the list of `File` objects."
+    },
+    {
+      "id": "accepted-types",
+      "title": "Accepted types",
+      "description": "`accept` takes extensions (`.csv`) and MIME types (`image/*`). With MIME types only, the target turns red while a file of another type is dragged over it; extensions can only be checked on drop."
+    },
+    {
+      "id": "size-limit",
+      "title": "Size limit",
+      "description": "`maxSize` (bytes) refuses larger files. `onReject` receives the reason and the file, and the same message shows under the target."
+    },
+    {
+      "id": "max-files",
+      "title": "Maximum files",
+      "description": "`maxFiles` caps the list. Files over the cap are refused with a message and reported to `onReject`."
+    },
+    {
+      "id": "uploads",
+      "title": "Uploads with progress",
+      "description": "`onUpload` runs for each added file. Call `onProgress(0-100)` to fill the bar, resolve when the file has landed and the row turns to Uploaded with a drawn check."
+    },
+    {
+      "id": "failure-retry",
+      "title": "Failure and retry",
+      "description": "Reject with an `Error` and its message becomes the reason on the row, with a Retry pill that starts the upload again from zero. The border tints and the row shakes once."
+    },
+    {
+      "id": "cancel",
+      "title": "Cancelling",
+      "description": "Removing a row aborts the `signal` you were given, so you can stop the request."
+    },
+    {
+      "id": "earlier-uploads",
+      "title": "Earlier uploads",
+      "description": "`defaultItems` shows rows that already have a status, such as files uploaded in a previous visit. They are not part of `value` or `onFilesChange`."
+    },
+    {
+      "id": "images",
+      "title": "Image thumbnails",
+      "description": "Image files get a 40px thumbnail from an object URL that is released when the row goes. Other types get an icon for their kind."
+    },
+    {
+      "id": "drop-label",
+      "title": "Drop label and note",
+      "description": "`dropLabel` replaces the prompt while files are over the target, and `note` replaces the line with the accepted types and size. A faint light follows the pointer along the edge while you drag."
+    },
+    {
+      "id": "compact",
+      "title": "Compact prompt",
+      "description": "`compactAt` folds the prompt to a slim bar once the list holds that many rows, so the list has room. A drag over it brings the prompt back."
+    },
+    {
+      "id": "paste",
+      "title": "Paste",
+      "description": "Files on the clipboard, such as a screenshot, are added while the pointer is over the component or focus is inside it. Text fields keep their own paste."
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "The target is a native button. Inside the list each row has one action tab stop, the arrows move between rows, and Delete removes the focused row; focus moves to a neighbouring row afterwards."
+    },
+    {
+      "id": "error",
+      "title": "Error",
+      "description": "`error` shows a message under the target, turns the edge red and sets `aria-invalid` on the input."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled upload cannot be opened, dropped on or pasted into."
+    }
+  ]
+}

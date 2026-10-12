@@ -1,0 +1,111 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Pick a start and an end day. The second click completes the range and closes the picker. Without `value` it keeps its own state.",
+      "minHeight": 460
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Pass `value` and `onValueChange` to own the range. `clearable` adds an x that empties it.",
+      "minHeight": 460
+    },
+    {
+      "id": "presets",
+      "title": "Presets",
+      "description": "The rail on the left holds Today, Yesterday, Last 7 days, Last 30 days, This month and Last month. The preset that matches the current range is highlighted, and the arrow keys move between them.",
+      "minHeight": 460
+    },
+    {
+      "id": "extended-presets",
+      "title": "Longer look-backs",
+      "description": "`EXTENDED_DATE_RANGE_PRESETS` adds Last 90 days, This quarter and Year to date to the default six.",
+      "minHeight": 520
+    },
+    {
+      "id": "financial-year",
+      "title": "Financial year",
+      "description": "`getFinancialYearPresets()` adds This and Last financial year, starting in April. Pass another start month, for example `getFinancialYearPresets(0)` for the calendar year.",
+      "minHeight": 520
+    },
+    {
+      "id": "custom-presets",
+      "title": "Custom presets",
+      "description": "A preset is a label and a `getRange` function. A preset that falls outside `minDate` and `maxDate` is disabled.",
+      "minHeight": 460
+    },
+    {
+      "id": "no-presets",
+      "title": "No presets",
+      "description": "Pass `presets={[]}` to show only the calendar, for example for booking dates.",
+      "minHeight": 460
+    },
+    {
+      "id": "two-months",
+      "title": "Two months",
+      "description": "`months=\"auto\"` shows two months side by side when the page is at least 712px wide and one below that. Use `months={2}` to always show two. The default is one month.",
+      "minHeight": 460
+    },
+    {
+      "id": "date-limits",
+      "title": "Date limits",
+      "description": "`minDate` and `maxDate` dim the days outside the window and disable the presets that fall outside it.",
+      "minHeight": 460
+    },
+    {
+      "id": "future-only",
+      "title": "Future dates only",
+      "description": "`disablePastDates` is a shortcut for a `minDate` of today.",
+      "minHeight": 460
+    },
+    {
+      "id": "week-start-locale",
+      "title": "Week start and locale",
+      "description": "`weekStartsOn={1}` starts the week on Monday. `locale` takes a BCP 47 tag and translates month names, weekdays and day labels.",
+      "minHeight": 460
+    },
+    {
+      "id": "summary",
+      "title": "Summary line",
+      "description": "The line under the calendar reads the range and its length. `formatSummary` translates it, and `showSummary={false}` hides it.",
+      "minHeight": 460
+    },
+    {
+      "id": "compact-label",
+      "title": "Compact label",
+      "description": "`formatDateRangeCompact` shortens the field text, for example `7 – 13 Oct 2026`. Pass it to `formatRange`; the default text is unchanged.",
+      "minHeight": 460
+    },
+    {
+      "id": "clearable",
+      "title": "Clearing",
+      "description": "`onClear` runs after the range is cleared, next to `onValueChange({})`. `clearLabel` names the button for assistive technology.",
+      "minHeight": 460
+    },
+    {
+      "id": "controlled-open",
+      "title": "Controlled open state",
+      "description": "`open` and `onOpenChange` let another control open and close the picker.",
+      "minHeight": 520
+    },
+    {
+      "id": "form",
+      "title": "Form integration",
+      "description": "Label the field with `aria-labelledby`, link the hint with `aria-describedby` and set `state=\"error\"` for a missing range.",
+      "minHeight": 460
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "The calendar is one tab stop with arrow-key movement. Opening from the keyboard puts focus on it, and Tab or Escape returns to the field.",
+      "minHeight": 460
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "A disabled picker cannot be opened or cleared."
+    }
+  ]
+}
