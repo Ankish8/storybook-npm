@@ -12,6 +12,16 @@ import {
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
 import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+  type MotionValue,
+  type Variants,
+} from "motion/react";
+import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -40,12 +50,14 @@ const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
 const DATE_SEGMENT_MASK = "--/--/----";
 const TIME_SEGMENT_MASK = "--:-- --";
 const TIME_SEGMENT_MASK_WITH_SECONDS = "--:--:-- --";
-const POPOVER_WIDTH = 336;
+// A compact panel: 288px gives 36px day cells (12px padding, 2px gaps) with a 14px number,
+// where the old 336px panel gave 40px cells.
+const POPOVER_WIDTH = 288;
 // The popover follows the trigger width but is clamped to a usable design range
 // so it neither stretches across a full-width desktop field nor overflows a
 // narrow mobile viewport.
-const MIN_POPOVER_WIDTH = 280;
-const MAX_POPOVER_WIDTH = 360;
+const MIN_POPOVER_WIDTH = 264;
+const MAX_POPOVER_WIDTH = 288;
 const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
 const MAX_POPOVER_HEIGHT = 500;
@@ -103,6 +115,12 @@ const TIME_COLUMN_FADE =
   "[-webkit-mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)]";
 
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DEFAULT_LOCALE = "en-US";
+type WeekStart = 0 | 1;
+
+// The today link and the grid's height share one quiet curve; reduced motion drops the height tween.
+const TODAY_ROW_MOTION =
+  "grid [transition:grid-template-rows_200ms_var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),opacity_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:opacity_120ms_ease-out]";
 const monthNames = Array.from({ length: 12 }, (_, monthIndex) =>
   new Intl.DateTimeFormat("en-US", { month: "short" }).format(
     new Date(2026, monthIndex, 1)
@@ -203,6 +221,13 @@ export interface DateTimePickerProps
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   portalContainer?: HTMLElement | null;
+  /** First day of the week in the calendar: 0 is Sunday (default), 1 is Monday. */
+  weekStartsOn?: 0 | 1;
+  /**
+   * BCP 47 locale for the calendar's month names, weekday labels and day labels, for example `"en-GB"` or
+   * `"hi-IN"`. The typed date field keeps its day/month/year format. Without it the labels stay English.
+   */
+  locale?: string;
 }
 
 type DateTimePickerVariant = NonNullable<
@@ -300,15 +325,64 @@ function getYearOptions(visibleMonth: Date, minDate?: Date, maxDate?: Date) {
   );
 }
 
-function getCalendarDays(month: Date) {
+function getCalendarDays(month: Date, weekStartsOn: WeekStart = 0) {
   const firstDay = startOfMonth(month);
   const gridStart = new Date(firstDay);
-  gridStart.setDate(firstDay.getDate() - firstDay.getDay());
+  gridStart.setDate(
+    firstDay.getDate() - ((firstDay.getDay() - weekStartsOn + 7) % 7)
+  );
 
   return Array.from({ length: 42 }, (_, index) => {
     const day = new Date(gridStart);
     day.setDate(gridStart.getDate() + index);
     return day;
+  });
+}
+
+function pad2(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+// The data-date attribute on each day button: the grid's roving focus finds its target by it.
+function toDateKey(date: Date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function fromDateKey(key: string) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+// A month step keeps the day of the month where it can and lands on the last day of a shorter month.
+function addMonthsClamped(date: Date, months: number) {
+  const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth() + 1,
+    0
+  ).getDate();
+  target.setDate(Math.min(date.getDate(), lastDay));
+  return target;
+}
+
+function getWeekdayLabels(weekStartsOn: WeekStart, locale?: string) {
+  const formatter = locale
+    ? new Intl.DateTimeFormat(locale, { weekday: "short" })
+    : null;
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const dayOfWeek = (weekStartsOn + index) % 7;
+    if (!formatter || !locale) return weekDays[dayOfWeek];
+
+    // 1 Jan 2023 is a Sunday.
+    const label = formatter.format(new Date(2023, 0, 1 + dayOfWeek));
+    return locale.toLowerCase().startsWith("en") ? label.slice(0, 2) : label;
   });
 }
 
@@ -469,6 +543,160 @@ function formatTimeForDisplay(time: string, showSeconds = false) {
     : `${hour12.toString().padStart(2, "0")}:${minute.padStart(2, "0")}`;
 
   return `${formattedTime} ${suffix}`;
+}
+
+/* A time reads as odometer wheels: a pick rolls the digits in the direction of change (up when the time
+   moves later, down when earlier), 12 to 1 and 59 to 00 turn one place instead of rewinding, and AM / PM
+   swaps as a word. The text itself stays in the DOM for assistive tech and tests (see TimeField). */
+const WHEEL_SPRING = {
+  type: "spring",
+  visualDuration: 0.32,
+  bounce: 0.12,
+} as const;
+const DIGITS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+function TimeGlyph({
+  position,
+  digit,
+}: {
+  position: MotionValue<number>;
+  digit: number;
+}) {
+  // Every style reads the wheel directly: a chained transform can lag a frame and leave the wheel blank on a jump.
+  const offset = (current: number) =>
+    ((((digit - current) % 10) + 15) % 10) - 5;
+  const y = useTransform(position, (current) => `${offset(current) * 1.05}em`);
+  const opacity = useTransform(position, (current) =>
+    Math.max(0, 1 - Math.abs(offset(current)) ** 1.5 * 1.1)
+  );
+  const visibility = useTransform(position, (current) =>
+    Math.abs(offset(current)) >= 1 ? "hidden" : "visible"
+  );
+  const filter = useTransform(position, (current) => {
+    const distance = Math.abs(offset(current));
+    return distance < 0.02 || distance >= 1
+      ? "none"
+      : `blur(${(distance * 3).toFixed(2)}px)`;
+  });
+  return (
+    <motion.span
+      className="absolute inset-0 flex items-center justify-center"
+      style={{ y, opacity, filter, visibility }}
+    >
+      {digit}
+    </motion.span>
+  );
+}
+
+function TimeWheel({ digit, direction }: { digit: number; direction: 1 | -1 }) {
+  const reduced = useReducedMotion();
+  const position = useMotionValue(digit);
+  const wheel = React.useRef({ digit, target: digit });
+  React.useLayoutEffect(() => {
+    const state = wheel.current;
+    if (state.digit === digit) return;
+    // Turn the way the time moved, unless that is more than half a turn: then take the short way round.
+    let delta =
+      direction > 0
+        ? (digit - state.digit + 10) % 10
+        : -((state.digit - digit + 10) % 10);
+    if (Math.abs(delta) > 5) delta -= Math.sign(delta) * 10;
+    state.target += delta;
+    state.digit = digit;
+    if (reduced) position.jump(state.target);
+    else animate(position, state.target, WHEEL_SPRING);
+  }, [digit, direction, position, reduced]);
+  return (
+    <>
+      {/* Sizes the column: tabular digits are all as wide as a 0. */}
+      <span className="invisible">0</span>
+      {DIGITS.map((item) => (
+        <TimeGlyph key={item} position={position} digit={item} />
+      ))}
+    </>
+  );
+}
+
+const meridiemRise: Variants = {
+  enter: (direction: number) => ({
+    opacity: 0,
+    y: `${direction * 0.45}em`,
+    filter: "blur(2px)",
+  }),
+  center: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transitionEnd: { filter: "none" },
+    transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+  },
+  exit: (direction: number) => ({
+    opacity: 0,
+    y: `${direction * -0.45}em`,
+    filter: "blur(2px)",
+    transition: { duration: 0.12 },
+  }),
+};
+
+/** "10:30 AM" or "10:30:15 AM" as wheels, a colon and a sliding AM / PM. Purely visual (aria-hidden). */
+function RollingTime({ text }: { text: string }) {
+  const reduced = useReducedMotion();
+  const match = /^(\d{2}(?::\d{2}){1,2}) (AM|PM)$/.exec(text);
+  // Later times are bigger numbers, and PM is later than AM.
+  const order = match
+    ? Number((match[1] ?? "").replace(/\D/g, "")) +
+      (match[2] === "PM" ? 1e7 : 0)
+    : 0;
+  const [trail, setTrail] = React.useState<{
+    order: number;
+    direction: 1 | -1;
+  }>({ order, direction: 1 });
+  if (trail.order !== order) {
+    setTrail({ order, direction: order > trail.order ? 1 : -1 });
+  }
+  const direction: 1 | -1 =
+    trail.order === order ? trail.direction : order > trail.order ? 1 : -1;
+
+  if (!match) return <span aria-hidden="true">{text}</span>;
+  const [, clock = "", meridiem = "AM"] = match;
+  return (
+    <span
+      aria-hidden="true"
+      data-rolling-time=""
+      className="inline-flex items-center whitespace-nowrap"
+    >
+      {[...clock].map((char, index) =>
+        /\d/.test(char) ? (
+          <span
+            key={index}
+            className="relative inline-flex justify-center [font-variant-numeric:tabular-nums]"
+          >
+            <TimeWheel digit={Number(char)} direction={direction} />
+          </span>
+        ) : (
+          <span key={index}>{char}</span>
+        )
+      )}
+      <span className="relative ml-1 inline-flex">
+        {reduced ? (
+          meridiem
+        ) : (
+          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+            <motion.span
+              key={meridiem}
+              custom={direction}
+              variants={meridiemRise}
+              initial="enter"
+              animate="center"
+              exit="exit"
+            >
+              {meridiem}
+            </motion.span>
+          </AnimatePresence>
+        )}
+      </span>
+    </span>
+  );
 }
 
 function formatDateForDisplay(date?: Date, time?: string, showSeconds = false) {
@@ -1473,7 +1701,11 @@ function TimeField({
           aria-hidden="true"
         />
         <span className="m-0 min-w-0 flex-1 truncate">
-          {formatTimeForDisplay(value, showSeconds)}
+          {/* The text for assistive tech (and anything that reads the DOM); the wheels are for the eye. */}
+          <span className="sr-only">
+            {formatTimeForDisplay(value, showSeconds)}
+          </span>
+          <RollingTime text={formatTimeForDisplay(value, showSeconds)} />
         </span>
         <ChevronDown
           className={cn(
@@ -1586,6 +1818,8 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       defaultOpen = false,
       onOpenChange,
       portalContainer,
+      weekStartsOn = 0,
+      locale,
       id,
       ...props
     },
@@ -1655,6 +1889,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       )
     );
     const [isDateInputFocused, setIsDateInputFocused] = React.useState(false);
+    // The one day button in the grid that is a tab stop (roving tabindex); arrow keys move it.
+    const [focusDay, setFocusDay] = React.useState<Date>(() =>
+      startOfDay(currentValue.date ?? new Date())
+    );
+    const pendingFocusRef = React.useRef<Date | null>(null);
+    // Set when the calendar button or Alt+ArrowDown asked for the grid, so the panel hands focus to it once open.
+    const focusOnOpenRef = React.useRef(false);
+    const keyboardActivationRef = React.useRef(false);
+    const calendarButtonRef = React.useRef<HTMLButtonElement | null>(null);
     const rootRef = React.useRef<HTMLDivElement | null>(null);
     const triggerRef = React.useRef<HTMLDivElement | null>(null);
     const popoverRef = React.useRef<HTMLDivElement | null>(null);
@@ -1710,8 +1953,30 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         autoUpdate(reference, floating, update, { animationFrame: true }),
     });
     const calendarDays = React.useMemo(
-      () => getCalendarDays(visibleMonth),
-      [visibleMonth]
+      () => getCalendarDays(visibleMonth, weekStartsOn),
+      [visibleMonth, weekStartsOn]
+    );
+    const weekdayLabels = React.useMemo(
+      () => getWeekdayLabels(weekStartsOn, locale),
+      [weekStartsOn, locale]
+    );
+    const calendarMonthNames = React.useMemo(
+      () =>
+        locale
+          ? Array.from({ length: 12 }, (_, monthIndex) =>
+              new Intl.DateTimeFormat(locale, { month: "short" }).format(
+                new Date(2026, monthIndex, 1)
+              )
+            )
+          : monthNames,
+      [locale]
+    );
+    const calendarMonthFormatter = React.useMemo(
+      () =>
+        locale
+          ? new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" })
+          : monthFormatter,
+      [locale]
     );
     // The cell of the selected day on the 6-week grid (-1 when it is outside it): the disc's position.
     const selectedCell = currentValue.date
@@ -1817,6 +2082,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
       const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Escape") {
+          // Focus inside the panel would be stranded on a node about to unmount: hand it back to the button.
+          if (popoverRef.current?.contains(document.activeElement)) {
+            calendarButtonRef.current?.focus();
+          }
           setOpen(false);
         }
       };
@@ -2021,6 +2290,20 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       event: React.KeyboardEvent<HTMLInputElement>
     ) => {
       if (pickerVariant === "time-only") return;
+
+      // Alt+ArrowDown (the combobox convention) opens the calendar and moves focus into its grid.
+      if (event.altKey && event.key === "ArrowDown") {
+        event.preventDefault();
+        focusOnOpenRef.current = true;
+        if (open) {
+          focusOnOpenRef.current = false;
+          focusGrid();
+        } else {
+          setOpen(true);
+        }
+        return;
+      }
+
       if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
 
       const direction = event.key === "ArrowUp" ? 1 : -1;
@@ -2089,6 +2372,146 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       );
     };
 
+    React.useEffect(() => {
+      if (open) setFocusDay(startOfDay(currentValue.date ?? new Date()));
+      // Opening is the only moment the roving day restarts from the selection.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
+    const isInVisibleMonth = (day: Date) =>
+      day.getFullYear() === visibleMonth.getFullYear() &&
+      day.getMonth() === visibleMonth.getMonth();
+    // The grid has exactly one tab stop: the focused day while it is on screen and selectable, otherwise the
+    // selected day, otherwise today, otherwise the first selectable day of the month.
+    const rovingDay = (() => {
+      const usable = (day?: Date): day is Date =>
+        !!day &&
+        isInVisibleMonth(day) &&
+        isSelectableDay(day, effectiveMinDate, maxDate);
+
+      if (usable(focusDay)) return focusDay;
+      if (usable(currentValue.date)) return currentValue.date;
+
+      const today = startOfDay(new Date());
+      if (usable(today)) return today;
+
+      const days = calendarDays.filter(isInVisibleMonth);
+      return (
+        days.find((day) => isSelectableDay(day, effectiveMinDate, maxDate)) ??
+        days[0]
+      );
+    })();
+
+    // Move the roving focus, paging to the month that holds the target. Paging with the keyboard only changes the
+    // month on screen: the value changes when a day is chosen, not when focus passes over it.
+    const moveFocus = (target: Date) => {
+      if (!isSelectableDay(target, effectiveMinDate, maxDate)) return;
+
+      if (getMonthKey(target) !== visibleMonthKey) {
+        setVisibleMonth(startOfMonth(target));
+      }
+
+      pendingFocusRef.current = target;
+      setFocusDay(target);
+    };
+
+    React.useEffect(() => {
+      const target = pendingFocusRef.current;
+      if (!target || !open) return;
+
+      pendingFocusRef.current = null;
+      popoverRef.current
+        ?.querySelector<HTMLElement>(`[data-date="${toDateKey(target)}"]`)
+        ?.focus();
+    }, [focusDay, visibleMonth, open]);
+
+    const focusGrid = () => {
+      popoverRef.current
+        ?.querySelector<HTMLElement>('[data-date][tabindex="0"]')
+        ?.focus();
+    };
+
+    // Asked for from the keyboard: hand focus to the grid so the arrows work straight away.
+    React.useEffect(() => {
+      if (!open || !isPositioned || !focusOnOpenRef.current) return;
+
+      focusOnOpenRef.current = false;
+      focusGrid();
+    }, [open, isPositioned]);
+
+    const handleGridKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+      const dayButton = (event.target as HTMLElement).closest<HTMLElement>(
+        "[data-date]"
+      );
+      if (!dayButton?.dataset.date) return;
+
+      const from = fromDateKey(dayButton.dataset.date);
+      const rowStart = addDays(from, -((from.getDay() - weekStartsOn + 7) % 7));
+      let target: Date;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          target = addDays(from, -1);
+          break;
+        case "ArrowRight":
+          target = addDays(from, 1);
+          break;
+        case "ArrowUp":
+          target = addDays(from, -7);
+          break;
+        case "ArrowDown":
+          target = addDays(from, 7);
+          break;
+        case "Home":
+          target = rowStart;
+          break;
+        case "End":
+          target = addDays(rowStart, 6);
+          break;
+        case "PageUp":
+          target = addMonthsClamped(from, event.shiftKey ? -12 : -1);
+          break;
+        case "PageDown":
+          target = addMonthsClamped(from, event.shiftKey ? 12 : 1);
+          break;
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      moveFocus(target);
+    };
+
+    // The panel is a portal at the end of the page, so Tab would otherwise leave it for the browser chrome:
+    // from its last (or first, with Shift) control focus returns to the calendar button instead.
+    const handlePopoverKeyDown = (
+      event: React.KeyboardEvent<HTMLDivElement>
+    ) => {
+      if (event.key !== "Tab") return;
+
+      const focusable = Array.from(
+        popoverRef.current?.querySelectorAll<HTMLElement>(
+          "button:not(:disabled), [tabindex]"
+        ) ?? []
+      ).filter((element) => element.tabIndex >= 0);
+      if (focusable.length === 0) return;
+
+      const active = document.activeElement;
+      if (
+        (event.shiftKey && active === focusable[0]) ||
+        (!event.shiftKey && active === focusable[focusable.length - 1])
+      ) {
+        event.preventDefault();
+        calendarButtonRef.current?.focus();
+      }
+    };
+
+    const todayStart = startOfDay(new Date());
+    const showTodayLink =
+      showCalendar &&
+      !isInVisibleMonth(todayStart) &&
+      isSelectableDay(todayStart, effectiveMinDate, maxDate);
+
     const popover =
       open &&
       !disabled &&
@@ -2125,10 +2548,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           onMouseDown={(event) => event.stopPropagation()}
           onWheel={(event) => event.stopPropagation()}
           onTouchMove={(event) => event.stopPropagation()}
+          onKeyDown={handlePopoverKeyDown}
         >
           {showCalendar && (
-            <div className="p-4 touch-pan-y">
-              <div className="mb-3.5 flex min-h-[34px] items-center justify-between gap-2">
+            <div className="p-3 touch-pan-y">
+              <div className="mb-2.5 flex min-h-8 items-center justify-between gap-2">
                 <button
                   type="button"
                   aria-label="Previous month"
@@ -2150,7 +2574,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     onOpenChange={(nextOpen) =>
                       setOpenCalendarDropdown(nextOpen ? "month" : null)
                     }
-                    options={monthNames.map((monthName, monthIndex) => {
+                    options={calendarMonthNames.map((monthName, monthIndex) => {
                       const optionMonth = new Date(
                         visibleMonth.getFullYear(),
                         monthIndex,
@@ -2202,7 +2626,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     aria-live="polite"
                     className="sr-only"
                   >
-                    {monthFormatter.format(visibleMonth)}
+                    {calendarMonthFormatter.format(visibleMonth)}
                   </div>
                 </div>
                 <button
@@ -2217,100 +2641,158 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 </button>
               </div>
 
-              {/* Static: only the day grid below re-mounts (and slides) per month. */}
-              <div className="mb-1.5 grid grid-cols-7 gap-x-1">
-                {weekDays.map((day) => (
-                  <div
-                    key={day}
-                    className="flex h-6 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)]"
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
+              {/* One labelled grid per month: the weekday row is static, only the rowgroup of days re-mounts (and slides) per month. */}
               <div
-                key={visibleMonthKey}
+                role="grid"
+                aria-label={calendarMonthFormatter.format(visibleMonth)}
+                onKeyDown={handleGridKeyDown}
+              >
+                <div role="row" className="mb-1 grid grid-cols-7 gap-x-0.5">
+                  {weekdayLabels.map((day, dayOfWeek) => (
+                    <div
+                      key={dayOfWeek}
+                      role="columnheader"
+                      className="flex h-6 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)]"
+                    >
+                      {day}
+                    </div>
+                  ))}
+                </div>
+                <div
+                  role="rowgroup"
+                  key={visibleMonthKey}
+                  className={cn(
+                    "relative grid grid-cols-7 gap-0.5",
+                    monthMotion.direction && [
+                      MONTH_MOTION,
+                      MONTH_MOTION_DIRECTION[monthMotion.direction],
+                    ]
+                  )}
+                >
+                  {/* Arc's selected disc: one layer per month, one cell in size, placed by week and weekday under the day buttons, so a new pick glides to its day on the morph spring (visualDuration .42, bounce .16, 506ms) and the selection entering or leaving the grid grows or fades it. */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-0 top-0 aspect-square w-[calc((100%-12px)/7)] rounded-full bg-semantic-primary will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_506ms_var(--arc-morph),opacity_160ms_cubic-bezier(0.22,1,0.36,1),scale_350ms_var(--arc-snappy)] motion-reduce:[transition:none]"
+                    style={{
+                      transform: `translate(calc(${selectedCell % 7} * (100% + 2px)), calc(${Math.floor(selectedCell / 7)} * (100% + 2px)))`,
+                      opacity: selectedCell >= 0 ? 1 : 0,
+                      scale: selectedCell >= 0 ? 1 : 0.6,
+                    }}
+                  />
+                  {/* Rows and cells are layout-free (display: contents): the days stay one 7-column CSS grid, so the selected disc keeps its maths. */}
+                  {Array.from({ length: 6 }, (_, rowIndex) => (
+                    <div key={rowIndex} role="row" className="contents">
+                      {calendarDays
+                        .slice(rowIndex * 7, rowIndex * 7 + 7)
+                        .map((day) => {
+                          const isCurrentMonth =
+                            day.getMonth() === visibleMonth.getMonth();
+                          const isSelected = isSameDay(day, currentValue.date);
+                          const isToday = isSameDay(day, new Date());
+                          const isDisabled =
+                            (effectiveMinDate &&
+                              isBeforeDay(day, effectiveMinDate)) ||
+                            (maxDate && isAfterDay(day, maxDate));
+                          const dayLabel = day.toLocaleDateString(
+                            locale ?? DEFAULT_LOCALE,
+                            { month: "long", day: "numeric", year: "numeric" }
+                          );
+
+                          return (
+                            <div
+                              key={day.toISOString()}
+                              role="gridcell"
+                              aria-selected={isSelected}
+                              className="contents"
+                            >
+                              <button
+                                type="button"
+                                data-date={toDateKey(day)}
+                                tabIndex={isSameDay(day, rovingDay) ? 0 : -1}
+                                onFocus={() => setFocusDay(day)}
+                                aria-label={dayLabel}
+                                aria-pressed={isSelected}
+                                aria-current={isToday ? "date" : undefined}
+                                disabled={!!isDisabled}
+                                className={cn(
+                                  // Arc day: a square cell (the column width) with a 14px number; hover fills the circle, press scales it .94.
+                                  "relative z-[1] grid aspect-square w-full min-w-0 place-items-center rounded-full p-0 text-sm leading-none [font-variant-numeric:tabular-nums] [transition-property:color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.94] enabled:active:[transition-duration:160ms,160ms,100ms] motion-reduce:[transition-property:color,background-color] motion-reduce:enabled:active:scale-100",
+                                  FOCUS_RING,
+                                  "focus-visible:z-10",
+                                  isSelected
+                                    ? "text-semantic-text-inverted font-medium"
+                                    : cn(
+                                        isCurrentMonth
+                                          ? "text-[var(--v2-text-secondary,#5E5E5E)]"
+                                          : "text-[var(--v2-text-muted,#707070)]",
+                                        HOVER_FILL
+                                      ),
+                                  isToday && !isSelected && "font-medium",
+                                  isDisabled &&
+                                    "opacity-40 cursor-not-allowed pointer-events-none"
+                                )}
+                                onClick={() => {
+                                  if (isDisabled) return;
+
+                                  setFocusDay(day);
+                                  updateValue({ ...currentValue, date: day });
+                                  if (closeOnSelect) {
+                                    setOpen(false);
+                                  }
+                                }}
+                              >
+                                {/* Outside days dim their number, not the button, so the disc arriving on one keeps its strength. */}
+                                <span
+                                  className={cn(
+                                    "relative",
+                                    !isCurrentMonth &&
+                                      !isSelected &&
+                                      "opacity-80"
+                                  )}
+                                >
+                                  {day.getDate()}
+                                  {isToday && (
+                                    <span className="absolute left-1/2 top-[calc(100%+4px)] -ml-0.5 size-1 rounded-full bg-current" />
+                                  )}
+                                </span>
+                              </button>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Today: slides open only when the month on screen is not today's. */}
+              <div
+                aria-hidden={!showTodayLink}
                 className={cn(
-                  "relative grid grid-cols-7 gap-1",
-                  monthMotion.direction && [
-                    MONTH_MOTION,
-                    MONTH_MOTION_DIRECTION[monthMotion.direction],
-                  ]
+                  TODAY_ROW_MOTION,
+                  showTodayLink
+                    ? "mt-2 [grid-template-rows:1fr] opacity-100"
+                    : "[grid-template-rows:0fr] opacity-0"
                 )}
               >
-                {/* Arc's selected disc: one layer per month, one cell in size, placed by week and weekday under the day buttons, so a new pick glides to its day on the morph spring (visualDuration .42, bounce .16, 506ms) and the selection entering or leaving the grid grows or fades it. */}
-                <span
-                  aria-hidden="true"
-                  className="pointer-events-none absolute left-0 top-0 aspect-square w-[calc((100%-24px)/7)] rounded-full bg-semantic-primary will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_506ms_var(--arc-morph),opacity_160ms_cubic-bezier(0.22,1,0.36,1),scale_350ms_var(--arc-snappy)] motion-reduce:[transition:none]"
-                  style={{
-                    transform: `translate(calc(${selectedCell % 7} * (100% + 4px)), calc(${Math.floor(selectedCell / 7)} * (100% + 4px)))`,
-                    opacity: selectedCell >= 0 ? 1 : 0,
-                    scale: selectedCell >= 0 ? 1 : 0.6,
-                  }}
-                />
-                {calendarDays.map((day) => {
-                  const isCurrentMonth =
-                    day.getMonth() === visibleMonth.getMonth();
-                  const isSelected = isSameDay(day, currentValue.date);
-                  const isToday = isSameDay(day, new Date());
-                  const isDisabled =
-                    (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
-                    (maxDate && isAfterDay(day, maxDate));
-                  const dayLabel = day.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  });
-
-                  return (
+                <div className="min-h-0 overflow-hidden">
+                  <div className="flex justify-end">
                     <button
-                      key={day.toISOString()}
                       type="button"
-                      aria-label={dayLabel}
-                      aria-pressed={isSelected}
-                      aria-current={isToday ? "date" : undefined}
-                      disabled={!!isDisabled}
+                      tabIndex={showTodayLink ? 0 : -1}
                       className={cn(
-                        // Arc day: a square cell (the column width) with a 14px number; hover fills the circle, press scales it .94.
-                        "relative z-[1] grid aspect-square w-full min-w-0 place-items-center rounded-full p-0 text-sm leading-none [font-variant-numeric:tabular-nums] [transition-property:color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.94] enabled:active:[transition-duration:160ms,160ms,100ms] motion-reduce:[transition-property:color,background-color] motion-reduce:enabled:active:scale-100",
+                        "rounded px-2 py-1 text-sm font-medium text-[var(--v2-text-primary,#484848)] [transition:background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
                         FOCUS_RING,
-                        "focus-visible:z-10",
-                        isSelected
-                          ? "text-semantic-text-inverted font-medium"
-                          : cn(
-                              isCurrentMonth
-                                ? "text-[var(--v2-text-secondary,#5E5E5E)]"
-                                : "text-[var(--v2-text-muted,#707070)]",
-                              HOVER_FILL
-                            ),
-                        isToday && !isSelected && "font-medium",
-                        isDisabled &&
-                          "opacity-40 cursor-not-allowed pointer-events-none"
+                        HOVER_FILL
                       )}
                       onClick={() => {
-                        if (isDisabled) return;
-
-                        updateValue({ ...currentValue, date: day });
-                        if (closeOnSelect) {
-                          setOpen(false);
-                        }
+                        setVisibleMonth(startOfMonth(todayStart));
+                        setFocusDay(todayStart);
                       }}
                     >
-                      {/* Outside days dim their number, not the button, so the disc arriving on one keeps its strength. */}
-                      <span
-                        className={cn(
-                          "relative",
-                          !isCurrentMonth && !isSelected && "opacity-80"
-                        )}
-                      >
-                        {day.getDate()}
-                        {isToday && (
-                          <span className="absolute left-1/2 top-[calc(100%+4px)] -ml-0.5 size-1 rounded-full bg-current" />
-                        )}
-                      </span>
+                      Today
                     </button>
-                  );
-                })}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -2318,7 +2800,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           {showTimeFields && (
             <div
               className={cn(
-                "space-y-3 bg-semantic-bg-primary p-4",
+                "space-y-2.5 bg-semantic-bg-primary p-3",
                 showCalendar &&
                   "border-t border-solid border-semantic-border-layout"
               )}
@@ -2467,7 +2949,33 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
             className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
-            onClick={() => setOpen(!open)}
+            ref={calendarButtonRef}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                keyboardActivationRef.current = true;
+              }
+            }}
+            onBlur={() => {
+              keyboardActivationRef.current = false;
+            }}
+            onClick={() => {
+              const byKeyboard = keyboardActivationRef.current;
+              keyboardActivationRef.current = false;
+
+              // From the keyboard the button hands focus to the calendar grid (the input already opened it on
+              // focus, so a toggle here would close what the reader is trying to reach).
+              if (byKeyboard && showCalendar) {
+                if (open) {
+                  focusGrid();
+                } else {
+                  focusOnOpenRef.current = true;
+                  setOpen(true);
+                }
+                return;
+              }
+
+              setOpen(!open);
+            }}
           >
             {showCalendar ? (
               <FigmaCalendarIcon

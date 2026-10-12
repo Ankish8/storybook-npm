@@ -55,6 +55,8 @@ function Example({
   value,
   minDate,
   maxDate,
+  weekStartsOn,
+  locale,
   version = "v2",
   ...props
 }: Args & { version?: "v1" | "v2" }) {
@@ -62,6 +64,9 @@ function Example({
   return (
     <Component
       {...props}
+      {...(version === "v1"
+        ? {}
+        : { weekStartsOn, locale: locale || undefined })}
       value={{
         date: dateFor(value?.date),
         startTime: typeof value?.startTime === "string" ? value.startTime : "",
@@ -140,6 +145,8 @@ const meta: Meta<Args> = {
         "minDate",
         "maxDate",
         "disablePastDates",
+        "weekStartsOn",
+        "locale",
         "name",
       ],
     },
@@ -178,6 +185,16 @@ const meta: Meta<Args> = {
               "Solid grey field; grey border; no halo",
             ],
             [
+              "Panel size",
+              "336px panel (up to 360px with the field), 16px padding, 40px day cells",
+              "At most 288px (264px minimum), 12px padding, 2px gaps and 36px day cells, so the calendar covers about 70px less height; the field itself keeps its sizes",
+            ],
+            [
+              "Time field",
+              "Plain text",
+              "The picked time rolls like an odometer: hour and minute digits turn in the direction of change (12 to 1 and 59 to 00 go one place, not back through every digit) and AM / PM swaps as a word. The text stays in the DOM for assistive tech; reduced motion jumps",
+            ],
+            [
               "Calendar",
               "Ring on today; 24px arrows; chevron-right pills; instant month swap",
               "4px dot on today; 32px arrows (36px on small screens); 32px pills with a turning chevron; 8px slide and fade on month change",
@@ -185,7 +202,17 @@ const meta: Meta<Args> = {
             [
               "Touch and keyboard",
               "Hover fills stuck after a tap; no focus ring",
-              "Hover only where a pointer can hover; 2px primary focus ring; 36px day cells on small screens",
+              "Hover only where a pointer can hover; 2px primary focus ring",
+            ],
+            [
+              "Calendar keyboard",
+              "Every day was a tab stop and the grid had no roles; the calendar could not be reached from the keyboard",
+              "One tab stop; arrows, Home/End and PageUp/PageDown (Shift for a year) move focus without changing the value, Enter chooses; role=grid with rows and gridcells; Alt+ArrowDown in the field, or Enter on the calendar button, moves focus into the grid; Escape and Tab return to the button",
+            ],
+            [
+              "Today and layout options",
+              "None",
+              "A Today link slides open under the grid only when today's month is off screen; weekStartsOn and locale are optional and default to Sunday and English",
             ],
             [
               "Time lists",
@@ -252,6 +279,17 @@ const meta: Meta<Args> = {
       description: "YYYY-MM-DD or empty for no bound.",
     },
     disablePastDates: { control: "boolean" },
+    weekStartsOn: {
+      control: "radio",
+      options: [0, 1],
+      description:
+        "First day of the calendar week: 0 Sunday (default), 1 Monday.",
+    },
+    locale: {
+      control: "text",
+      description:
+        "BCP 47 tag for the calendar's month names, weekdays and day labels, for example en-GB or hi-IN. The typed field keeps day/month/year. Empty keeps English.",
+    },
     name: { control: "text" },
     onValueChange: { control: false },
     onOpenChange: { control: false },
@@ -280,13 +318,15 @@ const meta: Meta<Args> = {
     minDate: "",
     maxDate: "",
     disablePastDates: false,
+    weekStartsOn: 0,
+    locale: "",
     name: "appointment",
     onValueChange: fn(),
     onOpenChange: fn(),
   },
   render: function Render(args) {
     return (
-      <div className="min-h-[560px] pt-4">
+      <div className="pt-4">
         <Example {...useLiveArgs(args)} />
       </div>
     );
@@ -296,6 +336,9 @@ export default meta;
 type Story = StoryObj<Args>;
 export const Overview: Story = {};
 export const Empty: Story = { args: { value: {} } };
+export const MondayStartLocale: Story = {
+  args: { weekStartsOn: 1, locale: "en-GB" },
+};
 export const DateOnly: Story = {
   args: {
     variant: "date-only",
@@ -347,7 +390,7 @@ export const AllVariants: Story = {
     "All three modes. Other Controls update all fields; each sample’s value can be edited independently."
   ),
   render: (args) => (
-    <div className="min-h-[560px] space-y-5">
+    <div className="space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Picker modes
@@ -386,7 +429,7 @@ export const AllSizes: Story = {
     "All width sizes: 280px, 336px and 360px. Each v2 field is 40px high."
   ),
   render: (args) => (
-    <div className="min-h-[560px] space-y-5">
+    <div className="space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Width sizes
@@ -418,7 +461,7 @@ export const States: Story = {
     "Every mode × validation × interaction state. Size remains editable and applies across the matrix; disabled removes focus/error halos."
   ),
   render: (args) => (
-    <div className="w-full min-h-[560px] space-y-5">
+    <div className="w-full space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Interaction states
@@ -481,7 +524,7 @@ export const V1VsV2: Story = {
     "All modes in default, error and disabled states, at every width size, in both versions. Value and host text Controls apply throughout."
   ),
   render: (args) => (
-    <div className="w-full min-h-[560px] space-y-5">
+    <div className="w-full space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           v1 and v2
@@ -554,7 +597,7 @@ function AppointmentForm(args: Args) {
   return (
     <form
       noValidate
-      className="min-h-[560px] max-w-[560px] space-y-5"
+      className="max-w-[560px] space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
         setSubmitted(true);

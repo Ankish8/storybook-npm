@@ -11,7 +11,11 @@ import {
 } from "storybook/test";
 import { gallery } from "../../../storybook/v2-preview";
 import {
+  DEFAULT_DATE_RANGE_PRESETS,
   DateRangePicker,
+  EXTENDED_DATE_RANGE_PRESETS,
+  formatDateRangeCompact,
+  getFinancialYearPresets,
   type DateRangePickerProps,
   type DateRangeValue,
   type DateRangePreset,
@@ -28,7 +32,8 @@ type Args = Omit<
   value: SerializedRange;
   minDate: string;
   maxDate: string;
-  presetMode: "default" | "none" | "custom";
+  presetMode: "default" | "none" | "custom" | "extended" | "financial-year";
+  compactTrigger: boolean;
   label: string;
   helperText: string;
   errorMessage: string;
@@ -86,6 +91,11 @@ function Example({
   helperText,
   errorMessage,
   width,
+  compactTrigger,
+  months,
+  weekStartsOn,
+  locale,
+  showSummary,
   version = "v2",
   ...props
 }: Args & { version?: "v1" | "v2" }) {
@@ -114,6 +124,18 @@ function Example({
       )}
       <Component
         {...props}
+        {...(version === "v1"
+          ? {}
+          : {
+              months,
+              weekStartsOn,
+              locale: locale || undefined,
+              showSummary,
+              formatRange: compactTrigger
+                ? (range: DateRangeValue) =>
+                    formatDateRangeCompact(range, locale || undefined)
+                : undefined,
+            })}
         value={{ start: dateFor(value?.start), end: dateFor(value?.end) }}
         minDate={dateFor(minDate)}
         maxDate={dateFor(maxDate)}
@@ -122,7 +144,14 @@ function Example({
             ? []
             : presetMode === "custom"
               ? CUSTOM_PRESETS
-              : undefined
+              : presetMode === "extended"
+                ? EXTENDED_DATE_RANGE_PRESETS
+                : presetMode === "financial-year"
+                  ? [
+                      ...DEFAULT_DATE_RANGE_PRESETS,
+                      ...getFinancialYearPresets(),
+                    ]
+                  : undefined
         }
         aria-labelledby={label ? `${id}-label` : undefined}
         aria-label={!label ? "Example date range" : undefined}
@@ -203,6 +232,11 @@ const meta: Meta<Args> = {
         "maxDate",
         "disablePastDates",
         "presetMode",
+        "months",
+        "weekStartsOn",
+        "locale",
+        "showSummary",
+        "compactTrigger",
         "label",
         "helperText",
         "errorMessage",
@@ -250,6 +284,11 @@ const meta: Meta<Args> = {
               "The preset equal to the committed range is highlighted and marked aria-current",
             ],
             [
+              "Panel size",
+              "272px months; 32px rows with 32px circles from sm and 36px below; 12px text",
+              "276px months and a 136px preset rail; 32px rows everywhere, with 28px circles from sm and 32px below, 14px text; a fixed 304px panel below sm (the presets scroll inside it) instead of stretching to the length of the preset row",
+            ],
+            [
               "Calendar header",
               "24px arrows; year pill only had a chevron",
               "32px arrows (36px on small screens); month and year pills are 32px with a chevron that turns while open",
@@ -263,6 +302,26 @@ const meta: Meta<Args> = {
               "Month change",
               "Instant swap",
               "Day grid slides 8px and fades over 200ms; reduced motion is a 120ms fade",
+            ],
+            [
+              "Keyboard",
+              "Every day button was a tab stop (42 of them)",
+              "One tab stop; arrows move by day and week, Home/End to the week edges, PageUp/PageDown by month (Shift for a year); each month is a role=grid with rows and gridcells; opened from the keyboard, focus lands on the grid, and Tab leaves back to the trigger",
+            ],
+            [
+              "Summary line",
+              "None",
+              "Under the calendar: 1 Oct – 7 Oct 2026 · 7 days, or the prompt for the missing end; announced politely; showSummary and formatSummary control it; a Today link appears when today's month is off screen",
+            ],
+            [
+              "Layout options",
+              "One month, Sunday first, English labels",
+              "months (1, 2 or auto), weekStartsOn and locale are optional; the defaults are unchanged",
+            ],
+            [
+              "Presets",
+              "Six built-in presets",
+              "Unchanged by default; EXTENDED_DATE_RANGE_PRESETS and getFinancialYearPresets() are opt-in; arrow keys move between presets",
             ],
             [
               "Range behavior",
@@ -313,7 +372,28 @@ const meta: Meta<Args> = {
     disablePastDates: { control: "boolean" },
     presetMode: {
       control: "radio",
-      options: ["default", "none", "custom"],
+      options: ["default", "none", "custom", "extended", "financial-year"],
+      description:
+        "default is the six built-in presets; extended adds Last 90 days, This quarter and Year to date (EXTENDED_DATE_RANGE_PRESETS); financial-year appends This and Last financial year (getFinancialYearPresets).",
+      table: { category: "Example" },
+    },
+    months: {
+      control: "radio",
+      options: [1, 2, "auto"],
+      description:
+        "Months side by side. auto shows two at 712px or wider. Defaults to 1.",
+    },
+    weekStartsOn: { control: "radio", options: [0, 1] },
+    locale: {
+      control: "text",
+      description:
+        "BCP 47 tag for month names, weekdays and the summary, for example en-GB or hi-IN. Empty keeps the English labels.",
+    },
+    showSummary: { control: "boolean" },
+    compactTrigger: {
+      control: "boolean",
+      description:
+        "Example only: passes formatDateRangeCompact as formatRange, giving 7 – 13 Oct 2026 in the trigger.",
       table: { category: "Example" },
     },
     label: { control: "text", table: { category: "Example" } },
@@ -339,6 +419,11 @@ const meta: Meta<Args> = {
     maxDate: "",
     disablePastDates: false,
     presetMode: "default",
+    months: 1,
+    weekStartsOn: 0,
+    locale: "",
+    showSummary: true,
+    compactTrigger: false,
     label: "Report period",
     helperText: "Choose the period to include in the report.",
     errorMessage: "Choose a start and end date.",
@@ -349,7 +434,7 @@ const meta: Meta<Args> = {
   },
   render: function Render(args) {
     return (
-      <div className="min-h-[520px] pt-4">
+      <div className="pt-4">
         <Example {...useLiveArgs(args)} />
       </div>
     );
@@ -359,6 +444,15 @@ export default meta;
 type Story = StoryObj<Args>;
 export const Overview: Story = {};
 export const Empty: Story = { args: { value: {} } };
+export const TwoMonths: Story = {
+  args: { months: 2, presetMode: "extended", compactTrigger: true, width: 560 },
+};
+export const MondayStartLocale: Story = {
+  args: { weekStartsOn: 1, locale: "en-GB", compactTrigger: true },
+};
+export const FinancialYearPresets: Story = {
+  args: { presetMode: "financial-year" },
+};
 export const Error: Story = { args: { state: "error", value: {} } };
 export const Disabled: Story = { args: { disabled: true } };
 export const NoPresets: Story = { args: { presetMode: "none" } };
@@ -386,7 +480,7 @@ export const AllVariants: Story = {
     "Both validation variants, with independently editable calendar values. Shared Controls apply before the variant axis."
   ),
   render: (args) => (
-    <div className="min-h-[540px] space-y-5">
+    <div className="space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Validation variants
@@ -419,7 +513,7 @@ export const HeightAndWidth: Story = {
     "One 44px field height, shown at two widths."
   ),
   render: (args) => (
-    <div className="min-h-[540px] space-y-5">
+    <div className="space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Field proportions
@@ -455,7 +549,7 @@ export const States: Story = {
     "Complete trigger variants × state matrix. Calendars are functional; forced CSS pseudo states keep the interaction treatments visible together."
   ),
   render: (args) => (
-    <div className="w-full min-h-[540px] space-y-5">
+    <div className="w-full space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Interaction states
@@ -508,7 +602,7 @@ export const V1VsV2: Story = {
     "Default, error and disabled triggers in both versions, with empty and selected values. Host text Controls apply to all samples."
   ),
   render: (args) => (
-    <div className="w-full min-h-[540px] space-y-5">
+    <div className="w-full space-y-5">
       <header className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           v1 and v2
@@ -563,7 +657,7 @@ function RangeForm(args: Args) {
   return (
     <form
       noValidate
-      className="min-h-[540px] max-w-[560px] space-y-5"
+      className="max-w-[560px] space-y-5"
       onSubmit={(event) => {
         event.preventDefault();
         setSubmitted(true);

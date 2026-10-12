@@ -49,19 +49,19 @@ const CALENDAR_PILL = `inline-flex h-8 items-center gap-1 rounded-lg border bord
 const CALENDAR_PILL_CHEVRON =
   "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform [transition-duration:580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
 
-// The range band is a ::before on the 36px cell wrapper rather than a child
+// The range band is a ::before on the 32px cell wrapper rather than a child
 // node, so a week row can cap both of its ends (and the range's own ends)
-// without extra DOM. 30px tall from `sm` (Arc: the day circle is the 36px cell
-// inset 3px), the full 36px below it where the circle is 36px.
+// without extra DOM. 28px tall from `sm` (the day circle is the 32px cell inset
+// 2px), the full 32px below it where the circle is 32px.
 const BAND_BASE =
-  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:right-0 before:content-[''] sm:before:inset-y-[3px]";
+  "before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:right-0 before:content-[''] sm:before:inset-y-[2px]";
 // At the range's own start/end the band begins at the circle's outer edge
 // instead of the cell edge (the cell is wider than the circle), so it emerges
 // from the circle without a pale halo. Week-row wraps stay flush with the grid.
 const BAND_START_AT_CIRCLE =
-  "before:left-[calc(50%-1.125rem)] sm:before:left-[calc(50%-15px)]";
+  "before:left-[calc(50%-1rem)] sm:before:left-[calc(50%-14px)]";
 const BAND_END_AT_CIRCLE =
-  "before:right-[calc(50%-1.125rem)] sm:before:right-[calc(50%-15px)]";
+  "before:right-[calc(50%-1rem)] sm:before:right-[calc(50%-14px)]";
 const BAND_RANGE = "before:bg-semantic-info-surface";
 // Lighter than the committed band and edged with dashes, so a not-yet-chosen
 // end reads as provisional. Below `sm` the rows touch, so the preview is
@@ -80,7 +80,16 @@ const MONTH_MOTION_DIRECTION = {
 
 type MonthDirection = keyof typeof MONTH_MOTION_DIRECTION | null;
 
+// The summary line and the Today link rise in on the same quiet curve as the month grid; reduced motion fades only.
+const SUMMARY_MOTION =
+  "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-1 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]";
+
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DEFAULT_LOCALE = "en-US";
+// Two months sit side by side from this panel width, matching the preset rail plus 2 x 300px.
+const TWO_MONTH_MIN_WIDTH = 712;
+// A day that moves the roving focus keeps its place in the grid: the key is the data-date value.
+type WeekStart = 0 | 1;
 const MONTH_SHORT_NAMES = [
   "Jan",
   "Feb",
@@ -172,6 +181,28 @@ export interface DateRangePickerProps
   onClear?: () => void;
   /** Accessible label for the clear button. Defaults to "Clear date range". */
   clearLabel?: string;
+  /**
+   * Number of months shown side by side. `"auto"` shows two when the page (or `portalContainer`) is at least 712px
+   * wide and one otherwise. Defaults to 1, the layout every existing screen already uses.
+   */
+  months?: 1 | 2 | "auto";
+  /** First day of the week: 0 is Sunday (default), 1 is Monday. */
+  weekStartsOn?: 0 | 1;
+  /**
+   * BCP 47 locale for month names, weekday labels and the summary line, for example `"en-GB"` or `"hi-IN"`.
+   * Without it the calendar keeps its English labels.
+   */
+  locale?: string;
+  /** Show the summary line under the calendar ("7 Oct – 13 Oct 2026 · 7 days"). Defaults to true. */
+  showSummary?: boolean;
+  /**
+   * Replace the summary text. `info.days` counts the inclusive days of a complete range, and `info.selecting`
+   * is true while the end date is still to be picked. Use it to translate the line.
+   */
+  formatSummary?: (
+    value: DateRangeValue,
+    info: { days: number; selecting: boolean }
+  ) => string;
 }
 
 function normalizeValue(value?: DateRangeValue): DateRangeValue {
@@ -229,10 +260,12 @@ function addDays(date: Date, days: number) {
   return result;
 }
 
-function getCalendarDays(month: Date) {
+function getCalendarDays(month: Date, weekStartsOn: WeekStart = 0) {
   const firstDay = startOfMonth(month);
   const gridStart = new Date(firstDay);
-  gridStart.setDate(firstDay.getDate() - firstDay.getDay());
+  gridStart.setDate(
+    firstDay.getDate() - ((firstDay.getDay() - weekStartsOn + 7) % 7)
+  );
 
   return Array.from({ length: 42 }, (_, index) => {
     const day = new Date(gridStart);
@@ -293,6 +326,127 @@ function isPointerInsideElement(
   }
 
   return false;
+}
+
+function pad2(value: number) {
+  return String(value).padStart(2, "0");
+}
+
+// The data-date attribute on each day button: the grid's roving focus finds its target by it.
+function toDateKey(date: Date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function fromDateKey(key: string) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+// A month step keeps the day of the month where it can and lands on the last day of a shorter month.
+function addMonthsClamped(date: Date, months: number) {
+  const target = new Date(date.getFullYear(), date.getMonth() + months, 1);
+  const lastDay = new Date(
+    target.getFullYear(),
+    target.getMonth() + 1,
+    0
+  ).getDate();
+  target.setDate(Math.min(date.getDate(), lastDay));
+  return target;
+}
+
+function getWeekdayLabels(weekStartsOn: WeekStart, locale?: string) {
+  const formatter = locale
+    ? new Intl.DateTimeFormat(locale, { weekday: "short" })
+    : null;
+
+  return Array.from({ length: 7 }, (_, index) => {
+    const dayOfWeek = (weekStartsOn + index) % 7;
+    if (!formatter || !locale) return weekDays[dayOfWeek];
+
+    // 1 Jan 2023 is a Sunday.
+    const label = formatter.format(new Date(2023, 0, 1 + dayOfWeek));
+    return locale.toLowerCase().startsWith("en") ? label.slice(0, 2) : label;
+  });
+}
+
+function getMonthName(monthIndex: number, locale?: string) {
+  if (!locale) return MONTH_LONG_NAMES[monthIndex];
+
+  return new Intl.DateTimeFormat(locale, { month: "long" }).format(
+    new Date(2023, monthIndex, 1)
+  );
+}
+
+function countDays(start: Date, end: Date) {
+  const startUtc = Date.UTC(
+    start.getFullYear(),
+    start.getMonth(),
+    start.getDate()
+  );
+  const endUtc = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+
+  return Math.round(Math.abs(endUtc - startUtc) / 86400000) + 1;
+}
+
+// "7 Oct" without a locale (day first, like the trigger), the locale's own short form with one.
+function formatDayMonth(date: Date, locale?: string) {
+  if (!locale) return `${date.getDate()} ${MONTH_SHORT_NAMES[date.getMonth()]}`;
+
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+  }).format(date);
+}
+
+function formatDayMonthYear(date: Date, locale?: string) {
+  if (!locale) return formatDateShort(date);
+
+  return new Intl.DateTimeFormat(locale, {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+/**
+ * Compact trigger text for `formatRange`: "7 – 13 Oct 2026" inside one month, "28 Sep – 3 Oct 2026" inside one
+ * year, and both years in full when they differ. A single day reads "7 Oct 2026".
+ */
+export function formatDateRangeCompact(
+  value: DateRangeValue,
+  locale?: string
+): string {
+  const { start, end } = value;
+  const only = start ?? end;
+  if (!start || !end) return only ? formatDayMonthYear(only, locale) : "";
+  if (isSameDay(start, end)) return formatDayMonthYear(start, locale);
+  if (start.getFullYear() !== end.getFullYear()) {
+    return `${formatDayMonthYear(start, locale)} – ${formatDayMonthYear(end, locale)}`;
+  }
+  if (start.getMonth() === end.getMonth() && !locale) {
+    return `${start.getDate()} – ${formatDayMonthYear(end, locale)}`;
+  }
+
+  return `${formatDayMonth(start, locale)} – ${formatDayMonthYear(end, locale)}`;
+}
+
+function defaultSummary(
+  value: DateRangeValue,
+  info: { days: number; selecting: boolean },
+  locale?: string
+) {
+  const { start, end } = value;
+  if (!start) return "Select a start date";
+  if (info.selecting) {
+    return `${formatDayMonthYear(start, locale)} · Select an end date`;
+  }
+  if (!end || isSameDay(start, end)) {
+    return `${formatDayMonthYear(start, locale)} · 1 day`;
+  }
+
+  const range = formatDateRangeCompact(value, locale);
+
+  return `${range} · ${info.days} days`;
 }
 
 function formatDateShort(date: Date) {
@@ -359,6 +513,76 @@ export const DEFAULT_DATE_RANGE_PRESETS: DateRangePreset[] = [
   },
 ];
 
+/**
+ * DEFAULT_DATE_RANGE_PRESETS plus Last 90 days, This quarter and Year to date, for reporting screens that look
+ * further back. Pass it as `presets`.
+ */
+export const EXTENDED_DATE_RANGE_PRESETS: DateRangePreset[] = [
+  ...DEFAULT_DATE_RANGE_PRESETS,
+  {
+    label: "Last 90 days",
+    getRange: () => {
+      const today = startOfDay(new Date());
+      return { start: addDays(today, -89), end: today };
+    },
+  },
+  {
+    label: "This quarter",
+    getRange: () => {
+      const today = startOfDay(new Date());
+      const quarterStart = new Date(
+        today.getFullYear(),
+        Math.floor(today.getMonth() / 3) * 3,
+        1
+      );
+      return { start: quarterStart, end: today };
+    },
+  },
+  {
+    label: "Year to date",
+    getRange: () => {
+      const today = startOfDay(new Date());
+      return { start: new Date(today.getFullYear(), 0, 1), end: today };
+    },
+  },
+];
+
+/**
+ * "This financial year" and "Last financial year" presets. The year starts in `startMonth` (0-11), April (3) by
+ * default, as in India. Spread them after the other presets: `[...DEFAULT_DATE_RANGE_PRESETS, ...getFinancialYearPresets()]`.
+ */
+export function getFinancialYearPresets(startMonth = 3): DateRangePreset[] {
+  const currentYearStart = (today: Date) =>
+    new Date(
+      today.getMonth() >= startMonth
+        ? today.getFullYear()
+        : today.getFullYear() - 1,
+      startMonth,
+      1
+    );
+
+  return [
+    {
+      label: "This financial year",
+      getRange: () => {
+        const today = startOfDay(new Date());
+        return { start: currentYearStart(today), end: today };
+      },
+    },
+    {
+      label: "Last financial year",
+      getRange: () => {
+        const start = currentYearStart(startOfDay(new Date()));
+        const lastStart = new Date(start.getFullYear() - 1, startMonth, 1);
+        return {
+          start: lastStart,
+          end: new Date(start.getFullYear(), startMonth, 0),
+        };
+      },
+    },
+  ];
+}
+
 function FigmaCalendarIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -403,6 +627,11 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       clearable = false,
       onClear,
       clearLabel = "Clear date range",
+      months = 1,
+      weekStartsOn = 0,
+      locale,
+      showSummary = true,
+      formatSummary,
       id,
       ...props
     },
@@ -442,6 +671,16 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
     // pending. Purely visual: it paints the preview band and never feeds the
     // draft, so nothing is announced or committed by hovering.
     const [previewDay, setPreviewDay] = React.useState<Date | null>(null);
+    // The one day button in the grid that is a tab stop (roving tabindex); arrow keys move it.
+    const [focusDay, setFocusDay] = React.useState<Date>(() =>
+      startOfDay(currentValue.start ?? currentValue.end ?? new Date())
+    );
+    const pendingFocusRef = React.useRef<Date | null>(null);
+    // Set when the trigger was activated from the keyboard, so the panel hands focus to the grid.
+    const focusOnOpenRef = React.useRef(false);
+    const [panelBoundaryWidth, setPanelBoundaryWidth] = React.useState(() =>
+      typeof window !== "undefined" ? window.innerWidth : 1024
+    );
 
     // Direction of the last month change, derived while rendering ("store the
     // previous value in state") so the new grid mounts with its slide class in
@@ -502,9 +741,22 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
         whileElementsMounted: (reference, floating, update) =>
           autoUpdate(reference, floating, update, { animationFrame: true }),
       });
-    const calendarDays = React.useMemo(
-      () => getCalendarDays(visibleMonth),
-      [visibleMonth]
+    const monthCount =
+      months === "auto"
+        ? panelBoundaryWidth >= TWO_MONTH_MIN_WIDTH
+          ? 2
+          : 1
+        : months;
+    const visibleMonths = React.useMemo(
+      () =>
+        Array.from({ length: monthCount }, (_, index) =>
+          addMonths(visibleMonth, index)
+        ),
+      [visibleMonth, monthCount]
+    );
+    const weekdayLabels = React.useMemo(
+      () => getWeekdayLabels(weekStartsOn, locale),
+      [weekStartsOn, locale]
     );
     const displayValue = (formatRange ?? defaultFormatRange)(currentValue);
     const showClear = clearable && !disabled && Boolean(displayValue);
@@ -584,6 +836,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       setPendingEnd(false);
       setPreviewDay(null);
       setOpenMenu(null);
+      setFocusDay(
+        startOfDay(latestValue.start ?? latestValue.end ?? new Date())
+      );
       setVisibleMonth(resetMonth);
       // Same batch as the month reset: the render-time derivation above then
       // sees an unchanged key and leaves the direction empty.
@@ -684,6 +939,198 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
       triggerRef.current?.focus();
     };
 
+    // "auto" months need the width the panel can use; it is re-read while the panel is open.
+    React.useEffect(() => {
+      if (!open || months !== "auto") return;
+
+      const measure = () =>
+        setPanelBoundaryWidth(
+          portalContainer?.clientWidth || window.innerWidth
+        );
+      measure();
+      window.addEventListener("resize", measure);
+
+      return () => window.removeEventListener("resize", measure);
+    }, [open, months, portalContainer]);
+
+    const isDayDisabled = (day: Date) =>
+      Boolean(
+        (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
+        (maxDate && isAfterDay(day, maxDate))
+      );
+    const isInVisibleMonths = (day: Date) =>
+      visibleMonths.some(
+        (month) =>
+          month.getFullYear() === day.getFullYear() &&
+          month.getMonth() === day.getMonth()
+      );
+    // The grid has exactly one tab stop: the focused day while it is on screen and selectable, otherwise today,
+    // otherwise the first selectable day of the first month.
+    const rovingDay = (() => {
+      if (isInVisibleMonths(focusDay) && !isDayDisabled(focusDay)) {
+        return focusDay;
+      }
+
+      const today = startOfDay(new Date());
+      if (isInVisibleMonths(today) && !isDayDisabled(today)) return today;
+
+      const firstMonth = visibleMonths[0];
+      const days = getCalendarDays(firstMonth, weekStartsOn).filter(
+        (day) => day.getMonth() === firstMonth.getMonth()
+      );
+
+      return days.find((day) => !isDayDisabled(day)) ?? days[0];
+    })();
+
+    // Move the roving focus, paging to the month that holds the target when it is off screen. The focus itself is
+    // applied once that month has rendered (see the effect below).
+    const moveFocus = (target: Date) => {
+      if (isDayDisabled(target)) return;
+
+      const targetKey = getMonthKey(target);
+      const firstKey = getMonthKey(visibleMonth);
+      if (targetKey < firstKey) {
+        setVisibleMonth(startOfMonth(target));
+      } else if (targetKey > firstKey + monthCount - 1) {
+        setVisibleMonth(addMonths(startOfMonth(target), -(monthCount - 1)));
+      }
+
+      pendingFocusRef.current = target;
+      setFocusDay(target);
+    };
+
+    React.useEffect(() => {
+      const target = pendingFocusRef.current;
+      if (!target || !open) return;
+
+      pendingFocusRef.current = null;
+      popoverRef.current
+        ?.querySelector<HTMLElement>(`[data-date="${toDateKey(target)}"]`)
+        ?.focus();
+    }, [focusDay, visibleMonth, open]);
+
+    // Opened from the keyboard: hand focus to the grid so Tab, Shift+Tab and the arrows work straight away.
+    React.useEffect(() => {
+      if (!open || !isPositioned || !focusOnOpenRef.current) return;
+
+      focusOnOpenRef.current = false;
+      popoverRef.current
+        ?.querySelector<HTMLElement>('[data-date][tabindex="0"]')
+        ?.focus();
+    }, [open, isPositioned]);
+
+    const handleGridKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+      const dayButton = (event.target as HTMLElement).closest<HTMLElement>(
+        "[data-date]"
+      );
+      if (!dayButton?.dataset.date) return;
+
+      const from = fromDateKey(dayButton.dataset.date);
+      const rowStart = addDays(from, -((from.getDay() - weekStartsOn + 7) % 7));
+      let target: Date;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          target = addDays(from, -1);
+          break;
+        case "ArrowRight":
+          target = addDays(from, 1);
+          break;
+        case "ArrowUp":
+          target = addDays(from, -7);
+          break;
+        case "ArrowDown":
+          target = addDays(from, 7);
+          break;
+        case "Home":
+          target = rowStart;
+          break;
+        case "End":
+          target = addDays(rowStart, 6);
+          break;
+        case "PageUp":
+          target = addMonthsClamped(from, event.shiftKey ? -12 : -1);
+          break;
+        case "PageDown":
+          target = addMonthsClamped(from, event.shiftKey ? 12 : 1);
+          break;
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      moveFocus(target);
+    };
+
+    const handleRailKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+      const buttons = Array.from(
+        event.currentTarget.querySelectorAll<HTMLButtonElement>(
+          "button:not(:disabled)"
+        )
+      );
+      const index = buttons.indexOf(
+        document.activeElement as HTMLButtonElement
+      );
+      if (index < 0) return;
+
+      let next: number;
+      if (event.key === "ArrowDown" || event.key === "ArrowRight") {
+        next = (index + 1) % buttons.length;
+      } else if (event.key === "ArrowUp" || event.key === "ArrowLeft") {
+        next = (index - 1 + buttons.length) % buttons.length;
+      } else if (event.key === "Home") {
+        next = 0;
+      } else if (event.key === "End") {
+        next = buttons.length - 1;
+      } else {
+        return;
+      }
+
+      event.preventDefault();
+      buttons[next]?.focus();
+    };
+
+    // The panel is a portal at the end of the page, so Tab would otherwise leave it for the browser chrome:
+    // from its last (or first, with Shift) control focus returns to the trigger instead.
+    const handlePopoverKeyDown = (
+      event: React.KeyboardEvent<HTMLDivElement>
+    ) => {
+      if (event.key !== "Tab") return;
+
+      const focusable = Array.from(
+        popoverRef.current?.querySelectorAll<HTMLElement>(
+          "button:not(:disabled), [tabindex]"
+        ) ?? []
+      ).filter((element) => element.tabIndex >= 0);
+      if (focusable.length === 0) return;
+
+      const active = document.activeElement;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (
+        (event.shiftKey && active === first) ||
+        (!event.shiftKey && active === last)
+      ) {
+        event.preventDefault();
+        triggerRef.current?.focus();
+      }
+    };
+
+    const selectingEnd = pendingEnd;
+    const summaryDays =
+      draftValue.start && draftValue.end
+        ? countDays(draftValue.start, draftValue.end)
+        : draftValue.start
+          ? 1
+          : 0;
+    const summaryInfo = { days: summaryDays, selecting: selectingEnd };
+    const summaryText = formatSummary
+      ? formatSummary(draftValue, summaryInfo)
+      : defaultSummary(draftValue, summaryInfo, locale);
+    const todayStart = startOfDay(new Date());
+    const showTodayLink =
+      !isInVisibleMonths(todayStart) && !isDayDisabled(todayStart);
+
     // The provisional range runs from the first click to the day under the
     // pointer, in whichever order they fall. Before the first click (and after
     // the commit) there is nothing to preview.
@@ -721,7 +1168,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           className={cn(
             // Arc panel: grows in from 95% and 8px above on the snappy spring (350ms), settling like the trigger it came from.
             "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.95] motion-safe:slide-in-from-top-2 origin-top-left motion-safe:[animation-duration:350ms] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [animation-timing-function:var(--arc-snappy)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
-            "flex flex-col rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            // Below `sm` the panel is a fixed compact width (the presets scroll inside it); it used to
+            // stretch to the full length of the preset row.
+            "flex flex-col max-sm:w-[19rem] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -738,10 +1187,14 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           onMouseDown={(event) => event.stopPropagation()}
           onWheel={(event) => event.stopPropagation()}
           onTouchMove={(event) => event.stopPropagation()}
+          onKeyDown={handlePopoverKeyDown}
         >
           <div className="flex flex-col sm:flex-row">
             {presets.length > 0 && (
-              <div className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-2.5 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-[9.25rem] sm:flex-col sm:border-r">
+              <div
+                onKeyDown={handleRailKeyDown}
+                className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-2 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-[8.5rem] sm:flex-col sm:border-r"
+              >
                 {presets.map((preset, presetIndex) => {
                   const presetDisabled =
                     clampRange(preset.getRange(), effectiveMinDate, maxDate) ===
@@ -755,7 +1208,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                       disabled={presetDisabled}
                       aria-current={presetSelected ? "true" : undefined}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-3 py-2 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
+                        "shrink-0 whitespace-nowrap rounded px-2.5 py-1.5 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
                         FOCUS_RING,
                         presetSelected
                           ? "bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
@@ -776,320 +1229,474 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             )}
 
             {/*
-              300px (276px of content) because the header's widest month
-              ("September" + chevron + 32px arrows) needs ~268px: any narrower
-              and the popover would resize as you page between months.
+              Each month is 276px: the header's widest month ("September" + chevron + 32px arrows) needs
+              ~268px, and any narrower would resize the panel as you page between months.
             */}
-            <div className="min-w-0 flex-1 p-2.5 touch-pan-y sm:min-w-[300px]">
-              <div className="mb-1 flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  aria-label="Previous month"
-                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
-                  onClick={() =>
-                    setVisibleMonth((month) => addMonths(month, -1))
-                  }
-                >
-                  <ChevronLeft className="size-4" aria-hidden="true" />
-                </button>
-
-                <div
-                  id={`${triggerId}-calendar-heading`}
-                  aria-live="polite"
-                  className="flex items-center gap-2"
-                >
-                  <DropdownMenu
-                    modal={false}
-                    open={openMenu === "month"}
-                    onOpenChange={(nextOpen) =>
-                      setOpenMenu((current) => {
-                        if (nextOpen) return "month";
-                        // Clicking the other trigger dismisses this menu
-                        // *after* the other one has opened — only clear the
-                        // slot if it is still ours.
-                        return current === "month" ? null : current;
-                      })
-                    }
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        data-calendar-menu="month"
-                        onPointerDown={(event) => event.preventDefault()}
-                        onClick={() => toggleCalendarMenu("month")}
-                        className={cn(CALENDAR_PILL, FOCUS_RING)}
-                      >
-                        {MONTH_LONG_NAMES[visibleMonth.getMonth()]}
-                        <ChevronDown
-                          className={cn(
-                            CALENDAR_PILL_CHEVRON,
-                            openMenu === "month" && "rotate-180"
-                          )}
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      // Closing must not pull focus back to the trigger: the
-                      // sibling menu opening in the same click would then see
-                      // focus land outside itself and dismiss immediately.
-                      onCloseAutoFocus={(event) => event.preventDefault()}
-                      className={cn(
-                        CALENDAR_DROPDOWN_Z_INDEX,
-                        "max-h-[240px] overflow-y-auto"
-                      )}
-                    >
-                      {MONTH_LONG_NAMES.map((label, monthIndex) => (
-                        <DropdownMenuItem
-                          key={label}
-                          disabled={
-                            !isMonthSelectable(
-                              visibleMonth.getFullYear(),
-                              monthIndex,
-                              effectiveMinDate,
-                              maxDate
-                            )
-                          }
-                          onSelect={() =>
-                            setVisibleMonth(
-                              startOfMonth(
-                                new Date(
-                                  visibleMonth.getFullYear(),
-                                  monthIndex,
-                                  1
-                                )
-                              )
-                            )
-                          }
-                        >
-                          {label}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-
-                  <DropdownMenu
-                    modal={false}
-                    open={openMenu === "year"}
-                    onOpenChange={(nextOpen) =>
-                      setOpenMenu((current) => {
-                        if (nextOpen) return "year";
-                        // Clicking the other trigger dismisses this menu
-                        // *after* the other one has opened — only clear the
-                        // slot if it is still ours.
-                        return current === "year" ? null : current;
-                      })
-                    }
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <button
-                        type="button"
-                        data-calendar-menu="year"
-                        onPointerDown={(event) => event.preventDefault()}
-                        onClick={() => toggleCalendarMenu("year")}
-                        className={cn(CALENDAR_PILL, FOCUS_RING)}
-                      >
-                        {visibleMonth.getFullYear()}
-                        <ChevronDown
-                          className={cn(
-                            CALENDAR_PILL_CHEVRON,
-                            openMenu === "year" && "rotate-180"
-                          )}
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      align="start"
-                      // Closing must not pull focus back to the trigger: the
-                      // sibling menu opening in the same click would then see
-                      // focus land outside itself and dismiss immediately.
-                      onCloseAutoFocus={(event) => event.preventDefault()}
-                      className={cn(
-                        CALENDAR_DROPDOWN_Z_INDEX,
-                        "max-h-[240px] overflow-y-auto"
-                      )}
-                    >
-                      {yearOptions.map((year) => (
-                        <DropdownMenuItem
-                          key={year}
-                          onSelect={() =>
-                            setVisibleMonth(
-                              startOfMonth(
-                                new Date(year, visibleMonth.getMonth(), 1)
-                              )
-                            )
-                          }
-                        >
-                          {year}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-
-                <button
-                  type="button"
-                  aria-label="Next month"
-                  className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
-                  onClick={() =>
-                    setVisibleMonth((month) => addMonths(month, 1))
-                  }
-                >
-                  <ChevronRight className="size-4" aria-hidden="true" />
-                </button>
-              </div>
-
-              {/* Static: only the day grid below re-mounts (and slides) per month. */}
-              <div className="grid w-full grid-cols-7">
-                {weekDays.map((day) => (
-                  <div
-                    key={day}
-                    className="flex h-9 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)] sm:h-7"
-                  >
-                    {day}
-                  </div>
-                ))}
-              </div>
+            <div className="min-w-0 flex-1 p-2 touch-pan-y">
               <div
-                key={visibleMonthKey}
                 className={cn(
-                  "grid w-full grid-cols-7",
-                  monthMotion.direction && [
-                    MONTH_MOTION,
-                    MONTH_MOTION_DIRECTION[monthMotion.direction],
-                  ]
+                  "flex",
+                  monthCount > 1
+                    ? "flex-col gap-2 sm:flex-row sm:gap-4"
+                    : "flex-col"
                 )}
-                onPointerLeave={() => setPreviewDay(null)}
-                onBlur={(event) => {
-                  if (!event.currentTarget.contains(event.relatedTarget)) {
-                    setPreviewDay(null);
-                  }
-                }}
               >
-                {calendarDays.map((day, dayIndex) => {
-                  const isCurrentMonth =
-                    day.getMonth() === visibleMonth.getMonth();
-                  const isToday = isSameDay(day, new Date());
-                  const { start, end } = draftValue;
-                  const hasRange = !!start && !!end && !isSameDay(start, end);
-                  const isRangeStart = isSameDay(day, start);
-                  const isRangeEnd = isSameDay(day, end);
-                  const isBetween =
-                    hasRange &&
-                    !!start &&
-                    !!end &&
-                    isAfterDay(day, start) &&
-                    isBeforeDay(day, end);
-                  const isInBand =
-                    hasRange && (isRangeStart || isRangeEnd || isBetween);
-                  const isInPreview =
-                    !isInBand &&
-                    !!previewLow &&
-                    !!previewHigh &&
-                    !isSameDay(previewLow, previewHigh) &&
-                    !isBeforeDay(day, previewLow) &&
-                    !isAfterDay(day, previewHigh);
-                  const isPreviewEnd =
-                    !!previewDay &&
-                    !!previewAnchor &&
-                    isSameDay(day, previewDay) &&
-                    !isSameDay(day, previewAnchor);
-                  const isSelectedEdge = isRangeStart || isRangeEnd;
-                  // The grid always starts on Sunday, so the column alone says
-                  // where a week row wraps: the band is capped there as well
-                  // as at the range's own ends.
-                  const columnIndex = dayIndex % 7;
-                  const hasBand = isInBand || isInPreview;
-                  const isBandStart =
-                    hasBand && isSameDay(day, isInPreview ? previewLow : start);
-                  const isBandEnd =
-                    hasBand && isSameDay(day, isInPreview ? previewHigh : end);
-                  const isDisabled =
-                    (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
-                    (maxDate && isAfterDay(day, maxDate));
-                  const dayLabel = day.toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  });
+                {visibleMonths.map((month, monthIndex) => {
+                  const days = getCalendarDays(month, weekStartsOn);
+                  const monthKey = getMonthKey(month);
+                  const showPrev = monthIndex === 0;
+                  const showNext = monthIndex === monthCount - 1;
+                  const spacer = (
+                    <span aria-hidden="true" className="size-8 shrink-0" />
+                  );
 
                   return (
                     <div
-                      key={day.toISOString()}
-                      className={cn(
-                        "relative flex h-9 items-center justify-center",
-                        hasBand && BAND_BASE,
-                        isInBand && BAND_RANGE,
-                        isInPreview && BAND_PREVIEW,
-                        hasBand &&
-                          (columnIndex === 0 || isBandStart) &&
-                          "before:rounded-l-full",
-                        hasBand &&
-                          (columnIndex === 6 || isBandEnd) &&
-                          "before:rounded-r-full",
-                        isBandStart && BAND_START_AT_CIRCLE,
-                        isBandEnd && BAND_END_AT_CIRCLE
-                      )}
+                      key={monthIndex}
+                      className="min-w-0 flex-1 sm:min-w-[276px]"
                     >
-                      <button
-                        type="button"
-                        aria-label={dayLabel}
-                        aria-pressed={isSelectedEdge}
-                        aria-current={isToday ? "date" : undefined}
-                        disabled={!!isDisabled}
-                        className={cn(
-                          "relative z-[1] flex h-9 w-full max-w-9 items-center justify-center rounded-full text-sm [font-variant-numeric:tabular-nums] [transition-property:color,background-color,transform] [transition-duration:160ms,160ms,120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-90 motion-reduce:[transition-property:color,background-color] motion-reduce:enabled:active:scale-100 sm:h-[30px] sm:max-w-[30px]",
-                          FOCUS_RING,
-                          "focus-visible:z-10",
-                          isSelectedEdge
-                            ? "bg-semantic-primary text-semantic-text-inverted font-medium"
-                            : cn(
-                                isCurrentMonth
-                                  ? "text-[var(--v2-text-secondary,#5E5E5E)]"
-                                  : "text-[var(--v2-text-muted,#707070)]",
-                                // The provisional end is outlined, not filled:
-                                // it only becomes a selected circle on click.
-                                isPreviewEnd
-                                  ? "ring-1 ring-inset ring-semantic-primary"
-                                  : HOVER_FILL
-                              ),
-                          isDisabled &&
-                            "opacity-40 cursor-not-allowed pointer-events-none"
+                      <div className="mb-1 flex items-center justify-between gap-2">
+                        {showPrev ? (
+                          <button
+                            type="button"
+                            aria-label="Previous month"
+                            className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
+                            onClick={() =>
+                              setVisibleMonth((current) =>
+                                addMonths(current, -1)
+                              )
+                            }
+                          >
+                            <ChevronLeft
+                              className="size-4"
+                              aria-hidden="true"
+                            />
+                          </button>
+                        ) : (
+                          spacer
                         )}
-                        onClick={() => {
-                          if (isDisabled) return;
 
-                          handleDayClick(day);
-                        }}
-                        onPointerEnter={(event) => {
-                          // A touch "hover" is just the tap that is about to
-                          // commit; previewing it would flash a band.
-                          if (pendingEnd && event.pointerType !== "touch") {
-                            setPreviewDay(day);
-                          }
-                        }}
-                        onFocus={() => {
-                          if (pendingEnd) setPreviewDay(day);
-                        }}
-                      >
-                        {day.getDate()}
-                        {isToday && (
-                          <span
-                            className={cn(
-                              "absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full max-sm:bottom-[5px]",
-                              isSelectedEdge
-                                ? "bg-semantic-text-inverted"
-                                : "bg-semantic-primary"
-                            )}
-                          />
+                        {monthIndex === 0 ? (
+                          <div
+                            id={`${triggerId}-calendar-heading`}
+                            aria-live="polite"
+                            className="flex items-center gap-2"
+                          >
+                            <DropdownMenu
+                              modal={false}
+                              open={openMenu === "month"}
+                              onOpenChange={(nextOpen) =>
+                                setOpenMenu((current) => {
+                                  if (nextOpen) return "month";
+                                  // Clicking the other trigger dismisses this menu
+                                  // *after* the other one has opened — only clear the
+                                  // slot if it is still ours.
+                                  return current === "month" ? null : current;
+                                })
+                              }
+                            >
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  type="button"
+                                  data-calendar-menu="month"
+                                  onPointerDown={(event) =>
+                                    event.preventDefault()
+                                  }
+                                  onClick={() => toggleCalendarMenu("month")}
+                                  className={cn(CALENDAR_PILL, FOCUS_RING)}
+                                >
+                                  {MONTH_LONG_NAMES[visibleMonth.getMonth()]}
+                                  <ChevronDown
+                                    className={cn(
+                                      CALENDAR_PILL_CHEVRON,
+                                      openMenu === "month" && "rotate-180"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="start"
+                                // Closing must not pull focus back to the trigger: the
+                                // sibling menu opening in the same click would then see
+                                // focus land outside itself and dismiss immediately.
+                                onCloseAutoFocus={(event) =>
+                                  event.preventDefault()
+                                }
+                                className={cn(
+                                  CALENDAR_DROPDOWN_Z_INDEX,
+                                  "max-h-[240px] overflow-y-auto"
+                                )}
+                              >
+                                {MONTH_LONG_NAMES.map((label, monthIndex) => (
+                                  <DropdownMenuItem
+                                    key={label}
+                                    disabled={
+                                      !isMonthSelectable(
+                                        visibleMonth.getFullYear(),
+                                        monthIndex,
+                                        effectiveMinDate,
+                                        maxDate
+                                      )
+                                    }
+                                    onSelect={() =>
+                                      setVisibleMonth(
+                                        startOfMonth(
+                                          new Date(
+                                            visibleMonth.getFullYear(),
+                                            monthIndex,
+                                            1
+                                          )
+                                        )
+                                      )
+                                    }
+                                  >
+                                    {label}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+
+                            <DropdownMenu
+                              modal={false}
+                              open={openMenu === "year"}
+                              onOpenChange={(nextOpen) =>
+                                setOpenMenu((current) => {
+                                  if (nextOpen) return "year";
+                                  // Clicking the other trigger dismisses this menu
+                                  // *after* the other one has opened — only clear the
+                                  // slot if it is still ours.
+                                  return current === "year" ? null : current;
+                                })
+                              }
+                            >
+                              <DropdownMenuTrigger asChild>
+                                <button
+                                  type="button"
+                                  data-calendar-menu="year"
+                                  onPointerDown={(event) =>
+                                    event.preventDefault()
+                                  }
+                                  onClick={() => toggleCalendarMenu("year")}
+                                  className={cn(CALENDAR_PILL, FOCUS_RING)}
+                                >
+                                  {visibleMonth.getFullYear()}
+                                  <ChevronDown
+                                    className={cn(
+                                      CALENDAR_PILL_CHEVRON,
+                                      openMenu === "year" && "rotate-180"
+                                    )}
+                                    aria-hidden="true"
+                                  />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent
+                                align="start"
+                                // Closing must not pull focus back to the trigger: the
+                                // sibling menu opening in the same click would then see
+                                // focus land outside itself and dismiss immediately.
+                                onCloseAutoFocus={(event) =>
+                                  event.preventDefault()
+                                }
+                                className={cn(
+                                  CALENDAR_DROPDOWN_Z_INDEX,
+                                  "max-h-[240px] overflow-y-auto"
+                                )}
+                              >
+                                {yearOptions.map((year) => (
+                                  <DropdownMenuItem
+                                    key={year}
+                                    onSelect={() =>
+                                      setVisibleMonth(
+                                        startOfMonth(
+                                          new Date(
+                                            year,
+                                            visibleMonth.getMonth(),
+                                            1
+                                          )
+                                        )
+                                      )
+                                    }
+                                  >
+                                    {year}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </div>
+                        ) : (
+                          <div className="min-w-0 truncate text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+                            {getMonthName(month.getMonth(), locale)}{" "}
+                            {month.getFullYear()}
+                          </div>
                         )}
-                      </button>
+
+                        {showNext ? (
+                          <button
+                            type="button"
+                            aria-label="Next month"
+                            className={cn(CALENDAR_NAV_BUTTON, FOCUS_RING)}
+                            onClick={() =>
+                              setVisibleMonth((current) =>
+                                addMonths(current, 1)
+                              )
+                            }
+                          >
+                            <ChevronRight
+                              className="size-4"
+                              aria-hidden="true"
+                            />
+                          </button>
+                        ) : (
+                          spacer
+                        )}
+                      </div>
+
+                      <div
+                        role="grid"
+                        aria-label={`${getMonthName(month.getMonth(), locale)} ${month.getFullYear()}`}
+                        onKeyDown={handleGridKeyDown}
+                      >
+                        {/* Static: only the day rows below re-mount (and slide) per month. */}
+                        <div role="row" className="grid w-full grid-cols-7">
+                          {weekdayLabels.map((day, dayOfWeek) => (
+                            <div
+                              key={dayOfWeek}
+                              role="columnheader"
+                              className="flex h-8 items-center justify-center text-xs font-medium text-[var(--v2-text-muted,#707070)] sm:h-6"
+                            >
+                              {day}
+                            </div>
+                          ))}
+                        </div>
+                        <div
+                          role="rowgroup"
+                          key={monthKey}
+                          className={cn(
+                            "w-full",
+                            monthMotion.direction && [
+                              MONTH_MOTION,
+                              MONTH_MOTION_DIRECTION[monthMotion.direction],
+                            ]
+                          )}
+                          onPointerLeave={() => setPreviewDay(null)}
+                          onBlur={(event) => {
+                            if (
+                              !event.currentTarget.contains(event.relatedTarget)
+                            ) {
+                              setPreviewDay(null);
+                            }
+                          }}
+                        >
+                          {Array.from({ length: 6 }, (_, rowIndex) => (
+                            <div
+                              key={rowIndex}
+                              role="row"
+                              className="grid w-full grid-cols-7"
+                            >
+                              {days
+                                .slice(rowIndex * 7, rowIndex * 7 + 7)
+                                .map((day, columnIndex) => {
+                                  const isCurrentMonth =
+                                    day.getMonth() === month.getMonth();
+
+                                  // With two months on screen the neighbouring month's days belong to the other grid.
+                                  if (monthCount > 1 && !isCurrentMonth) {
+                                    return (
+                                      <div
+                                        key={day.toISOString()}
+                                        role="gridcell"
+                                        aria-hidden="true"
+                                        className="h-8"
+                                      />
+                                    );
+                                  }
+
+                                  const isToday = isSameDay(day, new Date());
+                                  const { start, end } = draftValue;
+                                  const hasRange =
+                                    !!start && !!end && !isSameDay(start, end);
+                                  const isRangeStart = isSameDay(day, start);
+                                  const isRangeEnd = isSameDay(day, end);
+                                  const isBetween =
+                                    hasRange &&
+                                    !!start &&
+                                    !!end &&
+                                    isAfterDay(day, start) &&
+                                    isBeforeDay(day, end);
+                                  const isInBand =
+                                    hasRange &&
+                                    (isRangeStart || isRangeEnd || isBetween);
+                                  const isInPreview =
+                                    !isInBand &&
+                                    !!previewLow &&
+                                    !!previewHigh &&
+                                    !isSameDay(previewLow, previewHigh) &&
+                                    !isBeforeDay(day, previewLow) &&
+                                    !isAfterDay(day, previewHigh);
+                                  const isPreviewEnd =
+                                    !!previewDay &&
+                                    !!previewAnchor &&
+                                    isSameDay(day, previewDay) &&
+                                    !isSameDay(day, previewAnchor);
+                                  const isSelectedEdge =
+                                    isRangeStart || isRangeEnd;
+                                  // The column alone says where a week row wraps (the first column follows
+                                  // weekStartsOn): the band is capped there as well as at the range's own ends.
+                                  const hasBand = isInBand || isInPreview;
+                                  const isBandStart =
+                                    hasBand &&
+                                    isSameDay(
+                                      day,
+                                      isInPreview ? previewLow : start
+                                    );
+                                  const isBandEnd =
+                                    hasBand &&
+                                    isSameDay(
+                                      day,
+                                      isInPreview ? previewHigh : end
+                                    );
+                                  const isDisabled = isDayDisabled(day);
+                                  const dayLabel = day.toLocaleDateString(
+                                    locale ?? DEFAULT_LOCALE,
+                                    {
+                                      month: "long",
+                                      day: "numeric",
+                                      year: "numeric",
+                                    }
+                                  );
+
+                                  return (
+                                    <div
+                                      key={day.toISOString()}
+                                      role="gridcell"
+                                      aria-selected={
+                                        isSelectedEdge || isBetween
+                                      }
+                                      className={cn(
+                                        "relative flex h-8 items-center justify-center",
+                                        hasBand && BAND_BASE,
+                                        isInBand && BAND_RANGE,
+                                        isInPreview && BAND_PREVIEW,
+                                        hasBand &&
+                                          (columnIndex === 0 || isBandStart) &&
+                                          "before:rounded-l-full",
+                                        hasBand &&
+                                          (columnIndex === 6 || isBandEnd) &&
+                                          "before:rounded-r-full",
+                                        isBandStart && BAND_START_AT_CIRCLE,
+                                        isBandEnd && BAND_END_AT_CIRCLE
+                                      )}
+                                    >
+                                      <button
+                                        type="button"
+                                        data-date={toDateKey(day)}
+                                        tabIndex={
+                                          isSameDay(day, rovingDay) ? 0 : -1
+                                        }
+                                        aria-label={dayLabel}
+                                        aria-pressed={isSelectedEdge}
+                                        aria-current={
+                                          isToday ? "date" : undefined
+                                        }
+                                        disabled={isDisabled}
+                                        className={cn(
+                                          "relative z-[1] flex h-8 w-full max-w-8 items-center justify-center rounded-full text-sm [font-variant-numeric:tabular-nums] [transition-property:color,background-color,transform] [transition-duration:160ms,160ms,120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-90 motion-reduce:[transition-property:color,background-color] motion-reduce:enabled:active:scale-100 sm:h-[28px] sm:max-w-[28px]",
+                                          FOCUS_RING,
+                                          "focus-visible:z-10",
+                                          isSelectedEdge
+                                            ? "bg-semantic-primary text-semantic-text-inverted font-medium"
+                                            : cn(
+                                                isCurrentMonth
+                                                  ? "text-[var(--v2-text-secondary,#5E5E5E)]"
+                                                  : "text-[var(--v2-text-muted,#707070)]",
+                                                // The provisional end is outlined, not filled:
+                                                // it only becomes a selected circle on click.
+                                                isPreviewEnd
+                                                  ? "ring-1 ring-inset ring-semantic-primary"
+                                                  : HOVER_FILL
+                                              ),
+                                          isDisabled &&
+                                            "opacity-40 cursor-not-allowed pointer-events-none"
+                                        )}
+                                        onClick={() => {
+                                          if (isDisabled) return;
+
+                                          setFocusDay(day);
+                                          handleDayClick(day);
+                                        }}
+                                        onPointerEnter={(event) => {
+                                          // A touch "hover" is just the tap that is about to
+                                          // commit; previewing it would flash a band.
+                                          if (
+                                            pendingEnd &&
+                                            event.pointerType !== "touch"
+                                          ) {
+                                            setPreviewDay(day);
+                                          }
+                                        }}
+                                        onFocus={() => {
+                                          setFocusDay(day);
+                                          if (pendingEnd) setPreviewDay(day);
+                                        }}
+                                      >
+                                        {day.getDate()}
+                                        {isToday && (
+                                          <span
+                                            className={cn(
+                                              "absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full max-sm:bottom-[3px]",
+                                              isSelectedEdge
+                                                ? "bg-semantic-text-inverted"
+                                                : "bg-semantic-primary"
+                                            )}
+                                          />
+                                        )}
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
+
+              {showSummary && (
+                <div className="mt-1.5 flex min-h-9 items-center justify-between gap-3 border-t border-solid border-semantic-border-layout px-1 pt-2">
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="min-w-0 flex-1 text-sm leading-5 text-[var(--v2-text-secondary,#5E5E5E)]"
+                  >
+                    <span
+                      key={summaryText}
+                      className={cn("block truncate", SUMMARY_MOTION)}
+                    >
+                      {summaryText}
+                    </span>
+                  </div>
+                  {showTodayLink && (
+                    <button
+                      type="button"
+                      className={cn(
+                        "shrink-0 rounded px-2 py-1 text-sm font-medium text-[var(--v2-text-primary,#484848)] [transition:background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                        SUMMARY_MOTION,
+                        FOCUS_RING,
+                        HOVER_FILL
+                      )}
+                      onClick={() => {
+                        setVisibleMonth(startOfMonth(todayStart));
+                        setFocusDay(todayStart);
+                      }}
+                    >
+                      Today
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>,
@@ -1129,7 +1736,18 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             showClear && "pr-9",
             triggerClassName
           )}
-          onClick={() => setOpen(!open)}
+          onClick={(event) => {
+            // A click with no pointer (Enter or Space) is a keyboard open: the grid takes focus.
+            focusOnOpenRef.current = !open && event.detail === 0;
+            setOpen(!open);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "ArrowDown" && !open) {
+              event.preventDefault();
+              focusOnOpenRef.current = true;
+              setOpen(true);
+            }
+          }}
         >
           <FigmaCalendarIcon className="size-[18px] shrink-0 text-[var(--v2-text-secondary,#5E5E5E)]" />
           <span

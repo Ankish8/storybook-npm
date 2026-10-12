@@ -1,9 +1,21 @@
 import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { DateRangePicker } from "../../v2/date-range-picker";
+import {
+  DEFAULT_DATE_RANGE_PRESETS,
+  DateRangePicker,
+  EXTENDED_DATE_RANGE_PRESETS,
+  formatDateRangeCompact,
+  getFinancialYearPresets,
+} from "../../v2/date-range-picker";
 
 // DateRangePicker renders no <p> elements (trigger + popover use span/div/button
 // only), so the Bootstrap margin-bleed check below is trivially satisfied. It's
@@ -623,14 +635,12 @@ describe("DateRangePicker calendar refresh", () => {
   const cell = (day: number) =>
     screen.getByLabelText(dayLabelFor(oct(day))).parentElement as HTMLElement;
   const circle = (day: number) => screen.getByLabelText(dayLabelFor(oct(day)));
-  // The last 7-column grid in the dialog is the day grid (the first is the
-  // static weekday header), whichever month is showing.
+  // The rowgroup holding the week rows is the day grid; the weekday header sits
+  // outside it, so only this node re-mounts and slides per month.
   const dayGrid = () =>
-    Array.from(
-      screen
-        .getByRole("dialog", { hidden: true })
-        .querySelectorAll<HTMLElement>(".grid-cols-7")
-    ).pop() as HTMLElement;
+    screen
+      .getByRole("dialog", { hidden: true })
+      .querySelector<HTMLElement>('[role="rowgroup"]') as HTMLElement;
   const classTokens = (element: Element) =>
     (element.getAttribute("class") ?? "").split(/\s+/).filter(Boolean);
 
@@ -667,8 +677,9 @@ describe("DateRangePicker calendar refresh", () => {
     it("starts and ends the band at the circle edge, not the cell edge, only at the range's own ends", () => {
       renderRange();
 
-      expect(cell(1)).toHaveClass("before:left-[calc(50%-1.125rem)]");
-      expect(cell(7)).toHaveClass("before:right-[calc(50%-1.125rem)]");
+      // Half of the 32px circle (14px for the 28px circle from `sm`).
+      expect(cell(1)).toHaveClass("before:left-[calc(50%-1rem)]");
+      expect(cell(7)).toHaveClass("before:right-[calc(50%-1rem)]");
       // A row wrap is flush with the grid edge.
       expect(cell(4).className).not.toContain("before:left-[calc");
       expect(cell(3).className).not.toContain("before:right-[calc");
@@ -690,11 +701,25 @@ describe("DateRangePicker calendar refresh", () => {
       expect(circle(4)).toHaveAttribute("aria-pressed", "false");
     });
 
-    it("gives every row a 36px pitch at all breakpoints", () => {
+    it("gives every row a 32px pitch at all breakpoints, with a 32px circle (28px from sm)", () => {
       renderRange();
 
-      expect(cell(1)).toHaveClass("h-9");
-      expect(cell(1)).not.toHaveClass("sm:h-8");
+      expect(cell(1)).toHaveClass("h-8");
+      expect(cell(1)).not.toHaveClass("h-9");
+      expect(circle(1)).toHaveClass(
+        "h-8",
+        "max-w-8",
+        "sm:h-[28px]",
+        "sm:max-w-[28px]"
+      );
+    });
+
+    it("keeps the narrow panel at a compact fixed width instead of the preset row's length", () => {
+      renderRange();
+
+      // Hidden until floating-ui has placed it, so look it up directly.
+      const panel = document.querySelector('[role="dialog"]');
+      expect(panel).toHaveClass("max-sm:w-[19rem]");
     });
   });
 
@@ -1095,5 +1120,393 @@ describe("DateRangePicker calendar refresh", () => {
       // ... without playing the slide.
       expect(dayGrid().className).not.toContain("animate-in");
     });
+  });
+});
+
+describe("DateRangePicker keyboard grid", () => {
+  const oct = (day: number) => new Date(2026, 9, day);
+  const nov = (day: number) => new Date(2026, 10, day);
+  const day = (date: Date) => screen.getByLabelText(dayLabelFor(date));
+  const renderOpen = (
+    props: Partial<React.ComponentProps<typeof DateRangePicker>> = {}
+  ) =>
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{ start: oct(1), end: oct(7) }}
+        {...props}
+      />
+    );
+
+  it("exposes each month as a labelled grid with weekday headers and gridcells", () => {
+    renderOpen();
+    const grid = screen.getByLabelText("October 2026");
+
+    expect(
+      within(grid).getAllByRole("columnheader", { hidden: true })
+    ).toHaveLength(7);
+    expect(within(grid).getAllByRole("row", { hidden: true })).toHaveLength(7);
+    expect(within(grid).getAllByRole("gridcell", { hidden: true }).length).toBe(
+      42
+    );
+  });
+
+  it("has a single tab stop in the grid: the range start", () => {
+    renderOpen();
+    const stops = screen
+      .getAllByRole("button", { hidden: true })
+      .filter(
+        (button) => button.hasAttribute("data-date") && button.tabIndex === 0
+      );
+
+    expect(stops).toHaveLength(1);
+    expect(stops[0]).toHaveAttribute("aria-label", dayLabelFor(oct(1)));
+  });
+
+  it("moves focus with the arrow keys, Home and End", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    day(oct(14)).focus();
+
+    await user.keyboard("{ArrowRight}");
+    expect(day(oct(15))).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(day(oct(22))).toHaveFocus();
+    await user.keyboard("{ArrowLeft}{ArrowUp}");
+    expect(day(oct(14))).toHaveFocus();
+    // 14 Oct 2026 is a Wednesday: the Sunday-first week runs 11 to 17.
+    await user.keyboard("{Home}");
+    expect(day(oct(11))).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(day(oct(17))).toHaveFocus();
+  });
+
+  it("follows weekStartsOn for Home and End", async () => {
+    const user = userEvent.setup();
+    renderOpen({ weekStartsOn: 1 });
+    day(oct(14)).focus();
+
+    await user.keyboard("{Home}");
+    expect(day(oct(12))).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(day(oct(18))).toHaveFocus();
+  });
+
+  it("pages the month when an arrow key leaves it, and PageUp/PageDown step a month (Shift a year)", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    day(oct(31)).focus();
+
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByLabelText("November 2026")).toBeInTheDocument();
+    expect(day(nov(1))).toHaveFocus();
+
+    await user.keyboard("{PageUp}");
+    expect(day(oct(1))).toHaveFocus();
+    await user.keyboard("{Shift>}{PageDown}{/Shift}");
+    expect(screen.getByLabelText("October 2027")).toBeInTheDocument();
+    expect(day(new Date(2027, 9, 1))).toHaveFocus();
+  });
+
+  it("keeps the day of the month where it can and clamps to a shorter month", async () => {
+    const user = userEvent.setup();
+    renderOpen({
+      defaultValue: {
+        start: new Date(2026, 0, 31),
+        end: new Date(2026, 0, 31),
+      },
+    });
+    day(new Date(2026, 0, 31)).focus();
+
+    await user.keyboard("{PageDown}");
+    expect(day(new Date(2026, 1, 28))).toHaveFocus();
+  });
+
+  it("does not move onto a disabled day", async () => {
+    const user = userEvent.setup();
+    renderOpen({ minDate: oct(10) });
+    day(oct(10)).focus();
+
+    await user.keyboard("{ArrowLeft}");
+    expect(day(oct(10))).toHaveFocus();
+  });
+
+  it("picks a range with Enter, like a click", async () => {
+    const user = userEvent.setup();
+    const onValueChange = vi.fn();
+    renderOpen({ onValueChange });
+    day(oct(14)).focus();
+
+    await user.keyboard("{Enter}");
+    await user.keyboard("{ArrowRight}{ArrowRight}{Enter}");
+
+    expect(onValueChange).toHaveBeenCalledWith({
+      start: oct(14),
+      end: oct(16),
+    });
+  });
+
+  it("opens from the keyboard with focus on the grid", async () => {
+    const user = userEvent.setup();
+    render(<DateRangePicker defaultValue={{ start: oct(1), end: oct(7) }} />);
+    const trigger = screen.getByRole("button", { name: /Oct 2026/ });
+
+    trigger.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(day(oct(1))).toHaveFocus());
+  });
+
+  it("opens on ArrowDown from the trigger", async () => {
+    const user = userEvent.setup();
+    render(<DateRangePicker defaultValue={{ start: oct(1), end: oct(7) }} />);
+    screen.getByRole("button", { name: /Oct 2026/ }).focus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(
+      await screen.findByRole("dialog", { hidden: true })
+    ).toBeInTheDocument();
+    await waitFor(() => expect(day(oct(1))).toHaveFocus());
+  });
+
+  it("sends Tab from the last control back to the trigger", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const trigger = screen.getByRole("button", { name: /Oct 2026/ });
+    day(oct(1)).focus();
+
+    // Past the roving tab stop there is nothing left in the panel.
+    await user.tab();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("moves between presets with the arrow keys", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const preset = (label: string) =>
+      screen.getAllByText(label)[0] as HTMLElement;
+    preset("Today").focus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(preset("Yesterday")).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(preset("Last month")).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(preset("Today")).toHaveFocus();
+  });
+});
+
+describe("DateRangePicker summary line", () => {
+  const oct = (day: number) => new Date(2026, 9, day);
+  const status = () => screen.getByRole("status", { hidden: true });
+
+  it("reads the committed range and its length", () => {
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{ start: oct(1), end: oct(7) }}
+      />
+    );
+
+    expect(status()).toHaveTextContent("1 – 7 Oct 2026 · 7 days");
+  });
+
+  it("asks for a start date when empty, and for an end date after the first click", () => {
+    render(<DateRangePicker defaultOpen />);
+    expect(status()).toHaveTextContent("Select a start date");
+
+    fireEvent.click(
+      screen
+        .getAllByRole("button", { hidden: true })
+        .find(
+          (button) =>
+            button.hasAttribute("data-date") &&
+            button.getAttribute("data-date") === "2026-10-14"
+        ) as HTMLElement
+    );
+    expect(status()).toHaveTextContent("14 Oct 2026 · Select an end date");
+  });
+
+  it("names a single day as 1 day and spells both years when they differ", () => {
+    const first = render(
+      <DateRangePicker defaultOpen value={{ start: oct(5), end: oct(5) }} />
+    );
+    expect(status()).toHaveTextContent("5 Oct 2026 · 1 day");
+    first.unmount();
+
+    render(
+      <DateRangePicker
+        defaultOpen
+        value={{ start: new Date(2026, 11, 30), end: new Date(2027, 0, 3) }}
+      />
+    );
+    expect(status()).toHaveTextContent("30 Dec 2026 – 3 Jan 2027 · 5 days");
+  });
+
+  it("can be hidden or translated", () => {
+    const { rerender } = render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{ start: oct(1), end: oct(7) }}
+        showSummary={false}
+      />
+    );
+    expect(
+      screen.queryByRole("status", { hidden: true })
+    ).not.toBeInTheDocument();
+
+    rerender(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{ start: oct(1), end: oct(7) }}
+        formatSummary={(_, info) => `${info.days} Tage`}
+      />
+    );
+    expect(status()).toHaveTextContent("7 Tage");
+  });
+
+  it("offers a Today link only when today's month is off screen", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 15));
+    try {
+      render(<DateRangePicker defaultOpen />);
+      // Only the "Today" preset while October is showing.
+      expect(screen.getAllByText("Today")).toHaveLength(1);
+
+      fireEvent.click(screen.getByLabelText("Next month"));
+      fireEvent.click(screen.getByLabelText("Next month"));
+      expect(screen.getByLabelText("December 2026")).toBeInTheDocument();
+      const links = screen.getAllByText("Today");
+      expect(links).toHaveLength(2);
+
+      fireEvent.click(links[1]);
+      expect(screen.getByLabelText("October 2026")).toBeInTheDocument();
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
+describe("DateRangePicker months, week start and locale", () => {
+  const oct = (day: number) => new Date(2026, 9, day);
+  const renderOpen = (
+    props: Partial<React.ComponentProps<typeof DateRangePicker>> = {}
+  ) =>
+    render(
+      <DateRangePicker
+        defaultOpen
+        defaultValue={{ start: oct(1), end: oct(7) }}
+        {...props}
+      />
+    );
+
+  it("shows one month by default", () => {
+    renderOpen();
+    expect(screen.getAllByRole("grid", { hidden: true })).toHaveLength(1);
+  });
+
+  it("shows two months side by side, with each day in one grid only", () => {
+    renderOpen({ months: 2 });
+    const grids = screen.getAllByRole("grid", { hidden: true });
+
+    expect(grids).toHaveLength(2);
+    expect(grids[0]).toHaveAttribute("aria-label", "October 2026");
+    expect(grids[1]).toHaveAttribute("aria-label", "November 2026");
+    // 31 + 30 days, no duplicated outside days.
+    expect(
+      screen
+        .getAllByRole("button", { hidden: true })
+        .filter((button) => button.hasAttribute("data-date"))
+    ).toHaveLength(61);
+    // Previous sits on the left month, Next on the right one.
+    expect(screen.getAllByLabelText("Previous month")).toHaveLength(1);
+    expect(screen.getAllByLabelText("Next month")).toHaveLength(1);
+  });
+
+  it("pages the pair when the keyboard leaves the second month", async () => {
+    const user = userEvent.setup();
+    renderOpen({
+      months: 2,
+      defaultValue: {
+        start: new Date(2026, 10, 30),
+        end: new Date(2026, 10, 30),
+      },
+    });
+    screen.getByLabelText(dayLabelFor(new Date(2026, 10, 30))).focus();
+
+    await user.keyboard("{ArrowRight}");
+    const grids = screen.getAllByRole("grid", { hidden: true });
+    expect(grids[0]).toHaveAttribute("aria-label", "November 2026");
+    expect(grids[1]).toHaveAttribute("aria-label", "December 2026");
+    expect(
+      screen.getByLabelText(dayLabelFor(new Date(2026, 11, 1)))
+    ).toHaveFocus();
+  });
+
+  it("starts the week on Monday when asked", () => {
+    renderOpen({ weekStartsOn: 1 });
+    const headers = screen
+      .getAllByRole("columnheader", { hidden: true })
+      .map((header) => header.textContent);
+
+    expect(headers).toEqual(["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]);
+    // 1 Oct 2026 is a Thursday: the first row begins on Monday 28 Sep.
+    const firstCell = screen.getAllByRole("gridcell", { hidden: true })[0];
+    expect(firstCell).toHaveTextContent("28");
+  });
+
+  it("uses the locale for month names and day labels", () => {
+    renderOpen({ locale: "de-DE" });
+
+    expect(screen.getByLabelText("Oktober 2026")).toBeInTheDocument();
+    expect(screen.getByLabelText("7. Oktober 2026")).toBeInTheDocument();
+  });
+
+  it("exports preset sets for longer look-backs and financial years", () => {
+    expect(EXTENDED_DATE_RANGE_PRESETS.map((preset) => preset.label)).toEqual([
+      ...DEFAULT_DATE_RANGE_PRESETS.map((preset) => preset.label),
+      "Last 90 days",
+      "This quarter",
+      "Year to date",
+    ]);
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 9, 12));
+    try {
+      const [thisFy, lastFy] = getFinancialYearPresets();
+      expect(thisFy.getRange()).toEqual({
+        start: new Date(2026, 3, 1),
+        end: new Date(2026, 9, 12),
+      });
+      expect(lastFy.getRange()).toEqual({
+        start: new Date(2025, 3, 1),
+        end: new Date(2026, 2, 31),
+      });
+
+      vi.setSystemTime(new Date(2027, 1, 10));
+      expect(getFinancialYearPresets()[0].getRange().start).toEqual(
+        new Date(2026, 3, 1)
+      );
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("formats compact ranges for the trigger", () => {
+    expect(formatDateRangeCompact({ start: oct(7), end: oct(13) })).toBe(
+      "7 – 13 Oct 2026"
+    );
+    expect(
+      formatDateRangeCompact({ start: new Date(2026, 8, 28), end: oct(3) })
+    ).toBe("28 Sep – 3 Oct 2026");
+    expect(
+      formatDateRangeCompact({
+        start: new Date(2025, 11, 30),
+        end: new Date(2026, 0, 3),
+      })
+    ).toBe("30 Dec 2025 – 3 Jan 2026");
+    expect(formatDateRangeCompact({ start: oct(7), end: oct(7) })).toBe(
+      "7 Oct 2026"
+    );
+    expect(formatDateRangeCompact({})).toBe("");
   });
 });

@@ -1707,3 +1707,381 @@ describe("DateTimePicker calendar and time list refresh", () => {
     });
   });
 });
+
+describe("DateTimePicker keyboard grid", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+  const may = (day: number) => new Date(2026, 4, day);
+  const labelFor = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  const day = (date: Date) => screen.getByLabelText(labelFor(date));
+  const renderOpen = (
+    props: Partial<React.ComponentProps<typeof DateTimePicker>> = {}
+  ) => {
+    const onValueChange = vi.fn();
+    const view = render(
+      <DateTimePicker
+        defaultOpen
+        value={{ date: may(12), startTime: "10:30:00", endTime: "" }}
+        onValueChange={onValueChange}
+        {...props}
+      />
+    );
+    return { ...view, onValueChange };
+  };
+
+  it("exposes the month as a labelled grid with weekday headers, rows and gridcells", () => {
+    renderOpen();
+    const grid = screen.getByRole("grid", { hidden: true });
+
+    expect(grid).toHaveAttribute("aria-label", "May 2026");
+    expect(
+      within(grid).getAllByRole("columnheader", { hidden: true })
+    ).toHaveLength(7);
+    // The weekday row plus six week rows.
+    expect(within(grid).getAllByRole("row", { hidden: true })).toHaveLength(7);
+    expect(
+      within(grid).getAllByRole("gridcell", { hidden: true })
+    ).toHaveLength(42);
+  });
+
+  it("has a single tab stop in the grid: the selected day", () => {
+    renderOpen();
+    const stops = screen
+      .getAllByRole("button", { hidden: true })
+      .filter(
+        (button) => button.hasAttribute("data-date") && button.tabIndex === 0
+      );
+
+    expect(stops).toHaveLength(1);
+    expect(stops[0]).toHaveAttribute("aria-label", labelFor(may(12)));
+  });
+
+  it("moves focus with the arrow keys, Home and End without changing the value", async () => {
+    const user = userEvent.setup();
+    const { onValueChange } = renderOpen();
+    day(may(12)).focus();
+
+    await user.keyboard("{ArrowRight}");
+    expect(day(may(13))).toHaveFocus();
+    await user.keyboard("{ArrowDown}");
+    expect(day(may(20))).toHaveFocus();
+    await user.keyboard("{ArrowLeft}{ArrowUp}");
+    expect(day(may(12))).toHaveFocus();
+    // 12 May 2026 is a Tuesday: the Sunday-first week runs 10 to 16.
+    await user.keyboard("{Home}");
+    expect(day(may(10))).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(day(may(16))).toHaveFocus();
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("follows weekStartsOn for Home and End", async () => {
+    const user = userEvent.setup();
+    renderOpen({ weekStartsOn: 1 });
+    day(may(12)).focus();
+
+    await user.keyboard("{Home}");
+    expect(day(may(11))).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(day(may(17))).toHaveFocus();
+  });
+
+  it("pages the month when the keyboard leaves it, and PageUp/PageDown step a month (Shift a year)", async () => {
+    const user = userEvent.setup();
+    const { onValueChange } = renderOpen();
+    day(may(31)).focus();
+
+    await user.keyboard("{ArrowRight}");
+    expect(screen.getByRole("grid", { hidden: true })).toHaveAttribute(
+      "aria-label",
+      "June 2026"
+    );
+    expect(day(new Date(2026, 5, 1))).toHaveFocus();
+
+    await user.keyboard("{PageUp}");
+    expect(day(may(1))).toHaveFocus();
+    await user.keyboard("{Shift>}{PageDown}{/Shift}");
+    expect(screen.getByRole("grid", { hidden: true })).toHaveAttribute(
+      "aria-label",
+      "May 2027"
+    );
+    expect(day(new Date(2027, 4, 1))).toHaveFocus();
+    // Paging with the keyboard never moves the selection.
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
+  it("does not move onto a disabled day", async () => {
+    const user = userEvent.setup();
+    renderOpen({ minDate: may(10) });
+    day(may(10)).focus();
+
+    await user.keyboard("{ArrowLeft}");
+    expect(day(may(10))).toHaveFocus();
+  });
+
+  it("chooses the focused day with Enter", async () => {
+    const user = userEvent.setup();
+    const { onValueChange } = renderOpen();
+    day(may(12)).focus();
+
+    await user.keyboard("{ArrowRight}{ArrowRight}{Enter}");
+    expect(onValueChange).toHaveBeenCalledWith(
+      expect.objectContaining({ date: may(14) })
+    );
+  });
+
+  it("moves focus into the grid with Alt+ArrowDown from the typed field", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const input = screen.getByLabelText("Date and time");
+    input.focus();
+
+    await user.keyboard("{Alt>}{ArrowDown}{/Alt}");
+    await waitFor(() => expect(day(may(12))).toHaveFocus());
+  });
+
+  it("hands focus to the grid when the calendar button is used from the keyboard, without closing it", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const button = screen.getByLabelText("Open calendar");
+    button.focus();
+
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(day(may(12))).toHaveFocus());
+    expect(screen.getByLabelText("Date and time")).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+  });
+
+  it("still toggles with a pointer click on the calendar button", () => {
+    renderOpen();
+    expect(screen.getByLabelText("Date and time")).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+
+    fireEvent.click(screen.getByLabelText("Open calendar"));
+    expect(screen.getByLabelText("Date and time")).toHaveAttribute(
+      "aria-expanded",
+      "false"
+    );
+  });
+
+  it("returns focus to the calendar button on Escape", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const button = screen.getByLabelText("Open calendar");
+    day(may(12)).focus();
+
+    await user.keyboard("{Escape}");
+    expect(button).toHaveFocus();
+  });
+
+  it("sends Shift+Tab from the first control back to the calendar button", async () => {
+    const user = userEvent.setup();
+    renderOpen();
+    const button = screen.getByLabelText("Open calendar");
+    screen.getByLabelText("Previous month").focus();
+
+    await user.tab({ shift: true });
+    expect(button).toHaveFocus();
+  });
+});
+
+describe("DateTimePicker week start, locale and Today", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+  const may = (day: number) => new Date(2026, 4, day);
+  const renderOpen = (
+    props: Partial<React.ComponentProps<typeof DateTimePicker>> = {}
+  ) =>
+    render(
+      <DateTimePicker
+        defaultOpen
+        value={{ date: may(12), startTime: "10:30:00", endTime: "" }}
+        {...props}
+      />
+    );
+
+  it("starts the week on Monday when asked", () => {
+    renderOpen({ weekStartsOn: 1 });
+    const headers = screen
+      .getAllByRole("columnheader", { hidden: true })
+      .map((header) => header.textContent);
+
+    expect(headers).toEqual(["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"]);
+    // 1 May 2026 is a Friday: the first row begins on Monday 27 April.
+    expect(
+      screen.getAllByRole("gridcell", { hidden: true })[0]
+    ).toHaveTextContent("27");
+  });
+
+  it("uses the locale for month names and day labels", () => {
+    renderOpen({ locale: "de-DE" });
+
+    expect(screen.getByRole("grid", { hidden: true })).toHaveAttribute(
+      "aria-label",
+      "Mai 2026"
+    );
+    expect(screen.getByLabelText("12. Mai 2026")).toBeInTheDocument();
+    expect(screen.getByLabelText("Month")).toHaveTextContent("Mai");
+  });
+
+  it("offers a Today link only when today's month is off screen, and it does not change the value", () => {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(2026, 4, 20));
+    const onValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultOpen
+        value={{ date: new Date(2026, 11, 12), startTime: "", endTime: "" }}
+        onValueChange={onValueChange}
+      />
+    );
+    const link = screen.getByText("Today");
+    const row = link.closest("[aria-hidden]") as HTMLElement;
+
+    expect(screen.getByRole("grid", { hidden: true })).toHaveAttribute(
+      "aria-label",
+      "December 2026"
+    );
+    expect(row).toHaveAttribute("aria-hidden", "false");
+    expect(link).toHaveAttribute("tabindex", "0");
+
+    fireEvent.click(link);
+    expect(screen.getByRole("grid", { hidden: true })).toHaveAttribute(
+      "aria-label",
+      "May 2026"
+    );
+    expect(row).toHaveAttribute("aria-hidden", "true");
+    expect(link).toHaveAttribute("tabindex", "-1");
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("DateTimePicker compact panel", () => {
+  it("opens a 288px panel with 12px padding and 2px gaps, so day cells are 36px", () => {
+    render(
+      <DateTimePicker
+        defaultOpen
+        value={{ date: mayTwelve, startTime: "10:30:00", endTime: "" }}
+      />
+    );
+    const panel = document.querySelector('[role="dialog"]') as HTMLElement;
+    // Falls back to 288px until floating-ui has measured the trigger.
+    expect(panel.style.width).toContain("min(288px");
+    const grid = screen.getByRole("grid", { hidden: true });
+    expect(grid.parentElement).toHaveClass("p-3");
+    const days = grid.querySelector('[role="rowgroup"]') as HTMLElement;
+    expect(days).toHaveClass("grid-cols-7", "gap-0.5");
+    expect(days).not.toHaveClass("gap-1");
+  });
+
+  it("keeps the selected disc one cell wide and stepped by the 2px gap", () => {
+    render(
+      <DateTimePicker
+        defaultOpen
+        value={{ date: mayTwelve, startTime: "10:30:00", endTime: "" }}
+      />
+    );
+    const days = screen
+      .getByRole("grid", { hidden: true })
+      .querySelector('[role="rowgroup"]') as HTMLElement;
+    const disc = days.firstElementChild as HTMLElement;
+    expect(disc).toHaveClass("aspect-square", "w-[calc((100%-12px)/7)]");
+    // May 12 2026 is the third row's Tuesday: column 2, row 2 (Sunday start, May 1 is a Friday).
+    expect(disc.style.transform).toContain("(100% + 2px)");
+    expect(disc.style.transform).not.toContain("4px");
+  });
+});
+
+describe("DateTimePicker rolling time", () => {
+  const open = (showSeconds = false) => {
+    render(
+      <DateTimePicker
+        defaultOpen
+        showSeconds={showSeconds}
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "",
+        }}
+      />
+    );
+    return screen.getByLabelText("Start Time");
+  };
+  const wheels = (field: HTMLElement) =>
+    Array.from(field.querySelectorAll("[data-rolling-time] > span")).filter(
+      (node) => node.querySelectorAll("span[style]").length === 10
+    );
+  const visibleDigit = (column: Element) =>
+    Array.from(column.querySelectorAll<HTMLElement>("span[style]")).find(
+      (node) =>
+        node.style.visibility === "visible" && Number(node.style.opacity) > 0.9
+    )?.textContent;
+
+  it("keeps the time as text for assistive tech and draws wheels for the eye", () => {
+    const field = open();
+    expect(field).toHaveTextContent("10:30 AM");
+    expect(within(field).getByText("10:30 AM")).toHaveClass("sr-only");
+    const rolling = field.querySelector("[data-rolling-time]") as HTMLElement;
+    expect(rolling).toHaveAttribute("aria-hidden", "true");
+    expect(wheels(field)).toHaveLength(4);
+    expect(wheels(field).map(visibleDigit)).toEqual(["1", "0", "3", "0"]);
+    expect(rolling).toHaveTextContent(":");
+    expect(rolling.lastElementChild).toHaveTextContent("AM");
+  });
+
+  it("draws a wheel for the seconds too", () => {
+    const field = open(true);
+    expect(wheels(field)).toHaveLength(6);
+    expect(field).toHaveTextContent("10:30:00 AM");
+  });
+
+  it("turns the wheels when another hour is picked", async () => {
+    const user = userEvent.setup();
+    const field = open();
+    await user.click(field);
+    const hours = screen.getByLabelText("Start Time hours");
+    await user.click(within(hours).getByRole("option", { name: "05" }));
+    expect(within(field).getByText("05:30 AM")).toBeInTheDocument();
+    await waitFor(
+      () =>
+        expect(wheels(field).map(visibleDigit)).toEqual(["0", "5", "3", "0"]),
+      { timeout: 2000 }
+    );
+  });
+
+  it("swaps AM for PM as a word", async () => {
+    const user = userEvent.setup();
+    const field = open();
+    await user.click(field);
+    const meridiem = screen.getByLabelText("Start Time meridiem");
+    await user.click(within(meridiem).getByRole("option", { name: "PM" }));
+    expect(within(field).getByText("10:30 PM")).toBeInTheDocument();
+    await waitFor(
+      () => {
+        const rolling = field.querySelector(
+          "[data-rolling-time]"
+        ) as HTMLElement;
+        expect(rolling.lastElementChild).toHaveTextContent("PM");
+        expect(rolling.lastElementChild).not.toHaveTextContent("AM");
+      },
+      { timeout: 2000 }
+    );
+  });
+
+  it("does not roll anything when the time is unchanged", () => {
+    const field = open();
+    const before = wheels(field).map(visibleDigit);
+    expect(wheels(field).map(visibleDigit)).toEqual(before);
+  });
+});
