@@ -30,21 +30,29 @@ import {
 } from "./comparison-state";
 
 /**
- * Pixels a component's open menu reaches below its story's content, so the preview can reserve them up front and
- * opening a menu never resizes the card or moves what is in it. Measured in real Chrome on each hero story with
- * the trigger nearest the bottom (the menu's bottom edge minus the content's bottom edge), plus 24px of slack and
- * rounded up to 8. Split button and Button group keep their own fixed 420px reserve; Tooltip opens inside its
- * content and needs none.
+ * Pixels a component's open popup reaches below the preview card, so the iframe can be that much taller than the card
+ * and the popup can overflow it (the docs page clips the extra height until a popup is open, so nothing is left as
+ * empty canvas). Measured in real Chrome on each hero story with the trigger nearest the bottom (the popup's bottom
+ * edge minus the card's bottom edge), plus 24px of slack and rounded up to 8. A popup that turns out taller (more
+ * options through Customize) still fits: the room grows to the popup's actual bottom while it is open.
  */
 const popupRoom: Record<string, number> = {
   select: 208,
   "select-field": 184,
   "creatable-select": 216,
-  "multi-select": 144,
-  "creatable-multi-select": 200,
-  "search-filter": 232,
+  "multi-select": 288,
+  "creatable-multi-select": 152,
+  "search-filter": 176,
   "dropdown-menu": 80,
+  "split-button": 56,
+  "button-group": 40,
+  breadcrumbs: 96,
+  "date-range-picker": 328,
+  "date-time-picker": 304,
 };
+// What counts as an open popup: menus, listboxes, Radix popper content and the non-modal dialogs the pickers use.
+const POPUP_SELECTOR =
+  '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [role="dialog"][aria-modal="false"]';
 
 const query = new URLSearchParams(location.search);
 if (query.get("comparison") === "1") containComparisonFocus();
@@ -280,12 +288,7 @@ function App() {
 
   React.useEffect(() => {
     if (!frame.current) return;
-    // Content that reserves room for a menu stays at the top of the frame (see preview.css).
-    document.documentElement.toggleAttribute(
-      "data-popup",
-      (popupRoom[selection.component] ?? 0) > 0
-    );
-    let last = 0;
+    let last = "";
     let scheduled = 0;
     const observedDialogs = new Set<HTMLElement>();
     const report = () => {
@@ -294,29 +297,14 @@ function App() {
         const natural = Math.ceil(
           frame.current?.getBoundingClientRect().height || 140
         );
-        // Fixed portal overlays require a useful viewport but never resize from viewport height itself.
-        const overlay = [
-          "modal",
-          "panel",
-          "toast",
-          "date-range-picker",
-          "date-time-picker",
-        ].includes(selection.component);
-        const popup = [
-          "select",
-          "select-field",
-          "creatable-select",
-          "multi-select",
-          "creatable-multi-select",
-          "search-filter",
-          "dropdown-menu",
-          "split-button",
-          "phone-input",
-          "tooltip",
-        ].includes(selection.component);
+        // Fixed portal overlays (modals, panels, toasts) need a useful viewport, so the frame itself grows for them;
+        // popups do not: they overflow the card (see popupRoom).
+        const overlay = ["modal", "panel", "toast"].includes(
+          selection.component
+        );
         const dialogs = Array.from(
           document.querySelectorAll<HTMLElement>(
-            '[role="dialog"], [role="alertdialog"]'
+            '[role="dialog"]:not([aria-modal="false"]), [role="alertdialog"]'
           )
         );
         for (const dialog of observedDialogs) {
@@ -333,7 +321,7 @@ function App() {
         }
         const openDialog = dialogs.length > 0;
         // Size compact dialogs around their actual panel rather than a blanket
-        // 640px viewport. Full-height panels retain a stable viewport to avoid
+        // 640px viewport. Full-height panels retain a stable 480px viewport to avoid
         // feeding viewport-relative dimensions back into the resize protocol.
         const dialogHeight =
           selection.component === "panel"
@@ -345,35 +333,60 @@ function App() {
                     Math.ceil(dialog.getBoundingClientRect().height) + 80
                 )
               );
-        const openPopup = !!document.querySelector(
-          '[role="listbox"], [role="menu"], [data-state="open"][data-radix-popper-content-wrapper]'
+        const popups = Array.from(
+          document.querySelectorAll<HTMLElement>(POPUP_SELECTOR)
+        ).filter((popup) => popup.getBoundingClientRect().height > 0);
+        const open = popups.length > 0;
+        const baseRoom = popupRoom[selection.component] ?? 0;
+        const height = Math.min(
+          Math.max(
+            200,
+            overlay && openDialog ? Math.min(dialogHeight, 880) : 0,
+            natural
+          ),
+          1800
         );
-        const room = popupRoom[selection.component] ?? 0;
-        let height = Math.max(
-          // Reserve menu space before opening so the trigger and popup don't
-          // move halfway through their animation as the iframe grows.
-          ["split-button", "button-group"].includes(selection.component)
-            ? 420
-            : overlay && openDialog
-              ? Math.min(dialogHeight, 880)
-              : popup && openPopup && !room
-                ? 480
-                : 200,
-          // The content, plus the room its menu needs below it, so opening never resizes the preview.
-          Math.min(natural + room, 1800)
+        // The card is what the docs page shows; the content centres inside it whatever the iframe's height is.
+        const card = Math.max(240, Math.min(height, 880));
+        document.documentElement.style.setProperty(
+          "--preview-card",
+          `${card}px`
         );
-        // A menu taller than the reserve (more options through Customize) still fits: the document is as tall as it reaches.
-        if (room && openPopup)
-          height = Math.max(
-            height,
-            Math.min(document.documentElement.scrollHeight, 1800)
-          );
-        if (height !== last) {
-          last = height;
-          send("resize", { height });
+        const popupBottom = open
+          ? Math.max(
+              // scrollHeight, not the box: a popup capped to the viewport scrolls inside, and it is the full
+              // height that decides how much room it wants.
+              ...popups.map((popup) => {
+                const box = popup.getBoundingClientRect();
+                return (
+                  box.top +
+                  Math.max(box.height, popup.scrollHeight) +
+                  window.scrollY
+                );
+              })
+            )
+          : 0;
+        // A popup with no measured room (or a taller one than measured) makes the iframe taller once it is open.
+        const room = Math.min(
+          Math.max(baseRoom, open ? Math.ceil(popupBottom - card) + 16 : 0),
+          900
+        );
+        const key = `${height}|${room}|${open}`;
+        if (key !== last) {
+          last = key;
+          send("resize", { height, room, open });
         }
       });
     };
+    // A popup the reader leaves open and then clicks away from (in the docs page, outside this frame) would stay
+    // open over the page: closing it is what a click outside does everywhere else.
+    const dismiss = () => {
+      if (document.querySelector(POPUP_SELECTOR))
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+        );
+    };
+    window.addEventListener("blur", dismiss);
     const resize = new ResizeObserver(report);
     resize.observe(frame.current);
     const mutations = new MutationObserver(report);
@@ -387,6 +400,7 @@ function App() {
     report();
     document.fonts?.ready.then(report);
     return () => {
+      window.removeEventListener("blur", dismiss);
       resize.disconnect();
       mutations.disconnect();
       cancelAnimationFrame(scheduled);

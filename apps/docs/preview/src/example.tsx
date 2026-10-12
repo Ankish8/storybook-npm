@@ -22,6 +22,9 @@ const minHeight = Math.min(
   900
 );
 const parentOrigin = expectedParentOrigin(location, query.get("parentOrigin"));
+// What counts as an open popup: menus, listboxes, Radix popper content and the non-modal dialogs the pickers use.
+const POPUP_SELECTOR =
+  '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [role="dialog"][aria-modal="false"]';
 
 // Only a demo file that exists can be loaded: this glob is the whitelist for ?component= and ?example=.
 const loaders = import.meta.glob("../../examples/*/*.tsx") as Record<
@@ -88,7 +91,7 @@ function App() {
   React.useEffect(() => {
     const node = stage.current;
     if (!node) return;
-    let last = 0;
+    let last = "";
     let scheduled = 0;
     const observed = new Set<HTMLElement>();
     const report = () => {
@@ -97,7 +100,7 @@ function App() {
         // An open modal is fixed to the frame, so the frame has to grow to fit it; everything else is content-sized.
         const dialogs = Array.from(
           document.querySelectorAll<HTMLElement>(
-            '[role="dialog"], [role="alertdialog"]'
+            '[role="dialog"]:not([aria-modal="false"]), [role="alertdialog"]'
           )
         );
         for (const dialog of observed) {
@@ -122,16 +125,48 @@ function App() {
             )
           : 0;
         const natural = Math.ceil(node.getBoundingClientRect().height);
-        const height = Math.min(
-          Math.max(minHeight, natural, dialogHeight, 120),
-          1800
+        // The card the page shows is as tall as the content. A popup overflows it into `room`: the iframe is taller by
+        // that much (the manifest's minHeight is the viewport the demo needs) and the page clips it until one opens.
+        const height = Math.min(Math.max(natural, dialogHeight, 120), 1800);
+        const popups = Array.from(
+          document.querySelectorAll<HTMLElement>(POPUP_SELECTOR)
+        ).filter((popup) => popup.getBoundingClientRect().height > 0);
+        const open = popups.length > 0;
+        const reserve = Math.max(0, minHeight - height);
+        const popupBottom = open
+          ? Math.max(
+              // scrollHeight, not the box: a popup capped to the viewport scrolls inside, and it is the full
+              // height that decides how much room it wants.
+              ...popups.map((popup) => {
+                const box = popup.getBoundingClientRect();
+                return (
+                  box.top +
+                  Math.max(box.height, popup.scrollHeight) +
+                  window.scrollY
+                );
+              })
+            )
+          : 0;
+        const room = Math.min(
+          Math.max(reserve, open ? Math.ceil(popupBottom - height) + 16 : 0),
+          900
         );
-        if (height !== last) {
-          last = height;
-          send("resize", { height });
+        const key = `${height}|${room}|${open}`;
+        if (key !== last) {
+          last = key;
+          send("resize", { height, room, open });
         }
       });
     };
+    // A popup left open while the reader clicks elsewhere on the page (outside this frame) closes, as a click outside
+    // does everywhere else.
+    const dismiss = () => {
+      if (document.querySelector(POPUP_SELECTOR))
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+        );
+    };
+    window.addEventListener("blur", dismiss);
     const resize = new ResizeObserver(report);
     resize.observe(node);
     const mutations = new MutationObserver(report);
@@ -150,7 +185,7 @@ function App() {
         event.data?.type !== "request-size"
       )
         return;
-      last = 0;
+      last = "";
       report();
     };
     window.addEventListener("message", receive);
@@ -158,6 +193,7 @@ function App() {
     document.fonts?.ready.then(report);
     send("ready");
     return () => {
+      window.removeEventListener("blur", dismiss);
       resize.disconnect();
       mutations.disconnect();
       window.removeEventListener("message", receive);

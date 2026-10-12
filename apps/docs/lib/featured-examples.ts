@@ -29,7 +29,7 @@ export const featuredExamples: Record<string, string> = {
   // The three inline menu compositions require 940px.
   "dropdown-menu": "Overview",
   "empty-state": "Overview",
-  "file-upload": "AllVariants",
+  "file-upload": "Uploads",
   // Content states differ only in alt text; height comparisons stack large images.
   "image-media": "Overview",
   input: "AllVariants",

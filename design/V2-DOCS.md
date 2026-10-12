@@ -104,12 +104,22 @@ Blocks today (12): the six `Custom/Chat/*` components (Contact list item, Date d
 
 v2 is no longer in Storybook: `.storybook/main.ts` lists the v1 story directories explicitly and leaves out `src/components/ui/v2` and `src/docs/v2`, and `preview.ts` has no v2 container, CSS or decorator. The v2 story files stay in the repo because the docs site's preview runner renders them. If you add a new v1 story directory, add it to the list in `main.ts`.
 
-## The preview frame and open menus
+## The preview frame and open popups
 
-The hero preview is an iframe that reports its own height. A component whose menu opens inside the frame (Select, Select field, Creatable select, Multi-select, Creatable multi-select, Search filter, Dropdown menu) has to be tall enough for that menu before it opens, or opening it resizes the card, moves the content and clips the menu.
+A popup (menu, listbox, calendar, time list) overflows the preview card instead of leaving blank canvas for it. The hero preview and every example are iframes, and an iframe cannot draw outside its own box, so the card and the iframe are two different sizes:
 
-- `apps/docs/preview/src/main.tsx` holds `popupRoom`: pixels the open menu reaches below the story's content. The frame is `content + room` from the start, and `preview.css` (`html[data-popup]`) keeps the content at the top instead of centred. If a menu is ever taller than the reserve (for example after adding options in Customize) the frame grows to the document's height.
-- The numbers are measured, not guessed: open the hero story in a tall frame, open the trigger nearest the bottom, and take the menu's bottom edge minus the content's bottom edge, plus 24px of slack. Add the new component to `popupRoom` and to the `popup` list in the same file.
-- Split button and Button group keep a fixed 420px reserve. Tooltip opens inside its content and needs none.
+- The **card** is as tall as the content (at least 240px for the hero). The **iframe** is taller by `room` pixels, absolutely positioned over the card with a transparent background.
+- While no popup is open the iframe is clipped to the card with `clip-path: inset(0 0 <room>px 0)`. A clipped region neither paints nor takes pointer events (checked in Chrome), so the page content under it stays clickable. When the iframe reports `open: true` the clip is removed and the iframe goes above the page (`z-index: 30`), so the popup shows over whatever is below the card.
+- The iframe is already tall before anything opens, so a popup positions itself against a tall viewport and never flips upward for lack of space. Content centres inside the card, not the iframe: `preview.css` sets the body's `min-height` to `--preview-card`, which `main.tsx` writes from the same height it reports.
+- `main.tsx` and `example.tsx` send `{ height, room, open }` in the `resize` message (`height` is the card without the room). `open` is any element matching `POPUP_SELECTOR` (menus, listboxes, Radix popper content, non-modal dialogs). A popup taller than its room (more options through Customize, or a narrow column that stacks the layout) raises the room to the popup's full scroll height while it is open.
+- Clicking elsewhere on the page blurs the iframe window; both runtimes answer by sending Escape, so an open popup closes and the clip returns, as a click outside does everywhere else.
+- Modals, panels and toasts are real overlays: the card itself grows to fit them, as before.
+- The phone frame (Mobile) and the Customize workspace keep the old behaviour: the iframe is `height + room` and fully visible, because their canvas scrolls.
+
+Rooms for the hero preview live in `popupRoom` in `apps/docs/preview/src/main.tsx`. The numbers are measured, not guessed: open the hero story in a 893px-wide frame, open the trigger nearest the bottom, and take the popup's bottom edge minus the card's bottom edge, plus 24px of slack, rounded up to 8. A component that is not in the table gets room only while a popup is open. For examples the manifest's `minHeight` is the total viewport the demo needs; the card is the content, and the room is `minHeight` minus it.
+
+Rules that still apply:
+
+- Do not reserve space in a story for its popup (no `min-h-[520px]` wrappers): the card would grow to include it. The two picker stories had such wrappers and lost them.
 - Story galleries must not pin a field to a pixel width: use `width: 100%; max-width: <width>` and `min-w-0` on grid cells. A grid column sizes itself to its widest child, so a fixed 420px made the whole preview wider than the phone-width frame (the Mobile preview toggle is 390px).
 - When testing for horizontal overflow, do not use Chrome's `mobile` emulation: it widens the layout viewport to fit the content and hides the overflow. Fix the viewport width and compare `scrollWidth` with `innerWidth`.

@@ -232,6 +232,9 @@ export function ComponentPlayground({
   const [metadata, setMetadata] = useState<Metadata | null>(null);
   const [args, setArgs] = useState<Args>({});
   const [height, setHeight] = useState(300);
+  // Pixels the iframe is taller than the card, for an open popup to overflow into; popupOpen unclips them.
+  const [room, setRoom] = useState(0);
+  const [popupOpen, setPopupOpen] = useState(false);
   const [error, setError] = useState("");
   const [view, setView] = useState<"preview" | "code">("preview");
   const [sourceMode, setSourceMode] = useState<"component" | "story">(
@@ -277,6 +280,10 @@ export function ComponentPlayground({
     };
   }, [controlsOpen]);
   const [previewSize, setPreviewSize] = useState<"fit" | "mobile">("fit");
+  // The inline preview lets popups overflow its card; the phone frame and the Customize workspace keep the frame's own
+  // height (room included) because their canvas scrolls.
+  const overflowPreview = previewSize === "fit" && !controlsOpen;
+  const cardHeight = Math.max(240, Math.min(height, 880));
   const [activeSection, setActiveSection] = useState("preview");
   // A clicked contents entry stays selected until the reader scrolls or presses a key: a section too close to the page
   // end never reaches the top, so scroll position alone would highlight a neighbour.
@@ -338,9 +345,15 @@ export function ComponentPlayground({
           setMetadata((previous) =>
             previous ? { ...previous, argTypes: message.argTypes } : previous
           );
-      } else if (message.type === "resize" && Number.isFinite(message.height))
+      } else if (message.type === "resize" && Number.isFinite(message.height)) {
         setHeight(Math.min(1100, Math.max(200, message.height)));
-      else if (message.type === "error") setError(String(message.message));
+        setRoom(
+          Number.isFinite(message.room)
+            ? Math.min(900, Math.max(0, message.room))
+            : 0
+        );
+        setPopupOpen(message.open === true);
+      } else if (message.type === "error") setError(String(message.message));
     }
     window.addEventListener("message", receive);
     return () => window.removeEventListener("message", receive);
@@ -554,6 +567,9 @@ export function ComponentPlayground({
           hidden={view !== "preview"}
           className="preview-wrap"
           data-size={previewSize}
+          data-overflow={overflowPreview || undefined}
+          // The card is as tall as the content (the border adds 2px); the iframe is taller and clipped to it.
+          style={overflowPreview ? { height: cardHeight + 2 } : undefined}
         >
           {!metadata && !error && (
             <p className="preview-status" role="status">
@@ -577,11 +593,25 @@ export function ComponentPlayground({
                   frameOrigin
                 )
               }
-              style={{
-                height: Math.max(200, Math.min(height, 880)),
-                visibility: metadata ? "visible" : "hidden",
-                position: metadata ? "static" : "absolute",
-              }}
+              style={
+                overflowPreview
+                  ? {
+                      height: cardHeight + room,
+                      visibility: metadata ? "visible" : "hidden",
+                      // Clipped to the card (and click-through below it) until a popup opens, then the popup shows
+                      // over the page instead of leaving blank canvas for it.
+                      clipPath:
+                        room && !popupOpen
+                          ? `inset(0 0 ${room}px 0)`
+                          : undefined,
+                      zIndex: popupOpen ? 30 : 1,
+                    }
+                  : {
+                      height: Math.max(200, Math.min(cardHeight + room, 880)),
+                      visibility: metadata ? "visible" : "hidden",
+                      position: metadata ? "static" : "absolute",
+                    }
+              }
             />
           )}
         </div>

@@ -648,6 +648,28 @@ h3 {
   width: 100%;
   max-width: 100%;
 }
+/* The card is only as tall as the content; the iframe sits on top of it, taller, so an open popup can overflow the card
+   (the page clips the extra height until then). */
+.preview-wrap[data-overflow]:not([hidden]) {
+  display: block;
+}
+.preview-wrap[data-overflow] {
+  min-height: 0;
+  overflow: visible;
+  transition: height 240ms var(--docs-ease);
+}
+.preview-wrap[data-overflow] > .preview-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.preview-wrap[data-overflow] > .preview-status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+}
 .preview-wrap[data-size="mobile"] {
   overflow: auto;
   align-items: flex-start;
@@ -2114,24 +2136,36 @@ body[data-controls-open="true"] .arc-toc {
 .example-card {
   border: 1px solid #e8e8e8;
   border-radius: 20px;
-  overflow: hidden;
   background: #fff;
 }
+
+/* The card is as tall as the demo; the iframe sits on top of it, taller and clipped, so an open popup overflows the
+   card instead of leaving blank canvas for it. The corners are rounded here because the card no longer clips. */
 .example-preview {
   position: relative;
   background: var(--arc-canvas);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   min-width: 0;
+  border-radius: 19px 19px 0 0;
+  transition: height 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+.example-card > .example-code {
+  border-radius: 0 0 19px 19px;
+}
+.example-card > .example-code:only-child {
+  border-radius: 19px;
+}
+
 .example-frame {
   display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   max-width: 100%;
   border: 0;
   transition: height 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .example-status {
   position: absolute;
   inset: 0;

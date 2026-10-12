@@ -103,7 +103,12 @@ function ExampleFrame({
   const frame = useRef<HTMLIFrameElement>(null);
   const [src, setSrc] = useState("");
   const [origin, setOrigin] = useState("");
-  const [height, setHeight] = useState(example.minHeight ?? 160);
+  const [height, setHeight] = useState(160);
+  // Pixels the iframe is taller than the card, for an open popup to overflow into; open unclips them.
+  const [room, setRoom] = useState(
+    example.minHeight ? example.minHeight - 160 : 0
+  );
+  const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState("");
 
@@ -150,6 +155,12 @@ function ExampleFrame({
       const message = event.data;
       if (message.type === "resize" && Number.isFinite(message.height)) {
         setHeight(Math.min(1100, Math.max(120, message.height)));
+        setRoom(
+          Number.isFinite(message.room)
+            ? Math.min(900, Math.max(0, message.room))
+            : 0
+        );
+        setOpen(message.open === true);
         setReady(true);
       } else if (message.type === "ready") {
         frame.current?.contentWindow?.postMessage(
@@ -163,7 +174,7 @@ function ExampleFrame({
   }, [origin, slug, example.id]);
 
   return (
-    <div ref={holder} className="example-preview" style={{ minHeight: height }}>
+    <div ref={holder} className="example-preview" style={{ height }}>
       {!ready && !error && (
         <p className="example-status" role="status">
           Loading example…
@@ -187,7 +198,13 @@ function ExampleFrame({
               origin
             )
           }
-          style={{ height, visibility: ready && !error ? "visible" : "hidden" }}
+          style={{
+            height: height + room,
+            visibility: ready && !error ? "visible" : "hidden",
+            // Clipped to the card (and click-through below it) until a popup opens, then the popup shows over the page.
+            clipPath: room && !open ? `inset(0 0 ${room}px 0)` : undefined,
+            zIndex: open ? 30 : 1,
+          }}
         />
       )}
     </div>
