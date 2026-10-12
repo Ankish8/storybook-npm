@@ -238,6 +238,16 @@ const SelectField = React.forwardRef(
     );
     const selectedValue = isValueControlled ? value : uncontrolledValue;
 
+    // Render the selected label ourselves instead of letting Radix portal the
+    // item's bare text node into the trigger. Extensions that rewrite phone
+    // numbers move that text node, and React then crashes with
+    // "Failed to execute 'removeChild'" when the portal unmounts. Inside our
+    // own <span> they can only rewrite the span's content, and React removes
+    // the span itself.
+    const selectedLabel = selectedValue
+      ? options.find((o) => o.value === selectedValue)?.label
+      : undefined;
+
     // Combined value change handler that also fires onSelect with full option object.
     // When interceptValue returns false, onValueChange is skipped (only onSelect fires).
     const handleValueChange = React.useCallback(
@@ -401,7 +411,11 @@ const SelectField = React.forwardRef(
             aria-invalid={!!error}
             aria-describedby={ariaDescribedBy}
           >
-            <SelectValue placeholder={placeholder} />
+            <SelectValue placeholder={placeholder}>
+              {selectedLabel !== undefined ? (
+                <span>{selectedLabel}</span>
+              ) : undefined}
+            </SelectValue>
             {loading && (
               <Loader2 className="absolute right-8 size-4 animate-spin text-semantic-text-muted" />
             )}
