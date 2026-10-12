@@ -10,7 +10,12 @@ import {
   within,
 } from "storybook/test";
 import { useState } from "react";
-import { FileUpload, type FileUploadProps } from "./file-upload";
+import {
+  FileUpload,
+  type FileUploadHandler,
+  type FileUploadItem,
+  type FileUploadProps,
+} from "./file-upload";
 import { Button } from "./button";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
@@ -19,6 +24,44 @@ const sample = () =>
     type: "text/csv",
     lastModified: 1,
   });
+// A stand-in for a real upload: the bar fills over a couple of seconds, and a file with "fail" in its name is refused
+// the first time (so Retry has something to do) and accepted after that.
+const attempts = new Set<string>();
+const fakeUpload: FileUploadHandler = (item, { onProgress, signal }) =>
+  new Promise<void>((resolve, reject) => {
+    const refusing =
+      item.name.toLowerCase().includes("fail") && !attempts.has(item.id);
+    attempts.add(item.id);
+    let percent = 0;
+    const timer = window.setInterval(() => {
+      percent += 7 + Math.random() * 9;
+      if (refusing && percent > 55) {
+        window.clearInterval(timer);
+        // `Error` is a story export in this module, so the global one is reached explicitly.
+        reject(new globalThis.Error("Connection lost"));
+        return;
+      }
+      onProgress(Math.min(100, percent));
+      if (percent >= 100) {
+        window.clearInterval(timer);
+        resolve();
+      }
+    }, 260);
+    signal.addEventListener("abort", () => window.clearInterval(timer));
+  });
+// Rows that arrive with a status, as files uploaded earlier would.
+const earlier: FileUploadItem[] = [
+  { id: "e1", name: "brand-guidelines.pdf", size: 2400000, status: "uploaded" },
+  { id: "e2", name: "q3-report.xlsx", size: 640000, status: "uploaded" },
+  {
+    id: "e3",
+    name: "launch-video.mov",
+    size: 8600000,
+    status: "failed",
+    error: "Connection lost",
+  },
+];
+
 const meta: Meta<typeof FileUpload> = {
   title: "V2/Components/FileUpload",
   component: FileUpload,
@@ -34,6 +77,10 @@ const meta: Meta<typeof FileUpload> = {
         "maxSize",
         "disabled",
         "error",
+        "maxFiles",
+        "compactAt",
+        "dropLabel",
+        "note",
         "onFilesChange",
       ],
     },
@@ -54,6 +101,31 @@ const meta: Meta<typeof FileUpload> = {
             ["Drop zone", "—", "12px corners; dashed border; 24px padding"],
             ["File rows", "—", "8px corners; 12px padding"],
             ["Validation", "—", "Allowed extensions/MIME types and size limit"],
+            [
+              "Uploads",
+              "—",
+              "`onUpload` runs each file with a progress bar, a count, a drawn check on success, the reason on failure and a Retry pill; removing a row aborts it",
+            ],
+            [
+              "Drag light",
+              "—",
+              "A faint wash and a brighter stretch of the edge follow the pointer on a spring while a file is over the target; the dashes close, the target breathes, and `dropLabel` swaps the prompt",
+            ],
+            [
+              "Hover",
+              "—",
+              "Surface tint, darker dashes and the sheets fanning out; press changes colour only",
+            ],
+            [
+              "List",
+              "—",
+              "Image thumbnails, type icons, one tab stop per row action with ArrowUp/ArrowDown, Delete removes, paste adds, a polite status line announces additions and results",
+            ],
+            [
+              "Long lists",
+              "—",
+              "`maxFiles` refuses extras with a message; `compactAt` folds the prompt to a slim bar and unfolds it for a drag",
+            ],
           ],
           tokens: [
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
@@ -64,9 +136,16 @@ const meta: Meta<typeof FileUpload> = {
               "#27ABB8",
             ],
             ["Error", "--semantic-error-text", "#B42318", "#B42318"],
+            [
+              "Uploaded check",
+              "--semantic-success-primary",
+              "#17B26A",
+              "#17B26A",
+            ],
+            ["Progress fill", "--semantic-primary", "#343E55", "#343E55"],
           ],
           guidance:
-            "Files are held locally; this component does not upload them. onFilesChange receives accepted selections; onReject reports invalid files. Drop-zone geometry uses the v2 card/input language. The File Upload node exists in Figma, but its exact inner values were not verified after Chrome lost WebGL; see the completion notes.",
+            "Files are held locally unless you pass `onUpload`, which uploads each added file (progress, failure reason, Retry). onFilesChange receives accepted selections; onReject reports invalid files. Drop-zone geometry uses the v2 card/input language. The File Upload node exists in Figma, but its exact inner values were not verified after Chrome lost WebGL; see the completion notes.",
         }),
       },
     },
@@ -95,6 +174,10 @@ const meta: Meta<typeof FileUpload> = {
     maxSize: { control: "number" },
     disabled: { control: "boolean" },
     error: { control: "text" },
+    maxFiles: { control: "number" },
+    compactAt: { control: "number" },
+    dropLabel: { control: "text" },
+    note: { control: "text" },
   },
   render: function Render(args) {
     const [, updateArgs] = useArgs();
@@ -147,6 +230,40 @@ export const ImagesOnly: Story = {
       },
     },
   },
+};
+export const Uploads: Story = {
+  name: "Uploads, progress and retry",
+  args: {
+    label: "Launch assets",
+    helperText: "Files upload as soon as you add them.",
+    accept: "image/*,.pdf,video/*,.xlsx",
+    multiple: true,
+    maxFiles: 8,
+    note: "PDF, images or video up to 10 MB",
+    value: undefined,
+  },
+  parameters: {
+    ...gallery(
+      ["multiple", "value"],
+      "A file with fail in its name is refused the first time, so Retry has something to do."
+    ),
+    docs: {
+      description: {
+        story:
+          "`onUpload` runs each added file. Rows show a count and a bar while uploading, a drawn check when done, and the reason with a Retry pill when it fails. Add a file named `fail-demo.pdf` to see a failure; rows above arrive already finished.",
+      },
+    },
+  },
+  render: (args) => (
+    <div className="mx-auto w-[440px] max-w-full">
+      <FileUpload
+        {...args}
+        value={undefined}
+        defaultItems={earlier}
+        onUpload={fakeUpload}
+      />
+    </div>
+  ),
 };
 export const Disabled: Story = { args: { disabled: true } };
 export const Error: Story = {
