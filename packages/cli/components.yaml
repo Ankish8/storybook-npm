@@ -2617,6 +2617,7 @@ components:
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
     internalDependencies:
       - v2-input
 
@@ -2692,6 +2693,7 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+      - "motion@^14.0.0"
 
   v2-stepper:
     description: "Step progress with numbered or icon markers"
@@ -2831,6 +2833,7 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+      - "motion@^14.0.0"
     internalDependencies:
       - v2-button
 

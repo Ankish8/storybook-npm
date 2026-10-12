@@ -52,5 +52,29 @@
     "component": "text-field",
     "match": "button[aria-label=Clear input tabindex=-1 type=button]",
     "reason": "Intentional accessibility change in the Arc-parity pass: the clear button is now keyboard-reachable (tabindex 0) while it is visible, instead of tabindex -1. Label, type, click behaviour and the focus return to the input are unchanged."
+  },
+  {
+    "gate": "stories",
+    "component": "multi-select",
+    "match": "span[aria-label=Remove ",
+    "reason": "Intentional accessibility change in the keyboard pass: the chip remove crosses are pointer-only (tabindex -1) and the chips sit in an aria-hidden group, because a button nested in the trigger button cannot be reached by keyboard or assistive tech. role=\"button\" and aria-label=\"Remove <label>\" are unchanged, so getByLabelText and click handlers keep working. Keyboard users drop the last pick with Backspace/Delete on the trigger or toggle rows in the list, and the picks are read out as text. getByRole('button', { name: 'Remove …' }) no longer finds them, because they are aria-hidden."
+  },
+  {
+    "gate": "stories",
+    "component": "multi-select",
+    "match": "span[aria-label=Clear all role=button tabindex=0]",
+    "reason": "Intentional accessibility change in the keyboard pass: Clear all is a real <button type=\"button\" aria-label=\"Clear all\"> beside the trigger instead of a span[role=button] nested inside it. Label, click behaviour, showClearAll and the disabled guard are unchanged; it is reached by Tab right after the trigger."
+  },
+  {
+    "gate": "stories",
+    "component": "number-step-field",
+    "match": "inputmode=decimal",
+    "reason": "Intentional: the field is integer-only (a decimal point is refused, where v1 silently floored it), so the on-screen keyboard is numeric instead of decimal. type=number, min, max, step, value and aria-label on the input are unchanged."
+  },
+  {
+    "gate": "stories",
+    "component": "number-step-field",
+    "match": "button[aria-label=Increase value type=button]",
+    "reason": "Intentional accessibility change: without incrementAriaLabel / decrementAriaLabel the stepper buttons are named after the field (\"Increase Delay hours\") instead of reading \"Increase value\" on every field of a form. Passing the labels explicitly (as the v1 tests and BotFollowUps do) keeps the exact text; pass \"Increase value\" / \"Decrease value\" to restore the old default."
   }
 ]
