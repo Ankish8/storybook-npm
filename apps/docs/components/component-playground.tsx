@@ -1,5 +1,6 @@
 "use client";
 
+import { docsPath } from "../lib/paths";
 import {
   useEffect,
   useLayoutEffect,
@@ -253,7 +254,7 @@ export function ComponentPlayground({
   const preview = useMemo(() => {
     if (!browserOrigin) return { src: "", origin: "", story: "Overview" };
     const origin = process.env.NEXT_PUBLIC_PREVIEW_ORIGIN || browserOrigin;
-    const url = new URL("/preview/index.html", origin);
+    const url = new URL(docsPath("/preview/index.html"), origin);
     const story =
       new URL(window.location.href).searchParams.get("example") ||
       featuredExamples[slug] ||
@@ -394,9 +395,14 @@ export function ComponentPlayground({
   useEffect(() => {
     if (view !== "code") return;
     const controller = new AbortController();
-    fetch(`/api/source?slug=${encodeURIComponent(slug)}&mode=${sourceMode}`, {
-      signal: controller.signal,
-    })
+    fetch(
+      docsPath(
+        `/api/source?slug=${encodeURIComponent(slug)}&mode=${sourceMode}`
+      ),
+      {
+        signal: controller.signal,
+      }
+    )
       .then(async (response) => {
         if (!response.ok) throw new Error("Source is unavailable.");
         return response.json();

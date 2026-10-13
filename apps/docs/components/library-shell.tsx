@@ -1,5 +1,6 @@
 "use client";
 
+import { docsPath } from "../lib/paths";
 import Link from "next/link";
 import { SelectionMarker } from "./selection-marker";
 import { usePathname, useRouter } from "next/navigation";
@@ -404,14 +405,14 @@ export function LibraryShell({ children }: { children: ReactNode }) {
             >
               <img
                 className="arc-brand-symbol"
-                src="/brand/myoperator-symbol.svg"
+                src={docsPath("/brand/myoperator-symbol.svg")}
                 alt=""
                 width="28"
                 height="29"
               />
               <img
                 className="arc-brand-wordmark"
-                src="/brand/myoperator-wordmark.svg"
+                src={docsPath("/brand/myoperator-wordmark.svg")}
                 alt="MyOperator"
                 width="104"
                 height="21"

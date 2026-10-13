@@ -96,3 +96,9 @@ Its default port is 6006. Another existing local instance may use a different po
 The custom shell was compared with UIArc through computer use in Chrome. All 56 featured component pages loaded without page overflow at the observed 1280px browser width, and all 789 original examples rendered without preview errors. Search navigation, a 390px component viewport, expansion/Escape, and source viewing were checked. A real keyboard check exposed a Controls round-trip typing issue; the host now updates immediately and preserves edits until the preview acknowledges them.
 
 Catalog/source/search checks, both typechecks, ten adapter tests and the production build passed. See `verification/custom-library-report.json` for the recorded sweep. This is a render and selected interaction review, not a rerun of every Storybook play function. Full mobile-page and reduced-motion browser emulation were not established. Nothing has been committed, deployed or published by this docs task.
+
+## Production mount
+
+The `myoperator-design-system` Vercel project builds `apps/docs` with `NEXT_PUBLIC_DOCS_BASE_PATH=/design-system`. Its isolated Vite previews use the same prefix; Next Link prefixes navigation, while the docs helper prefixes assets, source requests and iframe URLs. Local `npm run docs` retains its root paths. `apps/docs/vercel.json` installs both package sets and runs the preview-first production build. Source files outside the app root are enabled for the library and traced source endpoint.
+
+The existing `myoperator-ai-builders` project owns `design.myoperator.com`; a project routing rule mounts only `/design-system` and its descendants to `myoperator-design-system.vercel.app`. The builder homepage remains served by its existing deployment. Storybook stays in `shadcn-react-app` and excludes v2 stories; canonical v2 story files remain available to the docs runtime.

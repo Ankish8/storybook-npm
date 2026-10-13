@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "node scripts/build.mjs",
+  "installCommand": "npm ci --prefix ../.. && npm ci",
+  "env": { "NEXT_PUBLIC_DOCS_BASE_PATH": "/design-system" },
+  "build": { "env": { "NEXT_PUBLIC_DOCS_BASE_PATH": "/design-system" } }
+}

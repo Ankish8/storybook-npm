@@ -1,3 +1,4 @@
+import { docsPath } from "@docs/lib/paths";
 import { notFound, permanentRedirect } from "next/navigation";
 import { components, entryHref, getComponent } from "@docs/lib/catalog";
 import { EntryPage } from "@docs/components/entry-page";
@@ -19,9 +20,10 @@ export default async function ComponentPage({
   const component = getComponent((await params).slug);
   if (!component) notFound();
   if (component.slug === "typography")
-    permanentRedirect("/foundations#typography");
-  if (component.aliasOf) permanentRedirect(entryHref(component));
+    permanentRedirect(docsPath("/foundations#typography"));
+  if (component.aliasOf) permanentRedirect(docsPath(entryHref(component)));
   // A block moved out of Components keeps working at its old address.
-  if (component.kind === "block") permanentRedirect(entryHref(component));
+  if (component.kind === "block")
+    permanentRedirect(docsPath(entryHref(component)));
   return <EntryPage entry={component} />;
 }

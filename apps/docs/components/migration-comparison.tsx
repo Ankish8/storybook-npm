@@ -1,5 +1,6 @@
 "use client";
 
+import { docsPath } from "../lib/paths";
 import {
   useCallback,
   useEffect,
@@ -63,7 +64,7 @@ function ComparisonFrame({
   const source = useMemo(() => {
     if (!active || !origin) return null;
     const url = new URL(
-      "/preview/index.html",
+      docsPath("/preview/index.html"),
       process.env.NEXT_PUBLIC_PREVIEW_ORIGIN || origin
     );
     url.searchParams.set("component", component);

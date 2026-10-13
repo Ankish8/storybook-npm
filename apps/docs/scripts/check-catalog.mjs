@@ -204,7 +204,7 @@ const typographyPage = await readFile(
 );
 assert.match(
   typographyPage,
-  /component\.slug === "typography"\)\s*permanentRedirect\("\/foundations#typography"\)/
+  /component\.slug === "typography"\)\s*permanentRedirect\(docsPath\("\/foundations#typography"\)\)/
 );
 assert.match(
   await readFile(join(appRoot, "app/foundations/page.tsx"), "utf8"),

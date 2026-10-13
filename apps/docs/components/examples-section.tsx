@@ -1,5 +1,6 @@
 "use client";
 
+import { docsPath } from "../lib/paths";
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Check, Copy } from "lucide-react";
 import { fullscreenFrameStyle, useFrameFullscreen } from "./frame-fullscreen";
@@ -120,7 +121,7 @@ function ExampleFrame({
     const start = () => {
       const previewOrigin =
         process.env.NEXT_PUBLIC_PREVIEW_ORIGIN || window.location.origin;
-      const url = new URL("/preview/example.html", previewOrigin);
+      const url = new URL(docsPath("/preview/example.html"), previewOrigin);
       url.searchParams.set("component", slug);
       url.searchParams.set("example", example.id);
       url.searchParams.set("parentOrigin", window.location.origin);

@@ -1,0 +1,15 @@
+dist/
+storybook-static/
+coverage/
+playwright-report/
+test-results/
+packages/*/dist/
+apps/docs/public/preview/
+tools/
+twins/
+design/*
+!design/verify/
+design/verify/*
+!design/verify/merged-components.json
+**/fonts/timeless/
+**/.env*

@@ -1,4 +1,5 @@
 "use client";
+import { docsPath } from "../lib/paths";
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
 export function PageActions({
@@ -18,7 +19,9 @@ export function PageActions({
       let text = command;
       if (mode === "page") {
         const response = await fetch(
-          `/api/source?slug=${encodeURIComponent(slug)}&mode=component`
+          docsPath(
+            `/api/source?slug=${encodeURIComponent(slug)}&mode=component`
+          )
         );
         if (!response.ok) throw new Error("Source unavailable");
         const data = await response.json();

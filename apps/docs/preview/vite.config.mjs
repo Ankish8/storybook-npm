@@ -36,7 +36,7 @@ const watchExamples = {
 
 export default defineConfig({
   root: here,
-  base: "/preview/",
+  base: `${process.env.NEXT_PUBLIC_DOCS_BASE_PATH || ""}/preview/`,
   plugins: [
     legacyStories({ repository, tailwindcss, rootTailwind }),
     react(),
