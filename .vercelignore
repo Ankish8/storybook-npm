@@ -7,9 +7,9 @@ packages/*/dist/
 apps/docs/public/preview/
 tools/
 twins/
-design/*
-!design/verify/
-design/verify/*
-!design/verify/merged-components.json
+design/arc-review/
+design/review/
+design/figma/
+design/figma-reports/
 **/fonts/timeless/
 **/.env*
