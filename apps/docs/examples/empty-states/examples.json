@@ -1,0 +1,35 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Tabbed states",
+      "description": "Switch between the four views with the pill tabs. Without onAction, no preset recovery button is rendered."
+    },
+    {
+      "id": "recovery",
+      "title": "Local recovery actions",
+      "description": "Clear filters, reconnect, refresh and go back change this local demo. Your app owns the actual data or request."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled view",
+      "description": "Use value and onValueChange for external selection. A selected view does not run a recovery action."
+    },
+    {
+      "id": "custom-slots",
+      "title": "Custom copy, icon and action",
+      "description": "Override only the states you need. Custom actions replace the preset button; null suppresses it."
+    },
+    {
+      "id": "sizes",
+      "title": "Both sizes",
+      "description": "Default preserves the full view. sm uses the compact EmptyState treatment inside the same shell."
+    },
+    {
+      "id": "rtl",
+      "title": "Right to left",
+      "description": "dir reaches the tab rail and panel. Keyboard navigation follows the underlying Tabs behavior."
+    }
+  ]
+}

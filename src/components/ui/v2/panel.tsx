@@ -13,7 +13,7 @@ const useBrowserLayoutEffect =
  * Panel root variants
  */
 const panelVariants = cva(
-  "border-l border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] transition-[width,opacity] motion-reduce:[transition-property:opacity] motion-reduce:[transition-duration:120ms] motion-reduce:[transition-delay:0ms] motion-reduce:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] shrink-0",
+  "min-h-0 min-w-0 max-w-full shrink-0 border-l border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_8px_24px_color-mix(in_srgb,var(--semantic-text-primary)_8%,transparent)] transition-[width,opacity] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
   {
     variants: {
       size: {
@@ -42,7 +42,7 @@ export interface PanelProps
   open?: boolean;
   /** Panel title displayed in the header */
   title?: string;
-  /** Callback when close button is clicked */
+  /** Requests closing from the close button or an unhandled Escape. The parent owns open. */
   onClose?: () => void;
   /** Optional footer content (e.g., action buttons) */
   footer?: React.ReactNode;
@@ -62,7 +62,7 @@ export interface PanelProps
  * </Panel>
  * ```
  */
-const Panel = React.forwardRef(
+const Panel = React.forwardRef<HTMLElement, PanelProps>(
   (
     {
       open = true,
@@ -74,76 +74,120 @@ const Panel = React.forwardRef(
       className,
       children,
       "aria-label": ariaLabel,
+      "aria-hidden": ariaHidden,
+      hidden,
       onKeyDown,
       ...props
     }: PanelProps,
-    ref: React.Ref<HTMLElement>
+    ref
   ) => {
     const resolvedSize = size ?? "default";
     const widthClass = panelWidths[resolvedSize];
+    const rootRef = React.useRef<HTMLElement | null>(null);
     const innerRef = React.useRef<HTMLDivElement>(null);
+    const nativeInert = "inert" in props && props.inert === true;
+    const available =
+      open &&
+      !hidden &&
+      !nativeInert &&
+      ariaHidden !== true &&
+      ariaHidden !== "true";
+
+    const setRef = React.useCallback(
+      (element: HTMLElement | null) => {
+        rootRef.current = element;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLElement | null) => void | (() => void)
+          )(element);
+          if (typeof cleanup === "function") {
+            return () => {
+              rootRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = element;
+      },
+      [ref]
+    );
 
     useBrowserLayoutEffect(() => {
+      // Include the aside itself: consumers can make it focusable with tabIndex.
+      rootRef.current?.toggleAttribute("inert", !open || nativeInert);
       innerRef.current?.toggleAttribute("inert", !open);
-    }, [open]);
+    }, [open, nativeInert]);
 
     // Capture the opener once and return focus only if this panel still owns it.
     React.useEffect(() => {
-      if (!open) return;
+      if (!available) return;
+      const panel = rootRef.current;
+      const doc = panel?.ownerDocument;
+      if (!panel || !doc) return;
       const opener =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
+        doc.activeElement instanceof HTMLElement &&
+        !panel.contains(doc.activeElement)
+          ? doc.activeElement
           : null;
-      const panel = innerRef.current;
-      panel?.focus({ preventScroll: true });
+      // Respect a child's autoFocus and an already focused nested panel.
+      if (!panel.contains(doc.activeElement)) {
+        innerRef.current?.focus({ preventScroll: true });
+      }
       return () => {
         if (
           opener?.isConnected &&
-          (panel?.contains(document.activeElement) ||
-            document.activeElement === document.body)
+          !opener.closest("[inert], [hidden]") &&
+          (panel.contains(doc.activeElement) || doc.activeElement === doc.body)
         ) {
           opener.focus({ preventScroll: true });
         }
       };
-    }, [open]);
+    }, [available]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
       onKeyDown?.(e);
-      if (!e.defaultPrevented && open && e.key === "Escape" && onClose) {
+      if (
+        !e.defaultPrevented &&
+        available &&
+        e.key === "Escape" &&
+        !e.nativeEvent.isComposing &&
+        onClose &&
+        e.target instanceof Element &&
+        e.currentTarget.contains(e.target as Node) &&
+        (e.target as Element).closest("[data-panel-root]") === e.currentTarget
+      ) {
+        // React events from portals still bubble through the panel. Only handle
+        // events from this panel's DOM, and let nested panels own their Escape.
+        e.preventDefault();
         onClose();
       }
     };
 
     return (
       <aside
-        ref={ref}
+        ref={setRef}
         className={cn(
           panelVariants({ size }),
-          // Arc's drawer: the panel settles on a critically damped spring (about 460ms) and is opaque the whole
-          // way in; it leaves faster (240ms) and only fades over the last 35% so its shadow goes with it.
           open
-            ? cn(
-                widthClass,
-                "opacity-100 [transition-duration:460ms,0ms] [transition-timing-function:linear(0_0%,0.0288_4%,0.0974_8%,0.186_12%,0.2816_16%,0.3764_20%,0.4656_24%,0.5468_28%,0.6189_32%,0.6819_36%,0.7361_40%,0.7822_44%,0.821_48%,0.8535_52%,0.8806_56%,0.9029_60%,0.9213_64%,0.9364_68%,0.9487_72%,0.9587_76%,0.9668_80%,0.9734_84%,0.9787_88%,0.983_92%,0.9864_96%,1_100%),linear]"
-              )
-            : "w-0 border-l-0 opacity-0 [transition-duration:240ms,84ms] [transition-delay:0ms,156ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),linear]",
+            ? cn(widthClass, "opacity-100 [transition-duration:240ms]")
+            : "w-0 border-l-0 opacity-0 pointer-events-none [transition-duration:180ms]",
           className
         )}
-        aria-label={ariaLabel ?? title}
-        aria-hidden={!open}
-        onKeyDown={handleKeyDown}
         {...props}
+        data-panel-root=""
+        aria-label={ariaLabel ?? title}
+        aria-hidden={open ? (ariaHidden ?? false) : true}
+        hidden={hidden}
+        onKeyDown={handleKeyDown}
       >
         <div
           ref={innerRef}
           tabIndex={-1}
-          className={cn(widthClass, "flex flex-col h-full outline-none")}
+          className="flex h-full min-h-0 min-w-0 w-full flex-col outline-none"
         >
-          {/* Header: Arc's drawer header (24px padding, 20px gap, 18px/1.4 title, 32px bordered close) */}
           {header ?? (
-            <div className="flex shrink-0 items-start gap-5 border-b border-solid border-semantic-border-layout p-6">
+            <div className="flex shrink-0 items-center gap-4 border-b border-solid border-semantic-border-layout p-4 sm:p-6">
               {title && (
-                <span className="min-w-0 flex-1 break-words text-lg font-medium leading-[1.4] text-[var(--v2-text-primary,#484848)]">
+                <span className="min-w-0 flex-1 break-words text-lg font-medium leading-[1.4] text-semantic-text-primary">
                   {title}
                 </span>
               )}
@@ -151,24 +195,27 @@ const Panel = React.forwardRef(
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={onClose}
+                  type="button"
+                  onClick={(event) => {
+                    if (!event.defaultPrevented && available) onClose();
+                  }}
                   aria-label="Close"
-                  className="-mt-[3.4px] size-8 shrink-0 rounded-md border-semantic-border-layout bg-[color-mix(in_oklab,var(--semantic-bg-ui,#F5F5F5)_65%,transparent)] p-0 text-[var(--v2-text-secondary,#5E5E5E)] shadow-none [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+                  className="ml-auto size-8 shrink-0 rounded-md border-semantic-border-layout bg-semantic-bg-subtle p-0 text-semantic-text-secondary shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-semantic-text-primary [@media(pointer:coarse)]:size-11"
                 >
-                  <X className="size-4" strokeWidth={1.75} />
+                  <X className="size-4" strokeWidth={1.75} aria-hidden="true" />
                 </Button>
               )}
             </div>
           )}
 
           {/* Body */}
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
             {children}
           </div>
 
           {/* Footer */}
           {footer && (
-            <div className="flex gap-2 px-6 py-4 shrink-0 border-t border-solid border-semantic-border-layout">
+            <div className="flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-solid border-semantic-border-layout px-4 py-4 sm:px-6">
               {footer}
             </div>
           )}

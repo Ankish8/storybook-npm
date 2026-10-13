@@ -1,7 +1,14 @@
 import "@testing-library/jest-dom/vitest";
 import * as React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   Tooltip,
@@ -182,13 +189,13 @@ describe("Tooltip", () => {
       expect(tooltip).toHaveClass(
         "data-[state=instant-open]:pointer-events-auto"
       );
-      expect(tooltip).toHaveClass("bg-semantic-info-surface");
-      expect(tooltip).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
-      expect(tooltip).toHaveClass("text-sm");
-      expect(tooltip).toHaveClass("leading-[1.4]");
+      expect(tooltip).toHaveClass("bg-semantic-bg-secondary");
+      expect(tooltip).toHaveClass("text-semantic-text-inverted");
+      expect(tooltip).toHaveClass("text-xs");
+      expect(tooltip).toHaveClass("leading-5");
       expect(tooltip).toHaveClass("rounded-md");
-      expect(tooltip).toHaveClass("px-4");
-      expect(tooltip).toHaveClass("py-3");
+      expect(tooltip).toHaveClass("px-3");
+      expect(tooltip).toHaveClass("py-2");
       expect(tooltip).toHaveClass("max-w-[15rem]");
     });
   });
@@ -306,7 +313,9 @@ describe("Tooltip", () => {
 
       await waitFor(() => {
         const arrow = screen.getByTestId("arrow");
-        expect(arrow).toHaveClass("fill-semantic-info-surface");
+        expect(arrow).toHaveClass(
+          "fill-[var(--tooltip-arrow-fill,var(--semantic-bg-secondary))]"
+        );
       });
     });
 
@@ -455,95 +464,495 @@ describe("Tooltip", () => {
   });
 });
 
-describe("Tooltip v2 refresh", () => {
-  it("only fades (120ms, no travel or scale) when Radix opens it inside the skip-delay window or on keyboard focus", () => {
-    renderTooltip(
-      <Tooltip defaultOpen>
-        <TooltipTrigger>Trigger</TooltipTrigger>
-        <TooltipContent>Help</TooltipContent>
-      </Tooltip>
-    );
-    const content = getTooltipContent() as HTMLElement;
-    // A tooltip that is open from the start is not delayed, so Radix reports `instant-open`.
-    expect(content).toHaveAttribute("data-state", "instant-open");
-    expect(content).toHaveClass(
-      "data-[state=instant-open]:motion-safe:[animation-duration:120ms]"
-    );
-    // The 0.97 grow and the 3px rise only exist on the delayed path; fade/zoom values are motion-safe, or the
-    // motion-safe animate-in reset cancels them.
-    expect(content).toHaveClass(
-      "motion-safe:fade-in-0",
-      "data-[state=delayed-open]:motion-safe:zoom-in-[0.97]",
-      "data-[state=delayed-open]:data-[side=top]:slide-in-from-bottom-[3px]",
-      "data-[state=closed]:motion-safe:fade-out-0",
-      "data-[state=closed]:motion-safe:zoom-out-[0.98]"
-    );
-    expect(content).not.toHaveClass("fade-in-0");
-    // 160ms in on the delayed path, 120ms out.
-    expect(content).toHaveClass(
-      "motion-safe:[animation-duration:160ms]",
-      "data-[state=closed]:motion-safe:[animation-duration:120ms]"
-    );
-  });
+const mockTouchMode = () => {
+  vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+    matches: query === "(hover: none)" || query === "(pointer: coarse)",
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }));
+};
 
-  it("opens after Arc's 250ms delay (Radix defaults to 700ms): not open right after hover, open later", async () => {
-    const user = userEvent.setup();
-    render(
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>Trigger</TooltipTrigger>
-          <TooltipContent>Help</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
-    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.getByRole("tooltip")).toBeInTheDocument(),
-      { timeout: 2000 }
-    );
-    // Opened through the delay path, so it keeps the 160ms grow-in.
-    expect(getTooltipContent()).toHaveAttribute("data-state", "delayed-open");
-  });
-
-  it("draws a 1px edge so the pale surface does not melt into a white page", () => {
-    renderTooltip(
-      <Tooltip defaultOpen>
-        <TooltipTrigger>Trigger</TooltipTrigger>
-        <TooltipContent>Help</TooltipContent>
-      </Tooltip>
-    );
-    const content = getTooltipContent();
-    expect(content).toHaveClass("border", "border-solid", "border-black/5");
-    // Arc's raised shadow sits alongside it.
-    expect(content?.className).toContain(
-      "shadow-[0_6px_18px_rgba(0,0,0,0.065)"
-    );
-  });
-
-  it("lets a caller restyle the surface (the dark disabled-row tooltip in MultiSelect)", () => {
-    renderTooltip(
-      <Tooltip defaultOpen>
-        <TooltipTrigger>Trigger</TooltipTrigger>
-        <TooltipContent className="bg-semantic-primary">Help</TooltipContent>
-      </Tooltip>
-    );
-    expect(getTooltipContent()).toHaveClass("bg-semantic-primary");
+beforeEach(() => {
+  window.matchMedia = (query) => ({
+    matches: query === "(hover: hover)",
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
   });
 });
 
-describe("TooltipProvider delay", () => {
-  it("lets a TooltipProvider delayDuration override the 250ms default", async () => {
+async function tap(trigger: HTMLElement) {
+  fireEvent.pointerDown(trigger, { pointerType: "touch", button: 0 });
+  fireEvent.pointerUp(trigger, { pointerType: "touch", button: 0 });
+  act(() => trigger.focus());
+  fireEvent.click(trigger);
+  await act(async () => {});
+}
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+});
+
+describe("Tooltip compatibility and dismissal", () => {
+  it("preserves React 19 callback-ref cleanup for trigger and content", () => {
+    const triggerCleanup = vi.fn();
+    const contentCleanup = vi.fn();
+    const triggerRef = vi.fn((node: HTMLButtonElement | null) =>
+      node ? triggerCleanup : undefined
+    );
+    const contentRef = vi.fn((node: HTMLDivElement | null) =>
+      node ? contentCleanup : undefined
+    );
+    const { unmount } = renderTooltip(
+      <Tooltip defaultOpen>
+        <TooltipTrigger ref={triggerRef}>Help</TooltipTrigger>
+        <TooltipContent ref={contentRef}>Details</TooltipContent>
+      </Tooltip>
+    );
+    expect(triggerRef).toHaveBeenCalledWith(screen.getByRole("button"));
+    expect(contentRef).toHaveBeenCalledWith(getTooltipContent());
+    // Radix can reattach its anchor while registering it. The active attachment
+    // must still receive exactly one cleanup when the consumer unmounts it.
+    const triggerCleanupsBeforeUnmount = triggerCleanup.mock.calls.length;
+    const contentCleanupsBeforeUnmount = contentCleanup.mock.calls.length;
+    unmount();
+    expect(triggerCleanup).toHaveBeenCalledTimes(
+      triggerCleanupsBeforeUnmount + 1
+    );
+    expect(contentCleanup).toHaveBeenCalledTimes(
+      contentCleanupsBeforeUnmount + 1
+    );
+  });
+
+  it("dismisses the tooltip before its parent dialog and preserves trigger focus", async () => {
     const user = userEvent.setup();
+    renderTooltip(
+      <DialogPrimitive.Root defaultOpen>
+        <DialogPrimitive.Portal>
+          <DialogPrimitive.Content>
+            <DialogPrimitive.Title>Assignment</DialogPrimitive.Title>
+            <DialogPrimitive.Description>
+              Choose an owner.
+            </DialogPrimitive.Description>
+            <button>Stay in dialog</button>
+            <Tooltip>
+              <TooltipTrigger>Owner help</TooltipTrigger>
+              <TooltipContent>Owner details</TooltipContent>
+            </Tooltip>
+          </DialogPrimitive.Content>
+        </DialogPrimitive.Portal>
+      </DialogPrimitive.Root>
+    );
+    await user.tab();
+    const trigger = screen.getByRole("button", { name: "Owner help" });
+    expect(trigger).toHaveFocus();
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("dialog", { name: "Assignment" })
+    ).toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("restores trigger focus from the existing controlled tour composition", async () => {
+    const user = userEvent.setup();
+    function Tour() {
+      const [open, setOpen] = React.useState(true);
+      return (
+        <Tooltip
+          open={open}
+          onOpenChange={(next) => {
+            if (next) setOpen(true);
+          }}
+        >
+          <TooltipTrigger>Tour trigger</TooltipTrigger>
+          <TooltipContent
+            role="dialog"
+            aria-label="Tour details"
+            onEscapeKeyDown={() => setOpen(false)}
+          >
+            <button>Next step</button>
+          </TooltipContent>
+        </Tooltip>
+      );
+    }
+    renderTooltip(<Tour />);
+    await user.tab();
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Next step" })).toHaveFocus();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Tour trigger" })).toHaveFocus();
+  });
+
+  it("keeps the 700ms Provider default and gives keyboard focus immediate help", async () => {
+    vi.useFakeTimers();
     render(
-      <TooltipProvider delayDuration={0}>
+      <TooltipProvider>
         <Tooltip>
-          <TooltipTrigger>Trigger</TooltipTrigger>
+          <TooltipTrigger>Timed help</TooltipTrigger>
           <TooltipContent>Help</TooltipContent>
         </Tooltip>
       </TooltipProvider>
     );
-    await user.hover(screen.getByRole("button", { name: "Trigger" }));
-    await waitFor(() => expect(screen.getByRole("tooltip")).toBeInTheDocument());
+    const trigger = screen.getByRole("button", { name: "Timed help" });
+    fireEvent.pointerMove(trigger, { pointerType: "mouse" });
+    act(() => vi.advanceTimersByTime(699));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    expect(getTooltipContent()).toHaveAttribute("data-state", "delayed-open");
+    fireEvent.keyDown(document, { key: "Escape" });
+    fireEvent.focus(trigger);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    expect(getTooltipContent()).toHaveAttribute("data-state", "instant-open");
+  });
+
+  it("lets a Root delay override its Provider delay", () => {
+    vi.useFakeTimers();
+    render(
+      <TooltipProvider delayDuration={500}>
+        <Tooltip delayDuration={75}>
+          <TooltipTrigger>Short delay</TooltipTrigger>
+          <TooltipContent>Help</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+    fireEvent.pointerMove(screen.getByRole("button"), { pointerType: "mouse" });
+    act(() => vi.advanceTimersByTime(74));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    act(() => vi.advanceTimersByTime(1));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+  });
+
+  it("keeps Provider skipDelayDuration when moving to the next trigger", () => {
+    vi.useFakeTimers();
+    render(
+      <TooltipProvider delayDuration={400} skipDelayDuration={300}>
+        {["First", "Second"].map((label) => (
+          <Tooltip key={label} disableHoverableContent>
+            <TooltipTrigger>{label}</TooltipTrigger>
+            <TooltipContent>{label} help</TooltipContent>
+          </Tooltip>
+        ))}
+      </TooltipProvider>
+    );
+    fireEvent.pointerMove(screen.getByRole("button", { name: "First" }), {
+      pointerType: "mouse",
+    });
+    act(() => vi.advanceTimersByTime(400));
+    expect(screen.getByRole("tooltip")).toHaveTextContent("First help");
+    fireEvent.pointerLeave(screen.getByRole("button", { name: "First" }), {
+      pointerType: "mouse",
+    });
+    act(() => vi.advanceTimersByTime(100));
+    fireEvent.pointerMove(screen.getByRole("button", { name: "Second" }), {
+      pointerType: "mouse",
+    });
+    expect(screen.getByRole("tooltip")).toHaveTextContent("Second help");
+    expect(getTooltipContent()).toHaveAttribute("data-state", "instant-open");
+  });
+
+  it("keeps Provider disableHoverableContent dismissal", async () => {
+    const user = userEvent.setup();
+    renderTooltip(
+      <Tooltip>
+        <TooltipTrigger>Hover help</TooltipTrigger>
+        <TooltipContent>Help</TooltipContent>
+      </Tooltip>,
+      { disableHoverableContent: true }
+    );
+    await user.hover(screen.getByRole("button"));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    await user.unhover(screen.getByRole("button"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("honors forceMount while closed and forwards content native props/ref", () => {
+    const ref = React.createRef<HTMLDivElement>();
+    renderTooltip(
+      <Tooltip>
+        <TooltipTrigger>Help</TooltipTrigger>
+        <TooltipContent
+          forceMount
+          ref={ref}
+          data-testid="content"
+          id="help-content"
+          lang="hi"
+          style={{ maxWidth: "180px" }}
+        >
+          Forced help
+        </TooltipContent>
+      </Tooltip>
+    );
+    expect(ref.current).toBe(screen.getByTestId("content"));
+    expect(ref.current).toHaveAttribute("data-state", "closed");
+    expect(ref.current).toHaveAttribute("id", "help-content");
+    expect(ref.current).toHaveAttribute("lang", "hi");
+    expect(ref.current).toHaveStyle({ maxWidth: "180px" });
+  });
+
+  it("lets controlled consumers decline an open request", async () => {
+    const onOpenChange = vi.fn();
+    const user = userEvent.setup();
+    renderTooltip(
+      <Tooltip open={false} onOpenChange={onOpenChange}>
+        <TooltipTrigger>Help</TooltipTrigger>
+        <TooltipContent>Help</TooltipContent>
+      </Tooltip>
+    );
+    await user.tab();
+    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("honors cancelled focus and pointer move handlers", async () => {
+    const onOpenChange = vi.fn();
+    renderTooltip(
+      <Tooltip onOpenChange={onOpenChange}>
+        <TooltipTrigger
+          onFocus={(event) => event.preventDefault()}
+          onPointerMove={(event) => event.preventDefault()}
+        >
+          Cancelled help
+        </TooltipTrigger>
+        <TooltipContent>Help</TooltipContent>
+      </Tooltip>
+    );
+    fireEvent.focus(screen.getByRole("button"));
+    fireEvent.pointerMove(screen.getByRole("button"), { pointerType: "mouse" });
+    await act(async () => {});
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("honors a cancelled Escape and then dismisses when cancellation stops", async () => {
+    const user = userEvent.setup();
+    let cancel = true;
+    const onEscape = vi.fn((event: KeyboardEvent) => {
+      if (cancel) event.preventDefault();
+    });
+    renderTooltip(
+      <Tooltip>
+        <TooltipTrigger>Help</TooltipTrigger>
+        <TooltipContent onEscapeKeyDown={onEscape}>Help</TooltipContent>
+      </Tooltip>
+    );
+    await user.tab();
+    await user.keyboard("{Escape}");
+    expect(onEscape).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    cancel = false;
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(screen.getByRole("button")).toHaveFocus();
+  });
+
+  it("honors a cancelled outside-pointer dismissal", async () => {
+    const user = userEvent.setup();
+    const onOutside = vi.fn((event: Event) => event.preventDefault());
+    renderTooltip(
+      <>
+        <Tooltip defaultOpen>
+          <TooltipTrigger>Help</TooltipTrigger>
+          <TooltipContent onPointerDownOutside={onOutside}>Help</TooltipContent>
+        </Tooltip>
+        <button>Outside</button>
+      </>
+    );
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+    expect(onOutside).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+  });
+
+  it("retains caller surface/size overrides and adds an inverse light surface", () => {
+    renderTooltip(
+      <Tooltip defaultOpen>
+        <TooltipTrigger>Help</TooltipTrigger>
+        <TooltipContent
+          variant="light"
+          className="bg-semantic-primary max-w-xs"
+          data-testid="light"
+        >
+          Help
+          <TooltipArrow data-testid="arrow" />
+        </TooltipContent>
+      </Tooltip>
+    );
+    expect(screen.getByTestId("light")).toHaveAttribute(
+      "data-variant",
+      "light"
+    );
+    expect(screen.getByTestId("light")).not.toHaveAttribute("variant");
+    expect(screen.getByTestId("light")).toHaveClass(
+      "bg-semantic-primary",
+      "max-w-xs",
+      "text-semantic-text-primary"
+    );
+    expect(screen.getByTestId("light")).not.toHaveClass(
+      "bg-semantic-bg-primary",
+      "max-w-[15rem]"
+    );
+    expect(screen.getByTestId("arrow")).toHaveAttribute("aria-hidden", "true");
+  });
+});
+
+describe("Tooltip touch and native event behavior", () => {
+  it("can close an uncontrolled defaultOpen tooltip with the first tap", async () => {
+    mockTouchMode();
+    const onOpenChange = vi.fn();
+    renderTooltip(
+      <Tooltip defaultOpen onOpenChange={onOpenChange}>
+        <TooltipTrigger>Initially open</TooltipTrigger>
+        <TooltipContent>Details</TooltipContent>
+      </Tooltip>
+    );
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    await tap(screen.getByRole("button"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[false]]);
+  });
+
+  it("toggles with one callback per tap, keeps focus and dismisses with Escape", async () => {
+    mockTouchMode();
+    const onOpenChange = vi.fn();
+    renderTooltip(
+      <Tooltip onOpenChange={onOpenChange}>
+        <TooltipTrigger>Touch help</TooltipTrigger>
+        <TooltipContent>Touch details</TooltipContent>
+      </Tooltip>
+    );
+    const trigger = screen.getByRole("button");
+    await tap(trigger);
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[true]]);
+    await tap(trigger);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[true], [false]]);
+    await tap(trigger);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[true], [false], [true], [false]]);
+  });
+
+  it("supports touch toggles from defaultOpen and controlled state", async () => {
+    mockTouchMode();
+    const onOpenChange = vi.fn();
+    function Controlled() {
+      const [open, setOpen] = React.useState(true);
+      return (
+        <Tooltip
+          open={open}
+          onOpenChange={(next) => {
+            onOpenChange(next);
+            setOpen(next);
+          }}
+        >
+          <TooltipTrigger>Controlled</TooltipTrigger>
+          <TooltipContent>Details</TooltipContent>
+        </Tooltip>
+      );
+    }
+    renderTooltip(<Controlled />);
+    await tap(screen.getByRole("button"));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[false]]);
+    await tap(screen.getByRole("button"));
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+    expect(onOpenChange.mock.calls).toEqual([[false], [true]]);
+  });
+
+  it("honors touch click cancellation from an asChild trigger", async () => {
+    mockTouchMode();
+    const onOpenChange = vi.fn();
+    const onClick = vi.fn((event: React.MouseEvent<HTMLButtonElement>) =>
+      event.preventDefault()
+    );
+    renderTooltip(
+      <Tooltip onOpenChange={onOpenChange}>
+        <TooltipTrigger asChild>
+          <button onClick={onClick}>Cancel tap</button>
+        </TooltipTrigger>
+        <TooltipContent>Details</TooltipContent>
+      </Tooltip>
+    );
+    await tap(screen.getByRole("button"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onOpenChange).not.toHaveBeenCalled();
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("keeps native link click events uncancelled and forwards the trigger ref", async () => {
+    mockTouchMode();
+    const ref = React.createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+    renderTooltip(
+      <Tooltip>
+        <TooltipTrigger ref={ref} asChild onClick={onClick}>
+          <a href="#assignment">Assignment</a>
+        </TooltipTrigger>
+        <TooltipContent>Details</TooltipContent>
+      </Tooltip>
+    );
+    const trigger = screen.getByRole("link");
+    fireEvent.pointerDown(trigger, { pointerType: "touch" });
+    fireEvent.pointerUp(trigger, { pointerType: "touch" });
+    expect(fireEvent.click(trigger)).toBe(true);
+    await act(async () => {});
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onClick.mock.calls[0][0].defaultPrevented).toBe(false);
+    expect(ref.current).toBe(trigger);
+    expect(trigger).toHaveAttribute("href", "#assignment");
+    expect(screen.getByRole("tooltip")).toBeInTheDocument();
+  });
+
+  it("keeps native submit behavior on a touch trigger", async () => {
+    mockTouchMode();
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    renderTooltip(
+      <form onSubmit={onSubmit}>
+        <Tooltip>
+          <TooltipTrigger type="submit" name="action" value="help">
+            Submit
+          </TooltipTrigger>
+          <TooltipContent>Details</TooltipContent>
+        </Tooltip>
+      </form>
+    );
+    await tap(screen.getByRole("button"));
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button")).toHaveAttribute("name", "action");
+    expect(screen.getByRole("button")).toHaveAttribute("value", "help");
+  });
+
+  it("does not hijack outside-click focus while dismissing touch help", async () => {
+    mockTouchMode();
+    const user = userEvent.setup();
+    renderTooltip(
+      <>
+        <Tooltip>
+          <TooltipTrigger>Touch help</TooltipTrigger>
+          <TooltipContent>Details</TooltipContent>
+        </Tooltip>
+        <button>Outside</button>
+      </>
+    );
+    await tap(screen.getByRole("button", { name: "Touch help" }));
+    await user.click(screen.getByRole("button", { name: "Outside" }));
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Outside" })).toHaveFocus();
   });
 });

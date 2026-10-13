@@ -12,7 +12,7 @@ const switchVariants = cva(
   // so the track colour fades rather than jumping; the unchecked surface fades in 160ms. before: = an invisible ring that
   // reaches 4px beyond the box, so the pointer target is 50 x 32 (default) without moving layout. The track does not scale
   // on press; the thumb stretches instead (see the thumb).
-  "peer group/switch relative isolate inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl p-[3px] before:absolute before:-inset-1 before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] after:bg-semantic-primary after:opacity-0 after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:after:[transition:opacity_120ms_ease-out] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:after:opacity-100 data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:[@media(hover:hover)]:hover:data-[state=unchecked]:bg-semantic-border-layout",
+  "peer group/switch relative isolate inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl p-[3px] before:absolute before:-inset-1 before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] after:bg-semantic-primary after:opacity-0 after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:after:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:after:opacity-100 data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=unchecked]:bg-semantic-border-layout enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=checked]:after:bg-semantic-primary-hover aria-[readonly=true]:cursor-default aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-inset aria-[invalid=true]:ring-semantic-error-primary aria-[invalid=true]:after:bg-semantic-error-primary aria-[invalid=true]:focus-visible:outline-semantic-error-primary",
   {
     variants: {
       size: {
@@ -35,14 +35,14 @@ const switchVariants = cva(
  * its far edge anchored, with the snappy spring (350ms) for the width; reduced motion skips the stretch.
  */
 const switchThumbVariants = cva(
-  "pointer-events-none relative z-[1] block shrink-0 rounded-full bg-semantic-bg-primary shadow-[0_0_0_0.5px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.14),0_2px_6px_rgba(0,0,0,0.06)] ring-0 [--arc-glide:linear(0,.075,.2163,.3756,.5147,.6358,.7282,.8024,.856,.8973,.9273,.9481,.9636,.9742,.9821,.9874,.9913,.9939,.9958,.9971,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_490ms_var(--arc-glide),width_350ms_var(--arc-snappy),background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:background-color_120ms_ease-out] data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
+  "pointer-events-none relative z-[1] block shrink-0 rounded-full bg-semantic-bg-primary shadow-[0_0_0_0.5px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.14),0_2px_6px_rgba(0,0,0,0.06)] ring-0 [--arc-glide:linear(0,.075,.2163,.3756,.5147,.6358,.7282,.8024,.856,.8973,.9273,.9481,.9636,.9742,.9821,.9874,.9913,.9939,.9958,.9971,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_490ms_var(--arc-glide),width_350ms_var(--arc-snappy),background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
   {
     variants: {
       size: {
         default:
-          "h-[18px] w-[18px] data-[state=checked]:translate-x-[18px] motion-safe:[button:enabled:active_&]:w-[23px] motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-[13px]",
-        sm: "h-3.5 w-3.5 data-[state=checked]:translate-x-4 motion-safe:[button:enabled:active_&]:w-[18px] motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-3",
-        lg: "h-[22px] w-[22px] data-[state=checked]:translate-x-5 motion-safe:[button:enabled:active_&]:w-7 motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-3.5",
+          "h-[18px] w-[18px] data-[state=checked]:translate-x-[18px] rtl:data-[state=checked]:-translate-x-[18px] motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:w-[23px] motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:translate-x-[13px] motion-safe:rtl:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:-translate-x-[13px]",
+        sm: "h-3.5 w-3.5 data-[state=checked]:translate-x-4 rtl:data-[state=checked]:-translate-x-4 motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:w-[18px] motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:translate-x-3 motion-safe:rtl:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:-translate-x-3",
+        lg: "h-[22px] w-[22px] data-[state=checked]:translate-x-5 rtl:data-[state=checked]:-translate-x-5 motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:w-7 motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:translate-x-3.5 motion-safe:rtl:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:-translate-x-3.5",
       },
     },
     defaultVariants: {
@@ -107,6 +107,8 @@ export interface SwitchProps
    * The label is a `<label htmlFor>` so only the label text toggles the switch.
    */
   description?: React.ReactNode;
+  /** Keeps the switch focusable and in forms while preventing user changes. */
+  readOnly?: boolean;
   /** Position of the label */
   labelPosition?: "left" | "right";
 }
@@ -120,6 +122,8 @@ const Switch = React.forwardRef(
       description,
       labelPosition = "right",
       disabled,
+      readOnly,
+      onClick,
       id,
       ...props
     }: SwitchProps,
@@ -127,7 +131,11 @@ const Switch = React.forwardRef(
   ) => {
     const generatedId = React.useId();
     // Only generate an id when a description needs one, so the default markup is unchanged.
-    const controlId = description ? id || generatedId : id;
+    const hasDescription =
+      description !== undefined &&
+      description !== null &&
+      description !== false;
+    const controlId = hasDescription ? id || generatedId : id;
     const descriptionId = controlId + "-description";
     const switchElement = (
       <SwitchPrimitives.Root
@@ -136,7 +144,12 @@ const Switch = React.forwardRef(
         ref={ref}
         id={controlId}
         {...props}
-        {...(description
+        onClick={(event) => {
+          onClick?.(event);
+          if (readOnly) event.preventDefault();
+        }}
+        {...(readOnly ? { "aria-readonly": true } : {})}
+        {...(hasDescription
           ? {
               "aria-describedby": [props["aria-describedby"], descriptionId]
                 .filter(Boolean)
@@ -148,7 +161,7 @@ const Switch = React.forwardRef(
       </SwitchPrimitives.Root>
     );
 
-    if (description) {
+    if (hasDescription) {
       const text = (
         <div className={cn("flex min-w-0 flex-col", disabled && "opacity-50")}>
           {label && (
@@ -157,8 +170,12 @@ const Switch = React.forwardRef(
               className={cn(
                 labelSizeVariants({ size }),
                 labelRowVariants({ size }),
-                "flex items-center font-normal text-[var(--v2-text-primary,#484848)]",
-                disabled ? "cursor-not-allowed" : "cursor-pointer"
+                "flex items-center font-normal text-semantic-text-primary",
+                disabled
+                  ? "cursor-not-allowed"
+                  : readOnly
+                    ? "cursor-default"
+                    : "cursor-pointer"
               )}
             >
               {label}
@@ -166,7 +183,7 @@ const Switch = React.forwardRef(
           )}
           <p
             id={descriptionId}
-            className="m-0 mt-1 text-xs leading-4 text-[var(--v2-text-muted,#707070)]"
+            className="m-0 mt-1 text-xs leading-4 text-semantic-text-muted"
           >
             {description}
           </p>
@@ -186,14 +203,15 @@ const Switch = React.forwardRef(
         <label
           className={cn(
             "inline-flex items-center gap-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer",
-            disabled && "cursor-not-allowed"
+            disabled && "cursor-not-allowed",
+            readOnly && "cursor-default"
           )}
         >
           {labelPosition === "left" && (
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-normal text-[var(--v2-text-primary,#484848)]",
+                "font-normal text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -205,7 +223,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-normal text-[var(--v2-text-primary,#484848)]",
+                "font-normal text-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >

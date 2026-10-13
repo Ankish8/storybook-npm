@@ -18,6 +18,9 @@ export default async function ComponentPage({
 }) {
   const component = getComponent((await params).slug);
   if (!component) notFound();
+  if (component.slug === "typography")
+    permanentRedirect("/foundations#typography");
+  if (component.aliasOf) permanentRedirect(entryHref(component));
   // A block moved out of Components keeps working at its old address.
   if (component.kind === "block") permanentRedirect(entryHref(component));
   return <EntryPage entry={component} />;

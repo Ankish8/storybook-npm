@@ -1,0 +1,54 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "A live on/off setting with a clickable label. Space and Enter toggle it when focused."
+    },
+    {
+      "id": "description",
+      "title": "With description",
+      "description": "Supporting text is linked through aria-describedby. Clicking the label toggles the control; the description stays selectable."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled",
+      "description": "Use checked and onCheckedChange to own the boolean state. The same API and default behavior are available in v1."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Small (36 \u00d7 20), default (42 \u00d7 24), and large (48 \u00d7 28) tracks share the same interaction."
+    },
+    {
+      "id": "label-position",
+      "title": "Label position",
+      "description": "Use labelPosition to place the label before or after the control."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled and read-only",
+      "description": "Disabled switches leave the tab order and do not submit. Optional readOnly switches remain focusable and submit their current value without allowing changes."
+    },
+    {
+      "id": "invalid",
+      "title": "Invalid",
+      "description": "aria-invalid marks the control red. Explain the problem with description or an external aria-describedby message."
+    },
+    {
+      "id": "settings",
+      "title": "Settings list",
+      "description": "Compose independently controlled switches with labels and supporting copy for a compact preferences panel."
+    },
+    {
+      "id": "form",
+      "title": "Form integration",
+      "description": "Checked switches contribute name and value to FormData; unchecked and disabled switches are omitted. The default submitted value is on."
+    },
+    {
+      "id": "rtl",
+      "title": "Right-to-left",
+      "description": "The thumb travels in the reading direction, including when dir is inherited from a parent."
+    }
+  ]
+}

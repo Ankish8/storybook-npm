@@ -5,6 +5,50 @@ export interface UiCardProps extends React.HTMLAttributes<HTMLDivElement> {
   selected?: boolean;
   disabled?: boolean;
 }
+
+// A card may still receive bubbled events from a legacy composition. Keep
+// controls inside it independent; prefer a passive card for new compositions.
+const interactiveDescendantSelector = [
+  "a[href]",
+  "area[href]",
+  "button",
+  "input",
+  "select",
+  "textarea",
+  "summary",
+  "label",
+  "audio[controls]",
+  "video[controls]",
+  "[contenteditable]:not([contenteditable='false'])",
+  "[tabindex]",
+  "[role='button']",
+  "[role='link']",
+  "[role='checkbox']",
+  "[role='radio']",
+  "[role='switch']",
+  "[role='tab']",
+  "[role='menuitem']",
+  "[role='menuitemcheckbox']",
+  "[role='menuitemradio']",
+  "[role='option']",
+  "[role='textbox']",
+  "[role='searchbox']",
+  "[role='combobox']",
+  "[role='slider']",
+  "[role='spinbutton']",
+  "[role='treeitem']",
+].join(",");
+
+function isInteractiveDescendant(event: React.MouseEvent<HTMLDivElement>) {
+  if (!(event.target instanceof Element)) return false;
+  const control = event.target.closest(interactiveDescendantSelector);
+  return (
+    control !== null &&
+    control !== event.currentTarget &&
+    event.currentTarget.contains(control)
+  );
+}
+
 const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
   (
     {
@@ -14,6 +58,8 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
       className,
       onClick,
       onKeyDown,
+      role,
+      tabIndex,
       ...props
     },
     ref
@@ -22,32 +68,49 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
     return (
       <div
         ref={ref}
-        role={interactive ? "button" : undefined}
-        tabIndex={interactive && !disabled ? 0 : undefined}
+        role={role ?? (interactive ? "button" : undefined)}
+        tabIndex={
+          interactive && disabled
+            ? undefined
+            : (tabIndex ?? (interactive ? 0 : undefined))
+        }
         aria-pressed={interactive ? selected : undefined}
         aria-disabled={interactive ? disabled : undefined}
         className={cn(
-          // Arc's card: 1px border, 20px padding, no resting shadow. Border eases in 160ms, shadow 240ms, lift 260ms.
-          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] shadow-none [transition-property:border-color,box-shadow,transform] [transition-duration:160ms,240ms,260ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:border-color,box-shadow] motion-reduce:[transition-duration:120ms]",
-          // A pointed-at card floats 2px, so the raised shadow arrives with the lift. Touch and pen never lift; the
-          // press has no scale of its own (Arc has none).
+          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-secondary shadow-none [transition-property:border-color,background-color] duration-150 ease-out motion-reduce:transition-none",
           interactive &&
             !disabled &&
-            "cursor-pointer [@media(hover:hover)_and_(pointer:fine)]:hover:-translate-y-0.5 [@media(hover:hover)_and_(pointer:fine)]:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)_and_(pointer:fine)]:hover:shadow-[0_6px_18px_rgba(0,0,0,0.065),0_1px_3px_rgba(0,0,0,0.035)] motion-reduce:[@media(hover:hover)_and_(pointer:fine)]:hover:translate-y-0 focus-visible:border-[var(--color-primary-100,#C0C3CA)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary",
+            "cursor-pointer focus-visible:border-semantic-border-focus focus-visible:[outline-style:solid] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-semantic-border-focus",
+          interactive &&
+            !disabled &&
+            !selected &&
+            "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-secondary",
           (variant === "icon" || variant === "action") && "w-[200px]",
           variant === "action" &&
             "border-dashed border-semantic-info-border shadow-none",
-          selected &&
-            "border-semantic-border-accent bg-semantic-brand-surface shadow-[0_0_4px_rgba(39,171,184,0.4)]",
+          selected && "border-semantic-border-accent bg-semantic-brand-surface",
           disabled &&
-            "cursor-not-allowed bg-semantic-bg-ui text-[var(--v2-text-muted,#707070)] [&_h3]:text-[var(--v2-text-muted,#707070)] [&_p]:text-[var(--v2-text-muted,#707070)] shadow-none",
+            "cursor-not-allowed bg-semantic-bg-ui text-semantic-text-muted [&_h3]:text-semantic-text-muted [&_p]:text-semantic-text-muted",
           className
         )}
-        onClick={disabled ? undefined : onClick}
+        onClick={
+          interactive
+            ? (event) => {
+                if (
+                  !disabled &&
+                  !event.defaultPrevented &&
+                  !isInteractiveDescendant(event)
+                ) {
+                  onClick?.(event);
+                }
+              }
+            : undefined
+        }
         onKeyDown={(event) => {
           onKeyDown?.(event);
           if (
             !event.defaultPrevented &&
+            event.target === event.currentTarget &&
             interactive &&
             !disabled &&
             (event.key === "Enter" || event.key === " ")
@@ -80,7 +143,7 @@ const UiCardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "m-0 text-lg font-medium leading-[1.1] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)]",
+      "m-0 text-lg font-medium leading-[1.3] tracking-[-0.01em] text-semantic-text-primary",
       className
     )}
     {...props}
@@ -94,7 +157,7 @@ const UiCardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "m-0 text-sm font-normal leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)]",
+      "m-0 text-sm font-normal leading-[1.4] text-semantic-text-secondary",
       className
     )}
     {...props}

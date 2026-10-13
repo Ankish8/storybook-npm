@@ -4,22 +4,31 @@ import {
   motion,
   useMotionValue,
   useMotionValueEvent,
-  useReducedMotion,
 } from "motion/react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface ProgressIndicatorProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Measured completion from 0 to 100. Non-finite values fall back to 0. */
   value?: number;
   variant?: "bar" | "circle" | "semi-circle";
   labelPosition?: "right" | "bottom" | "none";
+  /** Use when the amount of completed work is unknown. */
   indeterminate?: boolean;
 }
-// Self-contained keyframes (same approach as BouncingLoader): consumers get the slide without a theme change or the
-// tailwindcss-animate plugin. The bar is 30% wide, so -100% -> 350% of its own width travels from fully off the left
-// edge to fully off the right edge of the track. Applied only under motion-safe below.
+
+// Self-contained loading keyframes keep installed copies independent of a theme plugin.
 const SLIDE_KEYFRAMES =
   "@keyframes myoperator-v2-progress-slide{from{transform:translateX(-100%)}to{transform:translateX(350%)}}";
+const SWEEP_KEYFRAMES =
+  "@keyframes myoperator-v2-progress-sweep{from{stroke-dashoffset:30}to{stroke-dashoffset:-100}}";
+const ROTATE_KEYFRAMES =
+  "@keyframes myoperator-v2-progress-rotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}";
+const normalize = (value: number) =>
+  Math.max(0, Math.min(100, Number.isFinite(value) ? value : 0));
+// Rounding must not display completion before either the measured value or fill reaches 100.
+const visibleValue = (value: number) =>
+  value >= 100 ? 100 : Math.min(99, Math.round(value));
 
 const ProgressIndicator = React.forwardRef<
   HTMLDivElement,
@@ -32,57 +41,122 @@ const ProgressIndicator = React.forwardRef<
       labelPosition = "right",
       indeterminate = false,
       className,
-      "aria-label": ariaLabel = "Progress",
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledBy,
+      "aria-valuetext": ariaValueText,
       ...props
     },
     ref
   ) => {
-    const percentage = Math.max(
-      0,
-      Math.min(100, Number.isFinite(value) ? value : 0)
+    const percentage = normalize(value);
+    const [reducedMotion, setReducedMotion] = React.useState(false);
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const [pageVisible, setPageVisible] = React.useState(true);
+    const [inView, setInView] = React.useState(true);
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLDivElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              rootRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
+      },
+      [ref]
     );
-    const reducedMotion = useReducedMotion();
-    // Arc: one critically damped spring (0.4s visual duration, no bounce) drives the fill and the counted label.
+
+    React.useEffect(() => {
+      const updateVisibility = () =>
+        setPageVisible(document.visibilityState !== "hidden");
+      updateVisibility();
+      const motionQuery = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)"
+      );
+      const updateMotion = () =>
+        setReducedMotion(Boolean(motionQuery?.matches));
+      updateMotion();
+      if (motionQuery?.addEventListener)
+        motionQuery.addEventListener("change", updateMotion);
+      else motionQuery?.addListener(updateMotion);
+      document.addEventListener("visibilitychange", updateVisibility);
+      const node = rootRef.current;
+      const observer =
+        node && typeof IntersectionObserver !== "undefined"
+          ? new IntersectionObserver(([entry]) => {
+              if (entry) setInView(entry.isIntersecting);
+            })
+          : null;
+      if (node) observer?.observe(node);
+      return () => {
+        document.removeEventListener("visibilitychange", updateVisibility);
+        observer?.disconnect();
+        if (motionQuery?.removeEventListener)
+          motionQuery.removeEventListener("change", updateMotion);
+        else motionQuery?.removeListener(updateMotion);
+      };
+    }, []);
+
+    const canAnimate = !reducedMotion && pageVisible && inView;
+    // One finite interpolation drives the visible fill and count. ARIA exposes the measured value immediately.
     const progress = useMotionValue(percentage);
     const [animatedPercentage, setAnimatedPercentage] =
       React.useState(percentage);
     useMotionValueEvent(progress, "change", (next) => {
-      setAnimatedPercentage(Math.max(0, Math.min(100, next)));
+      setAnimatedPercentage(normalize(next));
     });
     React.useEffect(() => {
-      if (reducedMotion) {
+      if (!canAnimate || indeterminate || progress.get() === percentage) {
         progress.jump(percentage);
         return;
       }
       const controls = animate(progress, percentage, {
-        type: "spring",
-        visualDuration: 0.4,
-        bounce: 0,
+        duration: 0.4,
+        ease: [0.22, 1, 0.36, 1],
+        onComplete: () => progress.jump(percentage),
       });
       return () => controls.stop();
-    }, [percentage, reducedMotion, progress]);
-    // Completion lands as the fill arrives: the fill turns to the success colour and a check settles in by the count.
-    const complete = percentage >= 100;
-    // The visible count and fill share a single spring; semantic progress exposes the real value immediately.
-    const displayedPercentage = reducedMotion ? percentage : animatedPercentage;
+    }, [percentage, indeterminate, canAnimate, progress]);
+
+    const displayedPercentage = canAnimate ? animatedPercentage : percentage;
+    const complete = !indeterminate && percentage === 100;
+    const visuallyComplete = complete && displayedPercentage >= 100;
     const circle = variant !== "bar";
     const semi = variant === "semi-circle";
     const radius = 24.43256;
-    const circumference = 2 * Math.PI * radius;
-    const length = semi ? circumference / 2 : circumference;
+    const fillStroke = visuallyComplete
+      ? "var(--semantic-success-primary)"
+      : "var(--semantic-info-primary)";
+    const animationPlayState = canAnimate ? "running" : "paused";
+
     return (
       <div
-        ref={ref}
+        ref={setRootRef}
         role="progressbar"
-        aria-label={ariaLabel}
+        aria-label={ariaLabel ?? (ariaLabelledBy ? undefined : "Progress")}
+        aria-labelledby={ariaLabelledBy}
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={indeterminate ? undefined : percentage}
         aria-valuetext={
-          indeterminate ? undefined : `${Math.round(percentage)}%`
+          ariaValueText ?? (indeterminate ? undefined : `${percentage}%`)
+        }
+        data-state={
+          indeterminate
+            ? "indeterminate"
+            : complete
+              ? "complete"
+              : percentage === 0
+                ? "idle"
+                : "loading"
         }
         className={cn(
-          "font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)]",
+          "font-[family-name:var(--font-v2)] text-semantic-text-secondary",
           circle
             ? "relative inline-flex w-[54px] items-center justify-center text-xs leading-[15px]"
             : "flex w-[320px] max-w-full items-center gap-3 text-sm leading-[1.4]",
@@ -107,16 +181,24 @@ const ProgressIndicator = React.forwardRef<
                   <path
                     d={`M ${27 - radius} 27 A ${radius} ${radius} 0 0 1 ${27 + radius} 27`}
                     fill="none"
-                    stroke="var(--semantic-border-layout,#E9EAEB)"
+                    stroke="var(--semantic-border-layout)"
                     strokeWidth="5.13488"
                   />
                   <path
                     d={`M ${27 - radius} 27 A ${radius} ${radius} 0 0 1 ${27 + radius} 27`}
+                    pathLength="100"
                     fill="none"
-                    stroke="var(--semantic-info-primary,#4275D6)"
+                    stroke={fillStroke}
                     strokeWidth="5.13488"
-                    strokeDasharray={length}
-                    strokeDashoffset={length * (1 - displayedPercentage / 100)}
+                    strokeDasharray={indeterminate ? "30 100" : 100}
+                    strokeDashoffset={
+                      indeterminate ? -35 : 100 - displayedPercentage
+                    }
+                    className={cn(
+                      indeterminate &&
+                        "motion-safe:[animation-name:myoperator-v2-progress-sweep] motion-safe:[animation-duration:1.5s] motion-safe:[animation-timing-function:cubic-bezier(0.65,0,0.35,1)] motion-safe:[animation-iteration-count:infinite]"
+                    )}
+                    style={indeterminate ? { animationPlayState } : undefined}
                   />
                 </>
               ) : (
@@ -126,26 +208,37 @@ const ProgressIndicator = React.forwardRef<
                     cy="27"
                     r={radius}
                     fill="none"
-                    stroke="var(--semantic-border-layout,#E9EAEB)"
+                    stroke="var(--semantic-border-layout)"
                     strokeWidth="5.13488"
                   />
                   <circle
                     cx="27"
                     cy="27"
                     r={radius}
+                    pathLength="100"
                     fill="none"
-                    stroke="var(--semantic-info-primary,#4275D6)"
+                    stroke={fillStroke}
                     strokeWidth="5.13488"
-                    strokeDasharray={length}
-                    strokeDashoffset={length * (1 - displayedPercentage / 100)}
+                    strokeDasharray={100}
+                    strokeDashoffset={
+                      indeterminate ? 75 : 100 - displayedPercentage
+                    }
                     className={cn(
                       indeterminate &&
-                        "origin-center animate-spin motion-reduce:[animation-duration:2s]"
+                        "origin-center motion-safe:[animation-name:myoperator-v2-progress-rotate] motion-safe:[animation-duration:1.5s] motion-safe:[animation-timing-function:linear] motion-safe:[animation-iteration-count:infinite]"
                     )}
+                    style={
+                      indeterminate
+                        ? { animationDuration: "1.5s", animationPlayState }
+                        : undefined
+                    }
                   />
                 </g>
               )}
             </svg>
+            {indeterminate && (
+              <style>{semi ? SWEEP_KEYFRAMES : ROTATE_KEYFRAMES}</style>
+            )}
             {labelPosition !== "none" && !indeterminate && (
               <span
                 aria-hidden="true"
@@ -154,32 +247,37 @@ const ProgressIndicator = React.forwardRef<
                   semi && "bottom-0"
                 )}
               >
-                {Math.round(displayedPercentage)}%
+                {visibleValue(displayedPercentage)}%
               </span>
             )}
           </>
         ) : (
           <>
             <div
-              // Arc's track: 7px tall inside a 1px border. The fill slides in from the left instead of scaling, so
-              // its rounded end keeps its shape at every value.
               className={cn(
                 "relative h-[7px] w-full min-w-0 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui",
                 labelPosition === "bottom" ? "shrink-0" : "flex-1"
               )}
             >
               <div
-                data-complete={complete || undefined}
+                data-complete={visuallyComplete || undefined}
                 className={cn(
-                  "block h-full w-full rounded-[inherit] bg-semantic-info-primary [transition:background-color_240ms_cubic-bezier(0.22,1,0.36,1)] data-[complete]:bg-semantic-success-primary data-[complete]:[transition-delay:200ms] motion-reduce:transition-none",
-                  // Reduced motion keeps the static 30% fill: no movement and no pulse.
+                  "block h-full rounded-[inherit] bg-semantic-info-primary [transition-property:background-color] [transition-duration:180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[complete]:bg-semantic-success-primary motion-reduce:transition-none",
+                  indeterminate ? "w-[30%]" : "w-full",
                   indeterminate &&
-                    "motion-safe:[animation:myoperator-v2-progress-slide_1.5s_cubic-bezier(0.65,0,0.35,1)_infinite]"
+                    "motion-safe:[animation-name:myoperator-v2-progress-slide] motion-safe:[animation-duration:1.5s] motion-safe:[animation-timing-function:cubic-bezier(0.65,0,0.35,1)] motion-safe:[animation-iteration-count:infinite]"
                 )}
                 style={
                   indeterminate
-                    ? { width: "30%" }
-                    : { transform: `translateX(${displayedPercentage - 100}%)` }
+                    ? {
+                        width: "30%",
+                        animationPlayState,
+                        transition: canAnimate ? undefined : "none",
+                      }
+                    : {
+                        transform: `translateX(${displayedPercentage - 100}%)`,
+                        transition: canAnimate ? undefined : "none",
+                      }
                 }
               />
               {indeterminate && <style>{SLIDE_KEYFRAMES}</style>}
@@ -187,34 +285,30 @@ const ProgressIndicator = React.forwardRef<
             {labelPosition !== "none" && !indeterminate && (
               <span
                 aria-hidden="true"
-                className="inline-flex shrink-0 items-center gap-1 text-[var(--v2-text-muted,#707070)]"
+                className="inline-flex shrink-0 items-center gap-1 text-semantic-text-muted"
               >
-                {complete && (
-                  <motion.span
-                    initial={
-                      reducedMotion
-                        ? { opacity: 0 }
-                        : { opacity: 0, scale: 0.6, filter: "blur(2px)" }
-                    }
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    transition={
-                      reducedMotion
-                        ? { duration: 0.12 }
-                        : {
-                            type: "spring",
-                            visualDuration: 0.26,
-                            bounce: 0.12,
-                            delay: 0.24,
-                          }
-                    }
-                    className="grid place-items-center text-semantic-success-primary"
-                  >
-                    <Check className="size-3.5" strokeWidth={1.75} />
-                  </motion.span>
-                )}
-                {/* A hidden "100%" row reserves the widest count, so the check never shifts as the number gains a digit. */}
+                <span className="grid size-3.5 place-items-center text-semantic-success-primary">
+                  {visuallyComplete &&
+                    (canAnimate ? (
+                      <motion.span
+                        initial={
+                          canAnimate ? { opacity: 0, scale: 0.8 } : false
+                        }
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{
+                          duration: canAnimate ? 0.18 : 0,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="grid place-items-center"
+                      >
+                        <Check className="size-3.5" strokeWidth={1.75} />
+                      </motion.span>
+                    ) : (
+                      <Check className="size-3.5" strokeWidth={1.75} />
+                    ))}
+                </span>
                 <span className="inline-grid justify-items-end tabular-nums before:invisible before:h-0 before:overflow-hidden before:content-['100%']">
-                  {Math.round(displayedPercentage)}%
+                  {visibleValue(displayedPercentage)}%
                 </span>
               </span>
             )}

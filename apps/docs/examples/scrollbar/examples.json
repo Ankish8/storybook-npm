@@ -1,0 +1,30 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Vertical activity list",
+      "description": "Set a bounded height for the native viewport. Wheel, touch and keyboard scrolling remain native."
+    },
+    {
+      "id": "variants",
+      "title": "Both rails",
+      "description": "subtle remains the default fading overlay rail. dark uses a persistent solid rail."
+    },
+    {
+      "id": "horizontal",
+      "title": "Horizontal content",
+      "description": "orientation=horizontal keeps wide content inside its own native viewport."
+    },
+    {
+      "id": "without-controls",
+      "title": "Without arrow controls",
+      "description": "showControls=false hides only the arrow controls; the thumb and native scrolling remain."
+    },
+    {
+      "id": "selection",
+      "title": "Scroll and select",
+      "description": "Buttons inside the viewport own their selection state. Scrollbar supplies scrolling rather than listbox selection."
+    }
+  ]
+}

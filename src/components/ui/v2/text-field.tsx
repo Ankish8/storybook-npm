@@ -86,14 +86,14 @@ const textFieldContainerVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input hover:border-semantic-primary focus-within:shadow-none",
+          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input hover:border-semantic-primary focus-within:shadow-none",
+          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:shadow-none",
         error:
           "border border-solid border-semantic-error-primary focus-within:shadow-none",
       },
       disabled: {
-        true: "cursor-not-allowed bg-semantic-bg-ui shadow-none hover:border-semantic-border-input",
+        true: "cursor-not-allowed bg-semantic-bg-ui shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-input",
         false: "",
       },
     },
@@ -113,9 +113,9 @@ const textFieldInputVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
         error:
           "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
@@ -173,6 +173,8 @@ export interface TextFieldProps
   clearable?: boolean;
   /** Callback fired when the clear button is clicked */
   onClear?: () => void;
+  /** Returns focus to the input after clearing. Opt in to preserve v1 focus behavior. */
+  returnFocusOnClear?: boolean;
   /** Additional class for the wrapper container */
   wrapperClassName?: string;
   /** Additional class for the label */
@@ -207,11 +209,14 @@ const TextField = React.forwardRef(
       loading,
       clearable,
       onClear,
+      returnFocusOnClear = false,
       maxLength,
       value,
       defaultValue,
       onChange,
       onBeforeInput,
+      onCompositionStart,
+      onCompositionEnd,
       onWheel,
       disabled,
       id,
@@ -232,6 +237,9 @@ const TextField = React.forwardRef(
       [ref]
     );
 
+    const composing = React.useRef(false);
+    const changeSequence = React.useRef(0);
+
     // Internal state for character count in uncontrolled mode
     const [internalValue, setInternalValue] = React.useState(
       defaultValue ?? ""
@@ -242,34 +250,45 @@ const TextField = React.forwardRef(
     const currentValue = isControlled ? value : internalValue;
 
     // Derive state from props
-    const derivedState = error ? "error" : (state ?? "default");
+    const invalid =
+      props["aria-invalid"] === true || props["aria-invalid"] === "true";
+    const derivedState = error || invalid ? "error" : (state ?? "default");
     const shouldPreventConsecutiveSpaces =
       preventConsecutiveSpaces && shouldPreventConsecutiveSpacesForType(type);
 
     // Handle change for both controlled and uncontrolled
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      if (shouldPreventConsecutiveSpaces && e.target.value.includes("  ")) {
+      changeSequence.current += 1;
+      if (
+        shouldPreventConsecutiveSpaces &&
+        !composing.current &&
+        !(e.nativeEvent as InputEvent).isComposing &&
+        e.target.value.includes("  ")
+      ) {
         const input = e.currentTarget;
         const rawValue = input.value;
-        const rawCursor = input.selectionStart ?? rawValue.length;
+        const start = input.selectionStart;
+        const end = input.selectionEnd;
+        const direction = input.selectionDirection;
         const collapsedValue = collapseConsecutiveSpaces(rawValue);
-        const nextCursor = Math.min(
-          getCollapsedCursorPosition(rawValue, rawCursor),
-          collapsedValue.length
-        );
-
         input.value = collapsedValue;
-        // Restore the caret synchronously: assigning `value` above parks it at
-        // 0, and the next keystroke can land before any animation frame runs,
-        // which reorders what the user typed. The deferred pass is kept for
-        // browsers that reset the caret again after React re-renders, but it
-        // must no-op once the value has moved on — a frame that fires mid-typing
-        // would otherwise drag the caret back to a stale position.
-        input.setSelectionRange(nextCursor, nextCursor);
-        window.requestAnimationFrame(() => {
-          if (input.value !== collapsedValue) return;
-          input.setSelectionRange(nextCursor, nextCursor);
-        });
+        // Email and number inputs do not support setSelectionRange. Preserve
+        // both ends for text inputs, including a backward selection.
+        if (start !== null && end !== null) {
+          const nextStart = getCollapsedCursorPosition(rawValue, start);
+          const nextEnd = getCollapsedCursorPosition(rawValue, end);
+          input.setSelectionRange(nextStart, nextEnd, direction ?? undefined);
+          window.requestAnimationFrame(() => {
+            // A new selection or edit must never be undone by a stale frame.
+            if (
+              input.value !== collapsedValue ||
+              input.selectionStart !== nextStart ||
+              input.selectionEnd !== nextEnd
+            )
+              return;
+            input.setSelectionRange(nextStart, nextEnd, direction ?? undefined);
+          });
+        }
       }
 
       if (!isControlled) {
@@ -291,6 +310,7 @@ const TextField = React.forwardRef(
         }
       }
       onClear?.();
+      if (returnFocusOnClear) internalRef.current?.focus();
     };
 
     const showClearButton =
@@ -335,7 +355,8 @@ const TextField = React.forwardRef(
                 "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
                 size === "sm"
                   ? "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4]"
-                  : "text-sm leading-[1.4]"
+                  : "text-sm leading-[1.4]",
+                className
               )
             : cn(
                 textFieldInputVariants({ state: derivedState, size }),
@@ -354,7 +375,12 @@ const TextField = React.forwardRef(
         defaultValue={!isControlled ? defaultValue : undefined}
         onBeforeInput={(e) => {
           onBeforeInput?.(e);
-          if (!shouldPreventConsecutiveSpaces || e.defaultPrevented) {
+          if (
+            !shouldPreventConsecutiveSpaces ||
+            composing.current ||
+            (e.nativeEvent as InputEvent).isComposing ||
+            e.defaultPrevented
+          ) {
             return;
           }
 
@@ -381,6 +407,53 @@ const TextField = React.forwardRef(
             // caret backwards and reorders what follows.
             e.preventDefault();
           }
+        }}
+        onCompositionStart={(event) => {
+          composing.current = true;
+          onCompositionStart?.(event);
+        }}
+        onCompositionEnd={(event) => {
+          composing.current = false;
+          onCompositionEnd?.(event);
+          const input = event.currentTarget;
+          const raw = input.value;
+          if (!shouldPreventConsecutiveSpaces || !raw.includes("  ")) return;
+          const sequence = changeSequence.current;
+          const normalized = collapseConsecutiveSpaces(raw);
+          const start = input.selectionStart;
+          const end = input.selectionEnd;
+          const direction = input.selectionDirection;
+          // Some browsers commit composition without another input event. Wait for the native transaction
+          // to finish, then notify through React's normal ChangeEvent only if it has not already done so.
+          queueMicrotask(() => {
+            if (
+              !input.isConnected ||
+              internalRef.current !== input ||
+              composing.current ||
+              changeSequence.current !== sequence ||
+              (input.value !== raw && input.value !== normalized)
+            )
+              return;
+            input.value = raw;
+            Object.getOwnPropertyDescriptor(
+              HTMLInputElement.prototype,
+              "value"
+            )?.set?.call(input, normalized);
+            if (start !== null && end !== null)
+              input.setSelectionRange(
+                getCollapsedCursorPosition(raw, start),
+                getCollapsedCursorPosition(raw, end),
+                direction ?? undefined
+              );
+            input.dispatchEvent(
+              new InputEvent("input", {
+                bubbles: true,
+                inputType: "insertCompositionText",
+                data: event.data,
+                isComposing: false,
+              })
+            );
+          });
         }}
         onChange={handleChange}
         onWheel={
@@ -449,7 +522,7 @@ const TextField = React.forwardRef(
             )}
             {inputElement}
             {loading && (
-              <Loader2 className="animate-spin motion-reduce:[animation-duration:2s] size-4 text-[var(--v2-text-muted,#707070)] ml-2 flex-shrink-0" />
+              <Loader2 className="animate-spin motion-reduce:animate-none size-4 text-[var(--v2-text-muted,#707070)] ml-2 flex-shrink-0" />
             )}
             {!loading && rightIcon && (
               <span className="ml-2 text-[var(--v2-text-muted,#707070)] [&_svg]:size-4 flex-shrink-0">
@@ -465,7 +538,7 @@ const TextField = React.forwardRef(
                 type="button"
                 onClick={handleClear}
                 className={cn(
-                  "relative grid size-6 flex-shrink-0 cursor-pointer place-items-center rounded text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,background-color,opacity,transform,filter,margin-left,visibility] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:color,background-color,opacity,visibility]",
+                  "relative grid size-6 flex-shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-primary cursor-pointer place-items-center rounded text-[var(--v2-text-muted,#707070)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,background-color,opacity,transform,filter,margin-left,visibility] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:color,background-color,opacity,visibility]",
                   showClearButton
                     ? "visible ml-2 scale-100 opacity-100 blur-0 active:scale-[0.96] motion-reduce:active:scale-100"
                     : "pointer-events-none invisible -ml-6 scale-[0.8] opacity-0 blur-[2px] motion-reduce:scale-100 motion-reduce:blur-0"

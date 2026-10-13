@@ -1,0 +1,6 @@
+import { UiCard, UiCardHeader, UiCardTitle, UiCardDescription, UiCardContent, UiCardFooter } from "@/components/ui/v2/ui-card";
+<UiCard>
+  <UiCardHeader><UiCardTitle>Title</UiCardTitle></UiCardHeader>
+  <UiCardContent><UiCardDescription>Description</UiCardDescription></UiCardContent>
+  <UiCardFooter>Actions or context</UiCardFooter>
+</UiCard>

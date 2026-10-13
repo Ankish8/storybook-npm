@@ -1,0 +1,30 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Expandable sections",
+      "description": "The default type is multiple and the value is an array of open item names."
+    },
+    {
+      "id": "variants",
+      "title": "Both variants",
+      "description": "default uses dividers; bordered adds an enclosing border. Both use the same item, trigger and content APIs."
+    },
+    {
+      "id": "single",
+      "title": "Single open item",
+      "description": "type=single allows one item at a time. Its value is still a string array, including an empty array for all closed."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled expansion",
+      "description": "value and onValueChange let the parent expand all or close all. Arrow keys, Home and End navigate enabled triggers."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled item and chevron",
+      "description": "Disabled items cannot activate and are skipped by trigger arrow navigation. showChevron changes only the visible glyph."
+    }
+  ]
+}

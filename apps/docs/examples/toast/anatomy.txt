@@ -1,0 +1,5 @@
+import { Toaster, ToastAction, toast } from "@/components/ui/v2/toast";
+// Once at the app root:
+<Toaster stack />;
+// From an event handler:
+toast.success({ title: "Saved", action: <ToastAction altText="Undo the saved change">Undo</ToastAction> });

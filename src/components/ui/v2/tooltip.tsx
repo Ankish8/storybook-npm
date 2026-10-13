@@ -3,36 +3,22 @@ import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 
 import { cn } from "@/lib/utils";
 
-/**
- * Arc opens a tooltip after 250ms (Radix's own default is 700ms) and lets the next one open without delay for
- * 300ms after the last closes (Radix's default skip window). A `delayDuration` passed here still wins.
- */
-const TooltipProvider = ({
-  delayDuration = 250,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) => (
-  <TooltipPrimitive.Provider delayDuration={delayDuration} {...props} />
-);
-TooltipProvider.displayName = "TooltipProvider";
+// Keep Radix's 700ms delay, 300ms skip window and hoverable-content controls.
+const TooltipProvider = TooltipPrimitive.Provider;
 
-/** True when the primary input cannot hover (touch / most phones & tablets). Desktop hover stays false. */
 function usePrefersTapTooltipInteraction() {
   const [tapMode, setTapMode] = React.useState(() => {
-    if (typeof window === "undefined" || !window.matchMedia) {
-      return false;
-    }
+    if (typeof window === "undefined" || !window.matchMedia) return false;
     return window.matchMedia("(hover: none)").matches;
   });
 
   React.useEffect(() => {
-    if (typeof window === "undefined" || !window.matchMedia) {
-      return;
-    }
-    const mq = window.matchMedia("(hover: none)");
-    const sync = () => setTapMode(mq.matches);
+    if (!window.matchMedia) return;
+    const query = window.matchMedia("(hover: none)");
+    const sync = () => setTapMode(query.matches);
     sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
   }, []);
 
   return tapMode;
@@ -41,95 +27,65 @@ function usePrefersTapTooltipInteraction() {
 type TooltipFieldContextValue = {
   tapMode: boolean;
   open: boolean;
-  setOpen: (next: boolean | ((prev: boolean) => boolean)) => void;
-  isControlled: boolean;
-  /** True after pointerdown on touch; Radix may fire onOpenChange(true) from focus before click — ignore that open. */
-  suppressFocusOpenRef: React.MutableRefObject<boolean>;
+  setOpen: (next: boolean) => void;
+  suppressPrimitiveChangeRef: React.MutableRefObject<boolean>;
+  suppressTouchFocusOpenRef: React.MutableRefObject<boolean>;
+  triggerRef: React.MutableRefObject<HTMLButtonElement | null>;
 };
 
 const TooltipFieldContext =
   React.createContext<TooltipFieldContextValue | null>(null);
 
 function useTooltipFieldContext() {
-  const ctx = React.useContext(TooltipFieldContext);
-  if (!ctx) {
-    throw new Error("TooltipTrigger must be used within Tooltip");
-  }
-  return ctx;
+  const context = React.useContext(TooltipFieldContext);
+  if (!context) throw new Error("TooltipTrigger must be used within Tooltip");
+  return context;
 }
 
-const Tooltip = (props: React.ComponentProps<typeof TooltipPrimitive.Root>) => {
-  const {
-    open: openProp,
-    defaultOpen,
-    onOpenChange: onOpenChangeProp,
-    delayDuration: delayDurationProp,
-  } = props;
+const Tooltip = ({
+  open: openProp,
+  defaultOpen = false,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof TooltipPrimitive.Root>) => {
   const tapMode = usePrefersTapTooltipInteraction();
-  const isControlled = openProp !== undefined;
-  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(
-    () => defaultOpen ?? false
-  );
-
-  const suppressFocusOpenRef = React.useRef(false);
-
-  const handleOpenChange = React.useCallback(
-    (next: boolean) => {
-      if (!isControlled) {
-        if (tapMode && next === true && suppressFocusOpenRef.current) {
-          return;
-        }
-        setUncontrolledOpen(next);
-      }
-      onOpenChangeProp?.(next);
-    },
-    [isControlled, onOpenChangeProp, tapMode]
-  );
-
-  const openSnapshot = isControlled ? openProp! : uncontrolledOpen;
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen);
+  const open = openProp ?? uncontrolledOpen;
+  const suppressPrimitiveChangeRef = React.useRef(false);
+  const suppressTouchFocusOpenRef = React.useRef(false);
+  const triggerRef = React.useRef<HTMLButtonElement | null>(null);
 
   const setOpen = React.useCallback(
-    (next: boolean | ((prev: boolean) => boolean)) => {
-      if (isControlled) {
-        const value = typeof next === "function" ? next(openProp!) : next;
-        onOpenChangeProp?.(value);
-      } else {
-        setUncontrolledOpen(next);
-      }
+    (next: boolean) => {
+      if (next === open) return;
+      if (openProp === undefined) setUncontrolledOpen(next);
+      onOpenChange?.(next);
     },
-    [isControlled, openProp, onOpenChangeProp]
+    [open, openProp, onOpenChange]
   );
 
-  const rootProps: React.ComponentProps<typeof TooltipPrimitive.Root> = (() => {
-    if (isControlled) {
-      return props;
-    }
-    if (tapMode) {
-      return {
-        ...props,
-        defaultOpen: undefined,
-        open: uncontrolledOpen,
-        onOpenChange: handleOpenChange,
-        delayDuration: delayDurationProp ?? 0,
-      };
-    }
-    return {
-      ...props,
-      onOpenChange: handleOpenChange,
-    };
-  })();
-
-  const contextValue: TooltipFieldContextValue = {
-    tapMode,
-    open: openSnapshot,
-    setOpen,
-    isControlled,
-    suppressFocusOpenRef,
-  };
-
   return (
-    <TooltipFieldContext.Provider value={contextValue}>
-      <TooltipPrimitive.Root {...rootProps} />
+    <TooltipFieldContext.Provider
+      value={{
+        tapMode,
+        open,
+        setOpen,
+        suppressPrimitiveChangeRef,
+        suppressTouchFocusOpenRef,
+        triggerRef,
+      }}
+    >
+      <TooltipPrimitive.Root
+        {...props}
+        open={open}
+        onOpenChange={(next) => {
+          if (suppressPrimitiveChangeRef.current) return;
+          // Touch compatibility mouse events focus the trigger after pointerup,
+          // before click. The click owns this toggle, including controlled roots.
+          if (next && suppressTouchFocusOpenRef.current) return;
+          setOpen(next);
+        }}
+      />
     </TooltipFieldContext.Provider>
   );
 };
@@ -138,108 +94,178 @@ Tooltip.displayName = TooltipPrimitive.Root.displayName;
 const TooltipTrigger = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Trigger>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
->(({ onPointerDown, onClick, className, ...props }, ref) => {
-  const { tapMode, open, setOpen, isControlled, suppressFocusOpenRef } =
-    useTooltipFieldContext();
+>(
+  (
+    { onPointerDown, onPointerCancel, onClick, onBlur, className, ...props },
+    ref
+  ) => {
+    const {
+      tapMode,
+      open,
+      setOpen,
+      suppressPrimitiveChangeRef,
+      suppressTouchFocusOpenRef,
+      triggerRef,
+    } = useTooltipFieldContext();
+    const touchPointerRef = React.useRef(false);
 
-  const onPointerDownForTap = React.useCallback(
-    (e: React.PointerEvent<HTMLButtonElement>) => {
-      if (tapMode) {
-        suppressFocusOpenRef.current = true;
-      }
-      if (tapMode && open) {
-        e.preventDefault();
-      }
-    },
-    [tapMode, open, suppressFocusOpenRef]
-  );
+    // Radix closes on pointerdown/click. Ignore that change during a tap, while
+    // leaving the native event intact for links, forms and host event handlers.
+    const suppressPrimitiveChange = () => {
+      suppressPrimitiveChangeRef.current = true;
+      queueMicrotask(() => {
+        suppressPrimitiveChangeRef.current = false;
+      });
+    };
 
-  const onClickForTap = React.useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!tapMode) {
-        return;
-      }
-      e.preventDefault();
-      if (isControlled) {
-        setOpen(!open);
-      } else {
-        setOpen((o) => !o);
-      }
-      suppressFocusOpenRef.current = false;
-    },
-    [tapMode, isControlled, open, setOpen, suppressFocusOpenRef]
-  );
+    const composedRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        triggerRef.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLButtonElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              triggerRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
+      },
+      [ref, triggerRef]
+    );
 
-  return (
-    <TooltipPrimitive.Trigger
-      ref={ref}
-      {...props}
-      className={cn("cursor-pointer", className)}
-      onPointerDown={(e) => {
-        onPointerDown?.(e);
-        if (!e.defaultPrevented) {
-          onPointerDownForTap(e);
-        }
-      }}
-      onClick={(e) => {
-        onClick?.(e);
-        if (!e.defaultPrevented) {
-          onClickForTap(e);
-        }
-      }}
-    />
-  );
-});
+    return (
+      <TooltipPrimitive.Trigger
+        {...props}
+        ref={composedRef}
+        className={cn("cursor-pointer", className)}
+        onPointerDown={(event) => {
+          onPointerDown?.(event);
+          if (event.defaultPrevented) return;
+          touchPointerRef.current = tapMode || event.pointerType === "touch";
+          if (touchPointerRef.current) {
+            suppressTouchFocusOpenRef.current = true;
+            suppressPrimitiveChange();
+          }
+        }}
+        onPointerCancel={(event) => {
+          onPointerCancel?.(event);
+          touchPointerRef.current = false;
+          suppressTouchFocusOpenRef.current = false;
+        }}
+        onClick={(event) => {
+          onClick?.(event);
+          const isTap = tapMode || touchPointerRef.current;
+          touchPointerRef.current = false;
+          suppressTouchFocusOpenRef.current = false;
+          if (event.defaultPrevented || !isTap) return;
+          suppressPrimitiveChange();
+          setOpen(!open);
+        }}
+        onBlur={(event) => {
+          onBlur?.(event);
+          touchPointerRef.current = false;
+          suppressTouchFocusOpenRef.current = false;
+        }}
+      />
+    );
+  }
+);
 TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName;
 
-/**
- * Arc's tooltip. Opened through the delay it rises 3px from its trigger and grows from 0.97 over 160ms; Radix
- * emits `instant-open` for a tooltip that opens inside the skip-delay window (pointer moved straight from one
- * trigger to the next) and for keyboard focus, and that one only fades, over 120ms. Closing is a 120ms fade to 0.98.
- * The 1px `border-black/5` edge keeps the pale #ECF1FB surface from melting into a white page; `black/5` resolves
- * to a static colour, not a var(), so the alpha works.
- */
-const TooltipContent = React.forwardRef(
+export interface TooltipContentProps extends React.ComponentPropsWithoutRef<
+  typeof TooltipPrimitive.Content
+> {
+  /** A neutral dark surface by default, or a light surface for dark contexts. */
+  variant?: "default" | "light";
+}
+
+const TooltipContent = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Content>,
+  TooltipContentProps
+>(
   (
     {
       className,
-      sideOffset = 8,
-      collisionPadding = 12,
+      variant = "default",
+      sideOffset = 4,
+      forceMount,
+      onEscapeKeyDown,
       ...props
-    }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>,
-    ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Content>>
-  ) => (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        ref={ref}
-        sideOffset={sideOffset}
-        collisionPadding={collisionPadding}
-        className={cn(
-          "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto rounded-md border border-solid border-black/5 bg-semantic-info-surface px-4 py-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_6px_18px_rgba(0,0,0,0.065),0_1px_3px_rgba(0,0,0,0.035)] origin-[var(--radix-tooltip-content-transform-origin)] motion-safe:[animation-duration:160ms] data-[state=instant-open]:motion-safe:[animation-duration:120ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] data-[state=instant-open]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] motion-safe:animate-in motion-safe:fade-in-0 data-[state=delayed-open]:motion-safe:zoom-in-[0.97] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=delayed-open]:data-[side=bottom]:slide-in-from-top-[3px] data-[state=delayed-open]:data-[side=left]:slide-in-from-right-[3px] data-[state=delayed-open]:data-[side=right]:slide-in-from-left-[3px] data-[state=delayed-open]:data-[side=top]:slide-in-from-bottom-[3px] max-w-[15rem] whitespace-normal",
-          className
-        )}
-        {...props}
-      />
-    </TooltipPrimitive.Portal>
-  )
+    },
+    ref
+  ) => {
+    const { triggerRef } = useTooltipFieldContext();
+    const contentRef = React.useRef<HTMLDivElement | null>(null);
+    const composedRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        contentRef.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLDivElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              contentRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    return (
+      <TooltipPrimitive.Portal forceMount={forceMount}>
+        <TooltipPrimitive.Content
+          {...props}
+          ref={composedRef}
+          forceMount={forceMount}
+          sideOffset={sideOffset}
+          data-variant={variant}
+          className={cn(
+            "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto max-w-[15rem] whitespace-normal break-words rounded-md border border-solid px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-5 shadow-md origin-[var(--radix-tooltip-content-transform-origin)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:[animation-duration:160ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)] data-[state=instant-open]:motion-safe:[animation-duration:120ms] data-[state=delayed-open]:motion-safe:zoom-in-[0.98] data-[state=delayed-open]:data-[side=bottom]:motion-safe:slide-in-from-top-[3px] data-[state=delayed-open]:data-[side=left]:motion-safe:slide-in-from-right-[3px] data-[state=delayed-open]:data-[side=right]:motion-safe:slide-in-from-left-[3px] data-[state=delayed-open]:data-[side=top]:motion-safe:slide-in-from-bottom-[3px] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=closed]:motion-safe:[animation-duration:100ms] motion-reduce:animate-none motion-reduce:transform-none",
+            variant === "light"
+              ? "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary [--tooltip-arrow-fill:var(--semantic-bg-primary)]"
+              : "border-semantic-bg-secondary bg-semantic-bg-secondary text-semantic-text-inverted [--tooltip-arrow-fill:var(--semantic-bg-secondary)]",
+            className
+          )}
+          onEscapeKeyDown={(event) => {
+            onEscapeKeyDown?.(event);
+            if (event.defaultPrevented) return;
+            // Ordinary tooltips leave focus on their trigger. Restore it only
+            // when a caller's existing composition moved focus into the bubble.
+            if (
+              contentRef.current?.contains(
+                contentRef.current.ownerDocument.activeElement
+              )
+            ) {
+              triggerRef.current?.focus({ preventScroll: true });
+            }
+          }}
+        />
+      </TooltipPrimitive.Portal>
+    );
+  }
 );
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 
-const TooltipArrow = React.forwardRef(
-  (
-    {
-      className,
-      ...props
-    }: React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>,
-    ref: React.Ref<React.ElementRef<typeof TooltipPrimitive.Arrow>>
-  ) => (
-    <TooltipPrimitive.Arrow
-      ref={ref}
-      className={cn("fill-semantic-info-surface", className)}
-      {...props}
-    />
-  )
-);
+const TooltipArrow = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Arrow>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Arrow>
+>(({ className, ...props }, ref) => (
+  <TooltipPrimitive.Arrow
+    aria-hidden="true"
+    {...props}
+    ref={ref}
+    className={cn(
+      "fill-[var(--tooltip-arrow-fill,var(--semantic-bg-secondary))]",
+      className
+    )}
+  />
+));
 TooltipArrow.displayName = TooltipPrimitive.Arrow.displayName;
 
 export {

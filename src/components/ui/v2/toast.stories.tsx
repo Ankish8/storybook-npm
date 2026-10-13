@@ -72,6 +72,9 @@ type ToastArgs = React.ComponentProps<typeof Toast> & {
   position: "bottom-right" | "top-right";
   onAction: () => void;
   workspaceName: string;
+  stack: boolean;
+  expanded: boolean;
+  visibleToasts: number;
 };
 function ToastBody({
   args,
@@ -96,13 +99,16 @@ function ToastBody({
         className={
           version === "v1"
             ? "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
-            : "-mr-0.5 -mt-px inline-flex size-8 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)]"
+            : "-mr-0.5 -mt-px inline-flex size-8 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
         }
       >
         <X className={version === "v1" ? "size-3" : "size-4"} />
       </button>
     ) : (
-      <ToastClose aria-label="Dismiss notification" />
+      <ToastClose
+        aria-label="Dismiss notification"
+        className="static right-auto top-auto -mr-0.5 -mt-px"
+      />
     ));
   const action =
     args.showAction &&
@@ -115,7 +121,7 @@ function ToastBody({
         className={cn(
           version === "v1"
             ? "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-semibold text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50"
-            : "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
+            : "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-medium text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
           version === "v2"
             ? "rounded-lg tracking-[0.06px] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)]"
             : "rounded-md px-3"
@@ -150,7 +156,19 @@ function ToastBody({
   return (
     <div className="flex w-full items-start gap-3 py-3.5 pl-4 pr-3.5">
       {args.showIcon && IconV2 && (
-        <span className="grid size-[30px] shrink-0 place-items-center rounded-full border border-solid border-[color-mix(in_oklab,currentColor_24%,transparent)] bg-[color-mix(in_oklab,currentColor_10%,transparent)]">
+        <span
+          className={cn(
+            "grid size-[30px] shrink-0 place-items-center rounded-full border border-solid",
+            variant === "success" &&
+              "border-semantic-success-border/40 bg-semantic-success-surface text-semantic-success-primary",
+            (variant === "error" || variant === "destructive") &&
+              "border-semantic-error-border/40 bg-semantic-error-surface text-semantic-error-primary",
+            variant === "warning" &&
+              "border-semantic-warning-border/40 bg-semantic-warning-surface text-semantic-warning-primary",
+            variant === "info" &&
+              "border-semantic-info-border/40 bg-semantic-info-surface text-semantic-info-primary"
+          )}
+        >
           <IconV2 className="size-4" strokeWidth={2.25} aria-hidden />
         </span>
       )}
@@ -184,10 +202,7 @@ function LiveToast({
         <Button variant="outline" onClick={() => changeOpen(true)}>
           {args.triggerLabel}
         </Button>
-        <p
-          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
-          role="status"
-        >
+        <p className="m-0 text-xs text-semantic-text-muted" role="status">
           {args.open ? "Notification open" : "Notification closed"}
         </p>
       </div>
@@ -197,13 +212,13 @@ function LiveToast({
         type={args.type}
         open={args.open}
         onOpenChange={changeOpen}
-        className="w-[26rem] max-w-full"
+        className="w-[28rem] max-w-full p-0"
       >
         <ToastBody args={args} />
       </Toast>
       <ToastViewport
         className={cn(
-          "w-[448px] max-w-full",
+          "right-0 w-[480px] max-w-full",
           args.position === "top-right" &&
             "bottom-auto right-0 top-0 sm:bottom-auto sm:right-0 sm:top-0"
         )}
@@ -211,6 +226,135 @@ function LiveToast({
     </ToastProvider>
   );
 }
+/** An actual store-driven hero, also usable in docs with a contained viewport. */
+function StackHero({
+  args,
+  updateArgs,
+}: {
+  args: ToastArgs;
+  updateArgs: (next: Partial<ToastArgs>) => void;
+}) {
+  const [result, setResult] = React.useState(
+    "Queue a few notifications, then hover or focus the stack."
+  );
+  React.useEffect(() => () => toast.dismiss(), []);
+  function notify(
+    title = args.titleCopy,
+    variant = args.variant,
+    description = args.description
+  ) {
+    toast({
+      title,
+      description,
+      variant,
+      duration: args.duration,
+      onOpenChange: args.onOpenChange,
+      action: args.showAction ? (
+        <ToastAction
+          altText={args.actionAltText}
+          disabled={args.actionDisabled}
+          onClick={() => {
+            args.onAction();
+            setResult("Action completed: " + title);
+          }}
+        >
+          {args.actionLabel}
+        </ToastAction>
+      ) : undefined,
+    });
+    setResult("Notification queued: " + title);
+  }
+  return (
+    <section className="relative grid w-[640px] max-w-full gap-6 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-subtle p-5">
+      <div className="grid max-w-sm gap-4">
+        <div className="grid gap-1">
+          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+            Workspace notifications
+          </p>
+          <p className="m-0 text-sm text-semantic-text-secondary">
+            Updates from your team collect here. Expand the stack to review
+            them.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => notify()}>{args.triggerLabel}</Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              notify(
+                "Workspace synced",
+                "success",
+                "Your changes are available to the team."
+              );
+              notify(
+                "New conversation assigned",
+                "info",
+                "Riya assigned a conversation to you."
+              );
+              notify(
+                "Webhook needs attention",
+                "error",
+                "The latest delivery failed. Retry when ready."
+              );
+            }}
+          >
+            Queue 3 notifications
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              toast.dismiss();
+              setResult("Notifications dismissed.");
+            }}
+          >
+            Dismiss all
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-4 text-xs text-semantic-text-secondary">
+          <label className="inline-flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={args.stack}
+              onChange={(event) => updateArgs({ stack: event.target.checked })}
+            />
+            Layered stack
+          </label>
+          <label className="inline-flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={args.expanded}
+              disabled={!args.stack}
+              onChange={(event) =>
+                updateArgs({ expanded: event.target.checked })
+              }
+            />
+            Keep expanded
+          </label>
+        </div>
+        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+          {result}
+        </p>
+      </div>
+      <Toaster
+        stack={args.stack}
+        expanded={args.expanded}
+        visibleToasts={args.visibleToasts}
+        onExpandedChange={(expanded) => updateArgs({ expanded })}
+        providerProps={{
+          swipeDirection: args.swipeDirection,
+          swipeThreshold: args.swipeThreshold,
+        }}
+        viewportProps={{
+          className: cn(
+            "relative order-last bottom-auto left-auto right-auto top-auto m-0 w-full max-h-[none] max-w-[384px] justify-self-end p-4 sm:bottom-auto sm:right-auto sm:top-auto md:max-w-[384px]",
+            args.position === "top-right" && "order-first"
+          ),
+        }}
+      />
+    </section>
+  );
+}
+
 const meta: Meta<ToastArgs> = {
   title: "V2/Components/Toast",
   component: Toast,
@@ -219,14 +363,14 @@ const meta: Meta<ToastArgs> = {
     layout: "padded",
     controls: {
       include: [
-        "open",
+        "stack",
+        "expanded",
+        "visibleToasts",
         "variant",
         "duration",
         "titleCopy",
         "description",
         "triggerLabel",
-        "showIcon",
-        "showClose",
         "showAction",
         "actionLabel",
         "actionAltText",
@@ -248,7 +392,7 @@ const meta: Meta<ToastArgs> = {
           name: "toast",
           exportName: "Toaster, toast, Toast, ToastAction",
           summary:
-            "Dismissible notifications with six semantic treatments: a status chip, title and description, an optional action and a dismiss.",
+            "Neutral notifications with status icons, an action and labelled dismiss. The optional stack shares the existing toast() store and fans out on hover, focus or an explicit touch/keyboard control.",
           changes: [
             [
               "Structure",
@@ -258,7 +402,7 @@ const meta: Meta<ToastArgs> = {
             [
               "Container",
               "5px corners, flat status borders",
-              "416px, 8px corners, 1px tint border and Arc floating shadow",
+              "416px, 8px corners, neutral surface and border, subtle floating shadow",
             ],
             [
               "Typography",
@@ -268,64 +412,68 @@ const meta: Meta<ToastArgs> = {
             [
               "Status",
               "Default, success, error, warning, info",
-              "Preserved plus destructive alias to error",
+              "Same neutral card across variants; status is conveyed by the icon; destructive aliases error",
             ],
             [
               "Interaction",
               "Provider, duration, action, swipe, store helpers",
-              "Preserved; controlled primitive playground and hook Usage",
+              "Preserved Radix controls; optional layered stack, pause/resume and focus handoff",
             ],
           ],
           tokens: [
-            ["Default surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             [
-              "Success surface / border",
-              "--semantic-success-surface / --color-success-200",
-              "#ECFDF3 / #ABEFC6",
-              "#ECFDF3",
+              "All toast surfaces",
+              "--semantic-bg-primary",
+              "#FFFFFF",
+              "#FFFFFF",
             ],
             [
-              "Error / destructive",
-              "--semantic-error-surface / --color-error-200",
-              "#FEF3F2 / #FECDCA",
-              "#FEF3F2",
-            ],
-            [
-              "Warning",
-              "--semantic-warning-surface / --color-warning-200",
-              "#FFFAEB / #FEDF89",
-              "#FFFAEB",
-            ],
-            [
-              "Info",
-              "--semantic-info-surface / --color-info-200",
-              "#ECF1FB / #A8C0EC",
-              "#ECF1FB",
-            ],
-            [
-              "Default description",
-              "--semantic-text-muted",
-              "#717680",
-              "#717680",
+              "Neutral border",
+              "--semantic-border-layout",
+              "#E9EAEB",
+              "#E9EAEB",
             ],
             ["Title", "--semantic-text-primary", "#181D27", "#181D27"],
             [
-              "Description status colors",
-              "Success / error / warning / info text",
-              "#067647 / #B42318 / #B54708 / #2F5398",
+              "Description / action",
+              "--semantic-text-secondary",
+              "#343E55",
+              "#343E55",
             ],
-            ["Corners / width", "8px / 384px literals", "8px / 416px"],
+            ["Dismiss", "--semantic-text-muted", "#717680", "#717680"],
+            [
+              "Success icon",
+              "--semantic-success-primary",
+              "#17B26A",
+              "#17B26A",
+            ],
+            [
+              "Error / destructive icon",
+              "--semantic-error-primary",
+              "#F04438",
+              "#F04438",
+            ],
+            [
+              "Warning icon",
+              "--semantic-warning-primary",
+              "#F79009",
+              "#F79009",
+            ],
+            ["Info icon", "--semantic-info-primary", "#3B6ACB", "#3B6ACB"],
           ],
           guidance:
-            "Mount one Toaster per application and call toast, toast.success/error/warning/info or toast({variant: 'destructive'}). Destructive uses the error palette and preserves all Root props. Provide meaningful action altText. Duration is Radix's visible lifetime; the existing store removal delay and limit remain unchanged. Overview uses controlled primitives so dismiss/timeout update open Controls; hook notifications in Usage are deliberately separate from that playground. Galleries are inline visual presentations with no global viewport or portal.",
+            "Mount one Toaster per application and call the existing toast(), toast.success/error/warning/info or useToast(). Enable stacking with <Toaster stack />. Five queued items and the 2000ms default store removal delay are unchanged. All open items fan out when expanded; visibleToasts only limits collapsed layers. Hover and focus expand automatically, and the count button supports touch/keyboard expansion. Stack timers preserve remaining time while expanded, focused, hovered, dragged or the page is hidden. Root duration inherits Radix's 5000ms default, right swipe and 50px threshold; duration: Infinity keeps a toast open. A duration of 0 on a toast inherits the provider, while a provider duration of 0 is persistent. Native action, close, swipe and Escape preventDefault remain effective. All variants use neutral copy/surfaces with status in the icon. Overview is a live queued stack; Primitive playground isolates the controlled Root contract.",
         }),
       },
     },
   },
   args: {
+    stack: true,
+    expanded: false,
+    visibleToasts: 3,
     open: false,
     variant: "success",
-    duration: 5000,
+    duration: 8000,
     titleCopy: "Changes saved",
     description: "Your workspace settings are up to date.",
     triggerLabel: "Show notification",
@@ -343,6 +491,16 @@ const meta: Meta<ToastArgs> = {
     onAction: fn(),
   },
   argTypes: {
+    stack: { control: "boolean", table: { category: "Toaster presentation" } },
+    expanded: {
+      control: "boolean",
+      table: { category: "Toaster presentation" },
+      description: "Keep expanded; hover and focus also fan out the stack.",
+    },
+    visibleToasts: {
+      control: { type: "number", min: 1, max: 5, step: 1 },
+      table: { category: "Toaster presentation" },
+    },
     open: { control: "boolean", table: { category: "Toast" } },
     variant: {
       control: "select",
@@ -405,8 +563,8 @@ const meta: Meta<ToastArgs> = {
   render: function Render(args) {
     const [, updateArgs] = useArgs<ToastArgs>();
     return (
-      <div className="min-h-72 p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
-        <LiveToast args={args} updateArgs={updateArgs} />
+      <div className="min-h-72 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+        <StackHero args={args} updateArgs={updateArgs} />
       </div>
     );
   },
@@ -414,6 +572,38 @@ const meta: Meta<ToastArgs> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
+export const InteractiveStack: Story = {
+  name: "Interactive stack",
+  args: { stack: true },
+};
+export const PrimitivePlayground: Story = {
+  name: "Primitive playground",
+  parameters: {
+    controls: {
+      include: [
+        "open",
+        "variant",
+        "duration",
+        "titleCopy",
+        "description",
+        "triggerLabel",
+        "showIcon",
+        "showClose",
+        "showAction",
+        "actionLabel",
+        "actionAltText",
+        "actionDisabled",
+        "swipeDirection",
+        "swipeThreshold",
+        "position",
+      ],
+    },
+  },
+  render: function Render(args) {
+    const [, updateArgs] = useArgs<ToastArgs>();
+    return <LiveToast args={args} updateArgs={updateArgs} />;
+  },
+};
 export const Default: Story = {
   args: { variant: "default", titleCopy: "Workspace updated" },
   parameters: { controls: { exclude: ["showIcon"] } },
@@ -480,7 +670,7 @@ function InlineToast({
           : toastVariantsV1({
               variant: variant === "destructive" ? "error" : variant,
             }),
-        version === "v2" ? "w-[26rem] max-w-full" : "w-[384px] max-w-full",
+        version === "v2" ? "w-[28rem] max-w-full p-0" : "w-[384px] max-w-full",
         state === "Focus" && "[&_button]:pseudo-focus-visible"
       )}
     >
@@ -489,6 +679,9 @@ function InlineToast({
   );
 }
 const INLINE = [
+  "stack",
+  "expanded",
+  "visibleToasts",
   "open",
   "duration",
   "triggerLabel",
@@ -508,10 +701,10 @@ export const AllVariants: Story = {
   },
   render: (args) => (
     <div className="max-w-full overflow-x-auto p-4">
-      <div className="grid min-w-[1224px] grid-cols-3 items-start gap-6">
+      <div className="grid min-w-[1392px] grid-cols-3 items-start gap-6">
         {VARIANTS.map((variant) => (
           <div key={variant} className="flex flex-col gap-3">
-            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
+            <span className="text-xs font-normal text-semantic-text-muted">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} />
@@ -534,12 +727,12 @@ export const States: Story = {
       <div className="grid min-w-[1224px] grid-cols-3 items-start gap-6">
         {["Visible", "Disabled action", "Dismissed"].map((state) => (
           <div key={state} className="flex flex-col gap-3">
-            <span className="text-xs font-normal text-[var(--v2-text-muted,#707070)]">
+            <span className="text-xs font-normal text-semantic-text-muted">
               {state}
             </span>
             {state === "Dismissed" ? (
               <div className="flex min-h-[116px] w-[26rem] max-w-full items-center justify-center rounded-lg border border-dashed border-semantic-border-layout p-4">
-                <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
+                <p className="m-0 text-xs text-semantic-text-muted">
                   Notification closed · content unmounted
                 </p>
               </div>
@@ -560,7 +753,7 @@ export const V1VsV2: Story = {
   parameters: {
     ...gallery(
       [...INLINE, "variant"],
-      "Every status in both versions, with complete title, description, icon, close and action. The destructive row compares v1 error with v2's new destructive alias. Each status retains its existing v1 palette; v2 uses the recorded 200-level borders."
+      "Every status in both versions, with complete title, description, icon, close and action. The destructive row compares v1 error with v2's new destructive alias. The v1 cards retain their status surfaces; every v2 card shares a neutral surface and border, with status in its icon."
     ),
     layout: "padded",
   },
@@ -571,14 +764,14 @@ export const V1VsV2: Story = {
         {["v1 · ui/toast", "v2 · ui/v2/toast"].map((label) => (
           <span
             key={label}
-            className="text-xs font-normal text-[var(--v2-text-muted,#707070)]"
+            className="text-xs font-normal text-semantic-text-muted"
           >
             {label}
           </span>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <span className="pt-5 text-xs font-normal text-[var(--v2-text-muted,#707070)]">
+            <span className="pt-5 text-xs font-normal text-semantic-text-muted">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} version="v1" />
@@ -603,10 +796,10 @@ function WorkspaceForm({
   return (
     <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        <p className="m-0 text-base font-medium text-semantic-text-primary">
           Workspace settings
         </p>
-        <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
+        <p className="m-0 text-xs text-semantic-text-muted">
           Save a local edit and use the notification action to undo it.
         </p>
       </div>
@@ -641,7 +834,7 @@ function WorkspaceForm({
       >
         <label
           htmlFor={id}
-          className="text-sm font-medium text-[var(--v2-text-secondary,#5E5E5E)]"
+          className="text-sm font-medium text-semantic-text-secondary"
         >
           Workspace name
         </label>
@@ -664,16 +857,13 @@ function WorkspaceForm({
           </Button>
         </div>
       </form>
-      <p className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
+      <p className="m-0 text-sm text-semantic-text-secondary">
         Saved name: {saved}
       </p>
-      <p
-        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
-        role="status"
-      >
+      <p className="m-0 text-xs text-semantic-text-muted" role="status">
         {result}
       </p>
-      <Toaster />
+      <Toaster stack={args.stack} />
     </section>
   );
 }
@@ -697,6 +887,7 @@ export const Usage: Story = {
         "actionAltText",
         "actionDisabled",
         "workspaceName",
+        "stack",
         "onAction",
       ],
     },

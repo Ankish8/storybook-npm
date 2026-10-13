@@ -26,6 +26,7 @@ const meta: Meta<typeof Stepper> = {
         "marker",
         "disabled",
         "onStepChange",
+        "navigation",
       ],
     },
     docs: {
@@ -34,7 +35,7 @@ const meta: Meta<typeof Stepper> = {
           name: "stepper",
           hasV1: false,
           summary:
-            "Progressive steps with numbered or icon markers in horizontal and vertical layouts.",
+            "Progress steps with drawn completion checks, directional connectors and horizontal or vertical layouts. This component is new in v2; existing v2 imports and defaults remain supported.",
           changes: [
             ["Small marker", "—", "24 ×24px; 1px inset border"],
             [
@@ -45,12 +46,22 @@ const meta: Meta<typeof Stepper> = {
             [
               "Connector",
               "—",
-              "2px; rounded ends; fills on a spring as steps complete",
+              "2px; fills or drains in sequence with progress, including right-to-left layouts",
             ],
             [
               "Labels",
               "—",
-              "14px medium titles and 12px supporting text; completed steps show a check",
+              "14px titles and 12px supporting text; numbers shrink into a smoothly drawn check",
+            ],
+            [
+              "Step navigation",
+              "—",
+              "All enabled steps by default; opt-in completed-only navigation with Arrow and Home/End focus movement",
+            ],
+            [
+              "Reduced motion",
+              "—",
+              "Checks, connectors and marker changes apply immediately",
             ],
           ],
           tokens: [
@@ -64,7 +75,7 @@ const meta: Meta<typeof Stepper> = {
             ["Supporting text", "--semantic-text-muted", "#717680", "#717680"],
           ],
           guidance:
-            "currentStep is a zero-based index exposed as aria-current=step. Without onStepChange this is a read-only progress display; supplying it enables native keyboard-accessible step actions. Mark unavailable steps disabled.",
+            "currentStep is zero-based; steps.length completes the flow. Without onStepChange this is a read-only ordered list. By default all enabled steps remain clickable. Use navigation=completed for a strict flow; current and upcoming steps then cannot activate. Step actions are native type=button controls; Arrow keys and Home/End move focus without changing progress. Supply external Back/Continue actions and a live status for a complete flow.",
         }),
       },
     },
@@ -89,6 +100,7 @@ const meta: Meta<typeof Stepper> = {
     orientation: { control: "radio", options: ["horizontal", "vertical"] },
     marker: { control: "radio", options: ["numbered", "icon"] },
     disabled: { control: "boolean" },
+    navigation: { control: "radio", options: ["all", "completed"] },
   },
   render: function Render(args) {
     const [, updateArgs] = useArgs();
@@ -273,6 +285,108 @@ export const Usage: Story = {
           args.onStepChange?.(currentStep);
           updateArgs({ currentStep });
         }}
+      />
+    );
+  },
+};
+
+function ProgressionHero({
+  args,
+  changeOrientation,
+}: {
+  args: StepperProps;
+  changeOrientation: (value: "horizontal" | "vertical") => void;
+}) {
+  const index = Math.max(0, Math.min(args.steps.length, args.currentStep ?? 0));
+  const done = index === args.steps.length;
+  return (
+    <section className="w-[520px] max-w-full space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-sm font-medium text-semantic-text-primary">
+          Workspace setup
+        </span>
+        <div
+          role="group"
+          aria-label="Stepper orientation"
+          className="inline-flex gap-1 rounded-lg border border-solid border-semantic-border-layout p-1"
+        >
+          {(["horizontal", "vertical"] as const).map((orientation) => (
+            <Button
+              key={orientation}
+              type="button"
+              size="sm"
+              variant={args.orientation === orientation ? "secondary" : "ghost"}
+              aria-pressed={args.orientation === orientation}
+              onClick={() => changeOrientation(orientation)}
+              className="h-7 px-2 text-xs capitalize"
+            >
+              {orientation}
+            </Button>
+          ))}
+        </div>
+      </div>
+      <Stepper {...args} navigation="completed" currentStep={index} />
+      <div className="rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 py-3">
+        <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          {done ? "You're ready to go" : args.steps[index]?.title}
+        </p>
+        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+          {done
+            ? "All setup steps are complete. Restart to replay the transitions."
+            : args.steps[index]?.description}
+        </p>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+          {done
+            ? "All steps complete"
+            : `Step ${index + 1} of ${args.steps.length}`}
+        </p>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            disabled={args.disabled || index === 0}
+            onClick={() => args.onStepChange?.(index - 1)}
+          >
+            Back
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            disabled={args.disabled || !args.steps.length}
+            onClick={() => args.onStepChange?.(done ? 0 : index + 1)}
+          >
+            {done
+              ? "Restart"
+              : index === args.steps.length - 1
+                ? "Finish"
+                : "Continue"}
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export const DocsPreview: Story = {
+  parameters: gallery(
+    [],
+    "A compact workspace flow. Continue completes a step with a drawn check and flowing connector; Back reverses it. Revisit completed steps or switch orientation."
+  ),
+  render: function DocsPreviewRender(args) {
+    const [, updateArgs] = useArgs();
+    return (
+      <ProgressionHero
+        args={{
+          ...args,
+          onStepChange: (currentStep) => {
+            args.onStepChange?.(currentStep);
+            updateArgs({ currentStep });
+          },
+        }}
+        changeOrientation={(orientation) => updateArgs({ orientation })}
       />
     );
   },

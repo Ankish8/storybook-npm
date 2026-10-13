@@ -1,0 +1,35 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Status label",
+      "description": "Badge is a passive label. Its default variant and size stay unchanged."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "All ten existing variant names remain accepted, including primary, secondary and destructive."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "Small, default and large sizes retain 22, 26 and 30px heights."
+    },
+    {
+      "id": "approval",
+      "title": "Review approval",
+      "description": "A separate button changes the review status. The passive badge settles when its label and icon change."
+    },
+    {
+      "id": "icons",
+      "title": "Icons and dot",
+      "description": "leftIcon, rightIcon and dot are decorative. Keep the meaning in the readable label."
+    },
+    {
+      "id": "as-child",
+      "title": "As a link",
+      "description": "asChild applies the badge styles and native attributes to one child. Compose icon content in that child yourself."
+    }
+  ]
+}

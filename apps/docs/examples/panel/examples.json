@@ -1,0 +1,35 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Contextual panel",
+      "description": "Panel starts open by default. It is a non-modal complementary panel; the parent supplies its available height."
+    },
+    {
+      "id": "controlled",
+      "title": "Open, close and return focus",
+      "description": "The parent owns open. Close or Escape requests onClose; the opener remains available outside the panel."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "sm, default and lg prefer 280, 320 and 400px widths but stay within the available container."
+    },
+    {
+      "id": "form",
+      "title": "Native form and footer action",
+      "description": "The footer submit button targets the body form by id. Save changes updates a local status in the persistent footer."
+    },
+    {
+      "id": "scrollable",
+      "title": "Scrollable history",
+      "description": "The body scrolls independently while the header and footer remain available."
+    },
+    {
+      "id": "custom-header",
+      "title": "Custom header",
+      "description": "header replaces the default title and close button. Supply your own controls and an accessible panel label."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+Breadcrumbs (nav)
+└── Ordered path (ol)
+    ├── Ancestor links
+    ├── Decorative separators
+    ├── Overflow button → hidden ancestor menu
+    └── Current page (aria-current="page")

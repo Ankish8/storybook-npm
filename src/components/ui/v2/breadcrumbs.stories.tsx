@@ -30,7 +30,7 @@ const meta: Meta<typeof Breadcrumbs> = {
   tags: ["autodocs"],
   parameters: {
     layout: "centered",
-    controls: { include: ["items", "maxItems", "onNavigate"] },
+    controls: { include: ["items", "maxItems", "maxItemWidth", "onNavigate"] },
     design: {
       type: "figma",
       url: "https://www.figma.com/design/q84boKV4Bly9HKXzdtBj2K/New-Design-System---MyO?node-id=2274-48709",
@@ -51,16 +51,31 @@ const meta: Meta<typeof Breadcrumbs> = {
             [
               "Labels",
               "—",
-              "14px Inter at 1.4 line height; the current page is medium weight; links underline on hover",
+              "14px Timeless Sans / Inter at 1.4 line height; current page is medium weight; links underline on fine-pointer hover and keyboard focus",
+            ],
+            [
+              "Long paths",
+              "—",
+              "maxItems defaults to 4 and preserves hidden destinations in a menu; maxItemWidth optionally truncates labels without shortening accessible names",
+            ],
+            [
+              "Direction and separators",
+              "—",
+              "Native dir support with mirrored chevrons, an RTL menu and an optional decorative separator",
+            ],
+            [
+              "Motion",
+              "—",
+              "New levels slide in 8px over 240ms, respecting RTL and reduced motion; initial paths stay still",
             ],
           ],
           tokens: [
-            ["Ancestor", "--semantic-text-secondary", "343E55", "#343E55"],
-            ["Current", "--semantic-text-primary", "181D27", "#181D27"],
-            ["Separator", "--semantic-text-muted", "717680", "#717680"],
+            ["Ancestor", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Current", "--v2-text-primary", "#484848", "#484848"],
+            ["Separator", "--color-neutral-300", "#D5D7DA", "#D5D7DA"],
           ],
           guidance:
-            "Provide an ordered items array from root to current page. The final item is marked aria-current=page. maxItems collapses middle items into a menu; all destinations remain accessible.",
+            "Breadcrumbs is a v2-only component; there is no v1 Breadcrumbs export to migrate. Existing v2 items, maxItems, onNavigate and nav refs remain unchanged. Provide the path from root to current page; the final item is noninteractive and marked aria-current=page. maxItems includes the overflow button and has a minimum of 3. Hidden pages retain their native href and original index in onNavigate. Prevent default in onNavigate for app-owned navigation. Keyboard users can open the overflow menu with Enter, navigate with arrows and return with Escape. Long paths scroll horizontally by default; maxItemWidth is opt-in and keeps full labels accessible. Use dir=rtl to mirror chevrons and the menu. Decorative icons should have aria-hidden=true.",
         }),
       },
     },
@@ -69,6 +84,7 @@ const meta: Meta<typeof Breadcrumbs> = {
   argTypes: {
     items: { control: "object" },
     maxItems: { control: { type: "number", min: 3, max: 10 } },
+    maxItemWidth: { control: { type: "number", min: 48, max: 320 } },
   },
   render: (args) => (
     <Breadcrumbs
@@ -104,6 +120,36 @@ export const MorePages: Story = {
       { label: "Webhooks", href: "#webhooks" },
     ],
     maxItems: 3,
+  },
+};
+export const LongLabels: Story = {
+  args: {
+    maxItemWidth: 112,
+    items: [
+      {
+        label: "Customer success workspace",
+        href: "#workspace",
+        icon: <Home aria-hidden="true" />,
+      },
+      { label: "Team configuration and permissions", href: "#settings" },
+      { label: "Notification delivery preferences" },
+    ],
+  },
+};
+export const CustomSeparator: Story = {
+  args: { separator: <span className="text-semantic-text-muted">/</span> },
+};
+export const RightToLeft: Story = {
+  args: {
+    dir: "rtl",
+    "aria-label": "مسار التنقل",
+    maxItems: 3,
+    items: [
+      { label: "الرئيسية", href: "#home" },
+      { label: "مساحة العمل", href: "#workspace" },
+      { label: "الإعدادات", href: "#settings" },
+      { label: "التكاملات" },
+    ],
   },
 };
 export const AllVariants: Story = {
@@ -151,6 +197,14 @@ function Navigate(args: Parameters<NonNullable<Story["render"]>>[0]) {
           notifyNavigate(args.onNavigate, item, index);
         }}
       />
+      <button
+        type="button"
+        disabled={current >= args.items.length - 1}
+        className="text-sm text-semantic-text-link disabled:opacity-50"
+        onClick={() => setCurrent(current + 1)}
+      >
+        Open next level
+      </button>
       <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
         Current page:{" "}
         {args.items[Math.min(current, args.items.length - 1)]?.label || "None"}

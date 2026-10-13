@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 
 /**
  * Spinner variants for loading indicators.
- * Uses semantic color tokens for consistent theming. One turn takes 700ms, linear (Arc's button spinner). Reduced
- * motion keeps turning, slower, because a stopped spinner stops saying "busy".
+ * Uses semantic color tokens for consistent theming. The partial ring stays
+ * visible without rotating when reduced motion is requested.
  */
 const spinnerVariants = cva(
-  "animate-spin [animation-duration:700ms] motion-reduce:[animation-duration:2s]",
+  "block animate-spin [animation-duration:var(--v2-spinner-duration,700ms)] [animation-timing-function:linear] [animation-iteration-count:infinite] [animation-play-state:var(--v2-spinner-play-state,running)] motion-reduce:animate-none",
   {
     variants: {
       size: {
@@ -20,8 +20,8 @@ const spinnerVariants = cva(
       },
       variant: {
         default: "text-semantic-primary",
-        secondary: "text-[var(--v2-text-secondary,#5E5E5E)]",
-        muted: "text-[var(--v2-text-muted,#707070)]",
+        secondary: "text-semantic-text-secondary",
+        muted: "text-semantic-text-muted",
         inverted: "text-semantic-text-inverted",
         current: "text-current",
       },
@@ -34,14 +34,16 @@ const spinnerVariants = cva(
 );
 
 /**
- * Ring thickness in viewBox units. Arc's loader is a 1.5px ring on a 16px box, so the ratio (2.25 of 24) is constant
- * and the ring scales with the spinner instead of thinning out.
+ * A 1.5px ring at the smallest size scales with the indicator. The inset keeps
+ * the stroke inside the viewBox at every size.
  */
 const STROKE_WIDTH = 2.25;
 
 /**
  * A loading spinner component with customizable size and color variants.
- * Draws Arc's loader: a three-quarter ring with no track, open on the right, turning clockwise.
+ * Draws a three-quarter ring with an open gap and no visible track.
+ * Defaults to a named status; use aria-hidden when a parent already announces
+ * the loading state. Rotation pauses outside the viewport or on hidden pages.
  *
  * @example
  * ```tsx
@@ -59,27 +61,84 @@ export interface SpinnerProps
   "aria-label"?: string;
 }
 
-const Spinner = React.forwardRef(
+const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
   (
     {
       className,
       size = "default",
       variant,
       "aria-label": ariaLabel = "Loading",
+      "aria-hidden": ariaHidden,
+      "aria-labelledby": ariaLabelledBy,
+      role,
+      style,
       ...props
-    }: SpinnerProps,
-    ref: React.Ref<HTMLDivElement>
+    },
+    ref
   ) => {
-    // The ring's outer edge sits on the 24-unit box, so the centre line is half a stroke inside it.
-    const radius = 12 - STROKE_WIDTH / 2;
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const [visible, setVisible] = React.useState(true);
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === "function") return ref(node);
+        if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    React.useEffect(() => {
+      let inView = true;
+      const updateVisibility = () =>
+        setVisible(inView && document.visibilityState !== "hidden");
+      const node = rootRef.current;
+      const observer =
+        node && typeof IntersectionObserver !== "undefined"
+          ? new IntersectionObserver(([entry]) => {
+              if (!entry) return;
+              inView = entry.isIntersecting;
+              updateVisibility();
+            })
+          : null;
+      if (node) observer?.observe(node);
+      updateVisibility();
+      document.addEventListener("visibilitychange", updateVisibility);
+      return () => {
+        observer?.disconnect();
+        document.removeEventListener("visibilitychange", updateVisibility);
+      };
+    }, []);
+
+    const decorative = ariaHidden === true || ariaHidden === "true";
+    // Explicit CSS properties read these values even when a consumer's Tailwind
+    // animation shorthand is important. Native wrapper styles stay intact.
+    const callerStyle = style as
+      | (React.CSSProperties & { "--v2-spinner-play-state"?: string })
+      | undefined;
+    const spinnerStyle = {
+      "--v2-spinner-duration": style?.animationDuration ?? "700ms",
+      ...style,
+      "--v2-spinner-play-state": visible
+        ? (callerStyle?.["--v2-spinner-play-state"] ??
+          style?.animationPlayState ??
+          "running")
+        : "paused",
+    } as React.CSSProperties;
+    const radius = 10.5;
     const circumference = 2 * Math.PI * radius;
 
     return (
       <div
-        ref={ref}
-        role="status"
-        aria-label={ariaLabel}
-        className={cn("inline-flex shrink-0", className)}
+        ref={setRootRef}
+        role={role ?? (decorative ? undefined : "status")}
+        aria-label={decorative ? undefined : ariaLabel}
+        aria-labelledby={ariaLabelledBy}
+        aria-hidden={ariaHidden}
+        className={cn(
+          "inline-flex shrink-0 items-center justify-center align-middle leading-none [&[hidden]]:hidden",
+          className
+        )}
+        style={spinnerStyle}
         {...props}
       >
         <svg
@@ -87,8 +146,10 @@ const Spinner = React.forwardRef(
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+          focusable="false"
         >
-          {/* v1 draws a track beneath the arc and callers' tests may count circles, so the element stays; Arc has no track, so it is invisible. */}
+          {/* Retain the existing track element while the open ring supplies the visual indicator. */}
           <circle
             cx="12"
             cy="12"
@@ -97,7 +158,7 @@ const Spinner = React.forwardRef(
             strokeWidth={STROKE_WIDTH}
             opacity="0"
           />
-          {/* A 270-degree arc: the dash starts at 4:30 so the gap is centred on the right, like a border with border-right-color: transparent. */}
+          {/* The 270-degree arc leaves a clear gap on the right. */}
           <circle
             cx="12"
             cy="12"
@@ -108,7 +169,9 @@ const Spinner = React.forwardRef(
             transform="rotate(45 12 12)"
           />
         </svg>
-        <span className="sr-only">{ariaLabel}</span>
+        {!decorative && !ariaLabelledBy && (
+          <span className="sr-only">{ariaLabel}</span>
+        )}
       </div>
     );
   }

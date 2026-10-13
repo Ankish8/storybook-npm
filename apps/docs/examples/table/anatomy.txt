@@ -1,0 +1,6 @@
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell, TableCaption } from "@/components/ui/v2/table";
+<Table>
+  <TableCaption>Accessible context</TableCaption>
+  <TableHeader><TableRow><TableHead scope="col">Heading</TableHead></TableRow></TableHeader>
+  <TableBody><TableRow><TableCell>Value</TableCell></TableRow></TableBody>
+</Table>

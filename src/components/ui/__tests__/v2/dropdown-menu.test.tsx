@@ -997,3 +997,113 @@ describe("DropdownMenu v2 refresh", () => {
     );
   });
 });
+
+describe("DropdownMenu migration interaction regressions", () => {
+  it("keeps the parent highlight on its trigger when a destructive submenu item takes focus", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+        <DropdownMenuContent data-testid="parent-menu">
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>More actions</DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem destructive>Delete draft</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    screen.getByText("Actions").focus();
+    await user.keyboard("{Enter}{ArrowRight}");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("menuitem", { name: "Delete draft" })
+      ).toHaveFocus()
+    );
+    expect(
+      screen.getByTestId("parent-menu").querySelector("[data-menu-highlight]")
+    ).not.toHaveAttribute("data-tone", "danger");
+    await user.keyboard("{ArrowLeft}");
+    await waitFor(() => expect(screen.getByText("More actions")).toHaveFocus());
+  });
+
+  it("skips a disabled submenu trigger during keyboard navigation", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>First action</DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger disabled>
+              Admin actions
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem>Private action</DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
+          <DropdownMenuItem>Last action</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    screen.getByText("Actions").focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("menuitem", { name: "First action" })
+      ).toHaveFocus()
+    );
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitem", { name: "Last action" })).toHaveFocus();
+    expect(screen.getByText("Admin actions")).toHaveAttribute(
+      "aria-disabled",
+      "true"
+    );
+    expect(screen.queryByText("Private action")).not.toBeInTheDocument();
+  });
+
+  it("allows the first outside click through an opt-in non-modal menu", async () => {
+    const user = userEvent.setup();
+    const outside = vi.fn();
+    const openChange = vi.fn();
+    render(
+      <>
+        <DropdownMenu modal={false} onOpenChange={openChange}>
+          <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem>Rename</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <button onClick={outside}>Outside action</button>
+      </>
+    );
+    await user.click(screen.getByText("Actions"));
+    await user.click(screen.getByText("Outside action"));
+    expect(outside).toHaveBeenCalledOnce();
+    expect(openChange).toHaveBeenLastCalledWith(false);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+    expect(screen.getByText("Outside action")).toHaveFocus();
+  });
+
+  it("preserves keyboard typeahead and skips a disabled match", async () => {
+    const user = userEvent.setup();
+    render(
+      <DropdownMenu>
+        <DropdownMenuTrigger>Actions</DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>Archive</DropdownMenuItem>
+          <DropdownMenuItem disabled>Delete locked</DropdownMenuItem>
+          <DropdownMenuItem>Duplicate</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    screen.getByText("Actions").focus();
+    await user.keyboard("{Enter}d");
+    await waitFor(() =>
+      expect(screen.getByRole("menuitem", { name: "Duplicate" })).toHaveFocus()
+    );
+    await user.keyboard("{Escape}");
+    expect(screen.getByText("Actions")).toHaveFocus();
+  });
+});

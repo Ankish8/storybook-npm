@@ -12,7 +12,9 @@ export const categories = [
   { id: "forms", title: "Forms" },
   { id: "navigation", title: "Navigation" },
   { id: "feedback", title: "Feedback" },
+  { id: "cards", title: "Cards" },
   { id: "layout", title: "Layout and content" },
+  { id: "app-shell", title: "App shell" },
   { id: "chat", title: "Chat" },
 ] as const;
 
@@ -30,6 +32,10 @@ export interface ComponentEntry {
   kind?: "block";
   /** Slugs shown under Related; defaults to the other entries in the same category. */
   related?: string[];
+  /** Compatibility entry whose docs live with the canonical component. */
+  aliasOf?: string;
+  /** Retained source/install entry that is omitted from discovery. */
+  hidden?: boolean;
 }
 
 // The v2 CLI registry and each component's story summary define this catalog.
@@ -55,13 +61,6 @@ export const components: ComponentEntry[] = [
     category: "actions",
     description:
       "A main action joined to a dropdown of related alternatives, with shared Button styling and keyboard navigation.",
-  },
-  {
-    slug: "button-group",
-    title: "Button group",
-    category: "actions",
-    description:
-      "Joined actions with a sliding highlight, animated feedback and an optional menu.",
   },
   {
     slug: "modal",
@@ -171,10 +170,11 @@ export const components: ComponentEntry[] = [
     title: "Select",
     category: "forms",
     description:
-      "Composable Radix select primitives with keyboard navigation, grouped options, wrapped labels and viewport callbacks.",
+      "One Select family: a complete labelled field or composable Radix primitives, with search, groups, validation and paging.",
   },
   {
     slug: "select-field",
+    aliasOf: "select",
     title: "Select field",
     category: "forms",
     description:
@@ -259,9 +259,18 @@ export const components: ComponentEntry[] = [
   {
     slug: "empty-state",
     title: "Empty state",
-    category: "feedback",
+    category: "cards",
     description:
       "Centered empty views with a clear explanation and optional next action.",
+  },
+  {
+    slug: "empty-states",
+    title: "Empty states",
+    category: "app-shell",
+    kind: "block",
+    description:
+      "A tabbed app-shell pattern for no results, offline, caught-up and missing-page views, with recovery actions owned by your app.",
+    related: ["empty-state", "tabs", "button", "alert"],
   },
   {
     slug: "progress-indicator",
@@ -272,6 +281,7 @@ export const components: ComponentEntry[] = [
   },
   {
     slug: "shimmering-text",
+    hidden: true,
     title: "Shimmering text",
     category: "feedback",
     description:
@@ -364,6 +374,7 @@ export const components: ComponentEntry[] = [
   },
   {
     slug: "typography",
+    hidden: true,
     title: "Typography",
     category: "layout",
     description:
@@ -371,10 +382,19 @@ export const components: ComponentEntry[] = [
   },
   {
     slug: "ui-card",
-    title: "UI card",
-    category: "layout",
+    title: "Card",
+    category: "cards",
     description:
       "Content cards for templates, actions, metrics and selectable options.",
+    related: ["metric-card", "empty-state", "avatar", "button"],
+  },
+  {
+    slug: "metric-card",
+    title: "Metric card",
+    category: "cards",
+    description:
+      "A focused metric summary with formatted values, units, comparisons, independent trend direction and tone, and an optional supporting graphic.",
+    related: ["ui-card", "table", "progress-indicator", "badge"],
   },
   {
     slug: "contact-list-item",
@@ -435,16 +455,32 @@ export function getComponent(slug: string): ComponentEntry | undefined {
 }
 
 /** Where an entry's page lives: components under `/components`, blocks under `/blocks`. */
-export function entryHref(entry: Pick<ComponentEntry, "slug" | "kind">) {
-  return `${entry.kind === "block" ? "/blocks" : "/components"}/${entry.slug}`;
+export function entryHref(
+  entry: Pick<ComponentEntry, "slug" | "kind" | "aliasOf">
+) {
+  return `${entry.kind === "block" ? "/blocks" : "/components"}/${entry.aliasOf ?? entry.slug}`;
 }
 
-export const uiComponents = components.filter(
+export const visibleEntries = components.filter(
+  (component) => !component.hidden && !component.aliasOf
+);
+export const uiComponents = visibleEntries.filter(
   (component) => component.kind !== "block"
 );
-export const blocks = components.filter(
+export const blocks = visibleEntries.filter(
   (component) => component.kind === "block"
 );
+
+export function relatedEntries(entry: ComponentEntry) {
+  const candidates = entry.related
+    ? entry.related.map(getComponent)
+    : visibleEntries.filter((item) => item.category === entry.category);
+  return candidates
+    .filter((item): item is ComponentEntry =>
+      Boolean(item && !item.hidden && !item.aliasOf && item.slug !== entry.slug)
+    )
+    .slice(0, 4);
+}
 
 function pagesFor(entries: ComponentEntry[]) {
   return categories

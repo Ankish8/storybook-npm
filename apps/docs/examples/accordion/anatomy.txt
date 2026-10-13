@@ -1,0 +1,7 @@
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/v2/accordion";
+<Accordion type="multiple" defaultValue={["details"]}>
+  <AccordionItem value="details">
+    <AccordionTrigger>Details</AccordionTrigger>
+    <AccordionContent>Content</AccordionContent>
+  </AccordionItem>
+</Accordion>

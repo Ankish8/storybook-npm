@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -29,6 +30,7 @@ import {
   components,
   entryHref,
   uiComponents,
+  visibleEntries,
 } from "@docs/lib/catalog";
 
 const searchPages = [
@@ -44,7 +46,7 @@ const searchPages = [
     category: "Docs",
     description: "Colors, typography, spacing, focus and motion.",
   },
-  ...components.map((component) => ({
+  ...visibleEntries.map((component) => ({
     title: component.title,
     url: entryHref(component),
     category:
@@ -72,12 +74,32 @@ export function LibraryShell({ children }: { children: ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [previousPathname, setPreviousPathname] = useState(pathname);
+  // Reconcile route-dependent UI before committing children, without an extra
+  // effect render. Unrelated collapsed groups and search state stay intact.
+  if (previousPathname !== pathname) {
+    setPreviousPathname(pathname);
+    setMobileOpen(false);
+    const active = components.find(
+      (component) => pathname === entryHref(component)
+    );
+    if (active) {
+      const key = `${active.kind === "block" ? "block-" : ""}${active.category}`;
+      setCollapsedGroups((previous) => {
+        if (!previous.has(key)) return previous;
+        const next = new Set(previous);
+        next.delete(key);
+        return next;
+      });
+    }
+  }
   const dialogRef = useRef<HTMLDialogElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const navigationRef = useRef<HTMLElement>(null);
   const sidebarInputRef = useRef<HTMLInputElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasMobileOpen = useRef(false);
   const searchReturnFocusRef = useRef<HTMLElement | null>(null);
 
   const { filteredComponents, filteredBlocks } = useMemo(() => {
@@ -176,13 +198,18 @@ export function LibraryShell({ children }: { children: ReactNode }) {
         if (mobileOpen) {
           event.preventDefault();
           setMobileOpen(false);
-          menuButtonRef.current?.focus();
         }
       }
     };
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [closeSearch, mobileOpen, openSearch, searchOpen]);
+
+  useLayoutEffect(() => {
+    // The header must stop being inert before its menu button can take focus.
+    if (wasMobileOpen.current && !mobileOpen) menuButtonRef.current?.focus();
+    wasMobileOpen.current = mobileOpen;
+  }, [mobileOpen]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -206,21 +233,6 @@ export function LibraryShell({ children }: { children: ReactNode }) {
       .getElementById(`arc-search-option-${selectedIndex}`)
       ?.scrollIntoView({ block: "nearest" });
   }, [searchOpen, selectedIndex, selectedResult]);
-
-  useEffect(() => {
-    setMobileOpen(false);
-    const active = components.find(
-      (component) => pathname === entryHref(component)
-    );
-    if (!active) return;
-    const key = `${active.kind === "block" ? "block-" : ""}${active.category}`;
-    setCollapsedGroups((previous) => {
-      if (!previous.has(key)) return previous;
-      const next = new Set(previous);
-      next.delete(key);
-      return next;
-    });
-  }, [pathname]);
 
   useEffect(() => {
     const sidebar = navigationRef.current;
@@ -364,7 +376,6 @@ export function LibraryShell({ children }: { children: ReactNode }) {
 
   function closeNavigation() {
     setMobileOpen(false);
-    menuButtonRef.current?.focus();
   }
 
   return (

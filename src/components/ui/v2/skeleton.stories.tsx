@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useState } from "react";
+import { useId, useState, type CSSProperties } from "react";
 import { Skeleton } from "./skeleton";
 import { Skeleton as V1 } from "../skeleton";
 import { Button } from "./button";
@@ -33,21 +32,26 @@ const meta: Meta<typeof Skeleton> = {
             [
               "Animation",
               "Pulse only",
-              'Pulse by default; optional animation="shimmer" (1.6s linear sweep) or "none"',
+              'Calm finite pulse by default; optional animation="shimmer" or "none". Animations pause offscreen and in hidden tabs.',
             ],
           ],
           tokens: [
-            ["Default", "--semantic-bg-grey", "E9EAEB", "#E9EAEB"],
-            ["Subtle", "--semantic-bg-ui", "F5F5F5", "#F5F5F5"],
+            [
+              "Default",
+              "--semantic-bg-grey",
+              "#E9EAEB",
+              "var(--semantic-bg-grey)",
+            ],
+            ["Subtle", "--semantic-bg-ui", "#F5F5F5", "var(--semantic-bg-ui)"],
             [
               "Shimmer highlight",
               "--semantic-bg-primary",
               "#FFFFFF",
-              "#FFFFFF at 50%",
+              "color-mix(in srgb,var(--semantic-bg-primary) 50%,transparent)",
             ],
           ],
           guidance:
-            "Match shape, width and height to the content being loaded. Skeletons are hidden from screen readers; describe loading once on the parent region. Pulse and shimmer respect reduced motion: both show the static fill. Shimmer needs tailwindcss-animate in the consuming project.",
+            'Match shape, width and height to the content being loaded so the layout stays steady when it resolves. Skeleton blocks are decorative by default; set aria-busy on the content region and describe loading once in a status. Pulse and shimmer pause offscreen and in hidden tabs, settle after about twenty seconds, and show a static fill under reduced motion. animation="none" is always static. Native attributes, refs, styles and className remain available. Shimmer uses the existing tailwindcss-animate plugin in the consuming project.',
         }),
       },
     },
@@ -69,7 +73,14 @@ const meta: Meta<typeof Skeleton> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+export const Overview: Story = {
+  parameters: gallery(
+    ["shape", "width", "height"],
+    "A sample contact with matching placeholder and content footprints. Load contact reveals the details; Replay loading restores the placeholders. Palette and animation stay editable."
+  ),
+  render: (args) => <LoadingExample {...args} />,
+};
+export const Default: Story = {};
 export const Circle: Story = {
   args: { shape: "circle", width: 48, height: 48 },
 };
@@ -79,6 +90,40 @@ export const Rectangle: Story = {
 export const Subtle: Story = { args: { variant: "subtle" } };
 export const Shimmer: Story = {
   args: { animation: "shimmer", width: 240, height: 16 },
+};
+export const CallerStyles: Story = {
+  parameters: gallery(
+    ["shape", "width", "height", "animation"],
+    "Native styles set these placeholders to 65% width, 24px height and a paused 2.4s animation with a 120ms delay. The caller className rounds their corners."
+  ),
+  render: (args) => (
+    <div className="w-[320px] max-w-full space-y-5">
+      {(["pulse", "shimmer"] as const).map((animation) => (
+        <section key={animation} className="space-y-2">
+          <h3 className="m-0 text-sm font-medium capitalize">{animation}</h3>
+          <Skeleton
+            {...args}
+            data-testid={animation}
+            className="rounded-lg"
+            animation={animation}
+            shape="line"
+            width={undefined}
+            height={undefined}
+            style={{
+              width: "65%",
+              height: 24,
+              animationDelay: "120ms",
+              animationDuration: "2.4s",
+              animationPlayState: "paused",
+              animationTimingFunction: "linear",
+              animationIterationCount: 3,
+              animationFillMode: "forwards",
+            }}
+          />
+        </section>
+      ))}
+    </div>
+  ),
 };
 export const Animations: Story = {
   parameters: gallery(
@@ -167,69 +212,128 @@ export const AllShapes: Story = {
 };
 function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
   const [loading, setLoading] = useState(true);
-  const reducedMotion = useReducedMotion();
+  const [replay, setReplay] = useState(0);
+  const headingId = useId();
+  const stagger = (delay: string) =>
+    ({ ...args.style, "--v2-skeleton-delay": delay }) as CSSProperties;
   return (
-    <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-medium">Account summary</h3>
-      <div
+    <section className="w-[420px] max-w-full space-y-4 text-semantic-text-primary">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 id={headingId} className="m-0 text-base font-medium">
+          Contact details
+        </h3>
+        <span role="status" className="text-xs text-semantic-text-muted">
+          {loading ? "Loading contact" : "Contact loaded"}
+        </span>
+      </div>
+      <article
+        aria-labelledby={headingId}
         aria-busy={loading}
-        className="flex items-center gap-4 rounded-lg border border-solid border-semantic-border-layout p-5"
+        className="rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5"
       >
-        <AnimatePresence initial={false} mode="wait">
-          <motion.div
-            key={loading ? "loading" : "loaded"}
-            className="flex w-full items-center gap-4"
-            initial={{ opacity: 0, y: reducedMotion ? 0 : 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            {loading ? (
-              <>
-                <span className="sr-only">Loading account</span>
+        <div
+          key={loading ? replay : "content"}
+          className={
+            loading
+              ? undefined
+              : "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:[animation-duration:180ms]"
+          }
+        >
+          <div className="flex h-12 items-center gap-3">
+            <div className="size-12 shrink-0">
+              {loading ? (
                 <Skeleton {...args} shape="circle" width={48} height={48} />
-                <div className="min-w-0 flex-1 space-y-3">
+              ) : (
+                <span
+                  aria-hidden="true"
+                  className="grid size-12 place-items-center rounded-full bg-semantic-primary-surface text-sm font-medium text-semantic-primary"
+                >
+                  PS
+                </span>
+              )}
+            </div>
+            <div className="flex min-w-0 flex-1 flex-col gap-2">
+              <div className="flex h-5 items-center">
+                {loading ? (
                   <Skeleton
                     {...args}
-                    style={
-                      { "--v2-skeleton-delay": "60ms" } as React.CSSProperties
-                    }
+                    style={stagger("90ms")}
                     shape="line"
-                    width="80%"
+                    width="58%"
                     height={16}
                   />
+                ) : (
+                  <h4 className="m-0 truncate text-sm font-medium leading-5">
+                    Priya Shah
+                  </h4>
+                )}
+              </div>
+              <div className="flex h-4 items-center">
+                {loading ? (
                   <Skeleton
                     {...args}
-                    style={
-                      { "--v2-skeleton-delay": "120ms" } as React.CSSProperties
-                    }
+                    style={stagger("180ms")}
                     shape="line"
-                    width="60%"
+                    width="72%"
                     height={12}
                   />
-                </div>
-              </>
-            ) : (
-              <div>
-                <h4 className="m-0 text-sm font-medium">Example account</h4>
-                <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
-                  Your profile is ready.
-                </p>
+                ) : (
+                  <p className="m-0 truncate text-xs leading-4 text-semantic-text-muted">
+                    Customer success manager
+                  </p>
+                )}
               </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            </div>
+          </div>
+          <dl className="m-0 mt-5 grid gap-4 border-0 border-t border-solid border-semantic-border-layout pt-4">
+            {[
+              ["Email", "priya.shah@example.com", "82%"],
+              ["Team", "Customer success", "62%"],
+            ].map(([label, value, width], index) => (
+              <div key={label} className="min-w-0">
+                <dt className="text-xs font-normal leading-4 text-semantic-text-muted">
+                  {label}
+                </dt>
+                <dd className="m-0 mt-2 flex h-5 items-center text-sm leading-5">
+                  {loading ? (
+                    <Skeleton
+                      {...args}
+                      style={stagger(index === 0 ? "270ms" : "360ms")}
+                      shape="line"
+                      width={width}
+                      height={16}
+                    />
+                  ) : (
+                    <span className="truncate">{value}</span>
+                  )}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </article>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button onClick={() => setLoading(false)}>Load contact</Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            setReplay((value) => value + 1);
+            setLoading(true);
+          }}
+        >
+          Replay loading
+        </Button>
       </div>
-      <Button variant="outline" onClick={() => setLoading(!loading)}>
-        {loading ? "Show loaded content" : "Reload profile"}
-      </Button>
+      <p className="m-0 text-xs leading-5 text-semantic-text-muted">
+        Sample contact. Load contact reveals the details immediately.
+      </p>
     </section>
   );
 }
 export const Usage: Story = {
   parameters: gallery(
     ["shape", "width", "height"],
-    "Fixed avatar and text dimensions. Palette and animation apply to all placeholders. Toggle between loading and content."
+    "Fixed contact and text dimensions. Palette and animation apply to all placeholders. Load the sample contact or replay the loading state."
   ),
   render: (args) => <LoadingExample {...args} />,
 };

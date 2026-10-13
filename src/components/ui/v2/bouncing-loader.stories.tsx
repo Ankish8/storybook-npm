@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { BouncingLoader } from "./bouncing-loader";
+import { BouncingLoader, type BouncingLoaderProps } from "./bouncing-loader";
 import { BouncingLoader as V1 } from "../bouncing-loader";
 import { Button } from "./button";
 import { gallery } from "../../../storybook/v2-preview";
@@ -26,24 +26,42 @@ const meta: Meta<typeof BouncingLoader> = {
             [
               "Shape and motion",
               "Three bouncing dots",
-              "Same v2 loading treatment",
+              "A quiet 3px wave with a softer opacity change",
+            ],
+            ["Defaults", "8px dots, 0.375rem spacing", "Same size and spacing"],
+            [
+              "Motion preference",
+              "Continuous animation",
+              "Static dots with reduced motion; paused offscreen and on hidden pages",
+            ],
+            [
+              "Decorative use",
+              "Default named status",
+              "aria-hidden or presentation removes default announcements",
             ],
             ["Namespace", "ui/bouncing-loader", "ui/v2/bouncing-loader"],
           ],
           tokens: [
-            ["Dot color", "--semantic-text-placeholder", "A2A6B1", "#A2A6B1"],
+            [
+              "Dot fill override",
+              "--bouncing-loader-color",
+              "var(--semantic-text-placeholder)",
+              "#A2A6B1",
+            ],
+            ["Dot diameter", "--bouncing-loader-size", "8px"],
+            ["Dot spacing", "--bouncing-loader-spacing", "0.375rem"],
           ],
           guidance:
-            "Use one loader per loading region and give it a specific aria-label. Size and spacing accept pixel numbers or CSS lengths. Reduced motion shows static dots.",
+            "Use one loader per pending operation and give it a specific aria-label. If a button or parent status already describes the operation, use aria-hidden on the loader. Size and spacing accept pixel numbers or CSS lengths; their v1 defaults are preserved. Reduced motion shows static dots, and offscreen or hidden-page dots pause. Completion is controlled by your operation, never by the animation.",
         }),
       },
     },
   },
   args: {
-    size: 6,
-    spacing: 4,
+    size: 8,
+    spacing: 6,
     color: "var(--semantic-text-placeholder)",
-    "aria-label": "Preparing a response",
+    "aria-label": "Sending draft",
   },
   argTypes: {
     size: { control: { type: "number", min: 2, max: 32 } },
@@ -54,7 +72,97 @@ const meta: Meta<typeof BouncingLoader> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+const INITIAL_DRAFT =
+  "Thanks for reaching out. I’m checking this and will reply shortly.";
+
+function SendingDraft(args: BouncingLoaderProps) {
+  const [draft, setDraft] = useState(INITIAL_DRAFT);
+  const [state, setState] = useState<"idle" | "sending" | "sent">("idle");
+  const sending = state === "sending";
+
+  return (
+    <section className="w-[480px] max-w-full space-y-5 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 text-semantic-text-primary">
+      <header className="space-y-1">
+        <h3 className="m-0 text-base font-semibold">Send a reply</h3>
+        <p className="m-0 text-sm text-semantic-text-muted">
+          A local preview. Start sending, then finish when you’re ready.
+        </p>
+      </header>
+      <form
+        className="space-y-4"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (draft.trim() && !sending) setState("sending");
+        }}
+      >
+        <label className="block space-y-2 text-sm font-medium">
+          <span>Draft reply</span>
+          <textarea
+            value={draft}
+            readOnly={sending}
+            onChange={(event) => {
+              setDraft(event.target.value);
+              if (state === "sent") setState("idle");
+            }}
+            className="block min-h-28 w-full resize-y rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary p-3 text-sm font-normal leading-relaxed text-semantic-text-primary outline-none focus-visible:border-semantic-border-focus focus-visible:ring-1 focus-visible:ring-semantic-border-focus"
+          />
+        </label>
+        <div
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+          className="flex min-h-12 items-center gap-3 rounded-lg bg-semantic-bg-ui px-4 py-3 text-sm text-semantic-text-secondary"
+        >
+          {sending && <BouncingLoader {...args} aria-hidden="true" />}
+          <span>
+            {sending
+              ? (args["aria-label"] ?? "Sending draft")
+              : state === "sent"
+                ? "Draft sent in this preview."
+                : "Your draft is ready to send."}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="submit"
+            size="sm"
+            disabled={sending || !draft.trim()}
+            aria-busy={sending}
+          >
+            Start sending
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={!sending}
+            onClick={() => setState("sent")}
+          >
+            Finish sending
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setState("idle");
+              setDraft(INITIAL_DRAFT);
+            }}
+          >
+            Reset
+          </Button>
+        </div>
+      </form>
+    </section>
+  );
+}
+
+export const Overview: Story = {
+  render: (args) => <SendingDraft {...args} />,
+};
+export const Default: Story = {
+  render: (args) => <BouncingLoader {...args} />,
+};
 export const LargerDots: Story = { args: { size: 12, spacing: 8 } };
 export const AllSizes: Story = {
   parameters: gallery(
@@ -88,25 +196,46 @@ export const AllVariants: Story = {
     </div>
   ),
 };
-function LoadingExample(args: Parameters<typeof BouncingLoader>[0]) {
-  const [loading, setLoading] = useState(true);
-  return (
-    <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-medium">Assistant response</h3>
-      <div className="rounded-lg bg-semantic-bg-ui p-4">
-        {loading ? (
-          <BouncingLoader {...args} />
-        ) : (
-          <p className="m-0 text-sm">Your response is ready.</p>
-        )}
-      </div>
-      <Button variant="outline" onClick={() => setLoading(!loading)}>
-        {loading ? "Finish response" : "Start response"}
-      </Button>
-    </section>
-  );
-}
-export const Usage: Story = { render: (args) => <LoadingExample {...args} /> };
+export const Usage: Story = {
+  render: (args) => <SendingDraft {...args} />,
+};
+export const InButton: Story = {
+  render: (args) => (
+    <Button type="button" disabled aria-busy="true">
+      <BouncingLoader {...args} color="currentColor" aria-hidden="true" />
+      Sending draft
+    </Button>
+  ),
+};
+export const Decorative: Story = {
+  render: (args) => (
+    <div role="status" aria-live="polite" className="flex items-center gap-3">
+      <BouncingLoader {...args} aria-hidden="true" />
+      <span className="text-sm text-semantic-text-secondary">
+        Checking availability
+      </span>
+    </div>
+  ),
+};
+export const NativeStyles: Story = {
+  render: (args) => (
+    <BouncingLoader
+      {...args}
+      id="native-style-loader"
+      title="A slower wave with caller styles"
+      size="0.75rem"
+      spacing="0.5rem"
+      tabIndex={0}
+      style={{ animationDuration: "1.8s", padding: "12px", opacity: 0.9 }}
+      className="rounded-lg border border-solid border-semantic-border-layout focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-semantic-border-focus"
+    />
+  ),
+};
+export const Paused: Story = {
+  render: (args) => (
+    <BouncingLoader {...args} style={{ animationPlayState: "paused" }} />
+  ),
+};
 export const V1VsV2: Story = {
   name: "v1 vs v2",
   render: (args) => (

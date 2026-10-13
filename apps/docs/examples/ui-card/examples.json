@@ -1,0 +1,35 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Content card",
+      "description": "The display title is Card. The UiCard names, ui-card module and CLI key remain unchanged."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "default, template, icon, action and metrics remain available. Use MetricCard for a focused new metric summary."
+    },
+    {
+      "id": "selection",
+      "title": "Selectable card",
+      "description": "Supplying onClick adds keyboard activation, button semantics and a calm hover border. selected and disabled retain their meaning."
+    },
+    {
+      "id": "footer-action",
+      "title": "Independent footer action",
+      "description": "Keep a content card passive when it contains links or buttons. Its footer supports a byline and action."
+    },
+    {
+      "id": "custom-widths",
+      "title": "Responsive widths",
+      "description": "className can adapt the retained default widths. w-full and a maximum keep the card inside the page."
+    },
+    {
+      "id": "legacy-metrics",
+      "title": "Existing metrics composition",
+      "description": "The metrics variant and the six original parts remain usable when only the import path changes."
+    }
+  ]
+}

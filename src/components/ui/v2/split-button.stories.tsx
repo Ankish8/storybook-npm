@@ -110,7 +110,7 @@ const meta = {
             [
               "Compatibility",
               "No v1 equivalent",
-              "Additive v2 component; existing Button and ButtonGroup remain unchanged",
+              "Additive v2 component; existing Button remains unchanged",
             ],
             [
               "Styles",
@@ -130,7 +130,7 @@ const meta = {
             ["Neutral label", "--v2-text-secondary", "5E5E5E", "#5E5E5E"],
             ["Radius", "--radius", "8px"],
           ],
-          guidance: `Use when one action is the default and two to five related alternatives belong beside it. Choosing a menu item runs that item's callback; it does not silently replace the main action. For selection use ButtonGroup, and for one async task with completion feedback use ActionButton.
+          guidance: `Use when one action is the default and two to five related alternatives belong beside it. Choosing a menu item runs that item's callback; it does not silently replace the main action. For one async task with completion feedback use ActionButton.
 
 The default type is button. Native attributes, className and ref apply to the main button; containerClassName styles the pair. Loading blocks both actions while retaining focus on the main action. An empty actions array renders only the main button. open/onOpenChange supports controlled menus; otherwise defaultOpen initializes the menu. Disabling or loading closes it. Set menuLabel when a translated accessible name is needed.
 

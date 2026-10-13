@@ -112,7 +112,7 @@ function AlertExample({
       </UI>
       {!visible && (
         <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-semantic-border-layout p-4">
-          <p className="m-0 text-sm text-[var(--v2-text-muted,#707070)]">
+          <p className="m-0 text-sm text-[var(--v2-text-muted,var(--semantic-text-muted))]">
             Alert dismissed.
           </p>
           <Button
@@ -171,7 +171,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited semibold title / 14px body",
-              "Inter 16px medium title / 12px normal body",
+              "Inter 14px medium title / 12px normal body",
             ],
             [
               "Surface and border",
@@ -198,6 +198,11 @@ const meta: Meta<Args> = {
               "Controlled/uncontrolled",
               "Existing open/defaultOpen/onClose/action API retained",
             ],
+            [
+              "Motion",
+              "Immediate updates and removal",
+              "Short copy/icon swaps, smooth presence and copy height; reduced-motion fades",
+            ],
           ],
           tokens: [
             ["Text", "--semantic-text-primary", "#181D27", "#181D27"],
@@ -213,7 +218,7 @@ const meta: Meta<Args> = {
             ],
           ],
           guidance:
-            "Use inline for feedback inside a section, header for a full-width notice, and overlay for a compact card. Overlay places direct AlertTitle children (including fragments) in its header and other content in its body. Closable controlled alerts need onClose to update open. The Example controls compose title, description, icons and action buttons; they are not extra Alert props.",
+            "Use inline for feedback inside a section, header for a full-width notice, and overlay for a compact card. The full-width default is retained; constrain the surrounding container for a compact notice. Overview demonstrates a neutral surface through className without changing the status variants. Overlay places direct AlertTitle children (including fragments) in its header and other content in its body. Closable controlled alerts need onClose to update open. Customize controls compose title, description, icons and action buttons; they are not extra Alert props. The default role=alert and aria-live=polite remain compatible with v1; native attributes can override them.",
         }),
       },
     },
@@ -282,7 +287,70 @@ const meta: Meta<Args> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+
+function SyncExample() {
+  const [connected, setConnected] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
+  return (
+    <div className="mx-auto w-full max-w-[384px]">
+      <Alert
+        variant={connected ? "success" : "warning"}
+        animateExit
+        open={open}
+        closable
+        onClose={() => setOpen(false)}
+        className="border-semantic-border-layout bg-semantic-bg-primary"
+      >
+        <AlertTitle>
+          {connected ? "All updates synced" : "Sync paused"}
+        </AlertTitle>
+        <AlertDescription>
+          {connected
+            ? "Your latest 3 updates are now shared with the team."
+            : "3 updates are saved locally. Reconnect to share them with your team."}
+        </AlertDescription>
+      </Alert>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => {
+            setConnected((value) => !value);
+            setOpen(true);
+          }}
+        >
+          {connected ? "Pause sync" : "Reconnect"}
+        </Button>
+        {!open && (
+          <Button
+            type="button"
+            size="sm"
+            variant="ghost"
+            onClick={() => setOpen(true)}
+          >
+            Show alert
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export const Overview: Story = {
+  parameters: {
+    layout: "centered",
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          "Reconnect shares three local updates and changes the message and status icon. Pause sync returns to the local state. Dismiss and Show alert replay the opt-in animateExit transition. The 384px container and neutral className are this composition's choices; Alert still fills its container and dismisses immediately by default, as in v1.",
+      },
+    },
+  },
+  render: () => <SyncExample />,
+};
+export const Customize: Story = {};
 export const Default: Story = {};
 export const Success: Story = {
   args: {
@@ -358,7 +426,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
         {title}
       </h3>
       {children}
@@ -371,14 +439,12 @@ export const AllVariants: Story = {
     "All six colors are fixed. Presentation, icon, content, visibility and action controls apply throughout. Each alert dismisses independently."
   ),
   render: (args) => (
-    <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[850px] grid-cols-2 gap-4">
-        {variants.map((variant) => (
-          <Card key={variant} title={variant}>
-            <AlertExample args={{ ...args, variant }} />
-          </Card>
-        ))}
-      </div>
+    <div className="grid max-w-full grid-cols-1 gap-4 lg:grid-cols-2">
+      {variants.map((variant) => (
+        <Card key={variant} title={variant}>
+          <AlertExample args={{ ...args, variant }} />
+        </Card>
+      ))}
     </div>
   ),
 };
@@ -404,20 +470,47 @@ export const States: Story = {
     "Visible, focused actions, disabled actions and dismissed states are fixed. Other content and presentation controls remain editable."
   ),
   render: (args) => (
-    <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[850px] grid-cols-2 gap-4">
-        {["Visible", "Focus", "Disabled actions", "Dismissed"].map((state) => (
-          <Card key={state} title={state}>
-            <AlertExample
-              args={{
-                ...args,
-                open: state !== "Dismissed",
-                actionDisabled: state === "Disabled actions",
-              }}
-              forceFocus={state === "Focus"}
-            />
-          </Card>
-        ))}
+    <div className="grid max-w-full grid-cols-1 gap-4 lg:grid-cols-2">
+      {["Visible", "Focus", "Disabled actions", "Dismissed"].map((state) => (
+        <Card key={state} title={state}>
+          <AlertExample
+            args={{
+              ...args,
+              open: state !== "Dismissed",
+              actionDisabled: state === "Disabled actions",
+            }}
+            forceFocus={state === "Focus"}
+          />
+        </Card>
+      ))}
+    </div>
+  ),
+};
+export const ContainerWidths: Story = {
+  args: { showAction: true, showSecondaryAction: true, closable: true },
+  parameters: gallery(
+    ["presentation"],
+    "Alert has no size prop. Inline fills each 320px, 384px or full-width container. Copy wraps and actions move below it when space is limited."
+  ),
+  render: (args) => (
+    <div className="grid w-full gap-5">
+      <div className="w-full max-w-[320px]">
+        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+          320px maximum
+        </h3>
+        <AlertExample args={{ ...args, presentation: "inline" }} />
+      </div>
+      <div className="w-full max-w-[384px]">
+        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+          384px maximum
+        </h3>
+        <AlertExample args={{ ...args, presentation: "inline" }} />
+      </div>
+      <div className="w-full">
+        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+          Full width
+        </h3>
+        <AlertExample args={{ ...args, presentation: "inline" }} />
       </div>
     </div>
   ),
@@ -458,10 +551,10 @@ function SettingsExample({
   const [saved, setSaved] = React.useState(false);
   return (
     <section className="max-w-[760px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
         Inbox settings
       </h3>
-      <p className="m-0 mt-1 mb-5 text-xs text-[var(--v2-text-muted,#707070)]">
+      <p className="m-0 mt-1 mb-5 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
         Save a name to display local feedback. Dismissal stays synchronized with
         Controls.
       </p>
@@ -476,7 +569,7 @@ function SettingsExample({
         <div className="min-w-[220px] flex-1">
           <label
             htmlFor="alert-inbox-name"
-            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
+            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]"
           >
             Inbox name
           </label>
@@ -495,7 +588,7 @@ function SettingsExample({
         </Button>
       </form>
       {saved && (
-        <p className="m-0 mb-3 text-xs text-[var(--v2-text-muted,#707070)]">
+        <p className="m-0 mb-3 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
           Saved locally: {name}
         </p>
       )}

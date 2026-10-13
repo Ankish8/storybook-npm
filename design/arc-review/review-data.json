@@ -377,53 +377,6 @@
       "tryThis": "Compare the Ghost and Secondary buttons side by side in All variants."
     },
     {
-      "slug": "button-group",
-      "title": "Button Group",
-      "family": "Actions",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/button-group",
-      "changes": [
-        "Segment padding 16px to 14px; small segments use 14px text (was 12px); chevron segment 42px to 38px.",
-        "Hairline dividers, label crossfade with a 4px blur, width spring and a press dip."
-      ],
-      "verification": [
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Outline",
-        "Solid",
-        "Small",
-        "Large",
-        "Vertical",
-        "IconsOnly",
-        "LabelsOnly",
-        "Disabled",
-        "DisabledItem",
-        "WithoutMenu",
-        "AllVariants",
-        "AllSizes",
-        "States",
-        "Responsive",
-        "ZoomControls",
-        "Usage",
-        "Links",
-        "SelectionCompatibility",
-        "Primary",
-        "Toggle",
-        "ToggleLabels",
-        "InteractionTest"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Wider segments, short dividers",
-      "afterCaption": "Arc padding, hairline dividers, springy width",
-      "tryThis": "Press each segment and change its label."
-    },
-    {
       "slug": "checkbox",
       "title": "Checkbox",
       "family": "Forms",
@@ -481,49 +434,6 @@
       "beforeCaption": "Mark scales into place",
       "afterCaption": "Check draws inside a stable shell",
       "tryThis": "Press Replay change to compare selection feedback."
-    },
-    {
-      "slug": "confirmation-modal",
-      "title": "Confirmation Modal",
-      "family": "Navigation & overlays",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/dialog",
-      "changes": [
-        "Cancel now closes uncontrolled dialogs through the existing DialogClose primitive and restores trigger focus.",
-        "Kept the current compact layout, spring entrance and primary action styling.",
-        "Arc-parity pass: Inherits the new dialog surface and motion; padding 24px, 16px icon, buttons right-aligned instead of equal width.",
-        "Arc-parity pass: Initial focus lands on Cancel, the safe choice."
-      ],
-      "verification": [
-        "Focused component tests passed.",
-        "Source and API reviewed; local visual review blocked by browser URL policy.",
-        "All 16 assigned suites passed: 345 tests total.",
-        "TypeScript including stories passed; focused ESLint passed.",
-        "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Default",
-        "Destructive",
-        "Loading",
-        "WithoutDescription",
-        "LongContent",
-        "AllVariants",
-        "States",
-        "V1VsV2",
-        "Usage",
-        "Interaction",
-        "KeyboardInteraction"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Uncontrolled cancellation can stay open",
-      "afterCaption": "Cancellation closes the modal",
-      "tryThis": "The change is behavioral. Try dismissal; controlled examples may look identical at rest."
     },
     {
       "slug": "contact-list-item",
@@ -785,91 +695,6 @@
       "tryThis": "Focus state is shown in both previews so the border and glow difference is visible immediately."
     },
     {
-      "slug": "delete-confirmation-modal",
-      "title": "Delete Confirmation Modal",
-      "family": "Navigation & overlays",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/dialog",
-      "changes": [
-        "Cancel now closes uncontrolled delete dialogs and resets typed confirmation on close.",
-        "Kept explicit typed confirmation, error palette and existing dialog entrance.",
-        "Arc-parity pass: Inherits the new dialog surface and motion; padding aligned to 24px and the close button restyled."
-      ],
-      "verification": [
-        "Focused component tests passed.",
-        "Source and API reviewed; local visual review blocked by browser URL policy.",
-        "All 16 assigned suites passed: 345 tests total.",
-        "TypeScript including stories passed; focused ESLint passed.",
-        "Compiled Tailwind class scan passed: zero dead classes across the nine changed components.",
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Default",
-        "CustomTitle",
-        "CustomConfirmText",
-        "Loading",
-        "WithoutDescription",
-        "LongContent",
-        "AllVariants",
-        "States",
-        "V1VsV2",
-        "Usage",
-        "Interaction",
-        "KeyboardInteraction"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Uncontrolled cancellation can stay open",
-      "afterCaption": "Cancel closes and clears confirmation",
-      "tryThis": "The change is behavioral. Try dismissal; controlled examples may look identical at rest."
-    },
-    {
-      "slug": "dialog",
-      "title": "Dialog",
-      "family": "Navigation & overlays",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/dialog",
-      "changes": [
-        "Backdrop blurs 7px and dims to .46; the panel opens on a spring (about 500ms) from scale .96 and 8px below, and leaves in 160ms.",
-        "Border 1.2px to 1px; title 16px to 18px; description 12px to 14px in the secondary colour.",
-        "Header gap 16px to 8px; close button is a 32px bordered control."
-      ],
-      "verification": [
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Default",
-        "Small",
-        "Large",
-        "ExtraLarge",
-        "Full",
-        "WithIcon",
-        "HideCloseButton",
-        "LoadingAction",
-        "ScrollingContent",
-        "AllVariants",
-        "AllSizes",
-        "States",
-        "V1VsV2",
-        "Usage",
-        "Interaction",
-        "KeyboardInteraction"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Fade in, 16px title, small close",
-      "afterCaption": "Spring open, 18px title, 32px bordered close",
-      "tryThis": "Open the dialog and close it with Escape."
-    },
-    {
       "slug": "dropdown-menu",
       "title": "Dropdown Menu",
       "family": "Navigation & overlays",
@@ -1008,46 +833,6 @@
       "beforeCaption": "Before this pass",
       "afterCaption": "Updated behavior",
       "tryThis": "Interact with both previews to compare the changes described above."
-    },
-    {
-      "slug": "form-modal",
-      "title": "Form Modal",
-      "family": "Navigation & overlays",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/dialog",
-      "changes": [
-        "Inherits the new dialog surface, spring open and backdrop.",
-        "Header right padding widened to fit the 32px close button."
-      ],
-      "verification": [
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Small",
-        "Default",
-        "Large",
-        "ExtraLarge",
-        "Full",
-        "WithoutDescription",
-        "CustomButtons",
-        "Loading",
-        "SaveDisabled",
-        "MultipleFieldTypes",
-        "LongContent",
-        "AllSizes",
-        "States",
-        "V1VsV2",
-        "Usage"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Previous dialog surface",
-      "afterCaption": "Arc dialog surface and motion",
-      "tryThis": "Open the modal and compare the header and backdrop."
     },
     {
       "slug": "image-media",
@@ -1552,38 +1337,6 @@
       "beforeCaption": "Count jumps ahead of the fill",
       "afterCaption": "Count and fill travel together",
       "tryThis": "Press Replay change and watch the number during the transition."
-    },
-    {
-      "slug": "radio",
-      "title": "Radio",
-      "family": "Forms",
-      "status": "changed",
-      "changed": true,
-      "referenceUrl": "https://uiarc.dev/components/radio-group",
-      "changes": [
-        "Mark 16px to 17px, 1px border, filled with a 7px dot that springs in; press scale .88.",
-        "Card variant: 12px padding, hover surface and one highlight that glides between cards."
-      ],
-      "verification": [
-        "Arc values were measured live on uiarc.dev and on the component by the Arc-parity pass; unit tests for this component pass. Before/after frames on this page not yet visually reviewed."
-      ],
-      "commonStories": [
-        "Overview",
-        "Selected",
-        "Disabled",
-        "AllVariants",
-        "States",
-        "Cards",
-        "Usage",
-        "Interaction"
-      ],
-      "defaultStory": "Overview",
-      "demoState": "none",
-      "replay": null,
-      "initialArgs": null,
-      "beforeCaption": "Ring with small dot",
-      "afterCaption": "Filled mark, springing dot, gliding card highlight",
-      "tryThis": "Select different options, in the card variant too."
     },
     {
       "slug": "readable-field",

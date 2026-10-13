@@ -5,11 +5,6 @@
     "hasV1": true
   },
   {
-    "component": "button-group",
-    "figma": "932:19755",
-    "hasV1": false
-  },
-  {
     "component": "badge",
     "figma": "924:6748",
     "hasV1": true

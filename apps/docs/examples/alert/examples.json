@@ -1,0 +1,40 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Inline message",
+      "description": "Compose a title and description inside Alert. It is visible, inline and non-dismissible by default."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "The six v1 variant names remain available. Error and destructive share the error treatment."
+    },
+    {
+      "id": "presentations",
+      "title": "Presentations",
+      "description": "Inline, header and overlay are visual presentations. Overlay does not position itself or provide dialog semantics."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled dismissal",
+      "description": "A controlled close requests a change through onClose; the parent updates open. Dismissal removes the DOM immediately by default. This example opts into animateExit=true for a brief inert exit fade."
+    },
+    {
+      "id": "actions",
+      "title": "Reconnect and pause",
+      "description": "Action slots contain ordinary buttons. This example changes a local connection state and can be reset."
+    },
+    {
+      "id": "icons",
+      "title": "Custom and hidden icons",
+      "description": "A custom icon replaces the default. icon=null or showIcon=false hides it."
+    },
+    {
+      "id": "local-dismissal",
+      "title": "Uncontrolled dismissal",
+      "description": "closable dismisses local state and defaultOpen supplies its initial value. Dismissal is immediate by default; this example opts into animateExit=true for the exit fade. Key a new instance to reset it."
+    }
+  ]
+}

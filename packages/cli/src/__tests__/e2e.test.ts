@@ -5,6 +5,7 @@ import os from 'os'
 import { execSync } from 'child_process'
 import { getRegistry } from '../utils/registry.js'
 import type { Registry } from '../utils/registry-types.js'
+import { getUtilsContent, getUtilsAddition, upgradeUtilsContent } from '../utils/config.js'
 
 // ============================================================================
 // E2E Tests: Verify CLI-installed components are correct and buildable
@@ -128,15 +129,7 @@ export default {
   await fs.ensureDir(path.join(dir, 'src', 'lib'))
   await fs.writeFile(
     path.join(dir, 'src', 'lib', 'utils.ts'),
-    `import { type ClassValue, clsx } from "clsx"
-import { extendTailwindMerge } from "tailwind-merge"
-
-const twMerge = extendTailwindMerge({ prefix: "${PREFIX}" })
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
+    getUtilsContent(PREFIX)
   )
 
   await fs.writeFile(
@@ -732,6 +725,28 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       timeout: 90_000,
       env: cleanEnv,
     })
+
+    // Exercise actual generated/upgraded helpers with the consumer's Tailwind 3 merger.
+    await fs.writeFile(path.join(tempDir, 'utils-addition.ts'),
+      'import { clsx, type ClassValue } from "clsx"\nimport { twMerge } from "tailwind-merge"\nexport const applicationHelper = (value: ClassValue) => twMerge(clsx(value))\n' + getUtilsAddition(PREFIX))
+    await fs.writeFile(path.join(tempDir, 'utils-upgrade.ts'),
+      upgradeUtilsContent(getUtilsContent('') + '\nexport const applicationHelper = (value: ClassValue) => twMerge(clsx(value))\n', PREFIX))
+    await fs.writeFile(path.join(tempDir, 'cn-runtime.mjs'), `
+import fs from 'node:fs'
+import ts from 'typescript'
+import assert from 'node:assert/strict'
+for (const [source, output] of [['src/lib/utils.ts', 'utils-runtime.mjs'], ['utils-addition.ts', 'addition-runtime.mjs'], ['utils-upgrade.ts', 'upgrade-runtime.mjs']]) {
+  const content = ts.transpileModule(fs.readFileSync(source, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.ESNext } }).outputText
+  fs.writeFileSync(output, content)
+  const { cn, applicationHelper } = await import('./' + output)
+  assert.equal(cn('p-6', 'p-2'), 'p-2')
+  assert.equal(cn('tw-p-6', 'tw-p-2'), 'tw-p-2')
+  assert.equal(cn('p-6 tw-p-6', 'p-2 tw-p-2'), 'p-2 tw-p-2')
+  assert.equal(cn('hover:p-6 hover:tw-p-6', 'hover:p-2 hover:tw-p-2'), 'hover:p-2 hover:tw-p-2')
+  if (applicationHelper) assert.equal(applicationHelper('m-6 m-2'), 'm-2')
+}
+`)
+    execSync('node cn-runtime.mjs', { cwd: tempDir, stdio: 'pipe', timeout: 15_000, env: cleanEnv })
 
     // Vite build (can be slow on CI or constrained machines)
     const result = execSync('npx vite build', {

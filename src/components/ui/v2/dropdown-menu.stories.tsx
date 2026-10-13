@@ -268,10 +268,19 @@ const meta: Meta<MenuArgs> = {
             [
               "Items",
               "Compact 14px rows",
-              "48px minimum, 16px Inter, 10px / 6px padding",
+              "36px minimum, 14px v2 font, 8px vertical padding",
             ],
             ["Selection", "Dark checkmark", "Teal checkmark"],
-            ["Container", "6px corners", "8px corners"],
+            [
+              "Container",
+              "6px corners",
+              "8px corners, viewport-constrained scroll surface",
+            ],
+            [
+              "Motion",
+              "Scale and fade",
+              "Trigger-origin spring; fine-pointer highlight glide; reduced-motion fade",
+            ],
             [
               "Descriptions / suffixes",
               "Wrapped labels and trailing content",
@@ -304,7 +313,7 @@ const meta: Meta<MenuArgs> = {
             ["Disabled", "--semantic-disabled-primary", "#A2A6B1", "#A2A6B1"],
           ],
           guidance:
-            "Overview controls the real Root and Content, and labels custom item/trigger arguments as composition. Use checkboxes for independent choices and a radio group for a single choice. The selection stories keep menus open with onSelect.preventDefault; Escape returns focus. asChild accepts one real anchor or button and keeps its props/ref. Galleries are contained inline visual presentations without portal or focus scopes. There is one item size; no artificial size API is introduced.",
+            "Overview controls the real Root and Content, and labels custom item/trigger arguments as composition. Use checkboxes for independent choices and a radio group for a single choice. The selection stories keep menus open with onSelect.preventDefault; keyboard Escape returns focus. modal remains true by default; opt into modal={false} when outside controls should stay interactive. Submenus share viewport sizing and reduced-motion treatment. Disabled submenu triggers cannot open. asChild accepts one real anchor or button and keeps its props/ref. Galleries are contained inline visual presentations without portal or focus scopes. There is one item size; no artificial size API is introduced.",
         }),
       },
     },

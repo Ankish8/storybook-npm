@@ -1,0 +1,40 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Category label",
+      "description": "The default tag is a passive span with its existing label and content slots."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "All nine existing variants remain accepted, including primary, secondary and destructive aliases."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "sm, default and lg adjust the footprint. Long category values can wrap in a constrained row."
+    },
+    {
+      "id": "removal",
+      "title": "Remove a local filter",
+      "description": "onRemove requests a parent-owned removal. Focus moves to the next or previous remove button, then Reset after the last filter. Keep Support cancels removal with preventDefault."
+    },
+    {
+      "id": "disabled-removal",
+      "title": "Disabled removal",
+      "description": "removeDisabled disables only the remove control. The tag label and other native attributes remain available."
+    },
+    {
+      "id": "group",
+      "title": "Group and overflow",
+      "description": "TagGroup preserves its maxVisible default of two. A parent action can expose the remaining labels."
+    },
+    {
+      "id": "icons",
+      "title": "Icon content",
+      "description": "Compose decorative icons inside the existing children slot and keep the readable label."
+    }
+  ]
+}

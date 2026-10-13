@@ -1,0 +1,43 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Basic",
+      "description": "Pass ancestors first and the current page last. Ancestors are native links; the last item is a noninteractive `aria-current=\"page\"` label."
+    },
+    {
+      "id": "icons",
+      "title": "With icons",
+      "description": "Add an `icon` to any item. Keep decorative icons hidden from assistive technology so the text remains the accessible name."
+    },
+    {
+      "id": "collapsed",
+      "title": "Hidden pages",
+      "description": "`maxItems` defaults to 4, counting the overflow button. Middle ancestors remain in a keyboard-accessible menu. Enter opens it, arrows move between pages, and Escape restores focus.",
+      "minHeight": 340
+    },
+    {
+      "id": "long-labels",
+      "title": "Long labels",
+      "description": "Opt in to `maxItemWidth` to shorten each label visually. Full text remains in the accessible name and the native title. The path still scrolls horizontally in a narrow container."
+    },
+    {
+      "id": "separator",
+      "title": "Custom separator",
+      "description": "Use `separator` for a decorative slash, dot or icon. Separators are hidden from assistive technology."
+    },
+    {
+      "id": "rtl",
+      "title": "Right to left",
+      "description": "Set `dir=\"rtl\"` to reverse the path direction. The default chevrons mirror and the overflow menu follows the same direction.",
+      "minHeight": 340
+    },
+    {
+      "id": "navigation",
+      "title": "Navigate a local hierarchy",
+      "description": "`onNavigate` receives the original item, index and mouse event, including pages in the overflow menu. Prevent the default when your app owns navigation. New levels slide in softly; reduced motion keeps them still.",
+      "minHeight": 300
+    }
+  ]
+}

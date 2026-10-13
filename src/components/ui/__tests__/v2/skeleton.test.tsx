@@ -1,6 +1,11 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { Skeleton } from "../../v2/skeleton";
+import { afterEach, describe, it, expect, vi } from "vitest";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { Skeleton, skeletonVariants } from "../../v2/skeleton";
+
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("Skeleton", () => {
   it("renders correctly", () => {
@@ -86,9 +91,54 @@ describe("Skeleton", () => {
     });
   });
 
+  it("keeps the v1 precedence of dimension props over caller styles", () => {
+    const { container } = render(
+      <Skeleton
+        width={72}
+        height="2rem"
+        style={{ width: 240, height: 100, opacity: 0.75 }}
+      />
+    );
+    expect(container.firstChild).toHaveStyle({
+      width: "72px",
+      height: "2rem",
+      opacity: "0.75",
+    });
+    expect(container.firstChild).not.toHaveClass("w-full", "h-4");
+  });
+
+  it("accepts dimensions from style without competing default utilities", () => {
+    const { container } = render(
+      <Skeleton style={{ width: "65%", height: "1.5rem" }} />
+    );
+    expect(container.firstChild).toHaveStyle({
+      width: "65%",
+      height: "1.5rem",
+    });
+    expect(container.firstChild).not.toHaveClass("w-full", "h-4");
+  });
+
+  it("allows zero dimensions without falling back to a text line", () => {
+    const { container } = render(<Skeleton width={0} height={0} />);
+    expect(container.firstChild).toHaveStyle({ width: "0px", height: "0px" });
+    expect(container.firstChild).not.toHaveClass("w-full", "h-4");
+  });
+
+  it("retains default line sizing in the exported variants helper", () => {
+    expect(skeletonVariants().split(" ")).toEqual(
+      expect.arrayContaining(["h-4", "w-full", "rounded"])
+    );
+  });
+
   it("applies custom className", () => {
     const { container } = render(<Skeleton className="custom-class" />);
     expect(container.firstChild).toHaveClass("custom-class");
+  });
+
+  it("lets caller utilities replace default text-line dimensions", () => {
+    const { container } = render(<Skeleton className="h-8 w-32 rounded-lg" />);
+    expect(container.firstChild).toHaveClass("h-8", "w-32", "rounded-lg");
+    expect(container.firstChild).not.toHaveClass("h-4", "w-full", "rounded");
   });
 
   it("forwards ref correctly", () => {
@@ -102,10 +152,47 @@ describe("Skeleton", () => {
     expect(screen.getByTestId("my-skeleton")).toBeInTheDocument();
   });
 
+  it("passes native attributes and events through the same div", () => {
+    const onClick = vi.fn();
+    render(
+      <Skeleton
+        data-testid="native"
+        title="Contact placeholder"
+        aria-hidden={false}
+        aria-label="Loading contact"
+        role="status"
+        tabIndex={0}
+        onClick={onClick}
+      />
+    );
+    const element = screen.getByTestId("native");
+    expect(element).toHaveAttribute("title", "Contact placeholder");
+    expect(element).toHaveAttribute("aria-hidden", "false");
+    expect(element).toHaveAttribute("aria-label", "Loading contact");
+    expect(element).toHaveAttribute("tabindex", "0");
+    fireEvent.click(element);
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("forwards callback refs and clears them when unmounted", () => {
+    const ref = vi.fn();
+    const { container, unmount } = render(<Skeleton ref={ref} />);
+    expect(ref).toHaveBeenLastCalledWith(container.firstChild);
+    unmount();
+    expect(ref).toHaveBeenLastCalledWith(null);
+  });
+
+  it("keeps caller children in the placeholder div", () => {
+    const { container } = render(<Skeleton>Caller content</Skeleton>);
+    expect(container.firstChild).toHaveTextContent("Caller content");
+  });
+
   describe("Accessibility", () => {
     it('has aria-hidden="true"', () => {
       const { container } = render(<Skeleton />);
       expect(container.firstChild).toHaveAttribute("aria-hidden", "true");
+      expect(container.firstChild).not.toHaveAttribute("aria-busy");
+      expect(container.firstChild).not.toHaveAttribute("role");
     });
   });
 
@@ -138,10 +225,10 @@ describe("Skeleton animation", () => {
     const { container } = render(<Skeleton />);
     const el = container.firstChild as HTMLElement;
     expect(el).toHaveClass(
-      "[animation-duration:1.8s]",
-      "[animation-timing-function:cubic-bezier(0.65,0,0.35,1)]",
-      "[animation-iteration-count:11]",
-      "[animation-fill-mode:both]"
+      "[animation-duration:var(--v2-skeleton-duration,1.8s)]",
+      "[animation-timing-function:var(--v2-skeleton-timing,cubic-bezier(0.65,0,0.35,1))]",
+      "[animation-iteration-count:var(--v2-skeleton-iterations,11)]",
+      "[animation-fill-mode:var(--v2-skeleton-fill,both)]"
     );
   });
 
@@ -160,16 +247,16 @@ describe("Skeleton animation", () => {
     expect(el).toHaveClass("relative", "overflow-hidden");
     expect(el.className).toContain("motion-safe:after:animate-in");
     expect(el.className).toContain(
-      "motion-safe:after:[animation-duration:1.6s]"
+      "motion-safe:after:[animation-duration:var(--v2-skeleton-duration,1.6s)]"
     );
     expect(el.className).toContain(
-      "motion-safe:after:[animation-timing-function:linear]"
+      "motion-safe:after:[animation-timing-function:var(--v2-skeleton-timing,linear)]"
     );
     expect(el.className).toContain(
-      "motion-safe:after:[animation-iteration-count:infinite]"
+      "motion-safe:after:[animation-iteration-count:var(--v2-skeleton-iterations,12)]"
     );
     expect(el.className).toContain(
-      "linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary,#FFFFFF)_50%,transparent),transparent)"
+      "linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary)_50%,transparent),transparent)"
     );
     // the band rests off-canvas, so reduced motion shows the plain fill
     expect(el).toHaveClass("after:left-full", "after:w-full");
@@ -190,5 +277,121 @@ describe("Skeleton animation", () => {
       expect(container.firstChild).toHaveAttribute("aria-hidden", "true");
       unmount();
     }
+  });
+
+  it.each(["pulse", "shimmer"] as const)(
+    "retains native animation styles for %s",
+    (animation) => {
+      const { container } = render(
+        <Skeleton
+          animation={animation}
+          style={{
+            animationDelay: "120ms",
+            animationDuration: "2.4s",
+            animationPlayState: "paused",
+            animationTimingFunction: "linear",
+            animationIterationCount: 3,
+            animationFillMode: "forwards",
+            opacity: 0.8,
+          }}
+        />
+      );
+      const element = container.firstChild as HTMLDivElement;
+      expect(element).toHaveStyle({
+        animationDelay: "120ms",
+        animationDuration: "2.4s",
+        animationPlayState: "paused",
+        animationTimingFunction: "linear",
+        animationIterationCount: "3",
+        animationFillMode: "forwards",
+        opacity: "0.8",
+      });
+      expect(element.style.getPropertyValue("--v2-skeleton-play-state")).toBe(
+        "paused"
+      );
+      expect(element.style.getPropertyValue("--v2-skeleton-delay")).toBe(
+        "120ms"
+      );
+      expect(element.style.getPropertyValue("--v2-skeleton-duration")).toBe(
+        "2.4s"
+      );
+      expect(element.style.getPropertyValue("--v2-skeleton-timing")).toBe(
+        "linear"
+      );
+      expect(element.style.getPropertyValue("--v2-skeleton-iterations")).toBe(
+        "3"
+      );
+      expect(element.style.getPropertyValue("--v2-skeleton-fill")).toBe(
+        "forwards"
+      );
+    }
+  );
+
+  it.each(["pulse", "shimmer"] as const)(
+    "pauses %s while offscreen or the page is hidden and resumes only when both are visible",
+    (animation) => {
+      let intersect: (visible: boolean) => void = () => {};
+      const disconnect = vi.fn();
+      const observe = vi.fn();
+      vi.stubGlobal(
+        "IntersectionObserver",
+        class {
+          constructor(callback: IntersectionObserverCallback) {
+            intersect = (isIntersecting) =>
+              callback(
+                [{ isIntersecting } as IntersectionObserverEntry],
+                this as unknown as IntersectionObserver
+              );
+          }
+          observe = observe;
+          disconnect = disconnect;
+        }
+      );
+      const visibility = vi
+        .spyOn(document, "visibilityState", "get")
+        .mockReturnValue("visible");
+      const { container, unmount } = render(
+        <Skeleton
+          animation={animation}
+          style={{ animationPlayState: "running" }}
+        />
+      );
+      const element = container.firstChild as HTMLDivElement;
+      expect(observe).toHaveBeenCalledWith(element);
+      act(() => intersect(false));
+      expect(element.style.animationPlayState).toBe("paused");
+      expect(element.style.getPropertyValue("--v2-skeleton-play-state")).toBe(
+        "paused"
+      );
+      act(() => {
+        visibility.mockReturnValue("hidden");
+        document.dispatchEvent(new Event("visibilitychange"));
+        intersect(true);
+      });
+      expect(element.style.animationPlayState).toBe("paused");
+      act(() => {
+        visibility.mockReturnValue("visible");
+        document.dispatchEvent(new Event("visibilitychange"));
+      });
+      expect(element.style.animationPlayState).toBe("running");
+      expect(element.style.getPropertyValue("--v2-skeleton-play-state")).toBe(
+        "running"
+      );
+      unmount();
+      expect(disconnect).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it("starts paused when mounted in a hidden document", () => {
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+    const { container } = render(<Skeleton />);
+    expect(container.firstChild).toHaveStyle({ animationPlayState: "paused" });
+  });
+
+  it("does not observe a static placeholder", () => {
+    const observer = vi.fn();
+    vi.stubGlobal("IntersectionObserver", observer);
+    render(<Skeleton animation="none" />);
+    expect(observer).not.toHaveBeenCalled();
   });
 });

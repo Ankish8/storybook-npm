@@ -384,7 +384,7 @@ describe("Tabs", () => {
     it("gates hover colour behind a hover-capable pointer so taps do not stick", () => {
       renderList();
       expect(screen.getByRole("tab", { name: "Tab 2" })).toHaveClass(
-        "[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+        "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]"
       );
       expect(screen.getByRole("tab", { name: "Tab 2" })).not.toHaveClass(
         "hover:text-[var(--v2-text-primary,#484848)]"
@@ -494,3 +494,177 @@ describe("Tabs", () => {
     });
   });
 });
+
+describe.each(["underline", "pill"] as const)(
+  "%s Radix compatibility",
+  (variant) => {
+    it("keeps custom IDs linked and invokes the selection callback once", async () => {
+      const onValueChange = vi.fn();
+      const user = userEvent.setup();
+      render(
+        <Tabs defaultValue="a" onValueChange={onValueChange}>
+          <TabsList variant={variant} aria-label="Custom IDs">
+            <TabsTrigger value="a" id="custom-a">
+              A
+            </TabsTrigger>
+            <TabsTrigger value="b" id="custom-b">
+              B
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="a" id="panel-a">
+            Panel A
+          </TabsContent>
+          <TabsContent value="b" id="panel-b">
+            Panel B
+          </TabsContent>
+        </Tabs>
+      );
+      await user.click(screen.getByRole("tab", { name: "B" }));
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onValueChange).toHaveBeenCalledWith("b");
+      expect(screen.getByRole("tab", { name: "B" })).toHaveAttribute(
+        "id",
+        "custom-b"
+      );
+      expect(screen.getByRole("tabpanel")).toHaveAttribute("id", "panel-b");
+      await user.click(screen.getByRole("tab", { name: "A" }));
+      const root = screen.getByRole("tablist").parentElement as HTMLElement;
+      expect(root.style.getPropertyValue("--v2-tab-dir")).toBe("-1");
+    });
+
+    it("preserves generated trigger/panel ARIA references", () => {
+      render(
+        <Tabs defaultValue="a">
+          <TabsList variant={variant} aria-label="Linked panels">
+            <TabsTrigger value="a">A</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">Panel A</TabsContent>
+        </Tabs>
+      );
+      const tab = screen.getByRole("tab");
+      const panel = screen.getByRole("tabpanel");
+      expect(tab.getAttribute("aria-controls")).toBe(panel.id);
+      expect(panel.getAttribute("aria-labelledby")).toBe(tab.id);
+    });
+
+    it("forwards root, list, trigger and panel refs through asChild without wrapping", () => {
+      const rootRef = React.createRef<HTMLDivElement>();
+      const listRef = React.createRef<HTMLDivElement>();
+      const triggerRef = React.createRef<HTMLButtonElement>();
+      const panelRef = React.createRef<HTMLDivElement>();
+      render(
+        <Tabs defaultValue="a" asChild ref={rootRef}>
+          <section data-testid="root" className="custom-root">
+            <TabsList variant={variant} asChild ref={listRef}>
+              <nav aria-label="Views">
+                <TabsTrigger value="a" asChild ref={triggerRef}>
+                  <button type="button">A</button>
+                </TabsTrigger>
+              </nav>
+            </TabsList>
+            <TabsContent value="a" asChild ref={panelRef}>
+              <article>Panel A</article>
+            </TabsContent>
+          </section>
+        </Tabs>
+      );
+      expect(rootRef.current).toBe(screen.getByTestId("root"));
+      expect(listRef.current).toBe(screen.getByRole("tablist"));
+      expect(listRef.current?.tagName).toBe("NAV");
+      expect(triggerRef.current).toBe(screen.getByRole("tab"));
+      expect(panelRef.current).toBe(screen.getByRole("tabpanel"));
+      expect(panelRef.current?.tagName).toBe("ARTICLE");
+      expect(rootRef.current?.children).toHaveLength(2);
+    });
+
+    it("preserves forced panel state and native inputs across selection", async () => {
+      const user = userEvent.setup();
+      render(
+        <Tabs defaultValue="a">
+          <TabsList variant={variant}>
+            <TabsTrigger value="a">A</TabsTrigger>
+            <TabsTrigger value="b">B</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a" forceMount>
+            <input aria-label="Draft" name="draft" defaultValue="Initial" />
+          </TabsContent>
+          <TabsContent value="b" forceMount>
+            Panel B
+          </TabsContent>
+        </Tabs>
+      );
+      const input = screen.getByRole("textbox", { name: "Draft" });
+      await user.clear(input);
+      await user.type(input, "Edited");
+      await user.click(screen.getByRole("tab", { name: "B" }));
+      expect(input).toBeInTheDocument();
+      expect(input.closest('[role="tabpanel"]')).toHaveAttribute(
+        "data-state",
+        "inactive"
+      );
+      await user.click(screen.getByRole("tab", { name: "A" }));
+      expect(screen.getByRole("textbox", { name: "Draft" })).toBe(input);
+      expect(input).toHaveValue("Edited");
+    });
+
+    it("keeps RTL roving focus, Home/End and manual activation", async () => {
+      const user = userEvent.setup();
+      render(
+        <Tabs defaultValue="a" dir="rtl" activationMode="manual">
+          <TabsList variant={variant}>
+            <TabsTrigger value="a">A</TabsTrigger>
+            <TabsTrigger value="b" disabled>
+              B
+            </TabsTrigger>
+            <TabsTrigger value="c">C</TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">Panel A</TabsContent>
+          <TabsContent value="c">Panel C</TabsContent>
+        </Tabs>
+      );
+      await user.click(screen.getByRole("tab", { name: "A" }));
+      await user.keyboard("{ArrowLeft}");
+      expect(screen.getByRole("tab", { name: "C" })).toHaveFocus();
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Panel A");
+      await user.keyboard(" ");
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Panel C");
+      await user.keyboard("{Home}");
+      expect(screen.getByRole("tab", { name: "A" })).toHaveFocus();
+      await user.keyboard("{End}");
+      expect(screen.getByRole("tab", { name: "C" })).toHaveFocus();
+    });
+
+    it("preserves externally controlled updates and caller style", () => {
+      const onValueChange = vi.fn();
+      const view = (value: string) => (
+        <Tabs
+          value={value}
+          onValueChange={onValueChange}
+          style={{ color: "var(--semantic-text-primary)" }}
+          data-testid="root"
+        >
+          <TabsList variant={variant}>
+            <TabsTrigger value="a" id="custom-a">
+              A
+            </TabsTrigger>
+            <TabsTrigger value="b" id="custom-b">
+              B
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="a">Panel A</TabsContent>
+          <TabsContent value="b">Panel B</TabsContent>
+        </Tabs>
+      );
+      const { rerender } = render(view("b"));
+      rerender(view("a"));
+      expect(screen.getByRole("tabpanel")).toHaveTextContent("Panel A");
+      expect(
+        screen.getByTestId("root").style.getPropertyValue("--v2-tab-dir")
+      ).toBe("-1");
+      expect(screen.getByTestId("root").style.color).toBe(
+        "var(--semantic-text-primary)"
+      );
+      expect(onValueChange).not.toHaveBeenCalled();
+    });
+  }
+);

@@ -1,0 +1,40 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Composed table",
+      "description": "Use native table parts and a caption. The frame owns horizontal scrolling for narrow screens."
+    },
+    {
+      "id": "sorting",
+      "title": "Sort actual records",
+      "description": "useTableSort owns immutable ordered rows. onSortChange connects the header button; the third activation and Reset return to input order."
+    },
+    {
+      "id": "sizes",
+      "title": "All row densities",
+      "description": "sm, md and lg remain available; md is the unchanged default. withoutBorder hides only the outer border."
+    },
+    {
+      "id": "loading-empty",
+      "title": "Loading and empty states",
+      "description": "TableBody renders the requested skeleton counts while loading. TableEmpty supports a custom message in a native cell."
+    },
+    {
+      "id": "sticky",
+      "title": "Sticky header and column",
+      "description": "stickyHeader needs a bounded frame height. sticky cells remain visible during horizontal scrolling."
+    },
+    {
+      "id": "selection",
+      "title": "Explicit row selection",
+      "description": "The parent owns selected IDs and checkboxes. Stable row keys keep selection attached to the record when it moves."
+    },
+    {
+      "id": "wrapped-content",
+      "title": "Wrapped content",
+      "description": "wrapContent is optional. Long cell copy wraps rather than using the default single-line presentation."
+    }
+  ]
+}

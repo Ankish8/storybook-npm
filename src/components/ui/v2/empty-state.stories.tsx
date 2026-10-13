@@ -5,6 +5,7 @@ import { expect, fn, userEvent, within } from "storybook/test";
 import { PhoneCall, FileText, Search, Inbox } from "lucide-react";
 import { EmptyState, type EmptyStateProps } from "./empty-state";
 import { EmptyState as EmptyStateV1 } from "../empty-state";
+import { cn } from "@/lib/utils";
 import { Button } from "./button";
 import { Button as ButtonV1 } from "../button";
 import { Input } from "./input";
@@ -42,15 +43,16 @@ function Sample({
     <UI
       title={args.title}
       description={args.description}
-      className={
-        (version === "v1" ? "font-sans " : "") + (args.className || "")
-      }
-      {...(version === "v2" ? { size: args.size } : {})}
+      className={cn(version === "v1" && "font-sans", args.className)}
+      {...(version === "v2"
+        ? { size: args.size, illustration: args.illustration }
+        : {})}
       icon={Icon ? <Icon className="size-10" /> : undefined}
       actions={
         args.actionCount > 0 ? (
           <>
             <Action
+              type="button"
               size="sm"
               disabled={args.disabled}
               onClick={() => {
@@ -62,6 +64,7 @@ function Sample({
             </Action>
             {args.actionCount > 1 && (
               <Action
+                type="button"
                 size="sm"
                 variant="outline"
                 disabled={args.disabled}
@@ -81,6 +84,7 @@ function Sample({
 }
 const controls = [
   "size",
+  "illustration",
   "title",
   "description",
   "iconType",
@@ -107,31 +111,59 @@ const meta: Meta<Args> = {
           name: "empty-state",
           exportName: "EmptyState",
           summary:
-            "Centered empty views with a clear explanation and optional next action.",
+            "Calm empty views with custom content, optional illustrated presets, and a useful next action.",
           changes: [
             ["Padding", "64px vertical / 16px horizontal", "24px on all sides"],
-            ["Title", "16px semibold", "24px semibold Inter, 32px line height"],
+            ["Title", "16px semibold", "24px medium Inter, 32px line height"],
             ["Description", "14px body", "16px regular Inter"],
             ["Actions", "v1 buttons", "v2 Small buttons"],
             [
               "Size",
               "One size",
-              'default, or size="sm": 48px icon tile, 16px title, 14px description, 16px padding',
+              'default, or size="sm": 48px icon tile, 16px title, 14px description, 20px sides and 32–48px vertical padding',
             ],
             [
               "Slots",
               "ReactNode icon/title/description/actions",
-              "Same slot API",
+              "Same slot API; icons take precedence over illustration presets",
+            ],
+            [
+              "Illustrations",
+              "Custom icon only",
+              "Opt-in no-results, offline, caught-up and not-found SVG artwork",
             ],
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
-            ["Icon surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
+            [
+              "Icon / illustration surface",
+              "--semantic-bg-ui",
+              "#F5F5F5",
+              "#F5F5F5",
+            ],
+            [
+              "Illustration outline",
+              "--semantic-primary",
+              "#343E55",
+              "#343E55",
+            ],
+            [
+              "Illustration detail",
+              "--semantic-border-layout",
+              "#E9EAEB",
+              "#E9EAEB",
+            ],
+            [
+              "Completion mark",
+              "--semantic-success-primary",
+              "#17B26A",
+              "#17B26A",
+            ],
             ["Title", "--semantic-text-primary", "#181D27", "#181D27"],
             ["Description", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
           ],
           guidance:
-            "Explain why a view is empty and offer a useful next action. Icon and action controls configure ReactNode slots. EmptyState itself has no search or data-fetch behavior; Usage demonstrates local application state.",
+            "Explain why a view is empty and offer a useful next action. Choose an illustration preset or supply a custom icon; supplying an icon keeps the original icon slot. Illustrations are decorative and stay still under reduced motion. The contact-search preview clears an unmatched query, restores contacts, and returns focus to the search field. Native div attributes and a forwarded ref support application labeling and status announcements.",
         }),
       },
     },
@@ -151,6 +183,13 @@ const meta: Meta<Args> = {
   },
   argTypes: {
     size: { control: "select", options: ["default", "sm"] },
+    illustration: {
+      control: "select",
+      options: ["none", "no-results", "offline", "caught-up", "not-found"],
+      mapping: { none: undefined },
+      description:
+        'Optional decorative art. Set iconType to "none" to show it.',
+    },
     title: { control: "text" },
     description: { control: "text" },
     iconType: {
@@ -179,7 +218,23 @@ const meta: Meta<Args> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+export const Overview: Story = {
+  args: {
+    query: "Atlas",
+    iconType: "none",
+    illustration: "no-results",
+    title: "No matching contacts",
+    description: "Try a different name or clear your search to see everyone.",
+    actionCount: 1,
+    primaryLabel: "Clear search",
+    secondaryLabel: "Try Mira",
+  },
+  parameters: { controls: { include: [...controls, "query"] } },
+  render: function Render(args) {
+    const [, update] = useArgs<Args>();
+    return <SearchExample args={args} update={update} />;
+  },
+};
 export const WithIcon: Story = {};
 export const Small: Story = {
   args: {
@@ -229,6 +284,51 @@ export const InboxEmpty: Story = {
     actionCount: 0,
   },
 };
+export const Illustrations: Story = {
+  name: "Illustrated states",
+  parameters: gallery(
+    ["illustration", "iconType", "title", "description", "actionCount"],
+    "Four opt-in illustrations share the current theme. Artwork is decorative; the application supplies copy and recovery actions."
+  ),
+  render: (args) => (
+    <div className="grid gap-5 md:grid-cols-2">
+      {[
+        {
+          illustration: "no-results",
+          title: "No results",
+          description: "Try another keyword or adjust your filters.",
+        },
+        {
+          illustration: "offline",
+          title: "You're offline",
+          description: "Reconnect to load the latest conversations.",
+        },
+        {
+          illustration: "caught-up",
+          title: "All caught up",
+          description: "New conversations will appear here.",
+        },
+        {
+          illustration: "not-found",
+          title: "Page not found",
+          description: "This page may have moved. Try searching the workspace.",
+        },
+      ].map((state) => (
+        <Card key={state.illustration} title={state.title}>
+          <Sample
+            args={{
+              ...args,
+              ...state,
+              illustration: state.illustration as Args["illustration"],
+              iconType: "none",
+              actionCount: 0,
+            }}
+          />
+        </Card>
+      ))}
+    </div>
+  ),
+};
 function Card({
   title,
   children,
@@ -266,6 +366,21 @@ export const AllVariants: Story = {
               actionCount: c.actionCount,
             }}
           />
+        </Card>
+      ))}
+    </div>
+  ),
+};
+export const AllSizes: Story = {
+  parameters: gallery(
+    ["size"],
+    "The established default and compact sizes are shown with the same content and actions."
+  ),
+  render: (args) => (
+    <div className="grid gap-5 md:grid-cols-2">
+      {(["default", "sm"] as const).map((size) => (
+        <Card key={size} title={size === "default" ? "Default" : "Compact"}>
+          <Sample args={{ ...args, size }} />
         </Card>
       ))}
     </div>
@@ -316,6 +431,7 @@ function SearchExample({
   update: (next: Partial<Args>) => void;
 }) {
   const id = React.useId();
+  const input = React.useRef<HTMLInputElement>(null);
   const [feedback, setFeedback] = React.useState("");
   const matches = names.filter((n) =>
     n.toLowerCase().includes(args.query.toLowerCase())
@@ -325,9 +441,8 @@ function SearchExample({
       <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contacts
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
-        Filter a local list. Query typing and Controls stay synchronized;
-        clearing restores contacts.
+      <p className="m-0 mt-1 mb-4 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
+        Find someone in your workspace.
       </p>
       <label
         htmlFor={id}
@@ -336,7 +451,10 @@ function SearchExample({
         Search contacts
       </label>
       <Input
+        ref={input}
         id={id}
+        type="search"
+        placeholder="Search by name"
         value={args.query}
         onChange={(e) => {
           update({ query: e.target.value });
@@ -344,7 +462,7 @@ function SearchExample({
         }}
       />
       {matches.length ? (
-        <ul className="m-0 mt-4 list-none p-0">
+        <ul aria-label="Matching contacts" className="m-0 mt-4 list-none p-0">
           {matches.map((n) => (
             <li
               className="border-b border-semantic-border-layout py-3 text-sm"
@@ -357,24 +475,32 @@ function SearchExample({
       ) : (
         <Sample
           args={args}
-          onAction={() => {
-            update({ query: "" });
-            setFeedback("Search cleared. All contacts restored.");
+          onAction={(action) => {
+            if (action === args.primaryLabel) {
+              update({ query: "" });
+              setFeedback("Search cleared. All 3 contacts are shown.");
+            } else {
+              update({ query: "Mira" });
+              setFeedback("Showing contacts named Mira.");
+            }
+            input.current?.focus();
           }}
         />
       )}
-      {feedback && (
-        <p className="m-0 mt-4 text-xs text-semantic-success-text">
-          {feedback}
-        </p>
-      )}
+      <p role="status" className="m-0 mt-4 text-sm text-semantic-text-muted">
+        {feedback ||
+          (matches.length
+            ? matches.length + " contacts found"
+            : "No contacts found")}
+      </p>
     </section>
   );
 }
 export const Usage: Story = {
   args: {
     query: "Unmatched",
-    iconType: "search",
+    iconType: "none",
+    illustration: "no-results",
     title: "No matching contacts",
     description: "Clear your search to see all contacts.",
     actionCount: 1,
@@ -384,6 +510,32 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, update] = useArgs<Args>();
     return <SearchExample args={args} update={update} />;
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
+    const input = canvas.getByRole("searchbox", { name: "Search contacts" });
+    await step("An unmatched search offers recovery", async () => {
+      await expect(canvas.getByText("No matching contacts")).toBeVisible();
+      await expect(
+        canvas.queryByRole("list", { name: "Matching contacts" })
+      ).not.toBeInTheDocument();
+    });
+    await step("Clearing restores results and search focus", async () => {
+      await userEvent.click(
+        canvas.getByRole("button", { name: "Clear search" })
+      );
+      await expect(canvas.getAllByRole("listitem")).toHaveLength(3);
+      await expect(input).toHaveValue("");
+      await expect(input).toHaveFocus();
+      await expect(canvas.getByRole("status")).toHaveTextContent(
+        "All 3 contacts are shown"
+      );
+    });
+    await step("A new search filters the restored list", async () => {
+      await userEvent.type(input, "Mira");
+      await expect(canvas.getAllByRole("listitem")).toHaveLength(1);
+      await expect(canvas.getByText("Mira Shah")).toBeVisible();
+    });
   },
 };
 

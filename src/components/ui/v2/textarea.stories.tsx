@@ -67,6 +67,9 @@ const meta: Meta<typeof Textarea> = {
         "required",
         "rows",
         "resize",
+        "autoResize",
+        "minRows",
+        "maxRows",
         "showCount",
         "maxLength",
         "enforceMaxLength",
@@ -101,13 +104,17 @@ const meta: Meta<typeof Textarea> = {
               "14px supporting text",
               "12px supporting text",
             ],
-            ["Hover border", "Default border", "#C0C3CA on enabled fields"],
+            [
+              "Hover border",
+              "Default border",
+              "Semantic primary on enabled fine-pointer fields",
+            ],
             [
               "Focus",
               "Thin teal shadow",
-              "Primary border emphasis; no outer glow",
+              "Border and shadow stay unchanged on focus",
             ],
-            ["Disabled", "Reduced opacity", "Solid grey surface and border"],
+            ["Disabled", "Reduced opacity", "Grey surface with 60% opacity"],
             [
               "Typing and limits",
               "Space normalization, caret preservation, hard and soft limits",
@@ -126,8 +133,8 @@ const meta: Meta<typeof Textarea> = {
               "#A2A6B1",
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
-            ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
+            ["Hover border", "--semantic-primary", "#343E55", "#343E55"],
+            ["Focus", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -135,7 +142,7 @@ const meta: Meta<typeof Textarea> = {
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Keep the label visible. The `error` prop supplies an accessible description and error treatment. `maxLength` is a native hard limit unless `enforceMaxLength=false`; with a soft limit, let your form validate overflow. The counter counts normalized text, including single spaces and line breaks. `displayCharCount` overrides only the displayed count. `rows` and `resize` keep the existing native sizing behavior. Existing default and sm options remain available; lg adds the recorded Large treatment.",
+            "Keep the label visible. The `error` prop supplies an accessible description and error treatment. `maxLength` is a native hard limit unless `enforceMaxLength=false`; with a soft limit, let your form validate overflow. The counter counts normalized text, including single spaces and line breaks. `displayCharCount` overrides only the displayed count. `rows` defaults to 4 and `resize` to none, keeping existing native sizing behavior. `autoResize` opts into content height, with optional `minRows` and `maxRows`; bounded overflow scrolls. IME drafts remain intact until committed. `aria-invalid=true` also styles the red border. Existing default and sm options remain available; lg adds the recorded Large treatment.",
         }),
       },
     },
@@ -154,6 +161,7 @@ const meta: Meta<typeof Textarea> = {
     required: false,
     rows: 4,
     resize: "none",
+    autoResize: false,
     showCount: false,
     maxLength: 200,
     enforceMaxLength: true,
@@ -231,6 +239,18 @@ const meta: Meta<typeof Textarea> = {
       description:
         "Native resize directions; the field stays within its container.",
     },
+    autoResize: {
+      control: "boolean",
+      description: "Opt into content-based height.",
+    },
+    minRows: {
+      control: { type: "number", min: 1, step: 1 },
+      description: "Auto-resize minimum rows; defaults to rows.",
+    },
+    maxRows: {
+      control: { type: "number", min: 1, step: 1 },
+      description: "Auto-resize maximum rows before overflow scrolls.",
+    },
     showCount: {
       control: "boolean",
       description: "Show the current length against maxLength.",
@@ -261,6 +281,32 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
 export const Default: Story = {};
+export const DocsPreview: Story = {
+  args: {
+    label: "Conversation notes",
+    placeholder: "Add context for the next agent…",
+    helperText: "Share the details that matter.",
+    rows: 3,
+    showCount: true,
+    maxLength: 280,
+  },
+};
+export const AutoResize: Story = {
+  name: "Auto resize",
+  args: {
+    autoResize: true,
+    minRows: 2,
+    maxRows: 6,
+    helperText: "Grows with your notes, up to six rows.",
+  },
+};
+export const AriaInvalid: Story = {
+  name: "Form library invalid state",
+  args: {
+    "aria-invalid": "true",
+    helperText: "Add more context before saving.",
+  },
+};
 export const WithLabel: Story = {
   name: "With label",
   args: { label: "Conversation notes" },

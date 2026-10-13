@@ -1,6 +1,12 @@
 import * as React from "react";
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import {
+  act,
+  fireEvent,
+  render,
+  renderHook,
+  screen,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   Table,
@@ -15,6 +21,8 @@ import {
   TableEmpty,
   TableAvatar,
   TableToggle,
+  useTableSort,
+  type TableSort,
 } from "../../v2/table";
 
 describe("Table", () => {
@@ -434,7 +442,7 @@ describe("TableHead", () => {
     expect(head).not.toHaveAttribute("aria-sort");
   });
 
-  it("keeps a hidden arrow that shows faintly on hover, without text, on a sortable but unsorted column", () => {
+  it("keeps the idle sort affordance visible without hover and strengthens it on focus", () => {
     render(
       <Table>
         <TableHeader>
@@ -450,9 +458,10 @@ describe("TableHead", () => {
 
     const head = screen.getByTestId("head");
     const icon = head.querySelector("svg");
-    expect(icon).toHaveClass("size-4", "opacity-0");
+    expect(icon).toHaveClass("size-4", "opacity-40");
+    expect(icon).toHaveClass("group-focus-within/head:opacity-100");
     expect(icon).toHaveClass(
-      "[@media(hover:hover)]:group-hover/head:opacity-60"
+      "[@media(hover:hover)]:group-hover/head:opacity-70"
     );
     expect(head).toHaveTextContent("Unsorted");
     expect(head).not.toHaveTextContent("↑");
@@ -966,7 +975,7 @@ describe("Table stickyHeader", () => {
       "[&>thead>tr>th]:bg-semantic-primary-surface"
     );
     expect(table.className).toContain(
-      "[&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout,#E9EAEB)]"
+      "[&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout)]"
     );
     expect(table.parentElement).toHaveClass(
       "max-h-[var(--v2-table-max-height,inherit)]",
@@ -998,4 +1007,615 @@ describe("TableSkeleton stagger", () => {
       );
     expect(delays).toEqual(["0ms", "60ms", "120ms"]);
   });
+});
+
+describe("useTableSort", () => {
+  const data = Object.freeze([
+    { id: "a", name: "Campaign 10", amount: 10 },
+    { id: "b", name: "Campaign 2", amount: 2 },
+    { id: "c", name: "Campaign 1", amount: 10 },
+  ]);
+  const columns = {
+    name: { value: (row: (typeof data)[number]) => row.name },
+    amount: { value: (row: (typeof data)[number]) => row.amount },
+  };
+
+  it("sorts natural text without mutating input and resets to its original order", () => {
+    const { result } = renderHook(() => useTableSort(data, { columns }));
+    act(() => result.current.sortBy("name"));
+    expect(result.current.rows.map((row) => row.id)).toEqual(["c", "b", "a"]);
+    act(() => result.current.sortBy("name"));
+    expect(result.current.rows.map((row) => row.id)).toEqual(["a", "b", "c"]);
+    act(() => result.current.sortBy("name"));
+    expect(result.current.sort).toBeNull();
+    expect(result.current.rows.map((row) => row.id)).toEqual(["a", "b", "c"]);
+    expect(data.map((row) => row.id)).toEqual(["a", "b", "c"]);
+  });
+
+  it("compares numbers numerically and keeps equal records stable in both directions", () => {
+    const { result } = renderHook(() => useTableSort(data, { columns }));
+    act(() => result.current.sortBy("amount", "asc"));
+    expect(result.current.rows.map((row) => row.id)).toEqual(["b", "a", "c"]);
+    act(() => result.current.sortBy("amount", "desc"));
+    expect(result.current.rows.map((row) => row.id)).toEqual(["a", "c", "b"]);
+    expect(result.current.getSortDirection("amount")).toBe("desc");
+    expect(result.current.getSortDirection("name")).toBeNull();
+  });
+
+  it("starts a new column ascending and allows explicit reset", () => {
+    const { result } = renderHook(() =>
+      useTableSort(data, {
+        columns,
+        defaultSort: { key: "amount", direction: "desc" },
+      })
+    );
+    act(() => result.current.sortBy("name"));
+    expect(result.current.sort).toEqual({ key: "name", direction: "asc" });
+    act(() => result.current.resetSort());
+    expect(result.current.rows).toEqual(data);
+  });
+
+  it("waits for controlled sort updates and reports resets as null", () => {
+    const onSortChange = vi.fn();
+    const { result, rerender } = renderHook(
+      ({ sort }: { sort: TableSort<"name" | "amount"> | null }) =>
+        useTableSort(data, { columns, sort, onSortChange }),
+      { initialProps: { sort: null as TableSort<"name" | "amount"> | null } }
+    );
+    act(() => result.current.sortBy("amount"));
+    expect(onSortChange).toHaveBeenLastCalledWith({
+      key: "amount",
+      direction: "asc",
+    });
+    expect(result.current.rows).toEqual(data);
+    rerender({ sort: { key: "amount", direction: "asc" } });
+    expect(result.current.rows.map((row) => row.id)).toEqual(["b", "a", "c"]);
+    act(() => result.current.resetSort());
+    expect(onSortChange).toHaveBeenLastCalledWith(null);
+    expect(result.current.sort).toEqual({ key: "amount", direction: "asc" });
+  });
+
+  it("accepts a custom comparator for domain-specific order", () => {
+    const { result } = renderHook(() =>
+      useTableSort(data, {
+        columns: {
+          name: {
+            value: (row) => row.name,
+            compare: (a, b) => b.name.length - a.name.length,
+          },
+        },
+        defaultSort: { key: "name", direction: "asc" },
+      })
+    );
+    expect(result.current.rows.map((row) => row.id)).toEqual(["a", "b", "c"]);
+    act(() => result.current.sortBy("name", "desc"));
+    expect(result.current.rows.map((row) => row.id)).toEqual(["b", "c", "a"]);
+  });
+
+  it("compares dates and leaves empty or invalid values last in both directions", () => {
+    const records = [
+      { id: "empty", date: null },
+      { id: "late", date: new Date("2026-10-13") },
+      { id: "invalid", date: new Date("invalid") },
+      { id: "early", date: new Date("2026-10-01") },
+    ];
+    const { result } = renderHook(() =>
+      useTableSort(records, {
+        columns: { date: { value: (row) => row.date } },
+      })
+    );
+    act(() => result.current.sortBy("date", "asc"));
+    expect(result.current.rows.map((row) => row.id)).toEqual([
+      "early",
+      "late",
+      "empty",
+      "invalid",
+    ]);
+    act(() => result.current.sortBy("date", "desc"));
+    expect(result.current.rows.map((row) => row.id)).toEqual([
+      "late",
+      "early",
+      "empty",
+      "invalid",
+    ]);
+  });
+
+  it("applies an active sort to refreshed records without changing their identity", () => {
+    const { result, rerender } = renderHook(
+      ({ rows }) =>
+        useTableSort(rows, {
+          columns,
+          defaultSort: { key: "amount", direction: "asc" },
+        }),
+      { initialProps: { rows: [...data] } }
+    );
+    const added = { id: "d", name: "Campaign 4", amount: 4 };
+    rerender({ rows: [...data, added] });
+    expect(result.current.rows.map((row) => row.id)).toEqual([
+      "b",
+      "d",
+      "a",
+      "c",
+    ]);
+    expect(result.current.rows[1]).toBe(added);
+  });
+
+  it("orders extreme numeric values without overflow and leaves NaN last", () => {
+    const records = [Number.NaN, Infinity, 1e308, -1e308, -Infinity];
+    const { result } = renderHook(() =>
+      useTableSort(records, {
+        columns: { amount: { value: (value) => value } },
+        defaultSort: { key: "amount", direction: "asc" },
+      })
+    );
+    expect(result.current.rows).toEqual([
+      -Infinity,
+      -1e308,
+      1e308,
+      Infinity,
+      Number.NaN,
+    ]);
+    act(() => result.current.sortBy("amount", "desc"));
+    expect(result.current.rows).toEqual([
+      Infinity,
+      1e308,
+      -1e308,
+      -Infinity,
+      Number.NaN,
+    ]);
+  });
+});
+
+describe("TableHead native sorting", () => {
+  it("reorders real rows while keyed checkbox state stays with its record", async () => {
+    const records = [
+      { id: "a", amount: 10 },
+      { id: "b", amount: 2 },
+    ];
+    function ComposedTable() {
+      const { rows, sortBy, getSortDirection } = useTableSort(records, {
+        columns: { amount: { value: (row) => row.amount } },
+      });
+      return (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead scope="col">Select</TableHead>
+              <TableHead
+                onSortChange={(direction) => sortBy("amount", direction)}
+                sortDirection={getSortDirection("amount")}
+              >
+                Amount
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.id} data-testid={"row-" + row.id}>
+                <TableCell>
+                  <input
+                    type="checkbox"
+                    aria-label={"Select " + row.id}
+                    defaultChecked={false}
+                  />
+                </TableCell>
+                <TableCell>{row.amount}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      );
+    }
+    render(<ComposedTable />);
+    const user = userEvent.setup();
+    const selectA = screen.getByRole("checkbox", { name: "Select a" });
+    await user.click(selectA);
+    await user.click(screen.getByRole("button", { name: "Amount" }));
+    expect(
+      screen
+        .getAllByRole("row")
+        .slice(1)
+        .map((row) => row.dataset.testid)
+    ).toEqual(["row-b", "row-a"]);
+    expect(screen.getByRole("checkbox", { name: "Select a" })).toBe(selectA);
+    expect(selectA).toBeChecked();
+    await user.click(screen.getByRole("button", { name: "Amount" }));
+    expect(
+      screen
+        .getAllByRole("row")
+        .slice(1)
+        .map((row) => row.dataset.testid)
+    ).toEqual(["row-a", "row-b"]);
+    await user.click(screen.getByRole("button", { name: "Amount" }));
+    expect(
+      screen.getByRole("columnheader", { name: "Amount" })
+    ).toHaveAttribute("aria-sort", "none");
+    expect(selectA).toBeChecked();
+  });
+
+  it("cycles with mouse, Enter and Space, announces direction, and never submits a form", async () => {
+    const user = userEvent.setup();
+    const onSortChange = vi.fn();
+    const onSubmit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    function SortableHeader() {
+      const [direction, setDirection] = React.useState<"asc" | "desc" | null>(
+        null
+      );
+      return (
+        <form onSubmit={onSubmit}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead
+                  sortDirection={direction}
+                  onSortChange={(next) => {
+                    setDirection(next);
+                    onSortChange(next);
+                  }}
+                >
+                  Contacts
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+          </Table>
+        </form>
+      );
+    }
+    render(<SortableHeader />);
+    const button = screen.getByRole("button", { name: "Contacts" });
+    expect(button).toHaveAccessibleDescription(
+      "Not sorted. Activate to sort ascending."
+    );
+    expect(screen.getByRole("columnheader")).toHaveAttribute("scope", "col");
+    await user.click(button);
+    expect(screen.getByRole("columnheader")).toHaveAttribute(
+      "aria-sort",
+      "ascending"
+    );
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("columnheader")).toHaveAttribute(
+      "aria-sort",
+      "descending"
+    );
+    expect(button).toHaveAccessibleDescription(
+      "Sorted descending. Activate to restore the original order."
+    );
+    await user.keyboard(" ");
+    expect(screen.getByRole("columnheader")).toHaveAttribute(
+      "aria-sort",
+      "none"
+    );
+    expect(onSortChange.mock.calls.map(([next]) => next)).toEqual([
+      "asc",
+      "desc",
+      null,
+    ]);
+    expect(onSubmit).not.toHaveBeenCalled();
+  });
+
+  it("lets the native header click handler prevent sorting, including clicks on the icon", async () => {
+    const user = userEvent.setup();
+    const onSortChange = vi.fn();
+    const onClick = vi.fn((event: React.MouseEvent) => event.preventDefault());
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead onClick={onClick} onSortChange={onSortChange}>
+              Name
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    await user.click(screen.getByRole("button").querySelector("svg")!);
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onSortChange).not.toHaveBeenCalled();
+  });
+
+  it("calls the host click handler before committing an uncancelled sort", async () => {
+    const calls: string[] = [];
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              onClick={() => calls.push("host")}
+              onSortChange={() => calls.push("sort")}
+            >
+              Name
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    await userEvent.setup().click(screen.getByRole("button"));
+    expect(calls).toEqual(["host", "sort"]);
+  });
+
+  it("preserves composed custom header buttons and the table-cell ref", async () => {
+    const onClick = vi.fn();
+    const ref = React.createRef<HTMLTableCellElement>();
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              ref={ref}
+              sortable
+              sortDirection="asc"
+              data-column="name"
+            >
+              <button onClick={onClick}>Custom sort</button>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(1);
+    await userEvent.setup().click(screen.getByRole("button"));
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(ref.current).toBe(screen.getByRole("columnheader"));
+    expect(ref.current).toHaveAttribute("data-column", "name");
+  });
+
+  it("does not sort when the control is disabled", async () => {
+    const onSortChange = vi.fn();
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead sortDisabled onSortChange={onSortChange}>
+              Name
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    const button = screen.getByRole("button");
+    expect(button).toBeDisabled();
+    await userEvent.setup().click(button);
+    expect(onSortChange).not.toHaveBeenCalled();
+    expect(button).not.toHaveAttribute("sortdisabled");
+  });
+
+  it("moves between enabled sort controls with arrows and Home/End", async () => {
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead onSortChange={vi.fn()}>Name</TableHead>
+            <TableHead onSortChange={vi.fn()} sortDisabled>
+              Status
+            </TableHead>
+            <TableHead onSortChange={vi.fn()}>Contacts</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    const name = screen.getByRole("button", { name: "Name" });
+    const contacts = screen.getByRole("button", { name: "Contacts" });
+    name.focus();
+    await user.keyboard("{ArrowRight}");
+    expect(contacts).toHaveFocus();
+    await user.keyboard("{Home}");
+    expect(name).toHaveFocus();
+    await user.keyboard("{End}");
+    expect(contacts).toHaveFocus();
+    await user.keyboard("{ArrowLeft}");
+    expect(name).toHaveFocus();
+  });
+
+  it("honors native key-handler cancellation and custom accessible labels", async () => {
+    const user = userEvent.setup();
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              onSortChange={vi.fn()}
+              sortLabel="Sort campaigns"
+              onKeyDown={(event) => event.preventDefault()}
+            >
+              <span>Campaign</span>
+              <small>Names</small>
+            </TableHead>
+            <TableHead onSortChange={vi.fn()}>Contacts</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+    );
+    const button = screen.getByRole("button", { name: "Sort campaigns" });
+    button.focus();
+    await user.keyboard("{ArrowRight}");
+    expect(button).toHaveFocus();
+  });
+});
+
+describe("Table native behavior and loading", () => {
+  it("keeps children, styles and native drag / animation / click events on a row", () => {
+    const onDrag = vi.fn();
+    const onAnimationStart = vi.fn();
+    const onClick = vi.fn();
+    render(
+      <Table>
+        <TableBody>
+          <TableRow
+            draggable
+            onDrag={onDrag}
+            onAnimationStart={onAnimationStart}
+            onClick={onClick}
+            style={{ opacity: 0.7 }}
+            data-row-id="campaign"
+          >
+            <TableCell colSpan={2}>Campaign</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+    const row = screen.getByRole("row");
+    fireEvent.drag(row);
+    fireEvent.animationStart(row);
+    fireEvent.click(row);
+    expect(onDrag).toHaveBeenCalledOnce();
+    expect(onAnimationStart).toHaveBeenCalledOnce();
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(row).toHaveStyle({ opacity: 0.7 });
+    expect(row).toHaveAttribute("data-row-id", "campaign");
+    expect(screen.getByRole("cell")).toHaveAttribute("colspan", "2");
+  });
+
+  it("marks the loading body busy but preserves an explicit host override", () => {
+    const { rerender } = render(
+      <Table>
+        <TableBody isLoading data-testid="body" />
+      </Table>
+    );
+    expect(screen.getByTestId("body")).toHaveAttribute("aria-busy", "true");
+    rerender(
+      <Table>
+        <TableBody isLoading aria-busy={false} data-testid="body" />
+      </Table>
+    );
+    expect(screen.getByTestId("body")).toHaveAttribute("aria-busy", "false");
+  });
+
+  it("preserves intentional falsy empty-state content", () => {
+    render(
+      <Table>
+        <TableBody>
+          <TableEmpty colSpan={1}>{0}</TableEmpty>
+        </TableBody>
+      </Table>
+    );
+    expect(screen.getByRole("cell")).toHaveTextContent("0");
+    expect(screen.queryByText("No data available")).not.toBeInTheDocument();
+  });
+});
+
+describe("TableBody opt-in row motion", () => {
+  const animate = vi.fn();
+  const cancel = vi.fn();
+  const originalAnimate = Object.getOwnPropertyDescriptor(
+    HTMLTableRowElement.prototype,
+    "animate"
+  );
+  beforeEach(() => {
+    animate.mockReset().mockReturnValue({ cancel });
+    cancel.mockReset();
+    Object.defineProperty(HTMLTableRowElement.prototype, "animate", {
+      configurable: true,
+      value: animate,
+    });
+    vi.spyOn(
+      HTMLTableRowElement.prototype,
+      "getBoundingClientRect"
+    ).mockImplementation(function (this: HTMLTableRowElement) {
+      return new DOMRect(0, this.sectionRowIndex * 160, 600, 40);
+    });
+  });
+  afterEach(() => {
+    vi.restoreAllMocks();
+    if (originalAnimate)
+      Object.defineProperty(
+        HTMLTableRowElement.prototype,
+        "animate",
+        originalAnimate
+      );
+    else
+      delete (HTMLTableRowElement.prototype as Partial<HTMLTableRowElement>)
+        .animate;
+  });
+  const table = (
+    order: string[],
+    animateRows?: boolean,
+    ref?: React.Ref<HTMLTableSectionElement>
+  ) => (
+    <Table>
+      <TableBody animateRows={animateRows} ref={ref}>
+        {order.map((id) => (
+          <TableRow key={id}>
+            <TableCell>{id}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  );
+
+  it("keeps reordering instant by default", () => {
+    const { rerender } = render(table(["a", "b"]));
+    rerender(table(["b", "a"]));
+    expect(screen.getAllByRole("cell").map((cell) => cell.textContent)).toEqual(
+      ["b", "a"]
+    );
+    expect(animate).not.toHaveBeenCalled();
+  });
+
+  it("animates existing native rows with bounded travel, cancels rapid sorts and forwards the body ref", () => {
+    const ref = React.createRef<HTMLTableSectionElement>();
+    const { rerender, unmount } = render(table(["a", "b"], true, ref));
+    const a = screen.getByText("a").closest("tr");
+    expect(animate).not.toHaveBeenCalled();
+    rerender(table(["b", "a"], true, ref));
+    expect(screen.getByText("a").closest("tr")).toBe(a);
+    expect(animate).toHaveBeenCalledTimes(2);
+    expect(animate.mock.calls[0][0][0].transform).toContain("80px");
+    expect(animate.mock.calls[1][0][0].transform).toContain("-80px");
+    expect(animate.mock.calls[0][1]).toEqual({
+      duration: 240,
+      easing: "cubic-bezier(0.22,1,0.36,1)",
+    });
+    expect(ref.current?.tagName).toBe("TBODY");
+    expect(ref.current?.rows).toHaveLength(2);
+    rerender(table(["a", "b"], true, ref));
+    expect(cancel).toHaveBeenCalledTimes(2);
+    unmount();
+    expect(cancel).toHaveBeenCalledTimes(4);
+    expect(ref.current).toBeNull();
+  });
+
+  it("honors reduced motion while sorting the real rows", () => {
+    vi.spyOn(window, "matchMedia").mockImplementation(
+      (query) =>
+        ({
+          matches: query === "(prefers-reduced-motion: reduce)",
+          media: query,
+        }) as MediaQueryList
+    );
+    const { rerender } = render(table(["a", "b"], true));
+    rerender(table(["b", "a"], true));
+    expect(screen.getAllByRole("cell").map((cell) => cell.textContent)).toEqual(
+      ["b", "a"]
+    );
+    expect(animate).not.toHaveBeenCalled();
+  });
+
+  it("does not animate newly added rows", () => {
+    const { rerender } = render(table(["a"], true));
+    rerender(table(["a", "b"], true));
+    expect(animate).not.toHaveBeenCalled();
+  });
+});
+
+it("preserves cleanup-returning callback refs", () => {
+  const calls: string[] = [];
+  const ref = (node: HTMLTableSectionElement | null) => {
+    calls.push(node ? "attach" : "null");
+    if (node)
+      return () => {
+        calls.push("cleanup");
+      };
+  };
+  const { unmount } = render(
+    <Table>
+      <TableBody ref={ref}>
+        <TableRow>
+          <TableCell>Campaign</TableCell>
+        </TableRow>
+      </TableBody>
+    </Table>
+  );
+  unmount();
+  expect(calls).toEqual(["attach", "cleanup"]);
 });

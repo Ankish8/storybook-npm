@@ -21,12 +21,7 @@ const navSlugs = new Set(
     " "
   )
 );
-const buttonSlugs = new Set([
-  "button",
-  "action-button",
-  "split-button",
-  "button-group",
-]);
+const buttonSlugs = new Set(["button", "action-button", "split-button"]);
 const focusComponents = new Set(
   "creatable-multi-select creatable-select date-range-picker date-time-picker input multi-select number-step-field otp-input phone-input readable-field search-filter select select-field text-field textarea".split(
     " "
@@ -141,95 +136,156 @@ const explanations = {
     "Closed controls become inert",
     "Close the panel and use Tab; the updated version restores focus to its opener.",
   ],
-  "modal": [
+  modal: [
     "Uncontrolled cancellation can stay open",
     "Cancellation closes the modal",
     "The change is behavioral. Try dismissal; controlled examples may look identical at rest.",
   ],
-  "button": ["Ghost is 2px narrower than Secondary", "Ghost matches Secondary width; tracking -0.16px", "Compare the Ghost and Secondary buttons side by side in All variants."],
-  "action-button": ["Tighter padding; opacity change on hover", "Arc spacing; spring width morph", "Click the button and watch the width and label change."],
-  "split-button": ["Two joined buttons, short divider", "One bordered pill, full-height divider", "Open the menu and press the main action."],
-  "button-group": ["Wider segments, short dividers", "Arc padding, hairline dividers, springy width", "Press each segment and change its label."],
-  "tooltip": ["Compact tooltip, 700ms delay", "Roomier tooltip, 250ms delay, rise-in", "Hover the trigger in each preview."],
-  "tabs": ["32px tabs, no track border", "36px tabs, bordered track, sliding panel", "Switch tabs in the pill variant and watch the cursor and panel."],
-  "switch": ["Scaling track", "Gliding thumb that stretches while pressed", "Press and hold the switch, then release."],
-  "tag": ["Hover grows the tag", "Hover is still; press dips", "Hover and press a tag, then dismiss it."],
-  "otp-input": ["Teal focus border / outer glow", "Primary border / no outer glow", "Focus a slot in each preview."],
-  "spinner": ["Faint track with round-capped arc", "Single 270-degree ring", "Compare the spinner sizes."],
-  "bouncing-loader": ["Larger, slower dots", "Small, quick typing dots", "Watch the dots cycle."],
-  "page-header": ["73px bar, 16px title", "92px bar, 18px title", "Compare the header height and the back button."],
-  "page-footer": ["Tighter footer", "Arc footer padding and text", "Compare the footer height beside the buttons."],
-  "date-divider": ["Light label, wide gap", "Medium label, 12px gap", "Compare the divider label and spacing."],
-  "system-message": ["13px message", "12px message", "Compare the message text size."],
-  "unread-separator": ["Previous label sizing", "12px/500 label, 12px gap", "Compare the label and line gap."],
+  button: [
+    "Ghost is 2px narrower than Secondary",
+    "Ghost matches Secondary width; tracking -0.16px",
+    "Compare the Ghost and Secondary buttons side by side in All variants.",
+  ],
+  "action-button": [
+    "Tighter padding; opacity change on hover",
+    "Arc spacing; spring width morph",
+    "Click the button and watch the width and label change.",
+  ],
+  "split-button": [
+    "Two joined buttons, short divider",
+    "One bordered pill, full-height divider",
+    "Open the menu and press the main action.",
+  ],
+  tooltip: [
+    "Compact tooltip, 700ms delay",
+    "Roomier tooltip, 250ms delay, rise-in",
+    "Hover the trigger in each preview.",
+  ],
+  tabs: [
+    "32px tabs, no track border",
+    "36px tabs, bordered track, sliding panel",
+    "Switch tabs in the pill variant and watch the cursor and panel.",
+  ],
+  switch: [
+    "Scaling track",
+    "Gliding thumb that stretches while pressed",
+    "Press and hold the switch, then release.",
+  ],
+  tag: [
+    "Hover grows the tag",
+    "Hover is still; press dips",
+    "Hover and press a tag, then dismiss it.",
+  ],
+  "otp-input": [
+    "Teal focus border / outer glow",
+    "Primary border / no outer glow",
+    "Focus a slot in each preview.",
+  ],
+  spinner: [
+    "Faint track with round-capped arc",
+    "Single 270-degree ring",
+    "Compare the spinner sizes.",
+  ],
+  "bouncing-loader": [
+    "Larger, slower dots",
+    "Small, quick typing dots",
+    "Watch the dots cycle.",
+  ],
+  "page-header": [
+    "73px bar, 16px title",
+    "92px bar, 18px title",
+    "Compare the header height and the back button.",
+  ],
+  "page-footer": [
+    "Tighter footer",
+    "Arc footer padding and text",
+    "Compare the footer height beside the buttons.",
+  ],
+  "date-divider": [
+    "Light label, wide gap",
+    "Medium label, 12px gap",
+    "Compare the divider label and spacing.",
+  ],
+  "system-message": [
+    "13px message",
+    "12px message",
+    "Compare the message text size.",
+  ],
+  "unread-separator": [
+    "Previous label sizing",
+    "12px/500 label, 12px gap",
+    "Compare the label and line gap.",
+  ],
 };
-const entries = baseline.components.map((slug) => {
-  const audit = bySlug.get(slug);
-  const source = fs.readFileSync(`src/components/ui/v2/${slug}.tsx`);
-  const changed = hash(source) !== baseline.files[`${slug}.tsx`];
-  const before = fs.readFileSync(
-    `design/arc-review/before/${slug}.stories.tsx`,
-    "utf8"
-  );
-  const after = fs.readFileSync(
-    `src/components/ui/v2/${slug}.stories.tsx`,
-    "utf8"
-  );
-  const ids = (text) =>
-    [...text.matchAll(/export const (\w+)/g)].map((match) => match[1]);
-  const afterIds = new Set(ids(after));
-  const commonStories = ids(before).filter((id) => afterIds.has(id));
-  return {
-    slug,
-    title: slug
-      .split("-")
-      .map((word) =>
-        word === "ui"
-          ? "UI"
-          : word === "otp"
-            ? "OTP"
-            : word[0].toUpperCase() + word.slice(1)
-      )
-      .join(" "),
-    family: buttonSlugs.has(slug)
-      ? "Actions"
-      : formSlugs.has(slug)
-        ? "Forms"
-        : navSlugs.has(slug)
-          ? "Navigation & overlays"
-          : "Display",
-    status: audit
-      ? changed || audit.status === "changed"
-        ? "changed"
-        : "reviewed"
-      : "pending",
-    changed,
-    referenceUrl: audit?.referenceUrl ?? null,
-    changes: audit?.changes ?? ["Review in progress."],
-    verification: audit?.verification ?? [],
-    commonStories,
-    defaultStory: commonStories.includes(examples[slug])
-      ? examples[slug]
-      : "Overview",
-    demoState: focusComponents.has(slug)
-      ? "focus"
-      : slug === "skeleton"
-        ? "stagger"
-        : "none",
-    replay: replays[slug] ?? null,
-    initialArgs: null,
-    beforeCaption: focusComponents.has(slug)
-      ? "Teal focus border / outer glow"
-      : (explanations[slug]?.[0] ?? "Before this pass"),
-    afterCaption: focusComponents.has(slug)
-      ? "Primary border / no outer glow"
-      : (explanations[slug]?.[1] ?? "Updated behavior"),
-    tryThis: focusComponents.has(slug)
-      ? "Focus state is shown in both previews so the border and glow difference is visible immediately."
-      : (explanations[slug]?.[2] ??
-        "Interact with both previews to compare the changes described above."),
-  };
-});
+const entries = baseline.components
+  .filter((slug) => fs.existsSync(`src/components/ui/v2/${slug}.tsx`))
+  .map((slug) => {
+    const audit = bySlug.get(slug);
+    const source = fs.readFileSync(`src/components/ui/v2/${slug}.tsx`);
+    const changed = hash(source) !== baseline.files[`${slug}.tsx`];
+    const before = fs.readFileSync(
+      `design/arc-review/before/${slug}.stories.tsx`,
+      "utf8"
+    );
+    const after = fs.readFileSync(
+      `src/components/ui/v2/${slug}.stories.tsx`,
+      "utf8"
+    );
+    const ids = (text) =>
+      [...text.matchAll(/export const (\w+)/g)].map((match) => match[1]);
+    const afterIds = new Set(ids(after));
+    const commonStories = ids(before).filter((id) => afterIds.has(id));
+    return {
+      slug,
+      title: slug
+        .split("-")
+        .map((word) =>
+          word === "ui"
+            ? "UI"
+            : word === "otp"
+              ? "OTP"
+              : word[0].toUpperCase() + word.slice(1)
+        )
+        .join(" "),
+      family: buttonSlugs.has(slug)
+        ? "Actions"
+        : formSlugs.has(slug)
+          ? "Forms"
+          : navSlugs.has(slug)
+            ? "Navigation & overlays"
+            : "Display",
+      status: audit
+        ? changed || audit.status === "changed"
+          ? "changed"
+          : "reviewed"
+        : "pending",
+      changed,
+      referenceUrl: audit?.referenceUrl ?? null,
+      changes: audit?.changes ?? ["Review in progress."],
+      verification: audit?.verification ?? [],
+      commonStories,
+      defaultStory: commonStories.includes(examples[slug])
+        ? examples[slug]
+        : "Overview",
+      demoState: focusComponents.has(slug)
+        ? "focus"
+        : slug === "skeleton"
+          ? "stagger"
+          : "none",
+      replay: replays[slug] ?? null,
+      initialArgs: null,
+      beforeCaption: focusComponents.has(slug)
+        ? "Teal focus border / outer glow"
+        : (explanations[slug]?.[0] ?? "Before this pass"),
+      afterCaption: focusComponents.has(slug)
+        ? "Primary border / no outer glow"
+        : (explanations[slug]?.[1] ?? "Updated behavior"),
+      tryThis: focusComponents.has(slug)
+        ? "Focus state is shown in both previews so the border and glow difference is visible immediately."
+        : (explanations[slug]?.[2] ??
+          "Interact with both previews to compare the changes described above."),
+    };
+  });
 if (
   process.argv.includes("--require-complete") &&
   entries.some((entry) => entry.status === "pending")
@@ -294,7 +350,7 @@ for(const entry of review.entries){
  const links=make('div','card-links');const docs=make('a','text-link','Full component');docs.href='/components/'+entry.slug;links.append(docs);if(entry.referenceUrl){const ref=make('a','text-link','Arc reference ↗');ref.href=entry.referenceUrl;ref.target='_blank';ref.rel='noopener noreferrer';links.append(ref)}tools.append(links);card.append(tools);
  const grid=make('div','preview-grid');for(const version of ['before','after']){
   const col=make('div','preview-column');const label=make('div','preview-label');label.append(make('strong',null,version==='before'?'Before':'Updated'),make('span',null,version==='before'?entry.beforeCaption:entry.afterCaption));col.append(label);
-  const frame=make('iframe');frame.title=entry.title+' '+version+' interactive preview';frame.loading='lazy';frame.setAttribute('sandbox','allow-scripts allow-same-origin');frame.style.height=['button','button-group','action-button','split-button'].includes(entry.slug)?'420px':'320px';const url=new URL('/preview/index.html',location.origin);url.searchParams.set('component',entry.slug);url.searchParams.set('story',state.story);url.searchParams.set('parentOrigin',location.origin);url.searchParams.set('comparison','1');url.searchParams.set('compareState',entry.demoState);if(version==='before')url.searchParams.set('review','before');frame.src=url.href;col.append(frame);const error=make('p','preview-error');error.setAttribute('role','alert');col.append(error);state.frames[version]=frame;frame.addEventListener('load',()=>frame.contentWindow?.postMessage({channel,type:'request-metadata'},location.origin));grid.append(col);
+  const frame=make('iframe');frame.title=entry.title+' '+version+' interactive preview';frame.loading='lazy';frame.setAttribute('sandbox','allow-scripts allow-same-origin');frame.style.height=['button','action-button','split-button'].includes(entry.slug)?'420px':'320px';const url=new URL('/preview/index.html',location.origin);url.searchParams.set('component',entry.slug);url.searchParams.set('story',state.story);url.searchParams.set('parentOrigin',location.origin);url.searchParams.set('comparison','1');url.searchParams.set('compareState',entry.demoState);if(version==='before')url.searchParams.set('review','before');frame.src=url.href;col.append(frame);const error=make('p','preview-error');error.setAttribute('role','alert');col.append(error);state.frames[version]=frame;frame.addEventListener('load',()=>frame.contentWindow?.postMessage({channel,type:'request-metadata'},location.origin));grid.append(col);
  }card.append(grid);state.controls=make('div','controls');card.append(state.controls);document.getElementById('cards').append(card);
 }
 window.addEventListener('message',event=>{

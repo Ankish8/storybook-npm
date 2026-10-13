@@ -1,0 +1,55 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Underline",
+      "description": "The existing default: an underline follows the selected tab. Arrow keys move and activate tabs immediately."
+    },
+    {
+      "id": "pill",
+      "title": "Pill / segmented",
+      "description": "Set variant=\"pill\" on TabsList to use a light outlined rail and a white selected pill. The cursor glides on a gentle spring; the Radix selection API stays the same."
+    },
+    {
+      "id": "full-width",
+      "title": "Full width",
+      "description": "Use fullWidth on either list variant to distribute tabs evenly across the available width."
+    },
+    {
+      "id": "icons-counts",
+      "title": "With icons and counts",
+      "description": "Compose decorative icons and TabsCount inside a trigger. Keep icons aria-hidden and use a readable count label."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled selection",
+      "description": "Own the selected value with value and onValueChange. External actions and keyboard selection stay in sync."
+    },
+    {
+      "id": "manual",
+      "title": "Manual activation",
+      "description": "Set activationMode=\"manual\" when loading a panel is expensive. Arrow keys move focus; Enter or Space activates the focused tab."
+    },
+    {
+      "id": "vertical",
+      "title": "Vertical tabs",
+      "description": "Set orientation=\"vertical\" on Tabs. Up and Down move through tabs, and content transitions follow the vertical axis."
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled tabs",
+      "description": "Disabled triggers remain visible, do not activate, and are skipped by arrow-key navigation."
+    },
+    {
+      "id": "rtl",
+      "title": "Right to left",
+      "description": "dir=\"rtl\" reverses horizontal keyboard navigation and panel motion. The measured cursor follows the actual tab positions."
+    },
+    {
+      "id": "persistent",
+      "title": "Keep panel state",
+      "description": "Opt in to forceMount on TabsContent to preserve local state. Hide inactive forced panels explicitly with data-[state=inactive]:hidden."
+    }
+  ]
+}

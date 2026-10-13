@@ -473,12 +473,12 @@ describe("Modal icon", () => {
 });
 
 describe("Modal actions", () => {
-  it("uses shadcn's compact 32px buttons for Cancel and the confirm action", () => {
+  it("matches the confirmation field's 44px height and corners", () => {
     render(<Modal open title="Confirm" />);
     for (const name of ["Cancel", "Yes"]) {
       const button = screen.getByRole("button", { name });
-      expect(button).toHaveClass("h-8", "px-2.5");
-      expect(button).not.toHaveClass("h-11");
+      expect(button).toHaveClass("h-11", "rounded-lg", "px-4");
+      expect(button).not.toHaveClass("h-8");
     }
   });
 });

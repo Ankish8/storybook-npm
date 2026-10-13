@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SelectField, type SelectOption } from "../../v2/select-field";
 
@@ -662,6 +662,106 @@ describe("SelectField v2 refresh", () => {
     render(<SelectField options={defaultOptions} error="Required" />);
     expect(screen.getByRole("combobox").className).not.toContain(
       "aria-expanded:border-[var(--color-secondary-600"
+    );
+  });
+});
+
+describe("SelectField canonical module", () => {
+  it("preserves the compatibility import as the same component", async () => {
+    const canonical = await import("../../v2/select");
+    expect(canonical.SelectField).toBe(SelectField);
+  });
+
+  it("lets Escape close the list while search has focus", async () => {
+    const user = userEvent.setup();
+    render(<SelectField label="Method" options={defaultOptions} searchable />);
+    const trigger = screen.getByRole("combobox");
+    await user.click(trigger);
+    await user.click(screen.getByRole("textbox"));
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("moves from search into enabled results with arrow keys", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        label="Method"
+        defaultValue="option1"
+        options={[
+          ...defaultOptions,
+          { value: "disabled", label: "Disabled", disabled: true },
+        ]}
+        searchable
+      />
+    );
+    await user.click(screen.getByRole("combobox"));
+    const search = screen.getByRole("textbox");
+    await user.click(search);
+    await user.type(search, "Option 2");
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("option", { name: "Option 2" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(screen.getByRole("combobox")).toHaveTextContent("Option 2");
+  });
+
+  it("does not submit a form when Enter is pressed in search", async () => {
+    const user = userEvent.setup();
+    const submit = vi.fn((event: React.FormEvent) => event.preventDefault());
+    render(
+      <form onSubmit={submit}>
+        <SelectField label="Method" options={defaultOptions} searchable />
+      </form>
+    );
+    await user.click(screen.getByRole("combobox"));
+    await user.click(screen.getByRole("textbox"));
+    await user.keyboard("{Enter}");
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+});
+
+describe("SelectField keyboard search entry", () => {
+  it.each([false, true])(
+    "focuses search after a keyboard opening (separateGroups=%s)",
+    async (separateGroups) => {
+      const user = userEvent.setup();
+      render(
+        <SelectField
+          label="Method"
+          options={defaultOptions}
+          defaultValue="option1"
+          searchable
+          separateGroups={separateGroups}
+        />
+      );
+      await user.tab();
+      expect(screen.getByRole("combobox")).toHaveFocus();
+      await user.keyboard("{Enter}");
+      await waitFor(() => expect(screen.getByRole("textbox")).toHaveFocus());
+      await user.keyboard("Option 2{ArrowDown}");
+      expect(screen.getByRole("option", { name: "Option 2" })).toHaveFocus();
+      await user.keyboard("{ArrowUp}");
+      expect(screen.getByRole("textbox")).toHaveFocus();
+      await user.keyboard("{ArrowDown}{Enter}");
+      expect(screen.getByRole("combobox")).toHaveTextContent("Option 2");
+    }
+  );
+
+  it("keeps option focus for nonsearchable fields", async () => {
+    const user = userEvent.setup();
+    render(
+      <SelectField
+        label="Method"
+        options={defaultOptions}
+        defaultValue="option1"
+      />
+    );
+    await user.tab();
+    await user.keyboard("{Enter}");
+    await waitFor(() =>
+      expect(screen.getByRole("option", { name: "Option 1" })).toHaveFocus()
     );
   });
 });

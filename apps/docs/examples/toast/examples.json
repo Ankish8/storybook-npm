@@ -1,0 +1,40 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Store-driven confirmation",
+      "description": "Mount Toaster once in your app. This contained demo keeps its viewport in normal flow; the default app viewport is fixed."
+    },
+    {
+      "id": "stack",
+      "title": "Queue and expand a stack",
+      "description": "stack is an optional presentation of the same store. All five queued notices remain available on expansion; the measured viewport grows in normal flow."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "The six variant names share a neutral surface. A colored icon communicates status; the original primitive exports remain usable."
+    },
+    {
+      "id": "undo",
+      "title": "Save and undo local state",
+      "description": "A ToastAction has meaningful altText. The action restores the previous local workspace name."
+    },
+    {
+      "id": "update",
+      "title": "Update a persistent notice",
+      "description": "Use the existing returned id, update and dismiss handle. There is no new promise helper or loading variant."
+    },
+    {
+      "id": "controlled-primitive",
+      "title": "Controlled primitive",
+      "description": "The original Radix root, provider, action, close and viewport APIs remain available. open and onOpenChange belong to the parent."
+    },
+    {
+      "id": "provider-options",
+      "title": "Duration and swipe direction",
+      "description": "providerProps preserves provider control. Per-toast duration=0 inherits the provider; Infinity keeps that notice open."
+    }
+  ]
+}

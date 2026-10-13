@@ -20,20 +20,28 @@ afterEach(() => {
 function preview(id: string, initial: Args = {}) {
   const prepared = prepareStory(stories, id, "button");
   const Story = createStoryRenderer(prepared);
-  let setControls: (patch: Args) => void;
-  let current: Args;
+  let setControls: (patch: Args) => void = () => {
+    throw new Error("Preview controls are not committed.");
+  };
+  let current: Args = {};
   function Harness() {
     const [args, setArgs] = React.useState<Args>({
       ...prepared.initialArgs,
       ...initial,
     });
-    current = args;
-    setControls = (patch) => setArgs((old) => ({ ...old, ...patch }));
+    const updateArgs = React.useCallback(
+      (patch: Args) => setArgs((old) => ({ ...old, ...patch })),
+      []
+    );
+    React.useLayoutEffect(() => {
+      current = args;
+      setControls = updateArgs;
+    }, [args, updateArgs]);
     return (
       <PreviewContext.Provider
         value={{
           args,
-          updateArgs: setControls,
+          updateArgs,
           resetArgs: () => setArgs(prepared.initialArgs),
           context: {
             args: mapArgs(args, prepared.argTypes),
@@ -75,6 +83,7 @@ test("icon-only Controls offer square sizes and keep the icon mounted through lo
   }
   view.update({ loading: true });
   expect(button.getAttribute("aria-busy")).toBe("true");
+  expect((button as HTMLButtonElement).disabled).toBe(true);
   expect(
     button.querySelector("[data-v2-button-spinner][data-loading=true]")
   ).not.toBeNull();
@@ -86,6 +95,7 @@ test("icon-only Controls offer square sizes and keep the icon mounted through lo
   view.update({ loading: false });
   expect(button.querySelector("svg.lucide-plus")).not.toBeNull();
   expect(button.hasAttribute("aria-busy")).toBe(false);
+  expect((button as HTMLButtonElement).disabled).toBe(false);
 });
 
 test("canonical gallery shows five styles while v1 comparison retains all nine names", () => {
@@ -104,15 +114,17 @@ test("save feedback and loading stay synchronized with Customize args", () => {
   const view = preview("SaveFlow");
   const button = screen.getByRole("button", { name: "Save changes" });
   button.focus();
+  expect(document.activeElement).toBe(button);
   fireEvent.click(button);
   expect(view.args().loading).toBe(true);
-  expect(document.activeElement).toBe(button);
+  expect((button as HTMLButtonElement).disabled).toBe(true);
   expect(
     button.querySelector("[data-v2-button-spinner][data-loading=true]")
   ).not.toBeNull();
   expect(screen.getByRole("status").textContent).toContain("Saving");
   act(() => vi.advanceTimersByTime(1100));
   expect(view.args().loading).toBe(false);
+  expect((button as HTMLButtonElement).disabled).toBe(false);
   expect(view.args().children).toBe("Saved");
   expect(screen.getByRole("status").textContent).toContain("Draft saved");
   view.update({ loading: true, children: "Retry" });

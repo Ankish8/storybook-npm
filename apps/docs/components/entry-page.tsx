@@ -1,29 +1,22 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import {
-  components,
   entryHref,
-  getComponent,
+  relatedEntries,
   type ComponentEntry,
 } from "@docs/lib/catalog";
 import { ComponentPlayground } from "@docs/components/component-playground";
 import { ExamplesSection } from "@docs/components/examples-section";
 import { loadExamples } from "@docs/lib/examples";
+import { componentTokenDocumentation } from "@docs/lib/component-tokens";
 import { PageActions } from "@docs/components/page-actions";
 
 /** The documentation page for one catalog entry. Components and blocks share it; only the framing differs. */
 export async function EntryPage({ entry }: { entry: ComponentEntry }) {
   const isBlock = entry.kind === "block";
   const examples = await loadExamples(entry.slug);
-  const related = (
-    entry.related
-      ? entry.related.map(getComponent)
-      : components.filter(
-          (item) => item.category === entry.category && item.slug !== entry.slug
-        )
-  )
-    .filter((item): item is ComponentEntry => Boolean(item))
-    .slice(0, 4);
+  const tokenDocumentation = await componentTokenDocumentation(entry.slug);
+  const related = relatedEntries(entry);
   return (
     <div className="arc-page">
       <article className="arc-article">
@@ -42,6 +35,12 @@ export async function EntryPage({ entry }: { entry: ComponentEntry }) {
         )}
         <h1 className="arc-title">{entry.title}</h1>
         <p className="arc-description">{entry.description}</p>
+        {entry.hidden && (
+          <p className="m-0 arc-description">
+            This v2 addition is retained for existing installs. For new loading
+            interfaces, explore Spinner, Skeleton or Progress indicator.
+          </p>
+        )}
         <PageActions
           slug={entry.slug}
           title={entry.title}
@@ -52,6 +51,7 @@ export async function EntryPage({ entry }: { entry: ComponentEntry }) {
           slug={entry.slug}
           title={entry.title}
           anatomy={Boolean(examples?.anatomy)}
+          tokenDocumentation={tokenDocumentation}
           examples={examples?.examples.map(({ id, title }) => ({ id, title }))}
         >
           {examples && (

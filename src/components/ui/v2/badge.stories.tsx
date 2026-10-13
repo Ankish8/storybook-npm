@@ -1,8 +1,16 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Check } from "lucide-react";
+import {
+  Check,
+  CircleAlert,
+  CircleCheck,
+  FileCheck2,
+  Layers,
+} from "lucide-react";
 import { gallery } from "../../../storybook/v2-preview";
-import { Badge } from "./badge";
+import { Badge, type BadgeProps } from "./badge";
+import { Button } from "./button";
+import { Checkbox } from "./checkbox";
 import { Badge as BadgeV1 } from "../badge";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -53,15 +61,15 @@ const meta: Meta<typeof Badge> = {
             [
               "Heights",
               "Content and padding determine the height",
-              "sm 20 · default 24 · lg 30px",
+              "sm 22 · default 26 · lg 30px",
             ],
             ["Radius", "Full pill", "25px, matching the v2 pill"],
             [
               "Label",
               "Inherited, 14px medium (12px sm)",
-              "Inter regular, 12px (14px lg)",
+              "v2 font token, 12px medium (11px sm, 14px lg)",
             ],
-            ["Icon gap", "4px", "8px"],
+            ["Icon gap", "4px", "5px (4px sm)"],
             [
               "Status dot",
               "—",
@@ -70,7 +78,7 @@ const meta: Meta<typeof Badge> = {
             [
               "Borders",
               "Only outline has a border",
-              "0.4px tinted borders; outline 1px; disabled none",
+              "1px semantic status borders; disabled none",
             ],
             [
               "Status text",
@@ -79,10 +87,11 @@ const meta: Meta<typeof Badge> = {
             ],
             ["Secondary", "Grey surface", "Teal surface with teal border"],
             [
-              "Info border",
-              "None",
-              "Black, matching the recorded v2 design exactly",
+              "Content changes",
+              "Instant update",
+              "Short label and icon swap with an intrinsic width spring; reduced motion settles immediately",
             ],
+            ["Hover", "No visual change", "No tint, movement, or animation"],
           ],
           tokens: [
             ["Default surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
@@ -95,14 +104,19 @@ const meta: Meta<typeof Badge> = {
             ["Default text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Info surface", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Info text", "--semantic-info-text", "#2F5398", "#2F5398"],
-            ["Info border", "--color-black", "#000000", "#000000"],
+            ["Info border", "--semantic-info-border", "#A8C0EC", "#A8C0EC"],
             [
               "Active surface",
               "--semantic-success-surface",
               "#ECFDF3",
               "#ECFDF3",
             ],
-            ["Active border", "--color-success-200", "#ABEFC6", "#ABEFC6"],
+            [
+              "Active border",
+              "--semantic-success-border",
+              "#75E0A7",
+              "#75E0A7",
+            ],
             ["Active text", "--semantic-success-text", "#067647", "#067647"],
             [
               "Failed surface",
@@ -131,10 +145,10 @@ const meta: Meta<typeof Badge> = {
               "#27ABB8",
             ],
             ["Status dot", "currentColor", "The variant's text colour"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans, Inter, sans-serif · 500"],
           ],
           guidance:
-            "Use a status word as well as color. The optional dot is decorative (aria-hidden): it never replaces the word. Badges are informational by default; use a Button for actions. The `information` API name is unchanged. Use `asChild` only when the badge wraps an existing link.",
+            "Use a status word as well as color. Icons and the optional dot are decorative (aria-hidden). Badges stay quiet on hover; a change of string/number label or icon component/key gets a short transition. Re-rendering the same icon and passive font/size changes stay still. Reduced motion shows the current state immediately. Use a Button for actions. Native props, refs, variant/size defaults, and the `information` API name remain compatible with v1. `asChild` applies styles to one existing element and ignores the separate dot/icon props; put its content inside the child. Put a changing status in a polite live region only when it needs to be announced. References: [Arc](https://uiarc.dev/components/badge), [HeroUI Chip](https://heroui.com/en/docs/react/components/chip), and [shadcn](https://ui.shadcn.com/docs/components/radix/badge).",
         }),
       },
     },
@@ -158,7 +172,7 @@ const meta: Meta<typeof Badge> = {
     size: {
       control: "select",
       options: SIZES,
-      description: "Small 20px, default 24px, or large 30px.",
+      description: "Small 22px, default 26px, or large 30px.",
     },
     children: { control: "text", description: "Short status label." },
     dot: {
@@ -188,6 +202,134 @@ type Story = StoryObj<typeof meta>;
 
 export const Overview: Story = {
   args: { variant: "default", size: "default", children: "Badge" },
+};
+
+function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
+  const [status, setStatus] = React.useState<
+    "ready" | "approved" | "attention"
+  >("ready");
+  const [autoApprove, setAutoApprove] = React.useState(false);
+  const autoApproveId = React.useId();
+
+  React.useEffect(() => {
+    if (!autoApprove || status === "approved") return;
+    const timeout = window.setTimeout(() => setStatus("approved"), 1600);
+    return () => window.clearTimeout(timeout);
+  }, [autoApprove, status]);
+
+  const current = {
+    ready: {
+      label: "Ready",
+      variant: "information" as const,
+      icon: <CircleCheck />,
+      description: "The review is ready for approval.",
+    },
+    approved: {
+      label: "Approved",
+      variant: "active" as const,
+      icon: <Check />,
+      description: "The component is approved for this release.",
+    },
+    attention: {
+      label: "Needs attention",
+      variant: "warning" as const,
+      icon: <CircleAlert />,
+      description:
+        "The review was reopened. Check the changes before approving.",
+    },
+  }[status];
+
+  return (
+    <section
+      aria-label="Component review"
+      className="w-[520px] max-w-full overflow-hidden rounded-2xl border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]"
+    >
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-semantic-border-layout px-6 py-4">
+        <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          Component review
+        </p>
+        <Badge variant="secondary" size="sm" leftIcon={<Layers />}>
+          Design system
+        </Badge>
+      </div>
+      <div className="flex flex-col gap-5 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-semantic-bg-ui text-semantic-text-secondary">
+              <FileCheck2 className="size-5" aria-hidden="true" />
+            </span>
+            <div className="min-w-0">
+              <p className="m-0 text-base font-medium text-semantic-text-primary">
+                Status labels
+              </p>
+              <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+                Badge · Feedback and metadata
+              </p>
+            </div>
+          </div>
+          <div role="status" aria-live="polite" aria-atomic="true">
+            <Badge
+              variant={current.variant}
+              size={size}
+              leftIcon={current.icon}
+            >
+              {current.label}
+            </Badge>
+          </div>
+        </div>
+        <p className="m-0 min-h-10 text-sm leading-5 text-semantic-text-secondary">
+          {autoApprove && status !== "approved"
+            ? "Auto-approval is queued. You can turn it off before the review completes."
+            : current.description}
+        </p>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            type="button"
+            size="sm"
+            leftIcon={<Check />}
+            disabled={status === "approved"}
+            onClick={() => setStatus("approved")}
+          >
+            Approve
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={status !== "approved"}
+            onClick={() => {
+              setAutoApprove(false);
+              setStatus("attention");
+            }}
+          >
+            Reopen review
+          </Button>
+        </div>
+      </div>
+      <div className="flex items-center gap-2.5 border-t border-semantic-border-layout bg-semantic-bg-subtle px-6 py-4">
+        <Checkbox
+          id={autoApproveId}
+          checked={autoApprove}
+          onCheckedChange={(checked) => setAutoApprove(checked === true)}
+        />
+        <label
+          htmlFor={autoApproveId}
+          className="cursor-pointer text-sm text-semantic-text-secondary"
+        >
+          Auto-approve
+        </label>
+      </div>
+    </section>
+  );
+}
+
+export const ReviewWorkflow: Story = {
+  name: "Review workflow",
+  parameters: gallery(
+    ["variant", "children", "leftIcon", "rightIcon", "dot"],
+    "Approve the review or enable auto-approve. Reopen review changes the status to Needs attention and cancels automatic approval. Status text and icons update together; the Design system category stays still."
+  ),
+  render: ({ size }) => <ReviewWorkflowDemo size={size} />,
 };
 export const Primary: Story = {
   args: { variant: "primary", children: "Primary" },
@@ -228,7 +370,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
             {LABELS[variant]}
           </span>
           <Badge {...args} variant={variant} />
@@ -247,8 +389,8 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-end gap-8">
       {SIZES.map((size) => (
         <div key={size} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-            {size} · {size === "sm" ? 20 : size === "lg" ? 30 : 24}px
+          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+            {size} · {size === "sm" ? 22 : size === "lg" ? 30 : 26}px
           </span>
           <Badge {...args} size={size} />
         </div>
@@ -269,7 +411,7 @@ export const Dot: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,#707070)]">
+          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
             {LABELS[variant]}
           </span>
           <Badge {...args} variant={variant} dot />
@@ -296,17 +438,17 @@ export const VariantsAndSizes: Story = {
     <div className="max-w-full overflow-x-auto">
       <div className="grid min-w-[620px] grid-cols-[110px_repeat(3,minmax(140px,1fr))] items-center gap-x-6 gap-y-5">
         <div />
-        {["Small · 20px", "Default · 24px", "Large · 30px"].map((label) => (
+        {["Small · 22px", "Default · 26px", "Large · 30px"].map((label) => (
           <div
             key={label}
-            className="text-xs font-medium text-[var(--v2-text-muted,#707070)]"
+            className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]"
           >
             {label}
           </div>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))]">
               {LABELS[variant]}
             </div>
             {SIZES.map((size) => (
@@ -343,15 +485,15 @@ export const V1VsV2: Story = {
       <div className="max-w-full overflow-x-auto">
         <div className="grid min-w-[820px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
           <div />
-          <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
+          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]">
             v1 (ui/badge)
           </div>
-          <div className="text-xs font-medium text-[var(--v2-text-muted,#707070)]">
+          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]">
             v2 (ui/v2/badge)
           </div>
           {VARIANTS.map((variant) => (
             <React.Fragment key={variant}>
-              <div className="text-xs font-medium text-[var(--v2-text-secondary,#5E5E5E)]">
+              <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))]">
                 {LABELS[variant]}
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -385,10 +527,10 @@ export const Usage: Story = {
   render: (args) => (
     <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
           AI bots
         </p>
-        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
           Status at a glance across your workspace.
         </p>
       </div>
@@ -417,10 +559,10 @@ export const Usage: Story = {
           className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4"
         >
           <div className="min-w-0">
-            <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+            <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
               {bot.name}
             </p>
-            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
+            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
               {bot.type}
             </p>
           </div>
@@ -447,7 +589,12 @@ export const AsLink: Story = {
     ...args
   }) => (
     <Badge {...args} asChild>
-      <a href="#storybook-root">{children}</a>
+      <a
+        href="#storybook-root"
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-border-focus"
+      >
+        {children}
+      </a>
     </Badge>
   ),
 };

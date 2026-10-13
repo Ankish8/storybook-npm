@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
  * Button — v2 design (Figma: New Design System › v2 › Buttons).
  *
  * Same public props as `@/components/ui/button`, with Arc-inspired state styling
- * and focus-preserving loading. Brand primary and 8px radius are retained.
+ * and v1-compatible loading. Brand primary and 8px radius are retained.
  *
  * Canonical variants: primary, secondary, ghost, link, destructive.
  * `default` aliases primary; `outline` aliases secondary. Success and dashed
@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
  *
  * Sizes: sm 36 / default 44 / lg 50; square icon equivalents. Label Inter 500.
  *
- * Explicit disabled uses the native attribute. Loading uses aria-disabled so
- * focus stays on the action, with capture guards preventing repeat activation.
+ * Disabled and loading use the native disabled attribute, as in v1. Slotted
+ * links also use aria-disabled and capture guards to prevent activation.
  *
  * Focus ring: the 1px width is an arbitrary property on purpose. Storybook runs
  * tailwind-merge 3, where a bare `outline` means width and is dropped next to
@@ -93,7 +93,7 @@ export interface ButtonProps
   leftIcon?: React.ReactNode;
   /** Icon displayed on the right side of the button text */
   rightIcon?: React.ReactNode;
-  /** Shows a spinner and blocks activation while retaining keyboard focus */
+  /** Shows a loading spinner and disables the button */
   loading?: boolean;
   /** Text shown during loading state */
   loadingText?: string;
@@ -364,29 +364,33 @@ const Button = React.forwardRef(
           conceal={centeredLoading}
           iconOnly={iconOnly}
           leftIcon={
-            loading && !centeredLoading ? (
-              <Loader2
-                aria-hidden="true"
-                className="animate-spin [animation-duration:700ms] motion-reduce:[animation-duration:2s]"
-              />
+            loading ? (
+              !centeredLoading ? (
+                <Loader2
+                  aria-hidden="true"
+                  className="animate-spin [animation-duration:700ms] motion-reduce:[animation-duration:2s]"
+                />
+              ) : undefined
             ) : (
               leftIcon
             )
           }
-          rightIcon={loading && !centeredLoading ? undefined : rightIcon}
+          rightIcon={loading ? undefined : rightIcon}
         >
-          {loading && !centeredLoading ? loadingLabel : label}
+          {loading ? loadingLabel : label}
         </ButtonContent>
         <span
           aria-hidden="true"
           data-active={centeredLoading || undefined}
           className="pointer-events-none absolute inset-0 grid place-items-center opacity-0 scale-[0.6] transition-[opacity,transform] [transition-duration:160ms] ease-out data-[active=true]:opacity-100 data-[active=true]:scale-100 motion-reduce:scale-100"
         >
-          <span
-            data-v2-button-spinner=""
-            data-loading={centeredLoading || undefined}
-            className="size-4 rounded-full border-[1.5px] border-solid border-current border-r-transparent animate-spin [animation-duration:700ms] [animation-play-state:paused] data-[loading=true]:[animation-play-state:running] motion-reduce:[animation-duration:2s]"
-          />
+          {centeredLoading && (
+            <Loader2
+              data-v2-button-spinner=""
+              data-loading="true"
+              className="size-4 animate-spin [animation-duration:700ms] motion-reduce:[animation-duration:2s]"
+            />
+          )}
         </span>
       </>
     );
@@ -408,7 +412,7 @@ const Button = React.forwardRef(
     const slottedChild = child
       ? React.cloneElement(child, {
           children: content,
-          ...(disabled ? { disabled: true } : {}),
+          ...(disabled || loading ? { disabled: true } : {}),
           ...(unavailable
             ? {
                 "aria-disabled": true,
@@ -429,7 +433,7 @@ const Button = React.forwardRef(
         {...props}
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
-        disabled={disabled}
+        disabled={disabled || loading}
         aria-busy={loading || props["aria-busy"] || undefined}
         aria-disabled={unavailable || undefined}
         aria-label={

@@ -55,3 +55,15 @@ body {
   margin-block: auto;
 }
 
+html[data-preview-version="v1"] body {
+  font-family: "Source Sans Pro", sans-serif;
+}
+html[data-live-comparison="true"] .preview-frame {
+  overflow-x: auto;
+  min-height: 192px;
+}
+html[data-live-comparison="true"] .preview-frame[data-layout="centered"] {
+  display: flex;
+  justify-content: safe center;
+  align-items: center;
+}

@@ -82,6 +82,7 @@ const meta: Meta<typeof TextField> = {
         "preventConsecutiveSpaces",
         "onChange",
         "onClear",
+        "returnFocusOnClear",
       ],
     },
     design: {
@@ -98,7 +99,7 @@ const meta: Meta<typeof TextField> = {
             [
               "Messages",
               "Pop in",
-              "Measured height spring, replacement copy rise/blur, polite live region; clear button fades with a 32px target",
+              "Measured height spring, replacement copy rise/blur, polite live region; clear button fades; optional focus return preserves the v1 default",
             ],
             [
               "Height and radius",
@@ -108,33 +109,37 @@ const meta: Meta<typeof TextField> = {
             [
               "Typography",
               "Inherited font; 12px label",
-              "Inter; 14px medium label, 12px helper",
+              "Timeless Sans with Inter fallback; 14px medium label, 12px helper",
             ],
             [
               "Value text",
               "16px default / 12px compact",
               "14px default / 12px compact",
             ],
-            ["Hover border", "Default border", "#C0C3CA on enabled fields"],
+            [
+              "Hover border",
+              "Default border",
+              "Primary emphasis only on hover-capable fine pointers",
+            ],
             [
               "Focus",
               "Thin teal shadow",
-              "Primary border emphasis; no outer glow",
+              "No focus border or glow; small actions retain keyboard focus outlines",
             ],
             [
               "Error",
               "Red border and thin shadow",
-              "Red border and a soft 4px shadow; 12px error text",
+              "Red border with no shadow; also responds to aria-invalid; 12px error text",
             ],
             [
               "Disabled",
               "Reduced opacity",
-              "Solid grey surface without opacity loss",
+              "Grey surface with reduced opacity",
             ],
             [
               "Typing and validation",
               "Controlled/uncontrolled values, counters, clear callback and space/caret protection",
-              "Same current props and behavior",
+              "Same callback contract, with IME drafts and selection ranges preserved",
             ],
           ],
           tokens: [
@@ -154,16 +159,21 @@ const meta: Meta<typeof TextField> = {
               "#A2A6B1",
             ],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
-            ["Hover border", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
+            ["Hover border", "--semantic-primary", "#343E55", "#343E55"],
+            [
+              "Action focus outline",
+              "--semantic-primary",
+              "#343E55",
+              "#343E55",
+            ],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Font", "--font-v2", "Inter"],
+            ["Font", "--font-v2", "Timeless Sans, Inter"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Use a visible label and helper text when more context is needed. `error` supplies an error message, red styling and the accessible description. `state` changes the visual treatment only. In controlled forms, update `value` from `onChange` and reset it in `onClear`; the component never changes your controlled value itself. `loading` disables typing and replaces the right icon with a spinner. Compact size remains 36px for existing dense forms.",
+            "Use a visible label and helper text when more context is needed. `error` supplies an error message, red styling and the accessible description. `state` changes the visual treatment only. In controlled forms, update `value` from `onChange` and reset it in `onClear`; the component never changes your controlled value itself. `loading` disables typing and replaces the right icon with a spinner. Compact size remains 36px for existing dense forms. Consecutive spaces collapse outside IME composition; set `preventConsecutiveSpaces={false}` when spacing is significant. Clear fires only `onClear`, never a synthetic `onChange`. Opt into `returnFocusOnClear` for continuous keyboard editing; the default retains v1 focus behavior.",
         }),
       },
     },

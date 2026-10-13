@@ -1,3 +1,4 @@
+import type * as React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -132,22 +133,30 @@ describe("Switch v2 hit area, press and description", () => {
   it("glides the thumb on a spring and stretches it while the track is pressed (reduced motion skips the stretch)", () => {
     render(<Switch aria-label="Notifications" />);
     const thumb = screen.getByRole("switch").firstElementChild!;
-    expect(thumb).toHaveClass("h-[18px]", "w-[18px]", "data-[state=checked]:translate-x-[18px]");
-    expect(thumb.className).toContain("[transition:transform_490ms_var(--arc-glide)");
-    expect(thumb.className).toContain(
-      "motion-safe:[button:enabled:active_&]:w-[23px]"
+    expect(thumb).toHaveClass(
+      "h-[18px]",
+      "w-[18px]",
+      "data-[state=checked]:translate-x-[18px]"
     );
     expect(thumb.className).toContain(
-      "motion-safe:[button:enabled:active_&]:data-[state=checked]:translate-x-[13px]"
+      "[transition:transform_490ms_var(--arc-glide)"
     );
-    expect(thumb.className).toContain("motion-reduce:[transition:background-color_120ms_ease-out]");
+    expect(thumb.className).toContain(
+      "motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:w-[23px]"
+    );
+    expect(thumb.className).toContain(
+      "motion-safe:[button:enabled:not([aria-readonly=true]):active_&]:data-[state=checked]:translate-x-[13px]"
+    );
+    expect(thumb.className).toContain("motion-reduce:transition-none");
   });
 
   it("gates hover colour changes to devices that can hover", () => {
     render(<Switch aria-label="Notifications" />);
     const classes = screen.getByRole("switch").className.split(/\s+/);
     expect(
-      classes.some((c) => c.includes("[@media(hover:hover)]:hover:"))
+      classes.some((c) =>
+        c.includes("[@media(hover:hover)_and_(pointer:fine)]:hover:")
+      )
     ).toBe(true);
     expect(classes.some((c) => /(^|:)enabled:hover:/.test(c))).toBe(false);
   });
@@ -193,5 +202,132 @@ describe("Switch v2 hit area, press and description", () => {
     const control = screen.getByRole("switch");
     expect(control.id).not.toBe("");
     expect(control).toHaveAccessibleDescription("B");
+  });
+});
+
+describe("Switch v2 keyboard, form and read-only compatibility", () => {
+  it("toggles with Space and Enter and calls the callback once per activation", async () => {
+    const onCheckedChange = vi.fn();
+    render(<Switch label="Desktop alerts" onCheckedChange={onCheckedChange} />);
+    const control = screen.getByRole("switch", { name: "Desktop alerts" });
+    await userEvent.tab();
+    expect(control).toHaveFocus();
+    await userEvent.keyboard(" ");
+    expect(control).toHaveAttribute("aria-checked", "true");
+    await userEvent.keyboard("{Enter}");
+    expect(control).toHaveAttribute("aria-checked", "false");
+    expect(onCheckedChange.mock.calls).toEqual([[true], [false]]);
+  });
+
+  it("keeps controlled values owned by the caller", async () => {
+    const onCheckedChange = vi.fn();
+    const { rerender } = render(
+      <Switch
+        checked={false}
+        onCheckedChange={onCheckedChange}
+        aria-label="Alerts"
+      />
+    );
+    await userEvent.click(screen.getByRole("switch"));
+    expect(onCheckedChange).toHaveBeenCalledWith(true);
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "false");
+    rerender(
+      <Switch checked onCheckedChange={onCheckedChange} aria-label="Alerts" />
+    );
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "true");
+  });
+
+  it("lets a consumer prevent the default toggle", async () => {
+    const onCheckedChange = vi.fn();
+    const onClick = vi.fn((event: React.MouseEvent<HTMLButtonElement>) =>
+      event.preventDefault()
+    );
+    render(
+      <Switch
+        label="Alerts"
+        onClick={onClick}
+        onCheckedChange={onCheckedChange}
+      />
+    );
+    await userEvent.click(screen.getByRole("switch"));
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onCheckedChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("keeps read-only focus and consumer handlers without changing state by label, Space or Enter", async () => {
+    const onCheckedChange = vi.fn();
+    const onClick = vi.fn();
+    render(
+      <Switch
+        label="Managed alerts"
+        defaultChecked
+        readOnly
+        onClick={onClick}
+        onCheckedChange={onCheckedChange}
+      />
+    );
+    const control = screen.getByRole("switch", { name: "Managed alerts" });
+    expect(control).not.toBeDisabled();
+    expect(control).toHaveAttribute("aria-readonly", "true");
+    await userEvent.tab();
+    expect(control).toHaveFocus();
+    await userEvent.keyboard(" ");
+    await userEvent.keyboard("{Enter}");
+    await userEvent.click(screen.getByText("Managed alerts"));
+    expect(control).toHaveAttribute("aria-checked", "true");
+    expect(onCheckedChange).not.toHaveBeenCalled();
+    expect(onClick).toHaveBeenCalledTimes(3);
+  });
+
+  it("submits checked default/value fields and read-only values, omitting off and disabled switches", async () => {
+    const { container } = render(
+      <form>
+        <Switch name="desktop" value="enabled" defaultChecked label="Desktop" />
+        <Switch name="sound" defaultChecked label="Sound" />
+        <Switch name="off" label="Off" />
+        <Switch name="disabled" defaultChecked disabled label="Disabled" />
+        <Switch
+          name="managed"
+          value="locked"
+          defaultChecked
+          readOnly
+          label="Managed"
+        />
+      </form>
+    );
+    const form = container.querySelector("form")!;
+    expect([...new FormData(form).entries()]).toEqual([
+      ["desktop", "enabled"],
+      ["sound", "on"],
+      ["managed", "locked"],
+    ]);
+    await userEvent.click(screen.getByRole("switch", { name: "Sound" }));
+    expect(new FormData(form).has("sound")).toBe(false);
+    await userEvent.click(screen.getByRole("switch", { name: "Off" }));
+    expect(new FormData(form).get("off")).toBe("on");
+  });
+
+  it("preserves invalid values, explicit names and existing description references", () => {
+    render(
+      <>
+        <p id="outside">External help</p>
+        <Switch
+          label="Alerts"
+          description="Internal help"
+          aria-label="Custom name"
+          aria-describedby="outside"
+          aria-invalid="grammar"
+        />
+      </>
+    );
+    const control = screen.getByRole("switch", { name: "Custom name" });
+    expect(control).toHaveAttribute("aria-invalid", "grammar");
+    expect(control).toHaveAccessibleDescription("External help Internal help");
+  });
+
+  it("renders a numeric description without losing its association", () => {
+    render(<Switch label="Count" description={0} />);
+    expect(screen.getByRole("switch")).toHaveAccessibleDescription("0");
   });
 });

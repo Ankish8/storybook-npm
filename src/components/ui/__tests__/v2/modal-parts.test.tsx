@@ -680,7 +680,7 @@ describe("ModalCancel and ModalAction", () => {
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
-  it("both are shadcn's compact 32px buttons, and Cancel is an outline", () => {
+  it("both match 44px form fields, and Cancel is an outline", () => {
     render(
       <ModalRoot open>
         <ModalContent>
@@ -694,7 +694,11 @@ describe("ModalCancel and ModalAction", () => {
       </ModalRoot>
     );
     for (const name of ["Cancel", "Continue"]) {
-      expect(screen.getByRole("button", { name })).toHaveClass("h-8", "px-2.5");
+      expect(screen.getByRole("button", { name })).toHaveClass(
+        "h-11",
+        "rounded-lg",
+        "px-4"
+      );
     }
   });
 });

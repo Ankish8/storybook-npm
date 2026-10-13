@@ -3,8 +3,10 @@
 import {
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
@@ -22,6 +24,12 @@ import {
 import { SelectionMarker } from "./selection-marker";
 import { DocsSelect } from "./docs-select";
 import { featuredExamples } from "@docs/lib/featured-examples";
+import { MigrationSection } from "./migration-comparison";
+import { fullscreenFrameStyle, useFrameFullscreen } from "./frame-fullscreen";
+import {
+  auditedMigrationDocs,
+  migrationComparisons,
+} from "@docs/lib/migration-comparisons";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
@@ -47,6 +55,11 @@ function prepareDocs(text: string) {
 }
 
 const channel = "myoperator-v2-docs";
+// Origin is fixed for this document. The server snapshot keeps hydration's
+// first render identical before React reads the actual browser origin.
+const subscribeOrigin = () => () => {};
+const getBrowserOrigin = () => window.location.origin;
+const getServerOrigin = () => "";
 function headingId(text: string) {
   return text
     .toLowerCase()
@@ -93,33 +106,35 @@ function JsonControl({
   id: string;
 }) {
   const serialized = JSON.stringify(value ?? null, null, 2);
-  const [draft, setDraft] = useState(serialized);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    setDraft(serialized);
-    setError("");
-  }, [serialized]);
+  const [editor, setEditor] = useState({
+    serialized,
+    draft: serialized,
+    error: "",
+  });
+  if (editor.serialized !== serialized) {
+    setEditor({ serialized, draft: serialized, error: "" });
+  }
   return (
     <div>
       <textarea
         id={id}
         className="control-field"
         rows={3}
-        value={draft}
+        value={editor.draft}
         onChange={(event) => {
-          setDraft(event.target.value);
+          const draft = event.target.value;
           try {
-            const next = JSON.parse(event.target.value);
-            setError("");
+            const next = JSON.parse(draft);
+            setEditor({ serialized, draft, error: "" });
             onChange(next);
           } catch {
-            setError("Enter valid JSON.");
+            setEditor({ serialized, draft, error: "Enter valid JSON." });
           }
         }}
       />
-      {error && (
+      {editor.error && (
         <p className="control-error" role="status">
-          {error}
+          {editor.error}
         </p>
       )}
     </div>
@@ -212,6 +227,7 @@ export function ComponentPlayground({
   title,
   anatomy = false,
   examples = [],
+  tokenDocumentation,
   children,
 }: {
   slug: string;
@@ -220,6 +236,8 @@ export function ComponentPlayground({
   anatomy?: boolean;
   /** Curated examples rendered by `children`, listed under "Examples" in the reading guide. */
   examples?: Array<{ id: string; title: string }>;
+  /** Source-derived tokens for refreshed pages whose story helper normalizes text colors. */
+  tokenDocumentation?: string;
   /** Rendered between the preview and the written documentation: the Anatomy and Examples sections. */
   children?: ReactNode;
 }) {
@@ -227,21 +245,48 @@ export function ComponentPlayground({
   const frame = useRef<HTMLIFrameElement>(null);
   const expectedStory = useRef<string | null>(null);
   const pendingEdits = useRef<Args>({});
-  const [src, setSrc] = useState("");
-  const [frameOrigin, setFrameOrigin] = useState("");
+  const browserOrigin = useSyncExternalStore(
+    subscribeOrigin,
+    getBrowserOrigin,
+    getServerOrigin
+  );
+  const preview = useMemo(() => {
+    if (!browserOrigin) return { src: "", origin: "", story: "Overview" };
+    const origin = process.env.NEXT_PUBLIC_PREVIEW_ORIGIN || browserOrigin;
+    const url = new URL("/preview/index.html", origin);
+    const story =
+      new URL(window.location.href).searchParams.get("example") ||
+      featuredExamples[slug] ||
+      "Overview";
+    url.searchParams.set("component", slug);
+    url.searchParams.set("parentOrigin", browserOrigin);
+    url.searchParams.set("story", story);
+    return { src: url.href, origin: url.origin, story };
+  }, [browserOrigin, slug]);
+  const { src, origin: frameOrigin } = preview;
   const [metadata, setMetadata] = useState<Metadata | null>(null);
   const [args, setArgs] = useState<Args>({});
   const [height, setHeight] = useState(300);
   // Pixels the iframe is taller than the card, for an open popup to overflow into; popupOpen unclips them.
   const [room, setRoom] = useState(0);
   const [popupOpen, setPopupOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  useFrameFullscreen(fullscreen);
   const [error, setError] = useState("");
   const [view, setView] = useState<"preview" | "code">("preview");
   const [sourceMode, setSourceMode] = useState<"component" | "story">(
     "component"
   );
-  const [source, setSource] = useState("");
-  const [filename, setFilename] = useState("");
+  const sourceKey = `${slug}:${sourceMode}`;
+  const [sourceResult, setSourceResult] = useState<{
+    key: string;
+    source: string;
+    filename: string;
+  } | null>(null);
+  const source =
+    sourceResult?.key === sourceKey ? sourceResult.source : "Loading source…";
+  const filename = sourceResult?.key === sourceKey ? sourceResult.filename : "";
   const [copied, setCopied] = useState(false);
   const [controlsOpen, setControlsOpen] = useState(false);
   const playgroundRef = useRef<HTMLElement>(null);
@@ -290,23 +335,9 @@ export function ComponentPlayground({
   const clickedSection = useRef<string | null>(null);
   const [markdownCopied, setMarkdownCopied] = useState(false);
   const [selectedStory, setSelectedStory] = useState("Overview");
-  useEffect(() => {
-    const origin =
-      process.env.NEXT_PUBLIC_PREVIEW_ORIGIN || window.location.origin;
-    const url = new URL("/preview/index.html", origin);
-    url.searchParams.set("component", slug);
-    url.searchParams.set("parentOrigin", window.location.origin);
-    const example =
-      new URL(window.location.href).searchParams.get("example") ||
-      featuredExamples[slug] ||
-      "Overview";
-    if (example) {
-      url.searchParams.set("story", example);
-      expectedStory.current = example;
-    }
-    setFrameOrigin(url.origin);
-    setSrc(url.href);
-  }, [slug]);
+  useLayoutEffect(() => {
+    expectedStory.current = preview.story;
+  }, [preview]);
   useEffect(() => {
     function receive(event: MessageEvent) {
       if (
@@ -353,6 +384,8 @@ export function ComponentPlayground({
             : 0
         );
         setPopupOpen(message.open === true);
+        setDialogOpen(message.dialogOpen === true);
+        setFullscreen(message.fullscreen === true);
       } else if (message.type === "error") setError(String(message.message));
     }
     window.addEventListener("message", receive);
@@ -361,7 +394,6 @@ export function ComponentPlayground({
   useEffect(() => {
     if (view !== "code") return;
     const controller = new AbortController();
-    setSource("Loading source…");
     fetch(`/api/source?slug=${encodeURIComponent(slug)}&mode=${sourceMode}`, {
       signal: controller.signal,
     })
@@ -370,14 +402,23 @@ export function ComponentPlayground({
         return response.json();
       })
       .then((data) => {
-        setSource(data.source);
-        setFilename(data.filename);
+        if (!controller.signal.aborted)
+          setSourceResult({
+            key: sourceKey,
+            source: data.source,
+            filename: data.filename,
+          });
       })
       .catch((error) => {
-        if (error.name !== "AbortError") setSource(error.message);
+        if (!controller.signal.aborted && error.name !== "AbortError")
+          setSourceResult({
+            key: sourceKey,
+            source: error.message,
+            filename: "",
+          });
       });
     return () => controller.abort();
-  }, [slug, view, sourceMode]);
+  }, [slug, view, sourceMode, sourceKey]);
   function send(type: string, payload: Args = {}) {
     frame.current?.contentWindow?.postMessage(
       { channel, type, component: slug, story: selectedStory, ...payload },
@@ -402,10 +443,33 @@ export function ComponentPlayground({
     (example) => example.id === selectedStory
   );
   const entries = Object.entries(metadata?.argTypes ?? {});
-  const docText =
+  const storyDocText =
     typeof metadata?.docs === "string"
       ? metadata.docs
       : (metadata?.docs?.description ?? metadata?.description ?? "");
+  const distributionDocs =
+    "## Unprefixed Tailwind\n\nv2 installs with unprefixed Tailwind classes. If a screen also uses v1, keep its existing `tw-` stylesheet and compile the v2 paths with an unprefixed Tailwind configuration. Both stylesheets and the semantic theme variables must be available. Changing an import path does not rebuild your host CSS.\n";
+  const tokenDocs = tokenDocumentation
+    ? storyDocText
+        .replace(/## Text hierarchy[\s\S]*?(?=\n## |$)/, "")
+        .replace(
+          /## Design Tokens[\s\S]*?(?=\n## |$)/i,
+          tokenDocumentation + "\n"
+        )
+    : storyDocText;
+  const distributionText = tokenDocumentation
+    ? /## Unprefixed Tailwind/.test(tokenDocs)
+      ? tokenDocs.replace(
+          /## Unprefixed Tailwind[\s\S]*?(?=\n## |$)/,
+          distributionDocs
+        )
+      : tokenDocs + "\n\n" + distributionDocs
+    : tokenDocs;
+  const migration = auditedMigrationDocs(
+    distributionText,
+    migrationComparisons[slug]
+  );
+  const docText = migration.full;
   const headings = [...docText.matchAll(/^## (.+)$/gm)].map((match) => ({
     title: match[1].replace(/[`*_]/g, ""),
     id: headingId(match[1]),
@@ -586,6 +650,7 @@ export function ComponentPlayground({
               ref={frame}
               title={`${title} interactive preview`}
               className="preview-frame"
+              data-preview-fullscreen={fullscreen || undefined}
               src={src}
               onLoad={() =>
                 frame.current?.contentWindow?.postMessage(
@@ -594,25 +659,42 @@ export function ComponentPlayground({
                 )
               }
               style={
-                overflowPreview
+                fullscreen
                   ? {
-                      height: cardHeight + room,
+                      ...fullscreenFrameStyle,
                       visibility: metadata ? "visible" : "hidden",
-                      // Clipped to the card (and click-through below it) until a popup opens, then the popup shows
-                      // over the page instead of leaving blank canvas for it.
-                      clipPath:
-                        room && !popupOpen
-                          ? `inset(0 0 ${room}px 0)`
-                          : undefined,
-                      zIndex: popupOpen ? 30 : 1,
                     }
-                  : {
-                      height: Math.max(200, Math.min(cardHeight + room, 880)),
-                      visibility: metadata ? "visible" : "hidden",
-                      position: metadata ? "static" : "absolute",
-                    }
+                  : overflowPreview
+                    ? {
+                        height: cardHeight + room,
+                        visibility: metadata ? "visible" : "hidden",
+                        // Clipped to the card (and click-through below it) until a popup opens, then the popup shows
+                        // over the page instead of leaving blank canvas for it.
+                        clipPath:
+                          room && !popupOpen
+                            ? `inset(0 0 ${room}px 0)`
+                            : undefined,
+                        zIndex: popupOpen ? 30 : 1,
+                      }
+                    : {
+                        height: Math.max(200, Math.min(cardHeight + room, 880)),
+                        visibility: metadata ? "visible" : "hidden",
+                        position: metadata ? "static" : "absolute",
+                      }
               }
             />
+          )}
+          {dialogOpen && !fullscreen && (
+            <button
+              type="button"
+              className="doc-button doc-button-bordered migration-fullscreen"
+              onClick={() => {
+                frame.current?.focus({ preventScroll: true });
+                send("show-fullscreen");
+              }}
+            >
+              Open fullscreen
+            </button>
           )}
         </div>
         {view === "code" && (
@@ -678,37 +760,42 @@ export function ComponentPlayground({
           className="documentation"
           aria-label={`${title} documentation`}
         >
-          <Markdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw, [rehypeSanitize, docsSchema]]}
-            components={{
-              h2: ({ children }) => (
-                <h2 id={headingId(String(children))} data-doc-heading>
-                  {children}
-                </h2>
-              ),
-              span: ({ node, children, ...props }) => {
-                const color = node?.properties?.dataSwatch;
-                return typeof color === "string" &&
-                  /^#[0-9a-f]{3,8}$/i.test(color) ? (
-                  <span
-                    className="token-swatch"
-                    style={{ background: color }}
-                    aria-label={color}
-                  />
-                ) : (
-                  <span {...props}>{children}</span>
-                );
-              },
-              table: ({ children }) => (
-                <div className="table-scroll">
-                  <table>{children}</table>
-                </div>
-              ),
-            }}
-          >
-            {prepareDocs(docText)}
-          </Markdown>
+          {[migration.before, migration.after].map((text, index) => (
+            <div key={index}>
+              {index === 1 && <MigrationSection slug={slug} title={title} />}
+              <Markdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw, [rehypeSanitize, docsSchema]]}
+                components={{
+                  h2: ({ children }) => (
+                    <h2 id={headingId(String(children))} data-doc-heading>
+                      {children}
+                    </h2>
+                  ),
+                  span: ({ node, children, ...props }) => {
+                    const color = node?.properties?.dataSwatch;
+                    return typeof color === "string" &&
+                      /^#[0-9a-f]{3,8}$/i.test(color) ? (
+                      <span
+                        className="token-swatch"
+                        style={{ background: color }}
+                        aria-label={color}
+                      />
+                    ) : (
+                      <span {...props}>{children}</span>
+                    );
+                  },
+                  table: ({ children }) => (
+                    <div className="table-scroll">
+                      <table>{children}</table>
+                    </div>
+                  ),
+                }}
+              >
+                {prepareDocs(text)}
+              </Markdown>
+            </div>
+          ))}
         </section>
       )}
       {typeof document !== "undefined" &&

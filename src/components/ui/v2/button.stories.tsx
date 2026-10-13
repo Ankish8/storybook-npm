@@ -138,7 +138,7 @@ All six size names, icons, loadingText and asChild remain supported. Changing th
 
 Press feedback uses a quick compression and a gentle spring return. Wide actions compress less than compact ones. Primary hover and press use opacity instead of a gradient; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
 
-Loading keeps the original width and displays a centered spinner. Set \`loadingText\` to opt into an inline spinner with an explicit status label. Loading sets \`aria-busy\` and \`aria-disabled\`, blocks repeat activation, and keeps focus. Disabled actions use 52% opacity. Reduced motion removes scale, movement and blur; short fades remain. We retain a visible keyboard focus outline, unlike the reference.
+Loading keeps the original width and displays a centered spinner. Set \`loadingText\` to opt into an inline spinner with an explicit status label. Loading sets native \`disabled\`, \`aria-busy\` and \`aria-disabled\`, matching v1 and preventing repeat activation. Busy native buttons are skipped in the Tab order. Disabled actions use 52% opacity. Reduced motion removes scale, movement and blur; short fades remain. We retain a visible keyboard focus outline, unlike the reference.
 
 ## Design Tokens
 
@@ -234,7 +234,7 @@ Loading keeps the original width and displays a centered spinner. Set \`loadingT
     loading: {
       control: "boolean",
       description:
-        "Shows a spinner and blocks activation while keeping keyboard focus",
+        "Shows a spinner and natively disables the button, matching v1",
     },
     loadingText: {
       control: "text",
@@ -573,7 +573,7 @@ function SaveFlowRender() {
           Save a draft
         </p>
         <p className="m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]">
-          Try a click, Enter or Space. The action keeps focus while it saves.
+          Try a click, Enter or Space. The action is disabled while it saves.
         </p>
       </div>
       <div className="flex max-w-full flex-wrap items-center gap-3">

@@ -1,9 +1,10 @@
 import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { cva, type VariantProps } from "class-variance-authority";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Loader2, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Input } from "./input";
 
 /**
  * Arc's chevron turns on a 580ms spring that settles with a hint of life. The
@@ -32,7 +33,7 @@ const selectTriggerVariants = cva(
           // the extra `hover` selector outranks the grey hover border (specificity
           // 0,4,0 vs 0,3,0) so the trigger does not flicker back under the cursor.
           // Arc also tints the field on hover, press and while open (its muted surface).
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus:shadow-none aria-expanded:border-semantic-primary aria-expanded:bg-semantic-bg-ui aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
+          "border border-solid border-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus:shadow-none aria-expanded:border-semantic-primary aria-expanded:bg-semantic-bg-ui aria-expanded:shadow-none [@media(hover:hover)_and_(pointer:fine)]:enabled:aria-expanded:hover:border-semantic-primary",
         error:
           "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none ",
       },
@@ -43,7 +44,39 @@ const selectTriggerVariants = cva(
   }
 );
 
-const Select = SelectPrimitive.Root;
+const SelectOpenContext = React.createContext<(() => void) | null>(null);
+
+// Keep the Radix Root contract while sharing a close action with its portaled
+// content. This isolates Escape from surrounding dialogs, including consumers
+// that resolve more than one Radix DismissableLayer dependency.
+function Select({
+  open,
+  defaultOpen,
+  onOpenChange,
+  ...props
+}: React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>) {
+  const [internalOpen, setInternalOpen] = React.useState(defaultOpen ?? false);
+  const handleOpenChange = React.useCallback(
+    (next: boolean) => {
+      if (open === undefined) setInternalOpen(next);
+      onOpenChange?.(next);
+    },
+    [open, onOpenChange]
+  );
+  const close = React.useCallback(
+    () => handleOpenChange(false),
+    [handleOpenChange]
+  );
+  return (
+    <SelectOpenContext.Provider value={close}>
+      <SelectPrimitive.Root
+        {...props}
+        open={open ?? internalOpen}
+        onOpenChange={handleOpenChange}
+      />
+    </SelectOpenContext.Provider>
+  );
+}
 
 const SelectGroup = SelectPrimitive.Group;
 
@@ -82,12 +115,39 @@ function useValueRoll(ref: React.RefObject<HTMLSpanElement | null>) {
     const node = ref.current;
     if (!node || typeof MutationObserver === "undefined") return;
     let previous = visibleText(node);
+    let rows: (string | null)[] = [];
+    let animations: Animation[] = [];
+    let ghost: HTMLSpanElement | null = null;
+    const clearMotion = () => {
+      animations.forEach((animation) => animation.cancel());
+      animations = [];
+      ghost?.remove();
+      ghost = null;
+    };
+    const trigger = node.closest("button");
+    const rememberOptions = () => {
+      const listId = trigger?.getAttribute("aria-controls");
+      const list = listId ? document.getElementById(listId) : null;
+      if (list)
+        rows = Array.from(list.querySelectorAll('[role="option"]')).map(
+          (row) => row.textContent
+        );
+    };
+    const listObserver = new MutationObserver(rememberOptions);
+    if (trigger)
+      listObserver.observe(trigger, {
+        attributes: true,
+        attributeFilter: ["aria-expanded"],
+      });
+    rememberOptions();
 
     const observer = new MutationObserver(() => {
       const next = visibleText(node);
       if (next === previous) return;
       const before = previous;
       previous = next;
+      clearMotion();
+      rememberOptions();
       // The first fill (Radix portals the selected text in after mount) is not a change.
       if (!before || !next || typeof node.animate !== "function") return;
 
@@ -95,38 +155,35 @@ function useValueRoll(ref: React.RefObject<HTMLSpanElement | null>) {
         typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (reduce) {
-        node.animate([{ opacity: 0 }, { opacity: 1 }], {
-          duration: 120,
-          easing: VALUE_ROLL_EASE_OUT,
-        });
+        animations.push(
+          node.animate([{ opacity: 0 }, { opacity: 1 }], {
+            duration: 120,
+            easing: VALUE_ROLL_EASE_OUT,
+          })
+        );
         return;
       }
 
-      const listId = node.closest("button")?.getAttribute("aria-controls");
-      const rows = listId
-        ? Array.from(
-            document
-              .getElementById(listId)
-              ?.querySelectorAll('[role="option"]') ?? []
-          ).map((row) => row.textContent)
-        : [];
       const from = rows.indexOf(before);
       const to = rows.indexOf(next);
       const direction = to < from ? -1 : 1;
 
-      node.animate(
-        [
-          {
-            opacity: 0,
-            transform: `translateY(${direction * 0.35}em)`,
-            filter: "blur(4px)",
-          },
-          { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
-        ],
-        { duration: 240, easing: VALUE_ROLL_EASE_IN }
+      animations.push(
+        node.animate(
+          [
+            {
+              opacity: 0,
+              transform: `translateY(${direction * 0.35}em)`,
+              filter: "blur(4px)",
+            },
+            { opacity: 1, transform: "translateY(0)", filter: "blur(0px)" },
+          ],
+          { duration: 240, easing: VALUE_ROLL_EASE_IN }
+        )
       );
 
-      const ghost = document.createElement("span");
+      const leavingNode = document.createElement("span");
+      ghost = leavingNode;
       ghost.dataset.valueRollGhost = "";
       ghost.setAttribute("aria-hidden", "true");
       ghost.textContent = before;
@@ -144,8 +201,9 @@ function useValueRoll(ref: React.RefObject<HTMLSpanElement | null>) {
         ],
         { duration: 160, easing: VALUE_ROLL_EASE_OUT, fill: "forwards" }
       );
-      leaving.onfinish = () => ghost.remove();
-      leaving.oncancel = () => ghost.remove();
+      animations.push(leaving);
+      leaving.onfinish = () => leavingNode.remove();
+      leaving.oncancel = () => leavingNode.remove();
     });
 
     observer.observe(node, {
@@ -153,7 +211,11 @@ function useValueRoll(ref: React.RefObject<HTMLSpanElement | null>) {
       characterData: true,
       subtree: true,
     });
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      listObserver.disconnect();
+      clearMotion();
+    };
   }, [ref]);
 }
 
@@ -205,7 +267,12 @@ const SelectTrigger = React.forwardRef(
     <SelectPrimitive.Trigger
       ref={ref}
       className={cn(
-        selectTriggerVariants({ state }),
+        selectTriggerVariants({
+          state:
+            props["aria-invalid"] === true || props["aria-invalid"] === "true"
+              ? "error"
+              : state,
+        }),
         "group/v2-select",
         className
       )}
@@ -282,8 +349,11 @@ SelectScrollDownButton.displayName =
  * `preventDefault()`. We override this property in a capture-phase listener
  * so the library skips the preventDefault call.
  */
-function useUnlockBodyScroll() {
+function useUnlockBodyScroll(viewport: HTMLDivElement | null) {
   React.useEffect(() => {
+    if (!viewport?.isConnected) return;
+    // Radix mounts a detached viewport while closed to collect item labels.
+    // Only the real, connected popup may unlock the page.
     // Don't unlock body scroll if inside a dialog/modal — the dialog's
     // own scroll lock should remain active to prevent background scrolling
     if (document.querySelector('[role="dialog"]')) return;
@@ -310,7 +380,7 @@ function useUnlockBodyScroll() {
       document.removeEventListener("wheel", preventScrollLock, true);
       document.removeEventListener("touchmove", preventScrollLock, true);
     };
-  }, []);
+  }, [viewport]);
 }
 
 export type SelectContentProps = React.ComponentPropsWithoutRef<
@@ -351,18 +421,35 @@ const SelectContent = React.forwardRef(
       sideOffset = 4,
       collisionPadding = 12,
       onViewportScrollEnd,
+      onEscapeKeyDown,
       hideScrollButtons,
       truncateOptionText = false,
       ...props
     }: SelectContentProps,
     ref: React.Ref<React.ElementRef<typeof SelectPrimitive.Content>>
   ) => {
-    useUnlockBodyScroll();
-
     // Use a state-backed ref so the effect re-runs when the viewport mounts.
     // The viewport lives inside Radix's Portal and only attaches when the
     // Select opens — a plain useRef wouldn't trigger the effect.
     const [viewport, setViewport] = React.useState<HTMLDivElement | null>(null);
+    useUnlockBodyScroll(viewport);
+    const close = React.useContext(SelectOpenContext);
+    React.useEffect(() => {
+      if (!viewport?.isConnected || !close) return;
+      const handleEscape = (event: KeyboardEvent) => {
+        if (event.key !== "Escape") return;
+        const panel = viewport.closest('[role="listbox"]');
+        const panels = document.querySelectorAll('[role="listbox"]');
+        if (panel !== panels[panels.length - 1]) return;
+        onEscapeKeyDown?.(event);
+        const cancelled = event.defaultPrevented;
+        event.preventDefault();
+        event.stopPropagation();
+        if (!cancelled) close();
+      };
+      window.addEventListener("keydown", handleEscape, true);
+      return () => window.removeEventListener("keydown", handleEscape, true);
+    }, [viewport, close, onEscapeKeyDown]);
 
     React.useEffect(() => {
       if (!viewport || !onViewportScrollEnd) return;
@@ -372,15 +459,36 @@ const SelectContent = React.forwardRef(
         return scrollTop + clientHeight >= scrollHeight - BOTTOM_THRESHOLD_PX;
       };
 
+      const notify = (event: Event) => {
+        // A native event loses currentTarget after dispatch. The debounced
+        // fallback still promises the viewport to v1 consumers. Restore the
+        // native shape after the callback, including when it throws.
+        const descriptor = Object.getOwnPropertyDescriptor(
+          event,
+          "currentTarget"
+        );
+        Object.defineProperty(event, "currentTarget", {
+          configurable: true,
+          value: viewport,
+        });
+        try {
+          onViewportScrollEnd(
+            event as unknown as React.UIEvent<HTMLDivElement>
+          );
+        } finally {
+          if (descriptor)
+            Object.defineProperty(event, "currentTarget", descriptor);
+          else Reflect.deleteProperty(event, "currentTarget");
+        }
+      };
+
       const supportsScrollEnd =
         typeof window !== "undefined" && "onscrollend" in window;
 
       if (supportsScrollEnd) {
         const handler = (event: Event) => {
           if (isAtBottom()) {
-            onViewportScrollEnd(
-              event as unknown as React.UIEvent<HTMLDivElement>
-            );
+            notify(event);
           }
         };
         viewport.addEventListener("scrollend", handler);
@@ -392,9 +500,7 @@ const SelectContent = React.forwardRef(
         if (timeoutId) clearTimeout(timeoutId);
         timeoutId = setTimeout(() => {
           if (isAtBottom()) {
-            onViewportScrollEnd(
-              event as unknown as React.UIEvent<HTMLDivElement>
-            );
+            notify(event);
           }
         }, SCROLL_DEBOUNCE_MS);
       };
@@ -430,6 +536,7 @@ const SelectContent = React.forwardRef(
           position={position}
           sideOffset={sideOffset}
           collisionPadding={collisionPadding}
+          onEscapeKeyDown={onEscapeKeyDown}
           {...props}
         >
           {!hideScrollButtons && <SelectScrollUpButton />}
@@ -501,7 +608,7 @@ const SelectItem = React.forwardRef(
           // so the focus-visible pseudo-class is also true for a mouse hover (verified in Chrome) and cannot tell them apart.
           "relative flex min-h-9 w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-[11px] pr-[34px] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
           // Selection is told by the check and colour only; Arc never changes the weight, so labels do not reflow.
-          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
+          "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}
@@ -549,7 +656,636 @@ const SelectSeparator = React.forwardRef(
 );
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
+export interface SelectOption {
+  /** The value of the option */
+  value: string;
+  /** The display label of the option */
+  label: string;
+  /** Whether the option is disabled */
+  disabled?: boolean;
+  /** Group name for grouping options */
+  group?: string;
+}
+
+export interface SelectFieldProps {
+  /** Label text displayed above the select */
+  label?: string;
+  /** Shows red asterisk next to label when true */
+  required?: boolean;
+  /** Helper text displayed below the select */
+  helperText?: string;
+  /** Error message - shows error state with red styling */
+  error?: string;
+  /** Disabled state */
+  disabled?: boolean;
+  /** Loading state with spinner */
+  loading?: boolean;
+  /** Placeholder text when no value selected */
+  placeholder?: string;
+  /** Currently selected value (controlled) */
+  value?: string;
+  /** Default value (uncontrolled) */
+  defaultValue?: string;
+  /** Callback when value changes */
+  onValueChange?: (value: string) => void;
+  /** Callback when an option is selected, provides the full option object */
+  onSelect?: (option: SelectOption) => void;
+  /**
+   * Intercept a value change before it commits. Return `false` to prevent
+   * `onValueChange` from firing (only `onSelect` will fire). Useful for
+   * "action" items like "Add custom date" that should open a modal instead
+   * of committing a value. Requires controlled mode (`value` prop) to
+   * visually revert the selection.
+   */
+  interceptValue?: (value: string) => boolean;
+  /** Options to display */
+  options: SelectOption[];
+  /** Enable search/filter functionality */
+  searchable?: boolean;
+  /** Search placeholder text */
+  searchPlaceholder?: string;
+  /**
+   * Render a divider (top border) above each option group and display the
+   * group labels in uppercase with letter-spacing — matches the Figma
+   * "routing" dropdown style. Only affects grouped options.
+   */
+  separateGroups?: boolean;
+  /**
+   * Controlled search value. When provided, internal search state is
+   * ignored and the consumer owns the value — typically used to drive
+   * server-side filtering against a paginated API. The client-side
+   * `option.label` filter is also skipped, since the consumer is expected
+   * to have already filtered the options upstream.
+   *
+   * Pair with `onSearchChange`. Leave both undefined for the default
+   * uncontrolled, client-side filtering behavior.
+   */
+  searchValue?: string;
+  /**
+   * Fires on every keystroke in the search input. Also fires with `""`
+   * when the dropdown closes (so consumers can reset their query state).
+   */
+  onSearchChange?: (value: string) => void;
+  /** Additional class for wrapper */
+  wrapperClassName?: string;
+  /** Additional class for trigger */
+  triggerClassName?: string;
+  /**
+   * Additional class for the dropdown content. By default the content width is
+   * bound to the trigger width (`--radix-select-trigger-width`); override here
+   * (e.g. `w-[280px] max-w-[320px]`) when the trigger is intentionally narrow —
+   * such as a "View all" text link — so the list isn't clipped to the link width.
+   */
+  contentClassName?: string;
+  /** Additional class for label */
+  labelClassName?: string;
+  /** ID for the select */
+  id?: string;
+  /** Name attribute for form submission */
+  name?: string;
+  /**
+   * Fires when the user scrolls to the bottom of the open dropdown.
+   * Use this to load the next page from the server. The callback is
+   * forwarded to SelectContent's `onViewportScrollEnd` (debounced by
+   * the native `scrollend` event), so it won't fire while a scroll is
+   * still in progress.
+   *
+   * No virtualization is applied — all loaded items render to the DOM.
+   * For >2k items consumers may notice some lag; virtualization is a
+   * separate ticket if it becomes a real-world problem.
+   */
+  onScrollEnd?: () => void;
+  /**
+   * When true, renders a small "Loading more…" row at the bottom of
+   * the options list. Set this to true while your API call is in flight
+   * so the user knows more items are on the way.
+   */
+  loadingMore?: boolean;
+  /**
+   * When false, prevents `onScrollEnd` from firing further and renders
+   * an "End of list" footer row. Default true (keep firing).
+   */
+  hasMore?: boolean;
+  /**
+   * Clip long option labels in the dropdown to a single line with an ellipsis
+   * instead of wrapping them across lines. Default false (wrapped). The
+   * selected value in the trigger always truncates, and the value reported to
+   * `onValueChange` / `onSelect` is always the full string — truncation is
+   * presentation only.
+   */
+  truncateOptionText?: boolean;
+  /**
+   * Content shown inside the open dropdown when `options` is empty (and no
+   * search query is active — that case shows "No results found"). Use it to
+   * tell the user why the list is empty and what to do next, e.g.
+   * "No AI Agents yet. Build one in AI Agents first."
+   * Default: "No options available".
+   */
+  emptyMessage?: React.ReactNode;
+}
+
+/**
+ * A comprehensive select field component with label, icons, validation states, and more.
+ *
+ * @example
+ * ```tsx
+ * <SelectField
+ *   label="Authentication"
+ *   placeholder="Select authentication method"
+ *   options={[
+ *     { value: 'none', label: 'None' },
+ *     { value: 'basic', label: 'Basic Auth' },
+ *     { value: 'bearer', label: 'Bearer Token' },
+ *   ]}
+ *   required
+ * />
+ * ```
+ *
+ * @example Lazy-load on scroll
+ * ```tsx
+ * const [items, setItems] = useState<SelectOption[]>([]);
+ * const [loadingMore, setLoadingMore] = useState(false);
+ * const [hasMore, setHasMore] = useState(true);
+ * const page = useRef(0);
+ *
+ * const loadNext = async () => {
+ *   if (loadingMore || !hasMore) return;
+ *   setLoadingMore(true);
+ *   const { results, isLast } = await api.fetchTemplates(page.current);
+ *   setItems(prev => [...prev, ...results]);
+ *   setHasMore(!isLast);
+ *   page.current += 1;
+ *   setLoadingMore(false);
+ * };
+ *
+ * useEffect(() => { loadNext(); }, []);
+ *
+ * <SelectField
+ *   label="Template"
+ *   options={items}
+ *   onScrollEnd={loadNext}
+ *   loadingMore={loadingMore}
+ *   hasMore={hasMore}
+ * />
+ * ```
+ */
+const SelectField = React.forwardRef(
+  (
+    {
+      label,
+      required,
+      helperText,
+      error,
+      disabled,
+      loading,
+      placeholder = "Select an option",
+      value,
+      defaultValue,
+      onValueChange,
+      onSelect,
+      interceptValue,
+      options,
+      searchable,
+      searchPlaceholder = "Search...",
+      separateGroups,
+      searchValue,
+      onSearchChange,
+      wrapperClassName,
+      triggerClassName,
+      contentClassName,
+      labelClassName,
+      id,
+      name,
+      onScrollEnd,
+      loadingMore,
+      hasMore,
+      truncateOptionText,
+      emptyMessage = "No options available",
+    }: SelectFieldProps,
+    ref: React.Ref<HTMLButtonElement>
+  ) => {
+    const searchRef = React.useRef<HTMLInputElement>(null);
+    const openedByKeyboard = React.useRef(false);
+    const [isOpen, setIsOpen] = React.useState(false);
+    React.useEffect(() => {
+      if (!isOpen || !searchable) return;
+      // Keyboard users need a route into search. Do not summon the virtual
+      // keyboard for a touch opening; arrow navigation still reaches search.
+      if (
+        !openedByKeyboard.current &&
+        window.matchMedia?.("(pointer: coarse)")?.matches
+      )
+        return;
+      const frame = window.requestAnimationFrame(() =>
+        searchRef.current?.focus()
+      );
+      return () => window.cancelAnimationFrame(frame);
+    }, [isOpen, searchable]);
+
+    // Internal state for uncontrolled mode. When `searchValue` is provided,
+    // the consumer owns the value and this state is unused.
+    const [searchQuery, setSearchQuery] = React.useState("");
+    const isSearchControlled = searchValue !== undefined;
+    const effectiveSearchQuery = isSearchControlled ? searchValue : searchQuery;
+
+    // Track the current selection ourselves so we always know which option is
+    // selected — even in uncontrolled mode. This lets us keep the selected
+    // option mounted while the search filter hides everything else (see the
+    // filter below), which prevents Radix from blanking the trigger value and
+    // stealing focus off the search input when the selected item unmounts.
+    const isValueControlled = value !== undefined;
+    const [uncontrolledValue, setUncontrolledValue] = React.useState(
+      defaultValue ?? ""
+    );
+    const selectedValue = isValueControlled ? value : uncontrolledValue;
+
+    // Combined value change handler that also fires onSelect with full option object.
+    // When interceptValue returns false, onValueChange is skipped (only onSelect fires).
+    const handleValueChange = React.useCallback(
+      (newValue: string) => {
+        const intercepted = interceptValue?.(newValue) === false;
+
+        if (!intercepted) {
+          onValueChange?.(newValue);
+          if (!isValueControlled) {
+            setUncontrolledValue(newValue);
+          }
+        }
+
+        if (onSelect) {
+          const option = options.find((o) => o.value === newValue);
+          if (option) {
+            onSelect(option);
+          }
+        }
+      },
+      [onValueChange, onSelect, interceptValue, options, isValueControlled]
+    );
+
+    // Support re-selection: fire onSelect when clicking the already-selected
+    // item. Radix only fires onValueChange for *new* values, so without this
+    // clicking an action item like "Add custom date" a second time would be a
+    // no-op.
+    const handleItemClick = React.useCallback(
+      (option: SelectOption) => {
+        if (option.value === selectedValue) {
+          handleValueChange(option.value);
+        }
+      },
+      [selectedValue, handleValueChange]
+    );
+
+    // Derive state from props
+    const derivedState = error ? "error" : "default";
+
+    // Generate unique IDs for accessibility
+    const generatedId = React.useId();
+    const selectId = id || generatedId;
+    const helperId = `${selectId}-helper`;
+    const errorId = `${selectId}-error`;
+
+    // Determine aria-describedby
+    const ariaDescribedBy = error ? errorId : helperText ? helperId : undefined;
+
+    // Group options by group property.
+    //
+    // When client-side filtering is active, non-matching options are hidden
+    // (rendered with `display:none`) rather than removed from the tree. The
+    // one exception we *must* keep mounted is the currently-selected option:
+    // if Radix's selected item unmounts, the trigger loses its displayed value
+    // and focus is pulled off the search input. `matchCount` tracks how many
+    // options are actually visible so the "no results" / footer states stay
+    // accurate.
+    const groupedOptions = React.useMemo(() => {
+      const groups: Record<string, (SelectOption & { hidden?: boolean })[]> =
+        {};
+      const ungrouped: (SelectOption & { hidden?: boolean })[] = [];
+      let matchCount = 0;
+
+      const filtering = !!searchable && !isSearchControlled && !!searchQuery;
+      const query = searchQuery.toLowerCase();
+
+      options.forEach((option) => {
+        const isMatch =
+          !filtering || option.label.toLowerCase().includes(query);
+        const isSelected = option.value === selectedValue && !!selectedValue;
+
+        // Drop only options that neither match the query nor are selected.
+        if (!isMatch && !isSelected) {
+          return;
+        }
+
+        if (isMatch) matchCount++;
+        const entry = { ...option, hidden: !isMatch };
+
+        if (option.group) {
+          if (!groups[option.group]) {
+            groups[option.group] = [];
+          }
+          groups[option.group].push(entry);
+        } else {
+          ungrouped.push(entry);
+        }
+      });
+
+      return { groups, ungrouped, matchCount };
+    }, [options, searchable, isSearchControlled, searchQuery, selectedValue]);
+
+    const hasGroups = Object.keys(groupedOptions.groups).length > 0;
+
+    // Number of *visible* options — drives the empty-state and footer rows.
+    const totalRendered = groupedOptions.matchCount;
+    const showEndOfList =
+      hasMore === false && totalRendered > 0 && !loadingMore;
+
+    // Handle search input change
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const next = e.target.value;
+      if (!isSearchControlled) {
+        setSearchQuery(next);
+      }
+      onSearchChange?.(next);
+    };
+
+    const handleSearchKeyDown = (
+      event: React.KeyboardEvent<HTMLInputElement>
+    ) => {
+      // Escape must reach Radix so a searchable list can close. Text keys
+      // stay in the input instead of triggering Select's typeahead.
+      if (event.key === "Escape") return;
+      event.stopPropagation();
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        event.preventDefault();
+        const rows = Array.from(
+          event.currentTarget
+            .closest('[role="listbox"]')
+            ?.querySelectorAll<HTMLElement>(
+              '[role="option"]:not([data-disabled])'
+            ) ?? []
+        ).filter((row) => getComputedStyle(row).display !== "none");
+        (event.key === "ArrowDown" ? rows[0] : rows.at(-1))?.focus();
+      } else if (event.key === "Enter") {
+        event.preventDefault();
+      }
+    };
+
+    // Reset search when dropdown closes. In controlled mode we notify the
+    // consumer so they can reset their state; in uncontrolled mode we clear
+    // our own state directly.
+    const handleOpenChange = (open: boolean) => {
+      setIsOpen(open);
+      if (!open) {
+        if (isSearchControlled) {
+          onSearchChange?.("");
+        } else {
+          setSearchQuery("");
+        }
+      }
+    };
+
+    return (
+      <div
+        className={cn(
+          "font-[family-name:var(--font-v2,Inter,sans-serif)] flex flex-col gap-2",
+          wrapperClassName
+        )}
+        onPointerDownCapture={(event) => {
+          if ((event.target as HTMLElement).closest('[role="combobox"]'))
+            openedByKeyboard.current = false;
+        }}
+        onKeyDownCapture={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest('[role="combobox"]'))
+            openedByKeyboard.current = true;
+          if (
+            !searchable ||
+            event.key !== "ArrowUp" ||
+            target.getAttribute("role") !== "option"
+          )
+            return;
+          const first = Array.from(
+            target
+              .closest('[role="listbox"]')
+              ?.querySelectorAll<HTMLElement>(
+                '[role="option"]:not([data-disabled])'
+              ) ?? []
+          ).find((row) => getComputedStyle(row).display !== "none");
+          if (target === first) {
+            event.preventDefault();
+            event.stopPropagation();
+            searchRef.current?.focus();
+          }
+        }}
+      >
+        {/* Label */}
+        {label && (
+          <label
+            htmlFor={selectId}
+            className={cn(
+              "text-sm font-medium leading-[1.4] tracking-[-0.16px] text-[var(--v2-text-primary,#484848)]",
+              labelClassName
+            )}
+          >
+            {label}
+            {required && (
+              <span className="text-semantic-error-primary ml-0.5">*</span>
+            )}
+          </label>
+        )}
+
+        {/* Select */}
+        <Select
+          value={value}
+          defaultValue={defaultValue}
+          onValueChange={handleValueChange}
+          disabled={disabled || loading}
+          name={name}
+          onOpenChange={handleOpenChange}
+        >
+          <SelectTrigger
+            ref={ref}
+            id={selectId}
+            state={derivedState}
+            className={cn(
+              "relative",
+              loading && "pr-10",
+              // Routing uses the supporting-text placeholder role. Radix
+              // puts the empty-state attribute on the trigger.
+              separateGroups &&
+                "data-[placeholder]:[--v2-select-value-color:var(--v2-text-muted,#707070)]",
+              triggerClassName
+            )}
+            aria-invalid={!!error}
+            aria-describedby={ariaDescribedBy}
+          >
+            <SelectValue placeholder={placeholder} />
+            {loading && (
+              <Loader2 className="absolute right-8 size-4 animate-spin motion-reduce:[animation-duration:2s] text-[var(--v2-text-muted,#707070)]" />
+            )}
+          </SelectTrigger>
+          <SelectContent
+            onViewportScrollEnd={hasMore !== false ? onScrollEnd : undefined}
+            hideScrollButtons={totalRendered === 0}
+            truncateOptionText={truncateOptionText}
+            className={contentClassName}
+          >
+            {/* Search input */}
+            {searchable &&
+              (separateGroups ? (
+                // Figma "routing" style — a bordered, rounded search box that
+                // reuses the shared Input component (no leading icon).
+                <div className="px-1 pb-1.5">
+                  <Input
+                    ref={searchRef}
+                    type="text"
+                    placeholder={searchPlaceholder}
+                    aria-label={searchPlaceholder}
+                    value={effectiveSearchQuery}
+                    onChange={handleSearchChange}
+                    // Prevent closing dropdown when clicking input
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={handleSearchKeyDown}
+                  />
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
+                  <Search className="size-4 text-[var(--v2-text-muted,#707070)] shrink-0" />
+                  <input
+                    ref={searchRef}
+                    type="text"
+                    placeholder={searchPlaceholder}
+                    aria-label={searchPlaceholder}
+                    value={effectiveSearchQuery}
+                    onChange={handleSearchChange}
+                    className="w-full h-10 text-base text-[var(--v2-text-secondary,#5E5E5E)] bg-transparent placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none"
+                    // Prevent closing dropdown when clicking input
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={handleSearchKeyDown}
+                  />
+                </div>
+              ))}
+
+            {/* Ungrouped options. Non-matching options stay mounted but hidden
+                (only the selected option is ever kept while filtering). */}
+            {groupedOptions.ungrouped.map((option) => (
+              <SelectItem
+                key={option.value}
+                value={option.value}
+                disabled={option.disabled || option.hidden}
+                className={cn(option.hidden && "hidden")}
+                onPointerUp={() => handleItemClick(option)}
+              >
+                {option.label}
+              </SelectItem>
+            ))}
+
+            {/* Grouped options */}
+            {hasGroups &&
+              Object.entries(groupedOptions.groups).map(
+                ([groupName, groupOptions]) => {
+                  // Hide the group label when every option in it is filtered
+                  // out (i.e. only a hidden selected item remains).
+                  const hasVisible = groupOptions.some((o) => !o.hidden);
+                  return (
+                    <SelectGroup key={groupName}>
+                      {hasVisible && (
+                        <SelectLabel
+                          className={cn(
+                            separateGroups &&
+                              "mt-1 border-t border-solid border-semantic-border-layout pt-2.5 uppercase tracking-[0.5px]"
+                          )}
+                        >
+                          {groupName}
+                        </SelectLabel>
+                      )}
+                      {groupOptions.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value}
+                          disabled={option.disabled || option.hidden}
+                          className={cn(option.hidden && "hidden")}
+                          onPointerUp={() => handleItemClick(option)}
+                        >
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  );
+                }
+              )}
+
+            {/* No results message — based on the count of *visible* options. */}
+            {searchable && effectiveSearchQuery && totalRendered === 0 && (
+              <div className="py-6 text-center text-xs text-[var(--v2-text-muted,#707070)]">
+                No results found
+              </div>
+            )}
+
+            {/* Empty state — no options at all and nothing being searched/loaded. */}
+            {options.length === 0 && !effectiveSearchQuery && !loadingMore && (
+              <div
+                role="status"
+                className="px-3 py-6 text-center text-xs text-[var(--v2-text-muted,#707070)]"
+              >
+                {emptyMessage}
+              </div>
+            )}
+
+            {/* Loading-more row (lazy-load) */}
+            {loadingMore && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="flex items-center justify-center gap-2 py-2 text-xs text-[var(--v2-text-muted,#707070)]"
+              >
+                <Loader2
+                  className="size-3.5 animate-spin motion-reduce:[animation-duration:2s]"
+                  aria-hidden="true"
+                />
+                <span>Loading more…</span>
+              </div>
+            )}
+
+            {/* End-of-list footer (lazy-load) */}
+            {showEndOfList && (
+              <div
+                role="status"
+                className="py-2 text-center text-xs text-[var(--v2-text-muted,#707070)]"
+              >
+                End of list
+              </div>
+            )}
+          </SelectContent>
+        </Select>
+
+        {/* Helper text / Error message */}
+        {(error || helperText) && (
+          <div className="flex justify-between items-start gap-2">
+            {error ? (
+              <span
+                id={errorId}
+                className="text-xs leading-[1.4] text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+              >
+                {error}
+              </span>
+            ) : helperText ? (
+              <span
+                id={helperId}
+                className="text-xs leading-[1.4] text-[var(--v2-text-muted,#707070)]"
+              >
+                {helperText}
+              </span>
+            ) : null}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+SelectField.displayName = "SelectField";
+
 export {
+  SelectField,
   Select,
   SelectGroup,
   SelectValue,

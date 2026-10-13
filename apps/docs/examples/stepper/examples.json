@@ -1,0 +1,52 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "A complete flow",
+      "description": "Continue draws a completion check and fills the next connector. Back reverses the motion. Set currentStep to steps.length to finish, then restart. The optional navigation=completed mode permits only completed-step actions.",
+      "minHeight": 190
+    },
+    {
+      "id": "vertical",
+      "title": "Vertical steps",
+      "description": "Use a vertical layout for a sidebar or a narrow form. The connector fills from top to bottom and descriptions wrap beside each marker.",
+      "minHeight": 320
+    },
+    {
+      "id": "icons",
+      "title": "Custom icons",
+      "description": "With marker=icon, custom icons remain visible after completion. Steps without a custom icon use a dot that becomes a drawn check.",
+      "minHeight": 180
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Small markers are 24px and medium markers are 28px. Both keep a 2px connector and a 4px current-step halo.",
+      "minHeight": 220
+    },
+    {
+      "id": "navigation",
+      "title": "Direct navigation",
+      "description": "Existing behavior is unchanged: onStepChange makes all enabled steps clickable. Arrow keys and Home/End move focus; Enter or Space activates the focused step.",
+      "minHeight": 160
+    },
+    {
+      "id": "disabled",
+      "title": "Unavailable steps",
+      "description": "Disable an individual step or the entire stepper. Disabled actions cannot receive focus or fire onStepChange; keyboard navigation skips them.",
+      "minHeight": 250
+    },
+    {
+      "id": "read-only",
+      "title": "Read-only progress",
+      "description": "Omit onStepChange to show a labelled ordered list without buttons. aria-current=step identifies the current position.",
+      "minHeight": 120
+    },
+    {
+      "id": "rtl",
+      "title": "Right to left",
+      "description": "dir=rtl mirrors horizontal connector placement and fill direction. Arrow navigation follows the visual direction.",
+      "minHeight": 180
+    }
+  ]
+}

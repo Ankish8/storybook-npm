@@ -26,6 +26,8 @@ const {
   entryHref,
   blocks,
   uiComponents,
+  visibleEntries,
+  relatedEntries,
 } = await import(
   `data:text/javascript;base64,${Buffer.from(output.outputText).toString("base64")}`
 );
@@ -33,8 +35,8 @@ const {
 const slugs = components.map((component) => component.slug);
 assert.equal(
   slugs.length,
-  54,
-  "Expected all 54 v2 components (v1 dialog, form-modal, confirmation-modal and delete-confirmation-modal are merged into modal; radio is part of checkbox)."
+  55,
+  "Expected all 55 source/CLI entries, including MetricCard, EmptyStates and both hidden compatibility entries."
 );
 assert.equal(
   new Set(slugs).size,
@@ -65,6 +67,11 @@ assert.deepEqual(
 );
 
 const categoryIds = new Set(categories.map((category) => category.id));
+assert.equal(
+  categories.length,
+  8,
+  "Expected eight deliberate discovery categories."
+);
 for (const component of components) {
   assert.match(component.slug, /^[a-z0-9]+(?:-[a-z0-9]+)*$/);
   assert(
@@ -144,10 +151,65 @@ assert.deepEqual(
     // Page chrome.
     "page-footer",
     "page-header",
+    "empty-states",
   ].sort(),
   "Unexpected set of blocks."
 );
-assert.equal(uiComponents.length + blocks.length, components.length);
+const aliases = components.filter((component) => component.aliasOf);
+assert.deepEqual(
+  aliases.map((component) => [component.slug, component.aliasOf]),
+  [["select-field", "select"]]
+);
+for (const alias of aliases)
+  assert(getComponent(alias.aliasOf), `Missing canonical entry: ${alias.slug}`);
+const hidden = components.filter((component) => component.hidden);
+assert.deepEqual(hidden.map((component) => component.slug).sort(), [
+  "shimmering-text",
+  "typography",
+]);
+assert(
+  hidden.every((component) => !component.aliasOf && component.kind !== "block")
+);
+assert.equal(
+  uiComponents.length + blocks.length + aliases.length + hidden.length,
+  components.length
+);
+assert.equal(uiComponents.length, 39);
+assert.equal(blocks.length, 13);
+assert.equal(visibleEntries.length, 52);
+assert.equal(getComponent("button-group"), undefined);
+assert.equal(getComponent("ui-card").title, "Card");
+assert.deepEqual(
+  visibleEntries
+    .filter((component) => component.category === "cards")
+    .map((component) => component.slug)
+    .sort(),
+  ["empty-state", "metric-card", "ui-card"]
+);
+for (const entry of components)
+  assert(
+    relatedEntries(entry).every(
+      (item) => !item.hidden && !item.aliasOf && item.slug !== entry.slug
+    ),
+    `Invalid related entry: ${entry.slug}`
+  );
+for (const entry of [...hidden, ...aliases])
+  assert(
+    !urls.includes(`/components/${entry.slug}`),
+    `Hidden/alias page in navigation: ${entry.slug}`
+  );
+const typographyPage = await readFile(
+  join(appRoot, "app/components/[slug]/page.tsx"),
+  "utf8"
+);
+assert.match(
+  typographyPage,
+  /component\.slug === "typography"\)\s*permanentRedirect\("\/foundations#typography"\)/
+);
+assert.match(
+  await readFile(join(appRoot, "app/foundations/page.tsx"), "utf8"),
+  /id="typography"/
+);
 for (const block of blocks) {
   assert.equal(entryHref(block), `/blocks/${block.slug}`);
   for (const related of block.related ?? [])
@@ -228,6 +290,9 @@ const queries = [
   ["foundations", "/foundations"],
   ["creatable multi", "/blocks/creatable-multi-select"],
   ["blocks", "/blocks/creatable-multi-select"],
+  ["metric card", "/components/metric-card"],
+  ["empty states", "/blocks/empty-states"],
+  ["typography", "/foundations"],
 ];
 for (const [query, url] of queries) {
   const response = await searchGET(
@@ -243,6 +308,67 @@ for (const [query, url] of queries) {
     `Search must find ${url}`
   );
 }
+for (const query of ["shimmering", "typography", "select field", "card", ""]) {
+  const response = await searchGET(
+    new Request(
+      `http://localhost/api/search?query=${encodeURIComponent(query)}`
+    )
+  );
+  const results = await response.json();
+  assert(
+    results.every(
+      (result) =>
+        ![
+          "/components/shimmering-text",
+          "/components/typography",
+          "/components/select-field",
+        ].includes(result.url)
+    ),
+    `Hidden/alias result in search: ${query}`
+  );
+}
+const shell = await readFile(
+  join(appRoot, "components/library-shell.tsx"),
+  "utf8"
+);
+assert.match(shell, /\.\.\.visibleEntries\.map/);
+const featuredOutput = ts.transpileModule(
+  await readFile(join(appRoot, "lib/featured-examples.ts"), "utf8"),
+  { compilerOptions: { module: ts.ModuleKind.ESNext } }
+);
+const { featuredExamples } = await import(
+  `data:text/javascript;base64,${Buffer.from(featuredOutput.outputText).toString("base64")}`
+);
+for (const entry of hidden)
+  assert.equal(featuredExamples[entry.slug], undefined);
+for (const slug of [
+  "alert",
+  "badge",
+  "bouncing-loader",
+  "empty-state",
+  "empty-states",
+  "metric-card",
+  "progress-indicator",
+  "skeleton",
+  "spinner",
+  "tag",
+  "toast",
+  "tooltip",
+  "accordion",
+  "avatar",
+  "panel",
+  "scrollbar",
+  "table",
+  "ui-card",
+]) {
+  const story = await readFile(join(directory, `${slug}.stories.tsx`), "utf8");
+  assert(featuredExamples[slug], `Missing hero: ${slug}`);
+  assert.match(
+    story,
+    new RegExp(`export const ${featuredExamples[slug]}\\b`),
+    `Missing hero export: ${slug}`
+  );
+}
 
 console.log(
   JSON.stringify(
@@ -251,6 +377,8 @@ console.log(
       blocks: blocks.length,
       stories: components.length,
       cliEntries: registrySlugs.length,
+      aliases: aliases.length,
+      hidden: hidden.length,
       categories: categories.length,
       pages: urls.length,
       sourceChecks,

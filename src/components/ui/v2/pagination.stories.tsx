@@ -5,6 +5,7 @@ import { fn } from "storybook/test";
 import * as V2 from "./pagination";
 import * as V1 from "../pagination";
 import { Input } from "./input";
+import { Button } from "./button";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -71,6 +72,7 @@ function Sample({
         currentPage={current}
         totalPages={total}
         siblingCount={args.siblingCount}
+        {...(version === "v2" ? { pageWindow: args.pageWindow } : {})}
         onPageChange={change}
         align={args.align}
         totalItems={args.showInfo ? args.totalItems : undefined}
@@ -159,6 +161,7 @@ const controlNames = [
   "currentPage",
   "totalPages",
   "siblingCount",
+  "pageWindow",
   "align",
   "onPageChange",
   "composition",
@@ -198,11 +201,15 @@ const meta: Meta<Args> = {
               "Unpadded navigation",
               "10px outer padding and 12px group gap",
             ],
-            ["Typography", "Inherited font", "Inter and v2 Button labels"],
+            [
+              "Typography",
+              "Inherited font",
+              "Timeless Sans with Inter fallback and v2 Button labels",
+            ],
             [
               "Selection",
               "Widget currentPage/onPageChange",
-              "Existing API and ellipsis algorithm retained",
+              "Existing API and ellipsis algorithm retained by default. Optional pageWindow slides a continuous 3–9 page belt, including the first and last pages.",
             ],
             [
               "Composable sizes",
@@ -211,14 +218,14 @@ const meta: Meta<Args> = {
             ],
           ],
           tokens: [
-            ["Active surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
+            ["Active surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Active label", "--semantic-text-primary", "#181D27", "#181D27"],
             ["Muted label", "--semantic-text-muted", "#717680", "#717680"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
           ],
           guidance:
-            "Use PaginationWidget for existing numbered-page behavior. For custom content, compose PaginationLink and keep each link's navigation callback local or routed. currentPage is 1-based. totalItems/pageSize supply the range summary. Composition, iconsOnly and linkSize below configure the example; linkSize is applied only to composed PaginationLink samples.",
+            "Use PaginationWidget for existing numbered-page behavior. For custom content, compose PaginationLink and keep each link's navigation callback local or routed. Leave pageWindow unset for v1 behavior; set it to 5 for a continuous animated window. Page numbers travel horizontally with stable keys; reduced motion disables travel. Previous/Next icons mirror in RTL. Disabled anchors prevent activation and leave the tab order. currentPage is 1-based. totalItems/pageSize supply the range summary. Composition, iconsOnly and linkSize below configure the example; linkSize is applied only to composed PaginationLink samples.",
         }),
       },
     },
@@ -247,6 +254,11 @@ const meta: Meta<Args> = {
   argTypes: {
     currentPage: { control: { type: "number", min: 1, max: 20, step: 1 } },
     totalPages: { control: { type: "number", min: 1, max: 20, step: 1 } },
+    pageWindow: {
+      control: { type: "number", min: 3, max: 9 },
+      description:
+        "Opt-in sliding page window; unset preserves the v1 ellipsis range.",
+    },
     siblingCount: { control: { type: "number", min: 0, max: 3, step: 1 } },
     align: { control: "select", options: ["start", "center", "end"] },
     onPageChange: { control: false },
@@ -293,6 +305,56 @@ const meta: Meta<Args> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
+export const AnimatedWindow: Story = {
+  args: {
+    currentPage: 8,
+    totalPages: 12,
+    pageWindow: 5,
+    composition: "widget",
+    showInfo: false,
+  },
+  parameters: {
+    controls: { include: ["currentPage", "totalPages", "pageWindow"] },
+  },
+  render: function Render(args) {
+    const [, update] = useArgs<Args>();
+    const total = Math.max(1, args.totalPages);
+    const page = Math.max(1, Math.min(total, args.currentPage));
+    return (
+      <div className="mx-auto flex w-full max-w-lg flex-col gap-4 py-4">
+        <div className="flex items-center justify-between gap-3 text-sm">
+          <p className="m-0 tabular-nums text-semantic-text-muted">
+            Page {page} of {total}
+          </p>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page === 1}
+              onClick={() => update({ currentPage: 1 })}
+            >
+              First
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={page === total}
+              onClick={() => update({ currentPage: total })}
+            >
+              Last
+            </Button>
+          </div>
+        </div>
+        <V2.PaginationWidget
+          currentPage={page}
+          totalPages={total}
+          pageWindow={args.pageWindow ?? 5}
+          onPageChange={(currentPage) => update({ currentPage })}
+        />
+      </div>
+    );
+  },
+};
 export const WithMorePages: Story = {
   args: { currentPage: 10, totalPages: 20, totalItems: 200 },
 };
@@ -333,9 +395,7 @@ function Card({
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
-      <div className="max-w-full overflow-x-auto">
-        <div className="min-w-[650px]">{children}</div>
-      </div>
+      <div className="max-w-full">{children}</div>
     </section>
   );
 }

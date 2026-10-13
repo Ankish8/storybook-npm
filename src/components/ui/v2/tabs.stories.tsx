@@ -18,6 +18,7 @@ import { v2ComponentDocs } from "./story-docs";
 
 type ExampleArgs = Omit<React.ComponentProps<typeof V2.Tabs>, "children"> & {
   value: string;
+  example: "inbox" | "project";
   variant: "underline" | "pill";
   fullWidth: boolean;
   showCounts: boolean;
@@ -26,10 +27,17 @@ type ExampleArgs = Omit<React.ComponentProps<typeof V2.Tabs>, "children"> & {
   secondDisabled: boolean;
   panelTitle: string;
 };
-const OPTIONS = [
+const INBOX_OPTIONS = [
   { value: "open", label: "Open" },
   { value: "assigned", label: "Assigned" },
   { value: "resolved", label: "Resolved" },
+];
+
+const OPTIONS = INBOX_OPTIONS;
+const PROJECT_OPTIONS = [
+  { value: "open", label: "Overview" },
+  { value: "assigned", label: "Activity" },
+  { value: "resolved", label: "Settings" },
 ];
 
 function TabsExample({
@@ -43,6 +51,7 @@ function TabsExample({
   onValueChange?: (value: string) => void;
   forceState?: "hover" | "focus";
 }) {
+  const OPTIONS = args.example === "project" ? PROJECT_OPTIONS : INBOX_OPTIONS;
   const UI = version === "v1" ? V1 : V2;
   const [selected, setSelected] = React.useState(args.value);
   const [seed, setSeed] = React.useState(args.value);
@@ -68,7 +77,9 @@ function TabsExample({
         fullWidth={args.fullWidth}
         // v1 has no variant: only the v2 list receives it.
         {...(version === "v2" ? { variant: args.variant } : {})}
-        aria-label="Conversation status"
+        aria-label={
+          args.example === "project" ? "Project views" : "Conversation status"
+        }
         className={
           args.orientation === "vertical" ? "w-[200px] shrink-0" : undefined
         }
@@ -122,11 +133,17 @@ function TabsExample({
                 : "m-0 mt-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
             }
           >
-            {option.value === "open"
-              ? "Conversations waiting for a reply."
-              : option.value === "assigned"
-                ? "Conversations assigned to a teammate."
-                : "Conversations already resolved."}
+            {args.example === "project"
+              ? option.value === "open"
+                ? "A summary of your project and recent progress."
+                : option.value === "assigned"
+                  ? "Recent updates from your teammates."
+                  : "Manage your project preferences."
+              : option.value === "open"
+                ? "Conversations waiting for a reply."
+                : option.value === "assigned"
+                  ? "Conversations assigned to a teammate."
+                  : "Conversations already resolved."}
           </p>
           <p
             className={
@@ -178,12 +195,12 @@ const meta: Meta<ExampleArgs> = {
           name: "tabs",
           exportName: "Tabs, TabsList, TabsTrigger, TabsContent, TabsCount",
           summary:
-            "Accessible horizontal and vertical tabs with synchronized selection, optional counts and full-width layouts.",
+            "Accessible tabs with the original underline or an optional pill rail, synchronized selection, counts and full-width layouts.",
           changes: [
             [
               "Typography",
               "Inherited medium text",
-              "Inter 14/20 medium labels; color and indicator show selection; 0.014px spacing",
+              "14/20 medium labels in the configured v2 font; color and indicator show selection; 0.014px spacing",
             ],
             [
               "Horizontal tab",
@@ -203,12 +220,12 @@ const meta: Meta<ExampleArgs> = {
             [
               "Pill style",
               "—",
-              'Optional TabsList variant="pill": 1px-bordered grey track with 4px padding and 4px gaps, 36px tabs (88px minimum), white cursor with a 1px border and a faint shadow that glides on a gentle spring; the new panel fades in sliding 8px from the side of the chosen tab',
+              'Optional TabsList variant="pill": 1px-bordered grey track with 4px padding and 4px gaps, 36px tabs (88px minimum), white cursor with a 1px border and a faint shadow that glides on a gentle spring; the new panel fades in sliding 8px along the tab orientation; reduced motion keeps the cursor and panel still',
             ],
             [
               "Keyboard and selection",
               "Radix Tabs",
-              "Same controlled / uncontrolled API and keyboard behavior",
+              "Same controlled / uncontrolled API, refs, asChild, forceMount, IDs and keyboard behavior; custom trigger IDs also preserve motion direction",
             ],
           ],
           tokens: [
@@ -265,6 +282,7 @@ const meta: Meta<ExampleArgs> = {
   ],
   args: {
     value: "open",
+    example: "inbox",
     variant: "underline",
     orientation: "horizontal",
     activationMode: "automatic",
@@ -328,7 +346,7 @@ const meta: Meta<ExampleArgs> = {
     secondDisabled: {
       control: "boolean",
       table: { category: "TabsTrigger" },
-      description: "Disable only the Assigned tab to check keyboard skipping.",
+      description: "Disable only the middle tab to check keyboard skipping.",
     },
     panelTitle: {
       control: "text",
@@ -349,7 +367,9 @@ const meta: Meta<ExampleArgs> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+export const Overview: Story = {
+  args: { example: "project", panelTitle: "Project" },
+};
 export const Horizontal: Story = { args: { orientation: "horizontal" } };
 export const Vertical: Story = { args: { orientation: "vertical" } };
 export const WithDisabledTab: Story = { args: { secondDisabled: true } };
@@ -360,7 +380,9 @@ export const FullWidthWithBadges: Story = {
 export const AutoWidth: Story = { args: { fullWidth: false } };
 export const Controlled: Story = { args: { value: "assigned" } };
 export const WithCounts: Story = { args: { showCounts: true } };
-export const Pill: Story = { args: { variant: "pill" } };
+export const Pill: Story = {
+  args: { variant: "pill", example: "project", panelTitle: "Project" },
+};
 export const PillWithCounts: Story = {
   name: "Pill with counts",
   args: { variant: "pill", showCounts: true },

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Avatar, AvatarGroup, getInitials } from "../../v2/avatar";
 
@@ -18,6 +18,12 @@ describe("getInitials", () => {
 
   it("handles extra spaces gracefully", () => {
     expect(getInitials("  John  Doe  ")).toBe("JD");
+  });
+
+  it("trims a single name and safely handles empty names", () => {
+    expect(getInitials("  John  ")).toBe("JO");
+    expect(getInitials(" \t ")).toBe("");
+    expect(getInitials("")).toBe("");
   });
 });
 
@@ -92,9 +98,7 @@ describe("Avatar", () => {
   it("applies soft (default) variant classes", () => {
     const { container } = render(<Avatar name="Test" />);
     expect(container.firstChild).toHaveClass("bg-semantic-info-surface");
-    expect(container.firstChild).toHaveClass(
-      "text-[var(--v2-text-muted,#707070)]"
-    );
+    expect(container.firstChild).toHaveClass("text-semantic-text-muted");
   });
 
   it("applies filled variant classes", () => {
@@ -107,10 +111,10 @@ describe("Avatar", () => {
 
   it.each([
     ["xs", "size-6", "text-[10px]"],
-    ["sm", "size-7", "text-[10px]"],
-    ["md", "size-9", "text-xs"],
-    ["lg", "size-12", "text-sm"],
-    ["xl", "size-[88px]", "text-[22px]"],
+    ["sm", "size-8", "text-xs"],
+    ["md", "size-10", "text-sm"],
+    ["lg", "size-12", "text-base"],
+    ["xl", "size-16", "text-lg"],
   ] as const)(
     "renders %s size with correct classes",
     (size, sizeClass, textClass) => {
@@ -122,8 +126,8 @@ describe("Avatar", () => {
 
   it("defaults to md size", () => {
     const { container } = render(<Avatar name="Test" />);
-    expect(container.firstChild).toHaveClass("size-9");
-    expect(container.firstChild).toHaveClass("text-xs");
+    expect(container.firstChild).toHaveClass("size-10");
+    expect(container.firstChild).toHaveClass("text-sm");
   });
 
   // --- Status indicator ---
@@ -159,7 +163,7 @@ describe("Avatar", () => {
     const { container } = render(<Avatar name="Test" status="offline" />);
     const dot = container.querySelector("[data-status='offline']");
     expect(dot).toBeInTheDocument();
-    expect(dot).toHaveClass("bg-semantic-bg-grey");
+    expect(dot).toHaveClass("bg-semantic-text-muted");
   });
 
   it("does not render status dot when status not provided", () => {
@@ -210,6 +214,98 @@ describe("Avatar", () => {
     expect(screen.getByRole("img")).toBeInTheDocument();
   });
 
+  it("names an image-only avatar from its alt without exposing a duplicate image", () => {
+    const { container } = render(
+      <Avatar src="/photo.jpg" alt="Emma Collins" />
+    );
+    expect(screen.getAllByRole("img")).toHaveLength(1);
+    expect(
+      screen.getByRole("img", { name: "Emma Collins" })
+    ).toBeInTheDocument();
+    expect(container.querySelector("img")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+  });
+
+  it("names initials-only and empty avatars", () => {
+    const { rerender } = render(<Avatar initials="EC" />);
+    expect(screen.getByRole("img", { name: "EC" })).toBeInTheDocument();
+    rerender(<Avatar />);
+    expect(screen.getByRole("img", { name: "Avatar" })).toBeInTheDocument();
+  });
+
+  it("keeps the v1 accessible name while describing presence and keeping its dot decorative", () => {
+    const { container, rerender } = render(
+      <Avatar name="Emma Collins" status="online" />
+    );
+    expect(
+      screen.getByRole("img", { name: "Emma Collins" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Emma Collins" })).toHaveAttribute(
+      "aria-description",
+      "online"
+    );
+    expect(container.querySelector("[data-status=online]")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+    rerender(<Avatar name="Emma Collins" status="busy" />);
+    expect(
+      screen.getByRole("img", { name: "Emma Collins" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Emma Collins" })).toHaveAttribute(
+      "aria-description",
+      "busy"
+    );
+    expect(container.querySelector("[data-status=busy]")).toBeInTheDocument();
+    rerender(<Avatar name="Emma Collins" />);
+    expect(
+      screen.getByRole("img", { name: "Emma Collins" })
+    ).toBeInTheDocument();
+  });
+
+  it("preserves explicit ARIA names and native handlers, styles and callback refs", () => {
+    const click = vi.fn();
+    const ref = vi.fn();
+    render(
+      <Avatar
+        name="Emma Collins"
+        status="online"
+        aria-label="Team lead"
+        title="Profile"
+        tabIndex={0}
+        onClick={click}
+        style={{ width: 72, height: 72 }}
+        className="size-[72px]"
+        ref={ref}
+      />
+    );
+    const avatar = screen.getByRole("img", { name: "Team lead" });
+    fireEvent.click(avatar);
+    expect(click).toHaveBeenCalledOnce();
+    expect(ref).toHaveBeenCalledWith(avatar);
+    expect(avatar).toHaveAttribute("title", "Profile");
+    expect(avatar).toHaveAttribute("tabindex", "0");
+    expect(avatar).toHaveStyle({ width: "72px", height: "72px" });
+    expect(avatar).toHaveClass("size-[72px]");
+    expect(avatar).not.toHaveClass("size-10");
+  });
+
+  it("preserves aria-labelledby and decorative aria-hidden use", () => {
+    const { rerender } = render(
+      <>
+        <span id="person-name">Support lead</span>
+        <Avatar name="Emma Collins" aria-labelledby="person-name" />
+      </>
+    );
+    expect(
+      screen.getByRole("img", { name: "Support lead" })
+    ).toBeInTheDocument();
+    rerender(<Avatar name="Emma Collins" aria-hidden="true" />);
+    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  });
+
   // --- Base classes ---
 
   it("always has base CVA classes", () => {
@@ -242,6 +338,7 @@ describe("v2 outline", () => {
     const identity = screen.getByTestId("identity");
     expect(identity).toHaveClass("border-semantic-border-layout");
     expect(identity).toHaveAttribute("aria-label", "Aditi Kumar");
+    expect(identity).toHaveAttribute("aria-description", "busy");
     expect(identity).toHaveAttribute("title", "Support agent");
     expect(identity.querySelector("[data-status=busy]")).toBeInTheDocument();
     expect(screen.getByText("AK")).toBeInTheDocument();
@@ -249,6 +346,15 @@ describe("v2 outline", () => {
 });
 
 describe("v2 image fallback", () => {
+  it("keeps initials available while a new image loads", () => {
+    const { container } = render(
+      <Avatar name="Emma Collins" src="/loading.jpg" />
+    );
+    expect(screen.getByText("EC")).toBeInTheDocument();
+    expect(container.querySelector("img")).toHaveAttribute("data-loading", "");
+    expect(screen.getAllByRole("img")).toHaveLength(1);
+  });
+
   it("shows initials instead of a broken image when the image fails to load", () => {
     const { container } = render(
       <Avatar name="Aditi Kumar" src="/missing.png" />
@@ -295,6 +401,101 @@ describe("v2 image fallback", () => {
     expect(container.querySelector("img")).toBeNull();
     rerender(<Avatar name="Aditi Kumar" src="/other.png" />);
     expect(container.querySelector("img")).toHaveAttribute("src", "/other.png");
+  });
+
+  it("retries a previously failed URL after another URL, including when the other image never loaded", () => {
+    const { container, rerender } = render(
+      <Avatar name="Emma Collins" src="/first.jpg" />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    rerender(<Avatar name="Emma Collins" src="/second.jpg" />);
+    const secondImage = container.querySelector("img");
+    expect(secondImage).toHaveAttribute("src", "/second.jpg");
+    rerender(<Avatar name="Emma Collins" src="/first.jpg" />);
+    expect(container.querySelector("img")).toHaveAttribute("src", "/first.jpg");
+    expect(container.querySelector("img")).not.toBe(secondImage);
+    fireEvent.load(container.querySelector("img")!);
+    expect(screen.queryByText("EC")).not.toBeInTheDocument();
+  });
+
+  it("starts fresh when src is removed and restored", () => {
+    const { container, rerender } = render(
+      <Avatar initials="EC" src="/portrait.jpg" />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    rerender(<Avatar initials="EC" />);
+    expect(screen.getByText("EC")).toBeInTheDocument();
+    rerender(<Avatar initials="EC" src="/portrait.jpg" />);
+    expect(container.querySelector("img")).toHaveAttribute(
+      "src",
+      "/portrait.jpg"
+    );
+  });
+
+  it("shows a cached decoded photo immediately without a loading placeholder", () => {
+    const complete = vi
+      .spyOn(HTMLImageElement.prototype, "complete", "get")
+      .mockReturnValue(true);
+    const naturalWidth = vi
+      .spyOn(HTMLImageElement.prototype, "naturalWidth", "get")
+      .mockReturnValue(349);
+    try {
+      const { container } = render(
+        <Avatar name="Emma Collins" src="/cached.jpg" />
+      );
+      expect(container.querySelector("img")).not.toHaveAttribute(
+        "data-loading"
+      );
+      expect(screen.queryByText("EC")).not.toBeInTheDocument();
+    } finally {
+      complete.mockRestore();
+      naturalWidth.mockRestore();
+    }
+  });
+
+  it("handles a cached failed image without waiting for another error event", () => {
+    const complete = vi
+      .spyOn(HTMLImageElement.prototype, "complete", "get")
+      .mockReturnValue(true);
+    const naturalWidth = vi
+      .spyOn(HTMLImageElement.prototype, "naturalWidth", "get")
+      .mockReturnValue(0);
+    try {
+      const { container } = render(
+        <Avatar name="Emma Collins" src="/cached-error.jpg" />
+      );
+      expect(container.querySelector("img")).toBeNull();
+      expect(screen.getByText("EC")).toBeInTheDocument();
+    } finally {
+      complete.mockRestore();
+      naturalWidth.mockRestore();
+    }
+  });
+
+  it("retains native load/error callbacks on the root", () => {
+    const onLoad = vi.fn();
+    const onError = vi.fn();
+    const { container, rerender } = render(
+      <Avatar
+        name="Emma Collins"
+        src="/first.jpg"
+        onLoad={onLoad}
+        onError={onError}
+      />
+    );
+    fireEvent.load(container.querySelector("img")!);
+    expect(onLoad).toHaveBeenCalledOnce();
+    rerender(
+      <Avatar
+        name="Emma Collins"
+        src="/second.jpg"
+        onLoad={onLoad}
+        onError={onError}
+      />
+    );
+    fireEvent.error(container.querySelector("img")!);
+    expect(onError).toHaveBeenCalledOnce();
+    expect(screen.getByText("EC")).toBeInTheDocument();
   });
   it("keeps the status dot when the image falls back", () => {
     const { container } = render(
@@ -343,7 +544,7 @@ describe("v2 AvatarGroup", () => {
     expect(screen.getAllByRole("img")).toHaveLength(4);
     expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
   });
-  it("gives each avatar its place in the stack for the hover fan", () => {
+  it("retains the stack's per-avatar CSS metadata", () => {
     group({ max: 3 });
     const faces = screen.getAllByRole("img");
     expect(faces.map((f) => f.style.getPropertyValue("--index"))).toEqual([
@@ -365,6 +566,13 @@ describe("v2 AvatarGroup", () => {
     ).not.toBeInTheDocument();
     expect(screen.getByText("+2")).toBeInTheDocument();
     expect(screen.getByRole("img", { name: "2 more" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "2 more" })
+    ).toHaveAccessibleDescription("Meera Iyer, Karan Mehta");
+    expect(screen.getByRole("img", { name: "2 more" })).toHaveAttribute(
+      "title",
+      "Meera Iyer, Karan Mehta"
+    );
   });
   it("shows everything with no tile when max covers the count", () => {
     group({ max: 4 });
@@ -380,7 +588,7 @@ describe("v2 AvatarGroup", () => {
   });
   it("sizes the +N tile like the avatars beside it", () => {
     const { unmount } = group({ max: 1, size: "lg" });
-    expect(screen.getByText("+3")).toHaveClass("size-12", "text-sm");
+    expect(screen.getByText("+3")).toHaveClass("size-12", "text-base");
     // The group size also reaches children that did not set their own.
     expect(screen.getByRole("img", { name: "Aditi Kumar" })).toHaveClass(
       "size-12"
@@ -405,7 +613,7 @@ describe("v2 AvatarGroup", () => {
         <Avatar name="Aditi Kumar" size="xl" />
       </AvatarGroup>
     );
-    expect(screen.getByRole("img")).toHaveClass("size-[88px]");
+    expect(screen.getByRole("img")).toHaveClass("size-16");
     expect(screen.getByTestId("g")).toHaveClass("[&>*]:ring-semantic-bg-ui");
     expect(screen.getByTestId("g")).not.toHaveClass(
       "[&>*]:ring-semantic-bg-primary"
@@ -422,5 +630,62 @@ describe("v2 AvatarGroup", () => {
     );
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
     expect(screen.getAllByRole("img")).toHaveLength(1);
+  });
+
+  it("floors a fractional limit and updates overflow when people change", () => {
+    const { rerender } = render(
+      <AvatarGroup max={1.9}>
+        <Avatar name="Emma Collins" />
+        <Avatar name="Marcus Johnson" />
+        <Avatar name="Ava Mitchell" />
+      </AvatarGroup>
+    );
+    expect(
+      screen.getByRole("img", { name: "2 more" })
+    ).toHaveAccessibleDescription("Marcus Johnson, Ava Mitchell");
+    expect(
+      screen.queryByRole("img", { name: "Marcus Johnson" })
+    ).not.toBeInTheDocument();
+    rerender(
+      <AvatarGroup max={1.9}>
+        <Avatar name="Emma Collins" />
+        <Avatar name="Marcus Johnson" />
+      </AvatarGroup>
+    );
+    expect(
+      screen.getByRole("img", { name: "1 more" })
+    ).toHaveAccessibleDescription("Marcus Johnson");
+    expect(screen.queryByText("+2")).not.toBeInTheDocument();
+  });
+
+  it("preserves child style overrides and native group attributes", () => {
+    const click = vi.fn();
+    render(
+      <AvatarGroup
+        max={1}
+        size="lg"
+        title="Assigned people"
+        onClick={click}
+        data-testid="team"
+      >
+        <Avatar
+          name="Emma Collins"
+          style={{ width: 80, height: 80, "--index": 4 } as React.CSSProperties}
+        />
+        <Avatar aria-label="Support backup" initials="MJ" />
+      </AvatarGroup>
+    );
+    const person = screen.getByRole("img", { name: "Emma Collins" });
+    expect(person.style.getPropertyValue("--index")).toBe("4");
+    expect(person).toHaveStyle({ width: "80px", height: "80px" });
+    expect(
+      screen.getByRole("img", { name: "1 more" })
+    ).toHaveAccessibleDescription("Support backup");
+    fireEvent.click(screen.getByTestId("team"));
+    expect(click).toHaveBeenCalledOnce();
+    expect(screen.getByTestId("team")).toHaveAttribute(
+      "title",
+      "Assigned people"
+    );
   });
 });

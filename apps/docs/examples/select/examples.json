@@ -1,0 +1,94 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Complete field",
+      "description": "SelectField adds the label, options and supporting text. It now comes from the same Select module; the previous select-field import keeps working.",
+      "minHeight": 360
+    },
+    {
+      "id": "primitives",
+      "title": "Compose the primitives",
+      "description": "The original v1 composition stays available. Connect a visible label to the trigger, place options inside SelectContent, and choose your own layout.",
+      "minHeight": 360
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled selection",
+      "description": "Own the value with value and onValueChange. External actions can update or clear it, while onSelect receives the full option object. Use defaultValue instead for uncontrolled selection.",
+      "minHeight": 420
+    },
+    {
+      "id": "searchable",
+      "title": "Search and keyboard",
+      "description": "Searchable fields filter labels locally. Keyboard opening focuses search. Type, then press ArrowDown or ArrowUp to enter the results; ArrowUp from the first result returns to search. Escape closes the list and returns to the field.",
+      "minHeight": 460
+    },
+    {
+      "id": "groups",
+      "title": "Groups and dividers",
+      "description": "The group property creates labelled sections. separateGroups adds dividers and uppercase group labels. Disabled options remain visible and cannot be selected.",
+      "minHeight": 480
+    },
+    {
+      "id": "server-search",
+      "title": "Controlled search",
+      "description": "searchValue skips local filtering. Supply matching results yourself and reset the query when onSearchChange receives an empty string on close. This example filters a local array in the parent.",
+      "minHeight": 450
+    },
+    {
+      "id": "error",
+      "title": "Helper text and error",
+      "description": "error replaces helperText and links the problem through aria-describedby. SelectField keeps the v1 required marker; native constraint validation belongs on the Select root.",
+      "minHeight": 420
+    },
+    {
+      "id": "aria-invalid",
+      "title": "Invalid primitive trigger",
+      "description": "aria-invalid=\"true\" now applies the same error appearance as state=\"error\". This works with validation libraries without an extra state prop.",
+      "minHeight": 360
+    },
+    {
+      "id": "states",
+      "title": "Disabled and loading",
+      "description": "Disabled and loading fields cannot open. Both use the same dimmed surface; loading also displays a spinner. All current v1 props retain their behavior.",
+      "minHeight": 240
+    },
+    {
+      "id": "long-labels",
+      "title": "Long labels",
+      "description": "Options wrap by default so their full labels remain readable. truncateOptionText clips rows to one line; the selected value always truncates, and callbacks keep the full value.",
+      "minHeight": 430
+    },
+    {
+      "id": "empty",
+      "title": "Empty and no results",
+      "description": "emptyMessage explains why there are no options. A search with no matching labels shows No results found. The popup still closes with Escape.",
+      "minHeight": 420
+    },
+    {
+      "id": "pagination",
+      "title": "Load more on scroll",
+      "description": "onScrollEnd fires when the viewport reaches the bottom. loadingMore shows progress; hasMore={false} stops callbacks and displays End of list. This uses a local delay to demonstrate paging.",
+      "minHeight": 460
+    },
+    {
+      "id": "action-item",
+      "title": "Intercept an action item",
+      "description": "interceptValue can prevent an option from becoming the value while onSelect still fires. Use controlled mode to keep the current selection visible.",
+      "minHeight": 400
+    },
+    {
+      "id": "form",
+      "title": "In a form",
+      "description": "name submits the selected value through Radix\u2019s hidden native select. This example uses the primitive required prop for native browser validation. SelectField\u2019s required prop preserves its v1 label-marker behavior.",
+      "minHeight": 400
+    },
+    {
+      "id": "in-dialog",
+      "title": "Inside a dialog",
+      "description": "The dropdown stays above the dialog and preserves the dialog\u2019s scroll lock. Escape from the search closes the list first; a second Escape closes the dialog.",
+      "minHeight": 600
+    }
+  ]
+}

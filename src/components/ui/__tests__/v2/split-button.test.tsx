@@ -112,7 +112,7 @@ describe("SplitButton", () => {
     expect(run).not.toHaveBeenCalled();
     expect(screen.queryByRole("menu")).toBeNull();
   });
-  it("keeps focus while loading, uses loadingText and renders the shared spinner", () => {
+  it("uses native loading disablement, loadingText and the shared spinner", () => {
     const view = render(<SplitButton label="Publish" actions={actions} />);
     const main = screen.getByRole("button", { name: "Publish" });
     main.focus();
@@ -124,8 +124,7 @@ describe("SplitButton", () => {
         loadingText="Publishing"
       />
     );
-    expect(main).toHaveFocus();
-    expect(main).not.toBeDisabled();
+    expect(main).toBeDisabled();
     expect(main).toHaveAttribute("aria-busy", "true");
     expect(main.querySelector("svg.animate-spin")).not.toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("Publishing");

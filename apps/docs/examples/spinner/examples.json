@@ -1,0 +1,30 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Named loading indicator",
+      "description": "Give the status a meaningful aria-label for the operation."
+    },
+    {
+      "id": "variants",
+      "title": "All color treatments",
+      "description": "default, secondary, muted, inverted and current remain available. Inverted needs a contrasting surface; current inherits its parent."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "sm, default, lg and xl preserve 16, 24, 32 and 48px footprints."
+    },
+    {
+      "id": "loading-content",
+      "title": "Replace a loading state",
+      "description": "The parent owns the loading state. Resolve or restart the local preview without a fake network request."
+    },
+    {
+      "id": "button",
+      "title": "Inside an action",
+      "description": "A disabled native action keeps its label visible while a decorative current-color spinner indicates work."
+    }
+  ]
+}

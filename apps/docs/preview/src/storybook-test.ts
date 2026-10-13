@@ -1,34 +1,51 @@
 // Render support only. Interaction tests stay in Storybook/Vitest; never fake a pass here.
-type Callback = (...args: any[]) => any;
-const mocks = new Set<any>();
+// `never[]` accepts specifically typed implementations. Dynamic invocation stays
+// at the mock boundary, while recorded arguments retain the caller's tuple type.
+type Callback = (...args: never[]) => unknown;
+type DefaultCallback = (...args: unknown[]) => unknown;
+type RenderMock<T extends Callback> = T & {
+  mock: {
+    calls: Parameters<T>[];
+    instances: unknown[];
+    results: { type: "return"; value: unknown }[];
+  };
+  mockName: (value: string) => RenderMock<T>;
+  getMockName: () => string;
+  mockClear: () => RenderMock<T>;
+  mockReset: () => RenderMock<T>;
+  mockImplementation: {
+    (value: T): RenderMock<T>;
+    (value: Callback): RenderMock<T>;
+  };
+  mockImplementationOnce: {
+    (value: T): RenderMock<T>;
+    (value: Callback): RenderMock<T>;
+  };
+  mockReturnValue: (value: unknown) => RenderMock<T>;
+  mockReturnValueOnce: (value: unknown) => RenderMock<T>;
+  mockResolvedValue: (value: unknown) => RenderMock<T>;
+  mockResolvedValueOnce: (value: unknown) => RenderMock<T>;
+};
+const mocks = new Set<{ mockClear: () => unknown }>();
 let actionSink: ((name: string, args: unknown[]) => void) | undefined;
 export function setActionSink(sink?: typeof actionSink) {
   actionSink = sink;
 }
-export function fn<T extends Callback = Callback>(implementation?: T) {
+export function fn<T extends Callback = DefaultCallback>(implementation?: T) {
   let impl: Callback | undefined = implementation;
   let name = "callback";
   const once: Callback[] = [];
-  const mock = function (this: unknown, ...args: any[]) {
-    mock.mock.calls.push(args);
+  const mock = function (this: unknown, ...args: unknown[]) {
+    mock.mock.calls.push(args as Parameters<T>);
     mock.mock.instances.push(this);
     actionSink?.(name, args);
-    const result = (once.shift() || impl)?.apply(this, args);
+    const callback = once.shift() || impl;
+    const result: unknown = callback
+      ? Reflect.apply(callback, this, args)
+      : undefined;
     mock.mock.results.push({ type: "return", value: result });
     return result;
-  } as T & {
-    mock: { calls: any[][]; instances: unknown[]; results: unknown[] };
-    mockName: (value: string) => typeof mock;
-    getMockName: () => string;
-    mockClear: () => typeof mock;
-    mockReset: () => typeof mock;
-    mockImplementation: (value: Callback) => typeof mock;
-    mockImplementationOnce: (value: Callback) => typeof mock;
-    mockReturnValue: (value: any) => typeof mock;
-    mockReturnValueOnce: (value: any) => typeof mock;
-    mockResolvedValue: (value: any) => typeof mock;
-    mockResolvedValueOnce: (value: any) => typeof mock;
-  };
+  } as unknown as RenderMock<T>;
   mock.mock = { calls: [], instances: [], results: [] };
   mock.mockName = (value) => {
     name = value;

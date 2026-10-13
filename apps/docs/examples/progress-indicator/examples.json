@@ -1,0 +1,30 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Linear progress",
+      "description": "The main pattern is a labelled linear bar. Values represent measured completion and are clamped to 0–100."
+    },
+    {
+      "id": "task",
+      "title": "Advance a local task",
+      "description": "The parent owns the value. Advance, finish and reset the local import while the fill and label settle together."
+    },
+    {
+      "id": "labels",
+      "title": "Label positions",
+      "description": "right, bottom and none change the visible percentage. Keep an accessible name even when the visible label is hidden."
+    },
+    {
+      "id": "indeterminate",
+      "title": "Unknown completion",
+      "description": "indeterminate omits aria-valuenow and the percentage label. Use it while the amount of remaining work is unknown."
+    },
+    {
+      "id": "compatibility-shapes",
+      "title": "Existing circular shapes",
+      "description": "The v2-only circle and semi-circle APIs remain available for existing installs. New documentation leads with the linear bar."
+    }
+  ]
+}

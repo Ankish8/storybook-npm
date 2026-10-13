@@ -5,6 +5,7 @@ import react from "@vitejs/plugin-react";
 import { createRequire } from "node:module";
 import rootTailwind from "../../../tailwind.config.js";
 import pseudoStates from "./pseudo-states.mjs";
+import legacyStories from "./legacy-stories.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repository = path.resolve(here, "../../..");
@@ -36,9 +37,14 @@ const watchExamples = {
 export default defineConfig({
   root: here,
   base: "/preview/",
-  plugins: [react(), watchExamples],
+  plugins: [
+    legacyStories({ repository, tailwindcss, rootTailwind }),
+    react(),
+    watchExamples,
+  ],
   resolve: {
     alias: [
+      { find: "@docs", replacement: path.join(here, "..") },
       {
         find: /^storybook\/preview-api$/,
         replacement: path.join(here, "src/preview-api.tsx"),

@@ -7,23 +7,18 @@ import { cn } from "@/lib/utils";
  * Skeleton variants for content placeholders.
  * Uses semantic background tokens for consistent theming.
  *
- * `animation` is listed first so the default output keeps today's class order ("animate-pulse
- * motion-reduce:animate-none ..."). Shimmer sweeps a highlight band (the ::after) over the fill using
- * tailwindcss-animate's `enter` keyframes, which animate from a start offset to the element's own
- * resting state. The band rests just right of the placeholder (left-full) and starts 200% of its
- * width to the left, so one pass crosses the whole fill. No transform class is used on purpose: a
- * host stylesheet that marks utilities !important would pin it and freeze the animation. The band
- * rests off-canvas, so reduced motion (no animation) leaves the plain static fill.
+ * Tailwind supplies the pulse keyframes; the existing tailwindcss-animate plugin supplies
+ * shimmer's `enter` keyframes. The highlight rests outside the fill when motion is reduced.
+ * Both animations run for about twenty seconds, then leave the plain loading surface at rest.
  */
 const skeletonVariants = cva("", {
   variants: {
     animation: {
-      // Arc's pulse: 1.8s in-out, opacity 1 -> .5 -> 1 (Tailwind's `pulse` keyframes), 11 beats then rest (~20s) so a
-      // stalled load stops fidgeting. `--v2-skeleton-delay` staggers neighbours; Arc uses 90ms per block.
+      // A finite pulse with an optional delay for neighbouring placeholders.
       pulse:
-        "animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)] [animation-duration:1.8s] [animation-timing-function:cubic-bezier(0.65,0,0.35,1)] [animation-iteration-count:11] [animation-fill-mode:both]",
+        "animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)] [animation-duration:var(--v2-skeleton-duration,1.8s)] [animation-timing-function:var(--v2-skeleton-timing,cubic-bezier(0.65,0,0.35,1))] [animation-iteration-count:var(--v2-skeleton-iterations,11)] [animation-fill-mode:var(--v2-skeleton-fill,both)] [animation-play-state:var(--v2-skeleton-play-state,running)]",
       shimmer:
-        "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary,#FFFFFF)_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:1.6s] motion-safe:after:[animation-timing-function:linear] motion-safe:after:[animation-iteration-count:infinite] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)]",
+        "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary)_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:var(--v2-skeleton-duration,1.6s)] motion-safe:after:[animation-timing-function:var(--v2-skeleton-timing,linear)] motion-safe:after:[animation-iteration-count:var(--v2-skeleton-iterations,12)] motion-safe:after:[animation-fill-mode:var(--v2-skeleton-fill,none)] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)] motion-safe:after:[animation-play-state:var(--v2-skeleton-play-state,running)]",
       none: "",
     },
     variant: {
@@ -31,7 +26,7 @@ const skeletonVariants = cva("", {
       subtle: "bg-semantic-bg-ui",
     },
     shape: {
-      line: "rounded",
+      line: "h-4 w-full rounded",
       circle: "rounded-full",
       rectangle: "rounded",
     },
@@ -75,21 +70,57 @@ export interface SkeletonProps
   height?: number | string;
 }
 
-const Skeleton = React.forwardRef(
+const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
   (
-    {
-      className,
-      variant,
-      animation,
-      shape,
-      width,
-      height,
-      style,
-      ...props
-    }: SkeletonProps,
-    ref: React.Ref<HTMLDivElement>
+    { className, variant, animation, shape, width, height, style, ...props },
+    ref
   ) => {
-    const dimensionStyle: React.CSSProperties = {
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
+    const [visible, setVisible] = React.useState(true);
+    const animated = animation !== "none" && animation !== null;
+    const setRootRef = React.useCallback(
+      (node: HTMLDivElement | null) => {
+        rootRef.current = node;
+        if (typeof ref === "function") return ref(node);
+        if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    React.useEffect(() => {
+      if (!animated) return;
+      let inView = true;
+      const updateVisibility = () =>
+        setVisible(inView && document.visibilityState !== "hidden");
+      const node = rootRef.current;
+      const observer =
+        node && typeof IntersectionObserver !== "undefined"
+          ? new IntersectionObserver(([entry]) => {
+              if (!entry) return;
+              inView = entry.isIntersecting;
+              updateVisibility();
+            })
+          : null;
+      if (node) observer?.observe(node);
+      updateVisibility();
+      document.addEventListener("visibilitychange", updateVisibility);
+      return () => {
+        observer?.disconnect();
+        document.removeEventListener("visibilitychange", updateVisibility);
+      };
+    }, [animated]);
+
+    // Variables let caller timing and visibility pauses survive !important utility rules.
+    const dimensionStyle = {
+      ...(animated
+        ? {
+            "--v2-skeleton-delay": style?.animationDelay,
+            "--v2-skeleton-duration": style?.animationDuration,
+            "--v2-skeleton-timing": style?.animationTimingFunction,
+            "--v2-skeleton-iterations": style?.animationIterationCount,
+            "--v2-skeleton-fill": style?.animationFillMode,
+          }
+        : {}),
       ...style,
       ...(width !== undefined
         ? { width: typeof width === "number" ? `${width}px` : width }
@@ -97,14 +128,38 @@ const Skeleton = React.forwardRef(
       ...(height !== undefined
         ? { height: typeof height === "number" ? `${height}px` : height }
         : {}),
-    };
+      ...(animated
+        ? {
+            "--v2-skeleton-play-state": visible
+              ? (style?.animationPlayState ?? "running")
+              : "paused",
+            ...(!visible ? { animationPlayState: "paused" } : {}),
+          }
+        : {}),
+    } as React.CSSProperties;
+    // Preserve the exported v1 line sizing while allowing explicit inline dimensions in
+    // hosts that compile Tailwind utilities with !important.
+    const classes = skeletonVariants({ variant, shape, animation })
+      .split(" ")
+      .filter(
+        (value) =>
+          !(
+            value === "w-full" &&
+            (width !== undefined || style?.width !== undefined)
+          ) &&
+          !(
+            value === "h-4" &&
+            (height !== undefined || style?.height !== undefined)
+          )
+      )
+      .join(" ");
 
     return (
       <div
-        ref={ref}
+        ref={setRootRef}
         aria-hidden="true"
         className={cn(
-          skeletonVariants({ variant, shape, animation }),
+          classes,
           (shape === undefined || shape === null || shape === "line") &&
             width === undefined &&
             style?.width === undefined &&

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { CHANNEL, expectedParentOrigin } from "./model.mjs";
+import { createDialogPresentation } from "./dialog-presentation";
 import "../../../../src/index.css";
 import "../../../../src/storybook/typography.css";
 import "../../../../src/storybook/design-tokens.css";
@@ -91,6 +92,7 @@ function App() {
   React.useEffect(() => {
     const node = stage.current;
     if (!node) return;
+    const dialogPresentation = createDialogPresentation();
     let last = "";
     let scheduled = 0;
     const observed = new Set<HTMLElement>();
@@ -102,7 +104,7 @@ function App() {
           document.querySelectorAll<HTMLElement>(
             '[role="dialog"]:not([aria-modal="false"]), [role="alertdialog"]'
           )
-        );
+        ).filter((dialog) => dialog.getBoundingClientRect().height > 0);
         for (const dialog of observed) {
           if (!dialogs.includes(dialog)) {
             resize.unobserve(dialog);
@@ -124,6 +126,7 @@ function App() {
               )
             )
           : 0;
+        const presentation = dialogPresentation.update(dialogs);
         const natural = Math.ceil(node.getBoundingClientRect().height);
         // The card the page shows is as tall as the content. A popup overflows it into `room`: the iframe is taller by
         // that much (the manifest's minHeight is the viewport the demo needs) and the page clips it until one opens.
@@ -151,10 +154,10 @@ function App() {
           Math.max(reserve, open ? Math.ceil(popupBottom - height) + 16 : 0),
           900
         );
-        const key = `${height}|${room}|${open}`;
+        const key = `${height}|${room}|${open}|${presentation.dialogOpen}|${presentation.fullscreen}`;
         if (key !== last) {
           last = key;
-          send("resize", { height, room, open });
+          send("resize", { height, room, open, ...presentation });
         }
       });
     };
@@ -167,6 +170,11 @@ function App() {
         );
     };
     window.addEventListener("blur", dismiss);
+    const activate = (event: Event) => {
+      if (event.isTrusted) dialogPresentation.activate();
+    };
+    document.addEventListener("pointerdown", activate, true);
+    document.addEventListener("keydown", activate, true);
     const resize = new ResizeObserver(report);
     resize.observe(node);
     const mutations = new MutationObserver(report);
@@ -181,10 +189,12 @@ function App() {
       if (
         event.source !== window.parent ||
         event.origin !== parentOrigin ||
-        event.data?.channel !== CHANNEL ||
-        event.data?.type !== "request-size"
+        event.data?.channel !== CHANNEL
       )
         return;
+      if (event.data.type === "show-fullscreen")
+        dialogPresentation.requestFullscreen();
+      else if (event.data.type !== "request-size") return;
       last = "";
       report();
     };
@@ -194,6 +204,8 @@ function App() {
     send("ready");
     return () => {
       window.removeEventListener("blur", dismiss);
+      document.removeEventListener("pointerdown", activate, true);
+      document.removeEventListener("keydown", activate, true);
       resize.disconnect();
       mutations.disconnect();
       window.removeEventListener("message", receive);

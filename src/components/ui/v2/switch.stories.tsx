@@ -37,6 +37,7 @@ const meta: Meta<typeof Switch> = {
         "description",
         "labelPosition",
         "disabled",
+        "readOnly",
         "onCheckedChange",
       ],
     },
@@ -54,7 +55,7 @@ const meta: Meta<typeof Switch> = {
             [
               "Press and target",
               "—",
-              "Thumb stretches while pressed and glides on a spring; invisible 50 × 32 target for the default size",
+              "Thumb stretches while pressed and glides on a spring; invisible 50 × 32 target for the default size. Reduced motion removes all transitions.",
             ],
             [
               "Description",
@@ -69,7 +70,26 @@ const meta: Meta<typeof Switch> = {
             ["Thumb diameters", "16 / 20 / 24px", "14 / 18 / 22px"],
             ["Track radius", "Full pill", "12px"],
             ["Off surface", "#E9EAEB", "#EBECEE; hover #E9EAEB"],
-            ["On surface", "#343E55", "#343E55; hover #2F384D"],
+            [
+              "On surface",
+              "#343E55",
+              "Semantic primary; fine-pointer hover uses primary-hover",
+            ],
+            [
+              "Validation",
+              "ARIA attributes forwarded",
+              "aria-invalid also marks the track and focus outline red",
+            ],
+            [
+              "Read-only",
+              "—",
+              "Opt-in readOnly prevents changes while preserving focus and form values",
+            ],
+            [
+              "Direction",
+              "Inherited direction",
+              "Thumb travel mirrors in inherited or explicit RTL",
+            ],
             [
               "Focus",
               "2px ring with 2px offset",
@@ -84,7 +104,7 @@ const meta: Meta<typeof Switch> = {
             [
               "Labels and behavior",
               "Boolean selection and left/right labels",
-              "Same API; Inter 400 labels, 12px from the track",
+              "Same API; regular labels, 12px from the track",
             ],
           ],
           tokens: [
@@ -107,8 +127,10 @@ const meta: Meta<typeof Switch> = {
             ],
             ["Disabled off thumb", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Focus outline", "--semantic-primary", "#343E55", "#343E55"],
-            ["Label", "--v2-text-primary", "#484848", "#484848"],
-            ["Font", "--font-v2", "Inter 500"],
+            ["Label", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Supporting text", "--semantic-text-muted", "#717680", "#717680"],
+            ["Invalid track", "--semantic-error-primary", "#F04438", "#F04438"],
+            ["Font", "--font-v2", "Timeless Sans / Inter 400"],
           ],
           guidance:
             "Use Switch for a boolean setting that takes effect when toggled. Use Checkbox for selection within a list or form. Supply a visible `label` or an `aria-label`. Pair `checked` with `onCheckedChange` for controlled usage, or use `defaultChecked` for an uncontrolled initial value.",
@@ -165,6 +187,11 @@ const meta: Meta<typeof Switch> = {
       control: "boolean",
       description: "Disable toggling and keyboard focus.",
     },
+    readOnly: {
+      control: "boolean",
+      description:
+        "Keep focus and form submission while preventing user changes (opt-in).",
+    },
     onCheckedChange: {
       control: false,
       description: "Called with the next boolean value.",
@@ -174,6 +201,17 @@ const meta: Meta<typeof Switch> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 export const Overview: Story = {};
+export const DocsPreview: Story = {
+  name: "Docs preview",
+  args: { label: "Enable notifications" },
+  parameters: {
+    docs: { source: { code: '<Switch label="Enable notifications" />' } },
+  },
+};
+export const ReadOnly: Story = { args: { checked: true, readOnly: true } };
+export const Invalid: Story = {
+  args: { "aria-invalid": true, description: "Enable alerts to continue." },
+};
 export const Off: Story = { args: { checked: false } };
 export const On: Story = { args: { checked: true } };
 export const Disabled: Story = { args: { checked: true, disabled: true } };

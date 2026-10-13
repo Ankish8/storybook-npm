@@ -1,0 +1,60 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Label and helper text",
+      "description": "A visible label and linked helper copy make the purpose clear. Placeholder text is only a hint."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Default fields are 44px tall. The 36px compact size fits dense settings forms."
+    },
+    {
+      "id": "icons",
+      "title": "Icons and affixes",
+      "description": "Decorative icons, prefixes and suffixes share the same field surface. The input keeps its native value."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled clear and counter",
+      "description": "Own value through onChange and reset it through onClear. Opt into returnFocusOnClear for continuous editing; clear fires only onClear, preserving the v1 callback contract."
+    },
+    {
+      "id": "uncontrolled",
+      "title": "Uncontrolled clear",
+      "description": "defaultValue initializes a native input. Its clear action empties the field and updates the counter without creating an onChange event."
+    },
+    {
+      "id": "validation",
+      "title": "Validation feedback",
+      "description": "Helper and error copy ease into place. Select a validation state to see the border and linked message change together."
+    },
+    {
+      "id": "aria-invalid",
+      "title": "Form library invalid state",
+      "description": "aria-invalid=true gives the red border with or without affixes. Supply your own accessible description when the form owns the error message."
+    },
+    {
+      "id": "states",
+      "title": "Disabled, read-only and loading",
+      "description": "Disabled and loading fields block typing. Read-only text remains focusable and selectable; keep clearable unset for read-only fields."
+    },
+    {
+      "id": "password",
+      "title": "Password reveal",
+      "description": "The reveal action is a keyboard-accessible button with an explicit pressed state. Revealing never changes the password value."
+    },
+    {
+      "id": "spaces",
+      "title": "Space normalization",
+      "description": "Text fields collapse repeated spaces while preserving selection. Set preventConsecutiveSpaces=false for significant whitespace. IME drafts stay intact until a committed edit."
+    },
+    {
+      "id": "form",
+      "title": "Native form submission",
+      "description": "name participates in FormData and Enter submits the form. This example saves locally and displays the submitted value."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/v2/alert";
+{/* Dismissal is immediate by default. animateExit opts into an inert exit fade. */}
+<Alert animateExit action={primaryAction} secondaryAction={secondaryAction}>
+  <AlertTitle>Title</AlertTitle>
+  <AlertDescription>Supporting message</AlertDescription>
+</Alert>

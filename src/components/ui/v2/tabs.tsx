@@ -46,10 +46,15 @@ const Tabs = React.forwardRef<
         const panel = tab.closest('[role="tabpanel"]');
         return !panel || panel.contains(root);
       })
-      .map((tab) => tab.id);
-    const from = ids.findIndex((id) => id.endsWith(`-trigger-${previous}`));
-    const to = ids.findIndex((id) => id.endsWith(`-trigger-${next}`));
-    if (from >= 0 && to >= 0 && from !== to) setDirection(to > from ? 1 : -1);
+      .map((tab) => tab.dataset.v2TabValue);
+    const from = ids.findIndex((value) => value === previous);
+    const to = ids.findIndex((value) => value === next);
+    if (from >= 0 && to >= 0 && from !== to) {
+      const rtl =
+        root.getAttribute("data-orientation") !== "vertical" &&
+        window.getComputedStyle(root).direction === "rtl";
+      setDirection((to > from ? 1 : -1) * (rtl ? -1 : 1));
+    }
   }, []);
   React.useLayoutEffect(() => {
     if (props.value !== undefined && props.value !== lastValue.current)
@@ -135,7 +140,7 @@ function useTabIndicator(
       paint();
     };
     const tick = (time: number) => {
-      const dt = Math.max(0, (time - lastTime) / 1000);
+      const dt = Math.min(1 / 15, Math.max(0, (time - lastTime) / 1000));
       lastTime = time;
       let settled = true;
       if (zeta === 1) {
@@ -265,29 +270,29 @@ function useTabIndicator(
   }, [listRef, bouncy]);
 }
 
-const underlineListClasses = [
+const underlineListClasses = cn(
   "relative inline-flex items-center border-b border-solid border-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0",
   "after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
   "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent",
-  "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent",
-];
+  "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent"
+);
 
 // The cursor is the same measured ::after the underline uses, but it covers the whole selected tab, so it needs both
 // axes. `isolate` + `-z-10` park it behind the labels without wrapping them in a new element.
-const pillListClasses = [
+const pillListClasses = cn(
   "relative isolate inline-flex w-fit max-w-full items-center gap-1 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
   "after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-semantic-border-layout after:bg-semantic-bg-primary after:shadow-xs after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
   // Before the first measurement (server render, hidden Docs sample) the selected tab paints its own pill, so
   // selection is never invisible; once the cursor is live these are cleared so nothing is drawn twice.
-  "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:bg-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:shadow-none",
-];
+  "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:bg-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:shadow-none"
+);
 
 const TabsList = React.forwardRef(
   (
     { className, fullWidth, variant = "underline", ...props }: TabsListProps,
-    ref: React.Ref<React.ComponentRef<typeof TabsPrimitive.List>>
+    ref: React.ForwardedRef<React.ComponentRef<typeof TabsPrimitive.List>>
   ) => {
-    const listRef = React.useRef<HTMLDivElement>(null);
+    const listRef = React.useRef<HTMLDivElement | null>(null);
     const pill = variant === "pill";
     useTabIndicator(listRef, pill);
     const composedRef = React.useCallback(
@@ -319,22 +324,22 @@ const TabsList = React.forwardRef(
 TabsList.displayName = TabsPrimitive.List.displayName;
 
 // Hover is gated so a tap on a touch screen does not leave the label stuck in its hover colour.
-const underlineTriggerClasses = [
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out",
-  "text-[var(--v2-text-muted,#707070)] border-transparent [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]",
-  "data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:border-semantic-primary",
+const underlineTriggerClasses = cn(
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out motion-reduce:transition-none",
+  "text-[var(--v2-text-muted,var(--semantic-text-muted))] border-transparent [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+  "data-[state=active]:text-[var(--v2-text-primary,var(--semantic-text-primary))] data-[state=active]:border-semantic-primary",
   "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
-  "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui",
-];
+  "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui"
+);
 
 // The 1px transparent border keeps the tab the same size whether or not it paints its own (fallback) pill.
-const pillTriggerClasses = [
-  "inline-flex h-9 min-w-[88px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
-  "text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:text-[var(--v2-text-primary,#484848)]",
-  "data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,#484848)] data-[state=active]:shadow-xs",
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:opacity-50",
-  "data-[orientation=vertical]:justify-start",
-];
+const pillTriggerClasses = cn(
+  "inline-flex h-9 min-w-[88px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+  "text-[var(--v2-text-muted,var(--semantic-text-muted))] [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))] active:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+  "data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,var(--semantic-text-primary))] data-[state=active]:shadow-xs",
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "data-[orientation=vertical]:justify-start"
+);
 
 const TabsTrigger = React.forwardRef(
   (
@@ -348,6 +353,7 @@ const TabsTrigger = React.forwardRef(
     return (
       <TabsPrimitive.Trigger
         ref={ref}
+        data-v2-tab-value={props.value}
         className={cn(
           variant === "pill" ? pillTriggerClasses : underlineTriggerClasses,
           className
@@ -370,9 +376,10 @@ const TabsContent = React.forwardRef(
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline-none",
+        "mt-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] text-[var(--v2-text-secondary,var(--semantic-text-secondary))] focus-visible:outline-none",
         // Fades in while sliding 8px from the side of the newly selected tab (--v2-tab-dir is set by <Tabs>).
         "data-[state=active]:motion-safe:animate-in data-[state=active]:motion-safe:fade-in-0 data-[state=active]:motion-safe:[--tw-enter-translate-x:calc(var(--v2-tab-dir,1)*8px)] data-[state=active]:motion-safe:[animation-duration:240ms] data-[state=active]:motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
+        "data-[orientation=vertical]:data-[state=active]:motion-safe:[--tw-enter-translate-x:0px] data-[orientation=vertical]:data-[state=active]:motion-safe:[--tw-enter-translate-y:calc(var(--v2-tab-dir,1)*8px)] motion-reduce:transition-none",
         className
       )}
       {...props}
@@ -387,7 +394,7 @@ const TabsCount = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cn(
-      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,#5E5E5E)]",
+      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
       className
     )}
     {...props}

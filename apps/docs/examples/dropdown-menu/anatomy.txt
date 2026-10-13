@@ -1,0 +1,14 @@
+<DropdownMenu>
+  <DropdownMenuTrigger asChild><Button>Actions</Button></DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuLabel>Workspace</DropdownMenuLabel>
+    <DropdownMenuGroup><DropdownMenuItem>Rename</DropdownMenuItem></DropdownMenuGroup>
+    <DropdownMenuSeparator />
+    <DropdownMenuCheckboxItem checked={enabled} onCheckedChange={setEnabled}>Notifications</DropdownMenuCheckboxItem>
+    <DropdownMenuRadioGroup value={sort} onValueChange={setSort}><DropdownMenuRadioItem value="newest">Newest</DropdownMenuRadioItem></DropdownMenuRadioGroup>
+    <DropdownMenuSub>
+      <DropdownMenuSubTrigger>Share</DropdownMenuSubTrigger>
+      <DropdownMenuPortal><DropdownMenuSubContent><DropdownMenuItem>Copy link</DropdownMenuItem></DropdownMenuSubContent></DropdownMenuPortal>
+    </DropdownMenuSub>
+  </DropdownMenuContent>
+</DropdownMenu>

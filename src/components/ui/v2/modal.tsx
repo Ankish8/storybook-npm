@@ -30,8 +30,8 @@ const ModalTrigger = DialogPrimitive.Trigger;
 const ModalPortal = DialogPrimitive.Portal;
 const ModalClose = DialogPrimitive.Close;
 
-/** shadcn's compact 32px action buttons, in place of Button's 44px default. */
-const ACTION_CLASS = "h-8 px-2.5";
+/** Match the 44px fields and default Button treatment, including its 8px corners. */
+const ACTION_CLASS = "h-11 rounded-lg px-4";
 
 const ModalOverlay = React.forwardRef(
   (

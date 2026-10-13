@@ -1,0 +1,35 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Simple empty view",
+      "description": "A required ReactNode title and optional description are enough for an empty view."
+    },
+    {
+      "id": "illustrations",
+      "title": "All illustrations",
+      "description": "Four original vector scenes represent no results, offline, caught-up and not-found states. The illustration is decorative."
+    },
+    {
+      "id": "sizes",
+      "title": "Both sizes",
+      "description": "The existing default remains a full empty view. sm creates a compact view for cards and side panels."
+    },
+    {
+      "id": "clear-filters",
+      "title": "Clear a real filter",
+      "description": "The button restores the local contact list. EmptyState displays the result and does not own filtering."
+    },
+    {
+      "id": "custom-icon",
+      "title": "Custom icon and content",
+      "description": "An icon takes precedence over illustration. Titles, descriptions and actions can contain composed React content."
+    },
+    {
+      "id": "without-actions",
+      "title": "Information without an action",
+      "description": "Omit actions when there is no useful recovery. The component remains a native div and accepts labels or roles."
+    }
+  ]
+}

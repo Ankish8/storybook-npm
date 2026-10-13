@@ -21,8 +21,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@docs': path.resolve(__dirname, './apps/docs'),
     },
     // apps/docs has its own node_modules/react; its example demos must share this copy or hooks see a null dispatcher.
-    dedupe: ['react', 'react-dom'],
+    dedupe: ['react', 'react-dom', 'motion', 'framer-motion', 'lucide-react', 'react-markdown'],
   },
 })

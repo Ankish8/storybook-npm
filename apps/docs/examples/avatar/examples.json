@@ -1,0 +1,40 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Portrait and presence",
+      "description": "Load the sample photo directly from Arc and keep name as its fallback. The wrapper is the accessible image."
+    },
+    {
+      "id": "variants",
+      "title": "All variants",
+      "description": "soft, outline and filled keep the identity display passive."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "The v1 footprints remain 24, 32, 40, 48 and 64px for xs, sm, md, lg and xl."
+    },
+    {
+      "id": "statuses",
+      "title": "All presence states",
+      "description": "aria-label preserves the identity; presence is supplied separately through aria-description. The dot is decorative, and omitting status keeps a plain avatar."
+    },
+    {
+      "id": "group",
+      "title": "Group and overflow",
+      "description": "max controls the visible people; the overflow includes hidden names in its description. A separate button expands the local group."
+    },
+    {
+      "id": "photo-fallback",
+      "title": "Photo replacement and fallback",
+      "description": "Each URL starts a fresh loading attempt. A missing image falls back to initials; restoring the photo retries it."
+    },
+    {
+      "id": "custom-content",
+      "title": "Explicit initials and custom content",
+      "description": "Explicit initials override generated letters. Custom children remain the fallback while an image is loading or fails."
+    }
+  ]
+}

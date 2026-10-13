@@ -7,7 +7,7 @@ import {
   SelectField,
   type SelectFieldProps,
   type SelectOption,
-} from "./select-field";
+} from "./select";
 import { SelectField as SelectFieldV1 } from "../select-field";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -175,21 +175,29 @@ const meta: Meta<Args> = {
         component: v2ComponentDocs({
           name: "select-field",
           summary:
-            "A complete labelled select with live search, grouping, validation, action items and viewport pagination.",
+            "The complete field form of Select. Import SelectField from ui/v2/select; the former select-field import remains compatible.",
           changes: [
             ["Trigger", "42px / 4px", "44px / 8px"],
             [
               "Typography",
               "Inherited font",
-              "Inter 14px value; 14px medium label; 12px supporting text; 8px between label, field and text",
+              "Timeless Sans / Inter 14px value; 14px medium label; 12px supporting text; 8px between label, field and text",
             ],
-            ["Hover", "Default border", "#C0C3CA enabled border"],
-            ["Focus", "Thin teal shadow", "#27ABB8 border and soft 4px halo"],
+            [
+              "Hover",
+              "Default border",
+              "#C0C3CA enabled border on fine pointers",
+            ],
+            [
+              "Focus",
+              "Thin teal shadow",
+              "No field focus border or glow; primary border while open",
+            ],
             ["Error", "Red border", "Red border and soft 4px halo"],
             [
               "Disabled / loading",
               "Reduced opacity",
-              "Solid grey field without opacity loss",
+              "Grey field at 50% opacity",
             ],
             [
               "Behavior",
@@ -201,14 +209,14 @@ const meta: Meta<Args> = {
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Label", "--v2-text-primary", "#484848", "#484848"],
-            ["Helper", "--semantic-text-muted", "#717680", "#717680"],
+            ["Helper", "--v2-text-muted", "#707070", "#707070"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--color-secondary-600", "#27ABB8", "#27ABB8"],
+            ["Open border", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans / Inter 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

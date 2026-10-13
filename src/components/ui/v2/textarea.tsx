@@ -1,5 +1,5 @@
 import * as React from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useAnimationControls, useReducedMotion } from "motion/react";
 import { CircleAlert } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -80,7 +80,7 @@ const textareaVariants = cva(
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-semantic-primary focus:shadow-none",
+          "border border-solid border-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:shadow-none aria-[invalid=true]:border-semantic-error-primary aria-[invalid=true]:hover:border-semantic-error-primary",
         error:
           "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
       },
@@ -145,6 +145,12 @@ export interface TextareaProps
   enforceMaxLength?: boolean;
   /** Controls CSS resize behavior. Defaults to "none" */
   resize?: "none" | "vertical" | "horizontal" | "both";
+  /** Opt into content-based height. Native rows and resize behavior are unchanged when false. */
+  autoResize?: boolean;
+  /** Minimum visible rows when autoResize is enabled. Defaults to rows. */
+  minRows?: number;
+  /** Maximum visible rows when autoResize is enabled. Overflow scrolls after this limit. */
+  maxRows?: number;
   /** Additional class for the wrapper container */
   wrapperClassName?: string;
   /** Additional class for the label */
@@ -168,19 +174,32 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       displayCharCount,
       enforceMaxLength = true,
       resize = "none",
+      autoResize = false,
+      minRows,
+      maxRows,
       maxLength,
       rows = 4,
       value,
       defaultValue,
       onChange,
+      onCompositionStart,
+      onCompositionEnd,
       disabled,
       id,
+      style,
       ...props
     }: TextareaProps,
     ref
   ) => {
     const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-    const pendingSelectionRef = React.useRef<[number, number] | null>(null);
+    const pendingSelectionRef = React.useRef<
+      [number, number, "forward" | "backward" | "none"] | null
+    >(null);
+    const composing = React.useRef(false);
+    const changeSequence = React.useRef(0);
+    const [compositionDraft, setCompositionDraft] = React.useState<
+      string | null
+    >(null);
 
     const setTextareaRef = React.useCallback(
       (node: HTMLTextAreaElement | null) => {
@@ -205,9 +224,11 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     // Determine if controlled
     const isControlled = value !== undefined;
-    const currentValue = isControlled
-      ? normalizeTextareaSpaces(String(value ?? ""))
-      : internalValue;
+    const currentValue =
+      compositionDraft ??
+      (isControlled
+        ? normalizeTextareaSpaces(String(value ?? ""))
+        : internalValue);
 
     const restoreSelection = React.useCallback(() => {
       const pendingSelection = pendingSelectionRef.current;
@@ -223,19 +244,125 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       restoreSelection();
     });
 
+    React.useLayoutEffect(() => {
+      const textarea = textareaRef.current;
+      if (!autoResize || !textarea) return;
+
+      const original = {
+        height: textarea.style.height,
+        minHeight: textarea.style.minHeight,
+        maxHeight: textarea.style.maxHeight,
+        overflowY: textarea.style.overflowY,
+      };
+      const originalMinHeightPriority =
+        textarea.style.getPropertyPriority("min-height");
+      const positiveRows = (candidate: number | undefined, fallback: number) =>
+        candidate !== undefined && Number.isFinite(candidate)
+          ? Math.max(1, Math.floor(candidate))
+          : fallback;
+      const minimumRows = positiveRows(minRows, positiveRows(rows, 4));
+      const maximumRows = Math.max(
+        minimumRows,
+        positiveRows(maxRows, Infinity)
+      );
+      const measure = () => {
+        const computed = window.getComputedStyle(textarea);
+        const lineHeight =
+          parseFloat(computed.lineHeight) ||
+          (parseFloat(computed.fontSize) || 14) * 1.4;
+        const padding =
+          (parseFloat(computed.paddingTop) || 0) +
+          (parseFloat(computed.paddingBottom) || 0);
+        const border =
+          (parseFloat(computed.borderTopWidth) || 0) +
+          (parseFloat(computed.borderBottomWidth) || 0);
+        const borderBox = computed.boxSizing === "border-box";
+        const inset = borderBox ? padding + border : 0;
+        const minimum = minimumRows * lineHeight + inset;
+        const maximum = maximumRows * lineHeight + inset;
+        const scrollTop = textarea.scrollTop;
+        // Consumer Tailwind builds use !important; the opt-in row bound must
+        // override the default min-h utility without changing native defaults.
+        textarea.style.setProperty("min-height", `${minimum}px`, "important");
+        textarea.style.maxHeight = Number.isFinite(maximum)
+          ? `${maximum}px`
+          : "none";
+        // Collapse the native rows-based height before measuring, otherwise
+        // an empty textarea cannot shrink below its original rows value.
+        textarea.style.height = "0px";
+        const content = textarea.scrollHeight + (borderBox ? border : -padding);
+        textarea.style.height = `${Math.min(maximum, Math.max(minimum, content))}px`;
+        textarea.style.overflowY = content > maximum ? "auto" : "hidden";
+        textarea.scrollTop = scrollTop;
+      };
+      measure();
+      let mounted = true;
+      const fonts = document.fonts;
+      fonts?.ready.then(() => {
+        if (mounted) measure();
+      });
+      fonts?.addEventListener("loadingdone", measure);
+      window.addEventListener("resize", measure);
+      let previousWidth = textarea.getBoundingClientRect().width;
+      const observer =
+        typeof ResizeObserver === "undefined"
+          ? undefined
+          : new ResizeObserver(() => {
+              const width = textarea.getBoundingClientRect().width;
+              if (width !== previousWidth) {
+                previousWidth = width;
+                measure();
+              }
+            });
+      observer?.observe(textarea);
+      return () => {
+        mounted = false;
+        fonts?.removeEventListener("loadingdone", measure);
+        window.removeEventListener("resize", measure);
+        observer?.disconnect();
+        Object.assign(textarea.style, original);
+        textarea.style.setProperty(
+          "min-height",
+          original.minHeight,
+          originalMinHeightPriority
+        );
+      };
+    }, [
+      autoResize,
+      currentValue,
+      minRows,
+      maxRows,
+      rows,
+      size,
+      style,
+      className,
+    ]);
+
     // Derive state from props
-    const derivedState = error ? "error" : (state ?? "default");
+    const invalid =
+      props["aria-invalid"] === true || props["aria-invalid"] === "true";
+    const derivedState = error || invalid ? "error" : (state ?? "default");
 
     // Handle change for both controlled and uncontrolled — collapse duplicate spaces
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      changeSequence.current += 1;
       const nextValue = e.target.value;
+      if (composing.current || (e.nativeEvent as InputEvent).isComposing) {
+        setCompositionDraft(nextValue);
+        if (!isControlled) setInternalValue(nextValue);
+        onChange?.(e);
+        return;
+      }
+      setCompositionDraft(null);
       const normalized = normalizeTextareaSpaces(nextValue);
 
       if (normalized !== nextValue) {
-        const nextSelection: [number, number] = [
-          getNormalizedSelectionOffset(nextValue, e.target.selectionStart),
-          getNormalizedSelectionOffset(nextValue, e.target.selectionEnd),
-        ];
+        const nextSelection: [number, number, "forward" | "backward" | "none"] =
+          [
+            getNormalizedSelectionOffset(nextValue, e.target.selectionStart),
+            getNormalizedSelectionOffset(nextValue, e.target.selectionEnd),
+            e.target.selectionDirection ?? "none",
+          ];
         pendingSelectionRef.current = nextSelection;
         e.target.setSelectionRange(...nextSelection);
         requestAnimationFrame(restoreSelection);
@@ -274,6 +401,18 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     // (a page of fields with helper text must not unfold on load).
     const hasMessage = Boolean(error || helperText || (showCount && maxLength));
     const reducedMotion = useReducedMotion() ?? false;
+    const countMotion = useAnimationControls();
+    const previousCount = React.useRef(charCount);
+    React.useEffect(() => {
+      if (charCount !== previousCount.current) {
+        previousCount.current = charCount;
+        void countMotion.start({
+          opacity: reducedMotion ? 1 : [0.65, 1],
+          y: reducedMotion ? 0 : [2, 0],
+          transition: { duration: reducedMotion ? 0 : 0.16 },
+        });
+      }
+    }, [charCount, reducedMotion, countMotion]);
     const copyMotion = {
       initial: reducedMotion
         ? (false as const)
@@ -330,10 +469,61 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             resizeClasses[resize]
           )}
           disabled={disabled}
+          style={style}
           required={required}
           maxLength={enforceMaxLength !== false ? maxLength : undefined}
           value={currentValue}
           onChange={handleChange}
+          onCompositionStart={(event) => {
+            composing.current = true;
+            pendingSelectionRef.current = null;
+            onCompositionStart?.(event);
+          }}
+          onCompositionEnd={(event) => {
+            composing.current = false;
+            onCompositionEnd?.(event);
+            const textarea = event.currentTarget;
+            const raw = textarea.value;
+            const normalized = normalizeTextareaSpaces(raw);
+            const sequence = changeSequence.current;
+            const selection: [number, number, "forward" | "backward" | "none"] =
+              [
+                getNormalizedSelectionOffset(raw, textarea.selectionStart),
+                getNormalizedSelectionOffset(raw, textarea.selectionEnd),
+                textarea.selectionDirection ?? "none",
+              ];
+            setCompositionDraft(null);
+            if (!isControlled) {
+              setInternalValue(normalized);
+            }
+            if (raw === normalized) return;
+            queueMicrotask(() => {
+              if (
+                !textarea.isConnected ||
+                textareaRef.current !== textarea ||
+                composing.current ||
+                changeSequence.current !== sequence ||
+                (textarea.value !== raw && textarea.value !== normalized)
+              )
+                return;
+              // A controlled render may already normalize the visible draft; set the tracked raw value
+              // before the native setter so React also delivers the committed value to the consumer.
+              textarea.value = raw;
+              Object.getOwnPropertyDescriptor(
+                HTMLTextAreaElement.prototype,
+                "value"
+              )?.set?.call(textarea, normalized);
+              textarea.setSelectionRange(...selection);
+              textarea.dispatchEvent(
+                new InputEvent("input", {
+                  bubbles: true,
+                  inputType: "insertCompositionText",
+                  data: event.data,
+                  isComposing: false,
+                })
+              );
+            });
+          }}
           aria-invalid={!!error}
           aria-describedby={ariaDescribedBy}
           {...props}
@@ -392,16 +582,18 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             <span className="min-h-0 overflow-hidden" />
           )}
           {showCount && maxLength && (
-            <span
+            <motion.span
+              initial={false}
+              animate={countMotion}
               className={cn(
-                "min-h-0 overflow-hidden text-xs leading-[1.4] tracking-[-0.16px]",
+                "min-h-0 overflow-hidden text-xs tabular-nums leading-[1.4] tracking-[-0.16px] transition-colors [transition-duration:160ms] motion-reduce:transition-none",
                 charCount > maxLength
                   ? "text-semantic-error-text"
                   : "text-[var(--v2-text-muted,#707070)]"
               )}
             >
               {charCount}/{maxLength}
-            </span>
+            </motion.span>
           )}
         </FieldFeedback>
       </div>

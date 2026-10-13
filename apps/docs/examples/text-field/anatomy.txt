@@ -1,0 +1,6 @@
+<TextField
+  label="Workspace name"
+  helperText="A name your team can recognize."
+  value={value}
+  onChange={(event) => setValue(event.target.value)}
+/>

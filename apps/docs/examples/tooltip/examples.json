@@ -1,0 +1,47 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Hover, focus and touch",
+      "description": "Compose a named trigger. The tooltip supports hover and keyboard focus, and a tap toggle on a coarse non-hover pointer.",
+      "minHeight": 320
+    },
+    {
+      "id": "sides",
+      "title": "All sides",
+      "description": "top, right, bottom and left are placement requests. The popup can reposition near the viewport edge.",
+      "minHeight": 360
+    },
+    {
+      "id": "arrow",
+      "title": "Optional arrow",
+      "description": "TooltipArrow follows the content surface. sideOffset changes the gap from the trigger.",
+      "minHeight": 320
+    },
+    {
+      "id": "light",
+      "title": "Light surface",
+      "description": "TooltipContent variant=\"light\" is an optional v2 surface; the default stays dark. TooltipArrow inherits the content surface automatically.",
+      "minHeight": 320
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled visibility",
+      "description": "open and onOpenChange let the parent own visibility. Escape or an outside interaction requests closing.",
+      "minHeight": 340
+    },
+    {
+      "id": "delay",
+      "title": "Custom opening delay",
+      "description": "delayDuration on the provider or individual root overrides the inherited delay.",
+      "minHeight": 340
+    },
+    {
+      "id": "long-copy",
+      "title": "Wrapped help",
+      "description": "Keep tooltip copy short and non-interactive. Critical information should remain visible in the page.",
+      "minHeight": 400
+    }
+  ]
+}

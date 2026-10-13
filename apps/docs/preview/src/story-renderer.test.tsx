@@ -2,35 +2,44 @@ import * as React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, test } from "vitest";
 import { cleanup } from "@testing-library/react";
-import { PreviewContext, useArgs } from "./preview-api";
+import {
+  PreviewContext,
+  useArgs,
+  type Args,
+  type StoryDecorator,
+} from "./preview-api";
 import { createStoryRenderer } from "./story-renderer";
+import { clearAllMocks, fn, setActionSink } from "./storybook-test";
 
 afterEach(cleanup);
 test("typing and parent Controls stay synchronized without remounting the focused input", () => {
   let mounts = 0;
+  const decorate: StoryDecorator = (Story, context) => (
+    <div
+      data-testid="decorator"
+      data-variant={String(context.args.variant ?? "")}
+    >
+      <Story />
+    </div>
+  );
+  function ControlledInput(args: Args) {
+    const [, update] = useArgs();
+    React.useEffect(() => {
+      mounts++;
+    }, []);
+    return (
+      <input
+        aria-label="Example"
+        value={typeof args.value === "string" ? args.value : ""}
+        onChange={(event) => update({ value: event.target.value })}
+      />
+    );
+  }
   const prepared = {
-    decorators: [
-      (Story: React.ComponentType, context: any) => (
-        <div data-testid="decorator" data-variant={context.args.variant}>
-          <Story />
-        </div>
-      ),
-    ],
+    decorators: [decorate],
     meta: {},
     story: {
-      render(args: any) {
-        const [, update] = useArgs();
-        React.useEffect(() => {
-          mounts++;
-        }, []);
-        return (
-          <input
-            aria-label="Example"
-            value={args.value}
-            onChange={(event) => update({ value: event.target.value })}
-          />
-        );
-      },
+      render: ControlledInput,
     },
   };
   const Story = createStoryRenderer(prepared);
@@ -70,4 +79,44 @@ test("typing and parent Controls stay synchronized without remounting the focuse
     "error"
   );
   expect(mounts).toBe(1);
+});
+
+test("render callback mocks keep typed implementations, this, once values and action records", async () => {
+  const actions: { name: string; args: unknown[] }[] = [];
+  const receiver = { prefix: "Contact" };
+  const callback = fn(function (this: typeof receiver, value: string) {
+    return `${this.prefix}: ${value}`;
+  }).mockName("contact update");
+  setActionSink((name, args) => actions.push({ name, args }));
+  try {
+    // Implementation signatures remain specific, including after fn() without an implementation.
+    const initiallyEmpty = fn().mockImplementation(
+      (value: string) => value.length
+    );
+    expect(initiallyEmpty("Mira")).toBe(4);
+    callback.mockImplementationOnce((value: string) => value.length);
+    expect(callback.call(receiver, "Mira")).toBe(4);
+    expect(callback.call(receiver, "Owen")).toBe("Contact: Owen");
+    expect(callback.mock.calls).toEqual([["Mira"], ["Owen"]]);
+    expect(callback.mock.instances).toEqual([receiver, receiver]);
+    expect(actions.at(-1)).toEqual({ name: "contact update", args: ["Owen"] });
+    const typed = fn((value: string) => value.length).mockImplementation(
+      (value) => value.length + 1
+    );
+    expect(typed("Mira")).toBe(5);
+    callback.mockResolvedValueOnce({ saved: true });
+    await expect(callback.call(receiver, "Leena")).resolves.toEqual({
+      saved: true,
+    });
+    callback.mockReturnValueOnce(42);
+    expect(callback.call(receiver, "Atlas")).toBe(42);
+    clearAllMocks();
+    expect(callback.mock.calls).toEqual([]);
+    expect(callback.call(receiver, "Mira")).toBe("Contact: Mira");
+    callback.mockReset();
+    expect(callback.call(receiver, "Mira")).toBeUndefined();
+  } finally {
+    setActionSink(undefined);
+    clearAllMocks();
+  }
 });

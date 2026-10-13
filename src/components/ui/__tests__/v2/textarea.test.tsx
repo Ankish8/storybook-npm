@@ -403,8 +403,183 @@ describe("Textarea message reveal", () => {
       "[transition-duration:160ms]",
       "disabled:opacity-60"
     );
-    expect(textarea).toHaveClass("enabled:hover:border-semantic-primary");
+    expect(textarea).toHaveClass(
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary"
+    );
     expect(textarea.className).not.toContain("rgba(240,68,56");
     expect(screen.getByText("Notes")).toHaveClass("mb-2", "leading-[1.4]");
+  });
+});
+
+describe("Textarea migration-safe enhancements", () => {
+  it("preserves native defaults, caller styles, ref and form submission", () => {
+    const ref = React.createRef<HTMLTextAreaElement>();
+    const { container } = render(
+      <form>
+        <Textarea
+          ref={ref}
+          name="notes"
+          defaultValue={"two  words\nnew\tline"}
+          style={{ height: 140, overflowY: "scroll" }}
+        />
+      </form>
+    );
+    expect(ref.current).toHaveAttribute("rows", "4");
+    expect(ref.current).toHaveClass("resize-none");
+    expect(ref.current).toHaveStyle({ height: "140px", overflowY: "scroll" });
+    expect(new FormData(container.querySelector("form")!).get("notes")).toBe(
+      "two words\nnew\tline"
+    );
+  });
+
+  it("keeps composition drafts intact and notifies the normalized commit once", async () => {
+    const changes = vi.fn();
+    const start = vi.fn();
+    const end = vi.fn();
+    render(
+      <Textarea
+        onChange={changes}
+        onCompositionStart={start}
+        onCompositionEnd={end}
+      />
+    );
+    const textarea = screen.getByRole("textbox");
+    fireEvent.compositionStart(textarea);
+    fireEvent.change(textarea, { target: { value: "日  本" } });
+    expect(textarea).toHaveValue("日  本");
+    expect(changes.mock.calls[0][0].target.value).toBe("日  本");
+    fireEvent.compositionEnd(textarea);
+    expect(textarea).toHaveValue("日 本");
+    await waitFor(() => expect(changes).toHaveBeenCalledTimes(2));
+    expect(changes.mock.calls[1][0].target.value).toBe("日 本");
+    expect(start).toHaveBeenCalledTimes(1);
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps controlled consumer state in sync with an IME commit without a following input event", async () => {
+    const values: string[] = [];
+    function Controlled() {
+      const [value, setValue] = React.useState("");
+      return (
+        <>
+          <Textarea
+            value={value}
+            onChange={(event) => {
+              values.push(event.target.value);
+              setValue(event.target.value);
+            }}
+          />
+          <output>{value}</output>
+        </>
+      );
+    }
+    render(<Controlled />);
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    fireEvent.compositionStart(textarea);
+    fireEvent.change(textarea, { target: { value: "日  本" } });
+    fireEvent.compositionEnd(textarea, { data: "日  本" });
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("日 本")
+    );
+    expect(values).toEqual(["日  本", "日 本"]);
+    expect(textarea).toHaveValue("日 本");
+    expect(textarea.selectionStart).toBe(3);
+  });
+
+  it("preserves a backward selection through space normalization", async () => {
+    function Controlled() {
+      const [value, setValue] = React.useState("hello world");
+      return (
+        <Textarea value={value} onChange={(e) => setValue(e.target.value)} />
+      );
+    }
+    render(<Controlled />);
+    const textarea = screen.getByRole("textbox") as HTMLTextAreaElement;
+    const setValue = Object.getOwnPropertyDescriptor(
+      HTMLTextAreaElement.prototype,
+      "value"
+    )!.set!;
+    setValue.call(textarea, "hello   world");
+    textarea.setSelectionRange(5, 10, "backward");
+    fireEvent.change(textarea);
+    await waitFor(() => {
+      expect(textarea.selectionStart).toBe(5);
+      expect(textarea.selectionEnd).toBe(8);
+      expect(textarea.selectionDirection).toBe("backward");
+    });
+  });
+
+  it("bounds auto-resize, scrolls overflow and shrinks on controlled reset", () => {
+    const scroll = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(300);
+    const { rerender } = render(
+      <Textarea
+        autoResize
+        minRows={2}
+        maxRows={5}
+        value="Long notes"
+        onChange={() => {}}
+        style={{
+          lineHeight: "20px",
+          padding: "10px",
+          borderWidth: "1px",
+          boxSizing: "border-box",
+        }}
+      />
+    );
+    const textarea = screen.getByRole("textbox");
+    expect(textarea).toHaveStyle({
+      height: "122px",
+      minHeight: "62px",
+      maxHeight: "122px",
+      overflowY: "auto",
+    });
+    scroll.mockReturnValue(20);
+    rerender(
+      <Textarea
+        autoResize
+        minRows={2}
+        maxRows={5}
+        value=""
+        onChange={() => {}}
+        style={{
+          lineHeight: "20px",
+          padding: "10px",
+          borderWidth: "1px",
+          boxSizing: "border-box",
+        }}
+      />
+    );
+    expect(textarea).toHaveStyle({ height: "62px", overflowY: "hidden" });
+    scroll.mockRestore();
+  });
+
+  it("measures content-box rows and restores authored sizing when auto-resize is disabled", () => {
+    const scroll = vi
+      .spyOn(HTMLTextAreaElement.prototype, "scrollHeight", "get")
+      .mockReturnValue(200);
+    const style = {
+      height: 140,
+      lineHeight: "20px",
+      padding: "10px",
+      borderWidth: "1px",
+      boxSizing: "content-box" as const,
+      overflowY: "scroll" as const,
+    };
+    const { rerender } = render(
+      <Textarea autoResize minRows={2} maxRows={4} style={style} />
+    );
+    const textarea = screen.getByRole("textbox");
+    expect(textarea).toHaveStyle({
+      height: "80px",
+      minHeight: "40px",
+      maxHeight: "80px",
+      overflowY: "auto",
+    });
+    rerender(<Textarea autoResize={false} resize="vertical" style={style} />);
+    expect(textarea).toHaveStyle({ height: "140px", overflowY: "scroll" });
+    expect(textarea).toHaveClass("resize-y");
+    scroll.mockRestore();
   });
 });

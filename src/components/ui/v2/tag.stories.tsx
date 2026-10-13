@@ -35,20 +35,19 @@ const TAGS = [
   { value: "After call event" },
   { value: "Resolved" },
 ];
-function TagSample({
-  withIcon,
-  removable,
-  maxVisible: _max,
-  tags: _tags,
-  ...args
-}: TagStoryArgs) {
-  return (
-    <Tag {...args} onRemove={removable ? args.onRemove : undefined}>
-      {withIcon && <Phone className="size-3 shrink-0" />}
-      {args.children}
-    </Tag>
-  );
-}
+const TagSample = React.forwardRef<HTMLSpanElement, TagStoryArgs>(
+  function TagSample(
+    { withIcon, removable, maxVisible: _max, tags: _tags, ...args },
+    ref
+  ) {
+    return (
+      <Tag {...args} ref={ref} onRemove={removable ? args.onRemove : undefined}>
+        {withIcon && <Phone className="size-3 shrink-0" />}
+        {args.children}
+      </Tag>
+    );
+  }
+);
 const meta: Meta<TagStoryArgs> = {
   title: "V2/Components/Tag",
   component: Tag,
@@ -76,12 +75,12 @@ const meta: Meta<TagStoryArgs> = {
         component: v2ComponentDocs({
           name: "tag",
           summary:
-            "Tags label events and categories. Add a bold prefix, an icon, or a dismiss button when needed.",
+            "Tags label events and categories. Add a prefix, an icon, or a dismiss button. Passive tags stay out of the tab order.",
           changes: [
             [
               "Heights",
               "Content and padding determine the height",
-              "sm 24 · default 28 · lg 32px",
+              "sm 24 · default 28 · lg 32px minimum; long labels wrap",
             ],
             ["Radius", "4px", "8px"],
             [
@@ -104,12 +103,12 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Dismiss target",
               "12px icon is the whole target",
-              "24px target around a 22px circle and 14px icon, neutral hover plate and own focus ring; presses to 96% and springs back",
+              "24px target around a 22px circle and 14px icon, pointer-aware hover plate and keyboard focus ring; a brief press response respects reduced motion",
             ],
             [
               "Dismissal and overflow",
               "onRemove, removeDisabled, TagGroup",
-              "Same props and behavior",
+              "Same parent-controlled API; Backspace/Delete on the remove button and accurate boundary counts",
             ],
           ],
           tokens: [
@@ -120,7 +119,7 @@ const meta: Meta<TagStoryArgs> = {
               "#E9EAEB",
               "#E9EAEB",
             ],
-            ["Body text", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Body text", "--semantic-text-secondary", "#343E55", "#343E55"],
             [
               "Accent surface",
               "--semantic-brand-surface",
@@ -134,13 +133,13 @@ const meta: Meta<TagStoryArgs> = {
             ["Success text", "--semantic-success-text", "#067647", "#067647"],
             ["Warning text", "--semantic-warning-text", "#B54708", "#B54708"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
-            ["Dismiss hover plate", "--color-black", "#000000 at 8%"],
+            ["Dismiss hover plate", "--semantic-bg-inverted", "#000000 at 8%"],
             ["Dismiss focus ring", "--semantic-primary", "#343E55", "#343E55"],
             ["Font", "--font-v2", "Inter 400 / 600"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Use `label` for a short prefix and children for the value. `onRemove` receives the click event; the parent controls removal. Set a specific `removeAriaLabel` when several tags are dismissible. `TagGroup` keeps the v1 overflow indicator and `maxVisible` behavior.",
+            "Use `label` for a prefix and children for the value. `onRemove` receives a click event for pointer and keyboard dismissal; the parent controls removal and can honor `event.defaultPrevented`. Set a specific `removeAriaLabel` when several tags are dismissible. After updating a list, its parent should focus the next remove button, the previous button, or a suitable list action. `TagGroup` defaults to two visible tags; zero or negative limits show only the overflow count, fractions round down, NaN uses the default, and Infinity shows every tag.",
         }),
       },
     },
@@ -155,7 +154,7 @@ const meta: Meta<TagStoryArgs> = {
     removable: false,
     removeDisabled: false,
     removeAriaLabel: "Remove tag",
-    onRemove: () => removeAction(),
+    onRemove: removeAction,
     maxVisible: 2,
     tags: TAGS,
   },
@@ -189,7 +188,7 @@ const meta: Meta<TagStoryArgs> = {
     size: {
       control: "select",
       options: SIZES,
-      description: "Small 24px, default 28px, or large 32px.",
+      description: "Small 24px, default 28px, or large 32px minimum height.",
     },
     children: {
       control: "text",
@@ -276,7 +275,7 @@ export const AllSizes: Story = {
       {SIZES.map((size) => (
         <div key={size} className="flex flex-col items-start gap-2">
           <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-            {size} · {size === "sm" ? 20 : size === "lg" ? 30 : 24}px
+            {size} · {size === "sm" ? 24 : size === "lg" ? 32 : 28}px
           </span>
           <TagSample {...args} size={size} />
         </div>
@@ -321,42 +320,109 @@ export const RemoveDisabled: Story = {
 function DismissibleTags(args: TagStoryArgs) {
   const initialTags = ["Support", "VIP", "Trial"];
   const [tags, setTags] = React.useState(initialTags);
+  const [keepVip, setKeepVip] = React.useState(false);
+  const [announcement, setAnnouncement] = React.useState("");
+  const tagRefs = React.useRef(new Map<string, HTMLSpanElement>());
+  const resetRef = React.useRef<HTMLButtonElement>(null);
+  const focusAfterRemoval = React.useRef<string | null>(null);
+
+  React.useLayoutEffect(() => {
+    const target = focusAfterRemoval.current;
+    focusAfterRemoval.current = null;
+    if (!target) return;
+    if (target === "reset") {
+      resetRef.current?.focus();
+    } else {
+      tagRefs.current
+        .get(target)
+        ?.querySelector<HTMLButtonElement>("button")
+        ?.focus();
+    }
+  }, [tags]);
+
   return (
-    <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[440px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        <p className="m-0 text-base font-medium text-semantic-text-primary">
           Contact tags
         </p>
-        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
-          Remove a tag to update this example.
+        <p className="m-0 mt-1 text-sm text-semantic-text-muted">
+          Labels used to route this contact to the right team.
         </p>
       </div>
-      <div className="flex min-h-6 flex-wrap items-center gap-2">
+      <div
+        className="flex min-h-8 flex-wrap items-center gap-2"
+        aria-label="Contact tags"
+      >
         {tags.length ? (
           tags.map((tag) => (
             <TagSample
               {...args}
               key={tag}
+              ref={(node) => {
+                if (node) tagRefs.current.set(tag, node);
+                else tagRefs.current.delete(tag);
+              }}
               removeAriaLabel={"Remove " + tag}
               onRemove={(event) => {
                 args.onRemove?.(event);
+                if (keepVip && tag === "VIP") event.preventDefault();
+                if (event.defaultPrevented) {
+                  setAnnouncement(tag + " kept. Removal was cancelled.");
+                  return;
+                }
+                if (event.currentTarget === document.activeElement) {
+                  const index = tags.indexOf(tag);
+                  focusAfterRemoval.current =
+                    tags[index + 1] ?? tags[index - 1] ?? "reset";
+                }
                 setTags((current) => current.filter((value) => value !== tag));
+                setAnnouncement(
+                  tag + " removed. " + (tags.length - 1) + " tags remaining."
+                );
               }}
             >
               {tag}
             </TagSample>
           ))
         ) : (
-          <span className="text-sm text-[var(--v2-text-muted,#707070)]">
+          <span className="text-sm text-semantic-text-muted">
             No tags selected
           </span>
         )}
       </div>
-      <div className="border-t border-semantic-border-layout pt-4">
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm text-semantic-text-secondary">
+          <input
+            type="checkbox"
+            checked={keepVip}
+            onChange={(event) => setKeepVip(event.target.checked)}
+            className="size-4 accent-semantic-primary"
+          />
+          Keep VIP
+        </label>
+        <p className="m-0 text-xs text-semantic-text-muted">
+          Tab to ×, then press Enter, Space, Backspace or Delete. Keep VIP
+          cancels its removal.
+        </p>
+        <p
+          className="m-0 min-h-5 text-xs text-semantic-text-secondary"
+          role="status"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          {announcement || tags.length + " tags attached"}
+        </p>
+      </div>
+      <div className="flex border-t border-semantic-border-layout pt-4">
         <Button
+          ref={resetRef}
           variant="outline"
           size="sm"
-          onClick={() => setTags(initialTags)}
+          onClick={() => {
+            setTags(initialTags);
+            setAnnouncement("All three tags restored.");
+          }}
         >
           Reset tags
         </Button>
@@ -368,9 +434,37 @@ export const Dismissible: Story = {
   args: { variant: "accent", removable: true },
   parameters: gallery(
     ["children", "removeAriaLabel"],
-    "Remove and restore actual tags. Controls edit the palette, size, prefix, icon and dismiss behavior."
+    "Remove and restore actual tags, cancel VIP removal, and keep keyboard focus within the list. Controls edit the palette, size, prefix, icon and dismiss behavior."
   ),
   render: (args) => <DismissibleTags {...args} />,
+};
+export const LongLabels: Story = {
+  name: "Long and wrapped labels",
+  args: {
+    variant: "accent",
+    removable: true,
+    removeAriaLabel: "Remove follow-up event",
+  },
+  parameters: gallery(
+    ["children", "label"],
+    "Content stays readable inside a narrow container. The dismiss control stays available."
+  ),
+  render: (args) => (
+    <div className="flex w-64 max-w-full flex-col items-start gap-4">
+      <TagSample {...args} label="Follow-up:">
+        Waiting for the customer to confirm the onboarding details
+      </TagSample>
+      <TagSample {...args} label="Event identifier:">
+        customer_onboarding_confirmation_received_successfully
+      </TagSample>
+      <TagGroup
+        tags={TAGS}
+        maxVisible={1}
+        variant={args.variant}
+        size={args.size}
+      />
+    </div>
+  ),
 };
 export const VariantsAndSizes: Story = {
   name: "Variants and sizes",
@@ -570,17 +664,21 @@ export const Interaction: Story = {
     const canvas = within(canvasElement);
     const dismiss = canvas.getByRole("button", { name: "Remove Support" });
 
-    await step("Tab focuses it; Enter and Space dismiss", async () => {
-      await userEvent.tab();
-      await expect(dismiss).toHaveFocus();
-      await userEvent.keyboard("{Enter}");
-      await userEvent.keyboard(" ");
-      await expect(args.onRemove).toHaveBeenCalledTimes(2);
-    });
+    await step(
+      "Tab focuses it; Enter, Space, Backspace and Delete dismiss",
+      async () => {
+        await userEvent.tab();
+        await expect(dismiss).toHaveFocus();
+        await userEvent.keyboard("{Enter}");
+        await userEvent.keyboard(" ");
+        await userEvent.keyboard("{Backspace}{Delete}");
+        await expect(args.onRemove).toHaveBeenCalledTimes(4);
+      }
+    );
 
     await step("A click calls onRemove with the click event", async () => {
       await userEvent.click(dismiss);
-      await expect(args.onRemove).toHaveBeenCalledTimes(3);
+      await expect(args.onRemove).toHaveBeenCalledTimes(5);
       await expect(args.onRemove).toHaveBeenLastCalledWith(
         expect.objectContaining({ type: "click" })
       );

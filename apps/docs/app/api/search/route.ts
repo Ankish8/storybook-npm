@@ -1,4 +1,4 @@
-import { categories, components, entryHref } from "@docs/lib/catalog";
+import { categories, visibleEntries, entryHref } from "@docs/lib/catalog";
 
 const pages = [
   {
@@ -15,7 +15,7 @@ const pages = [
       "Design tokens for neutral text, semantic colors, Inter typography, spacing, radius, shadows, focus and reduced motion.",
     breadcrumbs: ["myOperator UI"],
   },
-  ...components.map((component) => ({
+  ...visibleEntries.map((component) => ({
     title: component.title,
     url: entryHref(component),
     description: component.description,

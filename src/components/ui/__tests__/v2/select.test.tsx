@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   Select,
@@ -569,7 +569,7 @@ describe("Select v2 refresh", () => {
     renderSelect();
     const trigger = screen.getByTestId("trigger");
     expect(trigger).toHaveClass(
-      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui",
       "enabled:active:bg-semantic-bg-ui",
       "aria-expanded:bg-semantic-bg-ui"
     );
@@ -666,7 +666,11 @@ describe("Select v2 refresh", () => {
   });
 
   describe("value roll", () => {
-    const animate = vi.fn(() => ({ onfinish: null, oncancel: null }));
+    const animate = vi.fn(() => ({
+      onfinish: null,
+      oncancel: null,
+      cancel: vi.fn(),
+    }));
     beforeEach(() => {
       animate.mockClear();
       Object.defineProperty(HTMLElement.prototype, "animate", {
@@ -711,5 +715,128 @@ describe("Select v2 refresh", () => {
         screen.getByTestId("trigger").querySelector("[data-value-roll-ghost]")
       ).toHaveAttribute("aria-hidden", "true");
     });
+  });
+});
+
+describe("Select browser regressions", () => {
+  it.each([true, "true"] as const)(
+    "shows error styling for aria-invalid=%s without a state prop",
+    (invalid) => {
+      renderSelect({ triggerProps: { "aria-invalid": invalid } });
+      expect(screen.getByRole("combobox")).toHaveClass(
+        "border-semantic-error-primary"
+      );
+      expect(screen.getByRole("combobox")).not.toHaveClass(
+        "aria-expanded:border-semantic-primary"
+      );
+    }
+  );
+
+  it("only unlocks scrolling while its popup is mounted", async () => {
+    const user = userEvent.setup();
+    renderSelect();
+    expect(document.querySelector("[data-select-scroll-fix]")).toBeNull();
+    await user.click(screen.getByRole("combobox"));
+    expect(document.querySelector("[data-select-scroll-fix]")).not.toBeNull();
+    await user.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(document.querySelector("[data-select-scroll-fix]")).toBeNull()
+    );
+  });
+
+  it("does not unlock the surrounding dialog", async () => {
+    const user = userEvent.setup();
+    render(
+      <div role="dialog" aria-label="Settings">
+        <Select>
+          <SelectTrigger aria-label="Choice">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="one">One</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    );
+    await user.click(screen.getByRole("combobox"));
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+    expect(document.querySelector("[data-select-scroll-fix]")).toBeNull();
+  });
+
+  it("keeps currentTarget available to a debounced scroll callback", async () => {
+    const original = Object.getOwnPropertyDescriptor(window, "onscrollend");
+    Reflect.deleteProperty(window, "onscrollend");
+    const user = userEvent.setup();
+    const callback = vi.fn();
+    let target: EventTarget | null = null;
+    try {
+      render(
+        <Select>
+          <SelectTrigger aria-label="Choice">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent
+            onViewportScrollEnd={(event) => {
+              target = event.currentTarget;
+              callback();
+            }}
+          >
+            <SelectItem value="one">One</SelectItem>
+          </SelectContent>
+        </Select>
+      );
+      await user.click(screen.getByRole("combobox"));
+      const viewport = document.querySelector(
+        "[data-select-viewport]"
+      ) as HTMLDivElement;
+      Object.defineProperty(viewport, "scrollHeight", { value: 400 });
+      Object.defineProperty(viewport, "clientHeight", { value: 200 });
+      viewport.scrollTop = 200;
+      act(() => viewport.dispatchEvent(new Event("scroll")));
+      await waitFor(() => expect(callback).toHaveBeenCalledOnce());
+      expect(target).toBe(viewport);
+    } finally {
+      if (original) Object.defineProperty(window, "onscrollend", original);
+    }
+  });
+});
+
+describe("Select Escape ownership", () => {
+  it("honors a caller that prevents Escape dismissal", async () => {
+    const user = userEvent.setup();
+    const onEscapeKeyDown = vi.fn((event: KeyboardEvent) =>
+      event.preventDefault()
+    );
+    render(
+      <Select defaultOpen>
+        <SelectTrigger aria-label="Choice">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent onEscapeKeyDown={onEscapeKeyDown}>
+          <SelectItem value="one">One</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+    await user.keyboard("{Escape}");
+    expect(onEscapeKeyDown).toHaveBeenCalledOnce();
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
+  });
+
+  it("preserves controlled open state and its close callback", async () => {
+    const user = userEvent.setup();
+    const onOpenChange = vi.fn();
+    render(
+      <Select open onOpenChange={onOpenChange}>
+        <SelectTrigger aria-label="Choice">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="one">One</SelectItem>
+        </SelectContent>
+      </Select>
+    );
+    await user.keyboard("{Escape}");
+    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+    expect(screen.getByRole("listbox")).toBeInTheDocument();
   });
 });

@@ -524,7 +524,7 @@ describe("TextField", () => {
     expect(screen.getByRole("textbox").parentElement).toHaveClass(
       "bg-semantic-bg-ui",
       "opacity-50",
-      "hover:border-semantic-border-input",
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-input",
       "shadow-none"
     );
   });
@@ -651,5 +651,137 @@ describe("TextField message reveal and clear button", () => {
     render(<TextField clearable defaultValue="x" data-testid="in" />);
     await user.click(screen.getByLabelText("Clear input"));
     expect(screen.getByTestId("in")).not.toHaveFocus();
+  });
+  it("normalizes email paste without invoking unsupported selection APIs", () => {
+    const onChange = vi.fn();
+    render(<TextField type="email" onChange={onChange} aria-label="Email" />);
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "a  b@example.com" } });
+    expect(input).toHaveValue("a b@example.com");
+    expect(onChange).toHaveBeenCalledOnce();
+  });
+
+  it("leaves IME drafts intact and normalizes a commit without a following change event", async () => {
+    const start = vi.fn();
+    const end = vi.fn();
+    render(
+      <TextField
+        aria-label="Name"
+        onCompositionStart={start}
+        onCompositionEnd={end}
+      />
+    );
+    const input = screen.getByRole("textbox");
+    fireEvent.compositionStart(input);
+    fireEvent.change(input, { target: { value: "に  ほ" } });
+    expect(input).toHaveValue("に  ほ");
+    fireEvent.compositionEnd(input);
+    await waitFor(() => expect(input).toHaveValue("に ほ"));
+    fireEvent.change(input, { target: { value: "に  ほん" } });
+    expect(input).toHaveValue("に ほん");
+    expect(start).toHaveBeenCalledOnce();
+    expect(end).toHaveBeenCalledOnce();
+  });
+
+  it("delivers the normalized IME commit to a controlled consumer exactly once", async () => {
+    const values: string[] = [];
+    function Controlled() {
+      const [value, setValue] = React.useState("");
+      return (
+        <>
+          <TextField
+            value={value}
+            onChange={(event) => {
+              values.push(event.target.value);
+              setValue(event.target.value);
+            }}
+          />
+          <output>{value}</output>
+        </>
+      );
+    }
+    render(<Controlled />);
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    fireEvent.compositionStart(input);
+    fireEvent.change(input, { target: { value: "日  本" } });
+    fireEvent.compositionEnd(input, { data: "日  本" });
+    await waitFor(() =>
+      expect(screen.getByRole("status")).toHaveTextContent("日 本")
+    );
+    expect(values).toEqual(["日  本", "日 本"]);
+    expect(input).toHaveValue("日 本");
+    expect(input.selectionStart).toBe(3);
+  });
+
+  it("preserves a backward selection when spaces collapse", () => {
+    render(<TextField aria-label="Name" />);
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    fireEvent.change(input, {
+      target: {
+        value: "ab  cd  ef",
+        selectionStart: 2,
+        selectionEnd: 8,
+        selectionDirection: "backward",
+      },
+    });
+    expect(input).toHaveValue("ab cd ef");
+    expect(input.selectionStart).toBe(2);
+    expect(input.selectionEnd).toBe(6);
+    expect(input.selectionDirection).toBe("backward");
+  });
+
+  it("styles aria-invalid on standalone and composed fields", () => {
+    render(
+      <>
+        <TextField aria-label="Plain" aria-invalid="true" />
+        <TextField aria-label="Composed" aria-invalid prefix="https://" />
+      </>
+    );
+    expect(screen.getByRole("textbox", { name: "Plain" })).toHaveClass(
+      "border-semantic-error-primary"
+    );
+    expect(
+      screen.getByRole("textbox", { name: "Composed" }).parentElement
+    ).toHaveClass("border-semantic-error-primary");
+  });
+
+  it("optionally returns keyboard focus after clear without changing the callback contract", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onClear = vi.fn();
+    render(
+      <TextField
+        label="Name"
+        returnFocusOnClear
+        defaultValue="Sales"
+        clearable
+        onClear={onClear}
+        onChange={onChange}
+      />
+    );
+    await user.tab();
+    await user.tab();
+    await user.keyboard(" ");
+    expect(screen.getByRole("textbox", { name: "Name" })).toHaveFocus();
+    expect(screen.getByRole("textbox", { name: "Name" })).toHaveValue("");
+    expect(onClear).toHaveBeenCalledOnce();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("forwards addon input classes and preserves native form data", () => {
+    const { container } = render(
+      <form>
+        <TextField
+          name="workspace"
+          defaultValue="Support"
+          prefix="@"
+          className="tracking-wide"
+        />
+      </form>
+    );
+    expect(screen.getByRole("textbox")).toHaveClass("tracking-wide");
+    expect(
+      new FormData(container.querySelector("form")!).get("workspace")
+    ).toBe("Support");
   });
 });

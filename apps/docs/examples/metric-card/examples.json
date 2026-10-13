@@ -1,0 +1,40 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Metric summary",
+      "description": "label names the accessible group. value accepts a number or a formatted string."
+    },
+    {
+      "id": "variants",
+      "title": "Both surfaces",
+      "description": "default and subtle choose the surface. Neither introduces hover movement."
+    },
+    {
+      "id": "sizes",
+      "title": "All sizes",
+      "description": "sm, default and lg adjust padding and value size without changing the data."
+    },
+    {
+      "id": "trends",
+      "title": "Direction and tone",
+      "description": "Direction describes movement; tone describes whether it helps. Fewer missed calls can be a positive downward trend."
+    },
+    {
+      "id": "formatted-values",
+      "title": "Formatted values and units",
+      "description": "Formatted strings stay exactly as supplied. suffix appends a unit without parsing or changing the value."
+    },
+    {
+      "id": "value-update",
+      "title": "Update a real value",
+      "description": "Changed values settle briefly by default. animateValue=false disables it; reduced motion also skips movement."
+    },
+    {
+      "id": "graphic-footer",
+      "title": "Supporting graphic and action",
+      "description": "Give a meaningful graphic its own accessible name. Children add a footer; the metric card itself remains passive."
+    }
+  ]
+}

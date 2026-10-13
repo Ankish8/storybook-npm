@@ -1,5 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
+import { renderToStaticMarkup } from "react-dom/server";
+import * as React from "react";
 import {
   Accordion,
   AccordionItem,
@@ -394,3 +396,251 @@ it("respects a consumer cancelling a toggle", () => {
     "false"
   );
 });
+
+describe("Accordion native API and hidden content", () => {
+  it("defaults to multiple selection without requiring the type prop", () => {
+    const onValueChange = vi.fn();
+    render(
+      <Accordion onValueChange={onValueChange}>
+        {["one", "two"].map((value) => (
+          <AccordionItem key={value} value={value}>
+            <AccordionTrigger>{value}</AccordionTrigger>
+            <AccordionContent>{value} details</AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    );
+    fireEvent.click(screen.getByRole("button", { name: "one" }));
+    fireEvent.click(screen.getByRole("button", { name: "two" }));
+    expect(onValueChange).toHaveBeenLastCalledWith(["one", "two"]);
+    expect(screen.getByRole("button", { name: "one" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+  });
+
+  it("starts server-rendered closed content at zero height", () => {
+    const markup = renderToStaticMarkup(
+      <Accordion>
+        <AccordionItem value="details">
+          <AccordionTrigger>Details</AccordionTrigger>
+          <AccordionContent>
+            <input aria-label="Contact name" defaultValue="Aditi" />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const host = document.createElement("div");
+    host.innerHTML = markup;
+    const panel = host.querySelector('[role="region"]');
+    expect(panel).toHaveAttribute("aria-hidden", "true");
+    expect(panel).toHaveStyle({ height: "0px" });
+  });
+
+  it("preserves native IDs and updates their accessible relationships", () => {
+    const Example = ({ suffix }: { suffix: string }) => (
+      <Accordion defaultValue={["details"]}>
+        <AccordionItem value="details">
+          <AccordionTrigger id={"trigger-" + suffix}>Details</AccordionTrigger>
+          <AccordionContent id={"panel-" + suffix}>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const { rerender } = render(<Example suffix="one" />);
+    expect(screen.getByRole("button", { name: "Details" })).toHaveAttribute(
+      "aria-controls",
+      "panel-one"
+    );
+    expect(screen.getByRole("region", { name: "Details" })).toHaveAttribute(
+      "aria-labelledby",
+      "trigger-one"
+    );
+    rerender(<Example suffix="two" />);
+    expect(screen.getByRole("button", { name: "Details" })).toHaveAttribute(
+      "aria-controls",
+      "panel-two"
+    );
+    expect(screen.getByRole("region", { name: "Details" })).toHaveAttribute(
+      "aria-labelledby",
+      "trigger-two"
+    );
+  });
+
+  it("returns focus to the trigger on a controlled collapse and keeps field values", () => {
+    const Example = ({ value, id }: { value: string[]; id: string }) => (
+      <Accordion value={value}>
+        <AccordionItem value="details">
+          <AccordionTrigger id={id}>Details</AccordionTrigger>
+          <AccordionContent data-testid="panel">
+            <input aria-label="Contact name" defaultValue="Aditi" />
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const { rerender } = render(
+      <Example value={["details"]} id="original-trigger" />
+    );
+    const field = screen.getByRole("textbox", { name: "Contact name" });
+    fireEvent.change(field, { target: { value: "Updated contact" } });
+    field.focus();
+    rerender(<Example value={[]} id="updated-trigger" />);
+    expect(screen.getByRole("button", { name: "Details" })).toHaveFocus();
+    expect(screen.getByTestId("panel")).toHaveAttribute("inert");
+    expect(screen.queryByRole("textbox", { name: "Contact name" })).toBeNull();
+    rerender(<Example value={["details"]} id="updated-trigger" />);
+    expect(screen.getByRole("textbox", { name: "Contact name" })).toHaveValue(
+      "Updated contact"
+    );
+    expect(screen.getByTestId("panel")).not.toHaveAttribute("inert");
+  });
+
+  it("merges native styles without losing measured content height or refs", () => {
+    const contentRef = React.createRef<HTMLDivElement>();
+    const triggerRef = React.createRef<HTMLButtonElement>();
+    const onFocus = vi.fn();
+    render(
+      <Accordion data-native-root="retained">
+        <AccordionItem value="details" data-native-item="retained">
+          <AccordionTrigger
+            ref={triggerRef}
+            title="Open details"
+            onFocus={onFocus}
+          >
+            Details
+          </AccordionTrigger>
+          <AccordionContent
+            ref={contentRef}
+            style={{ paddingTop: "12px" }}
+            data-native-panel="retained"
+          >
+            Content
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    expect(contentRef.current).toHaveStyle({
+      height: "0px",
+      paddingTop: "12px",
+    });
+    expect(contentRef.current).toHaveAttribute("data-native-panel", "retained");
+    expect(triggerRef.current).toHaveAttribute("title", "Open details");
+    triggerRef.current?.focus();
+    expect(onFocus).toHaveBeenCalledOnce();
+  });
+
+  it("never submits a surrounding form when the trigger toggles", () => {
+    const submit = vi.fn((event) => event.preventDefault());
+    const click = vi.fn();
+    render(
+      <form onSubmit={submit}>
+        <Accordion>
+          <AccordionItem value="details">
+            <AccordionTrigger onClick={click}>Details</AccordionTrigger>
+            <AccordionContent>Content</AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </form>
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Details" }));
+    expect(click).toHaveBeenCalledOnce();
+    expect(submit).not.toHaveBeenCalled();
+    expect(screen.getByRole("button", { name: "Details" })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+  });
+
+  it("honors both item and native trigger disabled state", () => {
+    const onValueChange = vi.fn();
+    render(
+      <Accordion onValueChange={onValueChange}>
+        <AccordionItem value="item-disabled" disabled>
+          <AccordionTrigger disabled={false}>Disabled item</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="trigger-disabled">
+          <AccordionTrigger disabled>Disabled trigger</AccordionTrigger>
+          <AccordionContent>Content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    for (const trigger of screen.getAllByRole("button")) {
+      expect(trigger).toBeDisabled();
+      fireEvent.click(trigger);
+    }
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+});
+
+describe("Accordion keyboard boundaries", () => {
+  it("wraps in both directions, skips nested accordions, and supports cancellation", () => {
+    const cancelled = vi.fn((event: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (event.key === "Home") event.preventDefault();
+    });
+    render(
+      <Accordion defaultValue={["first"]}>
+        <AccordionItem value="first">
+          <AccordionTrigger>First</AccordionTrigger>
+          <AccordionContent>
+            <Accordion>
+              <AccordionItem value="nested">
+                <AccordionTrigger>Nested</AccordionTrigger>
+                <AccordionContent>Nested content</AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="last">
+          <AccordionTrigger onKeyDown={cancelled}>Last</AccordionTrigger>
+          <AccordionContent>Last content</AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    const first = screen.getByRole("button", { name: "First" });
+    const last = screen.getByRole("button", { name: "Last" });
+    first.focus();
+    fireEvent.keyDown(first, { key: "ArrowDown" });
+    expect(last).toHaveFocus();
+    fireEvent.keyDown(last, { key: "ArrowDown" });
+    expect(first).toHaveFocus();
+    fireEvent.keyDown(first, { key: "ArrowUp" });
+    expect(last).toHaveFocus();
+    fireEvent.keyDown(last, { key: "Home" });
+    expect(last).toHaveFocus();
+    expect(cancelled).toHaveBeenCalledTimes(2);
+    fireEvent.keyDown(last, { key: "ArrowDown", ctrlKey: true });
+    expect(last).toHaveFocus();
+    expect(screen.getByRole("button", { name: "Nested" })).not.toHaveFocus();
+  });
+});
+
+it.each(["root", "trigger", "content"] as const)(
+  "preserves cleanup-returning callback refs on %s",
+  (target) => {
+    const calls: string[] = [];
+    const ref = (node: HTMLElement | null) => {
+      calls.push(node ? "attach" : "null");
+      if (node)
+        return () => {
+          calls.push("cleanup");
+        };
+    };
+    const { unmount } = render(
+      <Accordion
+        defaultValue={["details"]}
+        ref={target === "root" ? ref : undefined}
+      >
+        <AccordionItem value="details">
+          <AccordionTrigger ref={target === "trigger" ? ref : undefined}>
+            Details
+          </AccordionTrigger>
+          <AccordionContent ref={target === "content" ? ref : undefined}>
+            Contact profile
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    );
+    unmount();
+    expect(calls).toEqual(["attach", "cleanup"]);
+  }
+);

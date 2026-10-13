@@ -6,13 +6,6 @@ import { Check } from "lucide-react";
 import { PhoneInput, type PhoneInputProps } from "./phone-input";
 import { PhoneInput as PhoneInputV1 } from "../phone-input";
 import { Button } from "./button";
-import {
-  ModalRoot,
-  ModalContent,
-  ModalDescription,
-  ModalHeader,
-  ModalTitle,
-} from "./modal";
 import { gallery } from "../../../storybook/v2-preview";
 import { v2ComponentDocs } from "./story-docs";
 
@@ -24,12 +17,6 @@ type Args = PhoneInputProps & {
   customFlag: string;
   width: number;
 };
-const COUNTRIES = [
-  { iso: "IN", code: "+91", label: "India" },
-  { iso: "US", code: "+1", label: "United States" },
-  { iso: "GB", code: "+44", label: "United Kingdom" },
-  { iso: "AU", code: "+61", label: "Australia" },
-];
 const VARIANTS = ["default", "empty", "error"] as const;
 const COLUMNS = [
   { label: "Default", disabled: false },
@@ -50,10 +37,19 @@ function Example({
     id = props.id || generated,
     helperId = `${id}-example-helper`;
   const Component = version === "v1" ? PhoneInputV1 : PhoneInput;
+  const {
+    countrySelector: _selector,
+    countries: _countries,
+    preferredCountries: _preferred,
+    defaultCountryIso: _defaultCountry,
+    onCountryChange: _changeCountry,
+    ...legacyProps
+  } = props;
+  const fieldProps = version === "v1" ? legacyProps : props;
   return (
     <div
       className="max-w-full space-y-1.5 font-[family-name:var(--font-v2,Inter,sans-serif)]"
-      style={{ width }}
+      style={{ width: "100%", maxWidth: width }}
     >
       {label && (
         <label
@@ -71,7 +67,7 @@ function Example({
         </label>
       )}
       <Component
-        {...props}
+        {...fieldProps}
         id={id}
         countryFlag={
           customFlag ? (
@@ -106,43 +102,6 @@ function Example({
     </div>
   );
 }
-function CountryPicker({
-  open,
-  onOpenChange,
-  onPick,
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onPick: (country: (typeof COUNTRIES)[number]) => void;
-}) {
-  return (
-    <ModalRoot open={open} onOpenChange={onOpenChange}>
-      <ModalContent size="sm">
-        <ModalHeader>
-          <ModalTitle>Select a country</ModalTitle>
-          <ModalDescription>
-            Update the country flag and dial code in this example.
-          </ModalDescription>
-        </ModalHeader>
-        <div className="grid gap-2 p-6">
-          {COUNTRIES.map((c) => (
-            <Button
-              key={c.iso}
-              variant="secondary"
-              className="justify-between"
-              onClick={() => onPick(c)}
-            >
-              <span>{c.label}</span>
-              <span className="text-[var(--v2-text-muted,#707070)]">
-                {c.code}
-              </span>
-            </Button>
-          ))}
-        </div>
-      </ModalContent>
-    </ModalRoot>
-  );
-}
 function useLiveArgs(args: Args): Args {
   const [, updateArgs] = useArgs();
   return {
@@ -157,26 +116,17 @@ function Playground({
   updateExampleArgs,
   ...args
 }: Args & { updateExampleArgs: (args: Partial<Args>) => void }) {
-  const live = args;
-  const [open, setOpen] = React.useState(false);
   return (
-    <>
-      <Example
-        {...live}
-        onCountryClick={() => {
-          args.onCountryClick?.();
-          setOpen(true);
-        }}
-      />
-      <CountryPicker
-        open={open}
-        onOpenChange={setOpen}
-        onPick={(c) => {
-          updateExampleArgs({ countryIso: c.iso, countryCode: c.code });
-          setOpen(false);
-        }}
-      />
-    </>
+    <Example
+      {...args}
+      onCountryChange={(country) => {
+        args.onCountryChange?.(country);
+        updateExampleArgs({
+          countryIso: country.iso,
+          countryCode: country.dialCode,
+        });
+      }}
+    />
   );
 }
 function PreviewPhone({
@@ -184,40 +134,29 @@ function PreviewPhone({
   countryIso = "IN",
   countryCode = "+91",
   onChange,
-  onCountryClick,
+  onCountryChange,
   ...args
 }: Args & { version?: "v1" | "v2" }) {
-  const [text, setText] = React.useState(value),
-    [country, setCountry] = React.useState({
-      iso: countryIso,
-      code: countryCode,
-    }),
-    [open, setOpen] = React.useState(false);
+  const [text, setText] = React.useState(value);
+  const [country, setCountry] = React.useState({
+    iso: countryIso,
+    code: countryCode,
+  });
   return (
-    <>
-      <Example
-        {...args}
-        value={text}
-        countryIso={country.iso}
-        countryCode={country.code}
-        onChange={(e) => {
-          setText(e.target.value);
-          onChange?.(e);
-        }}
-        onCountryClick={() => {
-          onCountryClick?.();
-          setOpen(true);
-        }}
-      />
-      <CountryPicker
-        open={open}
-        onOpenChange={setOpen}
-        onPick={(c) => {
-          setCountry(c);
-          setOpen(false);
-        }}
-      />
-    </>
+    <Example
+      {...args}
+      value={text}
+      countryIso={country.iso}
+      countryCode={country.code}
+      onChange={(event) => {
+        setText(event.target.value);
+        onChange?.(event);
+      }}
+      onCountryChange={(next) => {
+        setCountry({ iso: next.iso, code: next.dialCode });
+        onCountryChange?.(next);
+      }}
+    />
   );
 }
 const meta: Meta<Args> = {
@@ -236,6 +175,7 @@ const meta: Meta<Args> = {
         "readOnly",
         "required",
         "phoneMaxNumber",
+        "countrySelector",
         "countryIso",
         "countryCode",
         "showChevron",
@@ -256,72 +196,68 @@ const meta: Meta<Args> = {
         component: v2ComponentDocs({
           name: "phone-input",
           summary:
-            "A numeric phone field with a country-code area, SVG flag, digit guards and accessible validation. The host supplies labels and the country chooser.",
+            "A numeric phone field with a country-code area, SVG flag, digit guards and accessible validation. Labels stay in the consuming form; opt in to the searchable country picker without changing the number value.",
           changes: [
             [
-              "Country button focus",
-              "No ring",
-              "2px inset ring on keyboard focus; validation message glides open",
+              "Country selection",
+              "App-supplied callback",
+              "Same callback by default; opt-in anchored searchable picker",
             ],
-            [
-              "Height and radius",
-              "42px / 4px",
-              "44px / 8px (Arc interaction review)",
-            ],
+            ["Height and radius", "42px / 4px", "44px / 8px"],
             [
               "Typography",
               "Inherited font",
-              "Inter 14px value/code; example label 14px medium and helper 12px",
+              "Timeless Sans with Inter fallback; 14px value/code",
             ],
-            ["Hover", "Default border", "#C0C3CA enabled border"],
+            [
+              "Hover",
+              "No treatment",
+              "Primary border on fine hover pointers only",
+            ],
             [
               "Focus",
-              "Thin teal shadow",
-              "Primary border emphasis; no outer glow",
-            ],
-            ["Error", "Red border", "Red border and soft 4px halo"],
-            [
-              "Disabled",
-              "Reduced opacity",
-              "Solid grey surface without opacity loss",
+              "Teal border and glow",
+              "No field border/glow; keyboard outline on country button",
             ],
             [
-              "Country activation",
-              "Click handler on prefix",
-              "Same chooser callback with a keyboard-accessible button",
+              "Error",
+              "Red border",
+              "Red border from state, validation or aria-invalid=true; no halo",
+            ],
+            ["Disabled", "Reduced opacity", "Gray surface at 50% opacity"],
+            [
+              "Paste",
+              "Formatted text could be blocked",
+              "Sanitize national digits before applying the digit limit",
             ],
             [
-              "Numeric behavior",
-              "Digit guards, sanitization and length limit",
-              "Same current callbacks, ref and validation contract",
+              "Value and form",
+              "National digits",
+              "Same digits-only value, input ref, name and change events",
             ],
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
-            ["Country code", "--semantic-text-secondary", "#343E55", "#343E55"],
-            [
-              "Placeholder",
-              "--semantic-text-placeholder",
-              "#A2A6B1",
-              "#A2A6B1",
-            ],
+            ["Country code", "--semantic-text-primary", "#181D27", "#181D27"],
+            ["Placeholder", "--v2-text-placeholder", "#707070", "#707070"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
-            ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
+            ["Hover", "--semantic-primary", "#343E55", "#343E55"],
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Validation", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans, Inter 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Numeric typing and pasted values are sanitized before onChange runs. phoneMaxNumber takes precedence over native maxLength. validation applies the error style and associated message; state only changes the treatment. Labels/helper text and the four-country dialog are example composition, not PhoneInput props. Country controls remain independently editable. The chooser callback is unavailable when disabled.",
+            "Value and onChange stay national digits; there is no automatic formatting, E.164 parsing or phone validity check. phoneMaxNumber takes precedence over maxLength. Paste sanitizes text before counting digits and preserves the selection. countrySelector is opt-in; legacy onCountryClick still owns country selection by default. In picker mode countryIso controls the country, otherwise defaultCountryIso starts at IN; countryCode can override the displayed code. onCountryChange receives {iso,name,dialCode} and never changes the number. countries and preferredCountries customize the list. The picker is locked by disabled or readOnly; legacy readOnly still affects only the number. The highlight stays attached to its row while scrolling; deliberate pointer and nearby keyboard moves retain a short spring. Only opening, filtering and explicit keyboard navigation reveal a row, so hover does not fight wheel or touch scrolling. Labels and helper text are form composition. Keyboard arrows move through countries, Enter picks and focuses the number, Escape returns to the country button. The number field has no visible keyboard focus beyond its caret, following the existing field-focus decision.",
         }),
       },
     },
   },
   args: {
+    countrySelector: true,
     value: "",
     placeholder: "Enter phone number",
     state: "default",
@@ -352,6 +288,7 @@ const meta: Meta<Args> = {
     readOnly: { control: "boolean" },
     required: { control: "boolean" },
     phoneMaxNumber: { control: { type: "number", min: 1, max: 15, step: 1 } },
+    countrySelector: { control: "boolean" },
     countryIso: { control: "text" },
     countryCode: { control: "text" },
     showChevron: { control: "boolean" },
@@ -567,8 +504,7 @@ function PhoneForm({
   ...args
 }: Args & { updateExampleArgs: (args: Partial<Args>) => void }) {
   const live = args;
-  const [open, setOpen] = React.useState(false),
-    [error, setError] = React.useState(""),
+  const [error, setError] = React.useState(""),
     [saved, setSaved] = React.useState<string | null>(null);
   return (
     <form
@@ -602,17 +538,13 @@ function PhoneForm({
           setSaved(null);
           live.onChange?.(e);
         }}
-        onCountryClick={() => {
-          args.onCountryClick?.();
-          setOpen(true);
-        }}
-      />
-      <CountryPicker
-        open={open}
-        onOpenChange={setOpen}
-        onPick={(c) => {
-          updateExampleArgs({ countryIso: c.iso, countryCode: c.code });
-          setOpen(false);
+        onCountryChange={(country) => {
+          args.onCountryChange?.(country);
+          updateExampleArgs({
+            countryIso: country.iso,
+            countryCode: country.dialCode,
+          });
+          setSaved(null);
         }}
       />
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">

@@ -12,6 +12,154 @@
 // ============================================================================
 
 export const COMPONENT_META = {
+  "v2-metric-card": {
+    "name": "MetricCard",
+    "description": "A calm metric summary with a value, optional trend, comparison and supporting graphic. An optional 180ms value transition respects reduced motion.",
+    "dependencies": [
+      "class-variance-authority",
+      "clsx",
+      "tailwind-merge@^2.6.0",
+      "lucide-react"
+    ],
+    "props": [
+      {
+        "name": "label",
+        "type": "string",
+        "required": true,
+        "description": "What the value measures; names the accessible group"
+      },
+      {
+        "name": "value",
+        "type": "number | string",
+        "required": true,
+        "description": "Numeric or already formatted metric value"
+      },
+      {
+        "name": "suffix",
+        "type": "string",
+        "required": false,
+        "description": "Optional unit appended to the value"
+      },
+      {
+        "name": "trend",
+        "type": "MetricCardTrend",
+        "required": false,
+        "description": "Readable change, independent up/down/flat direction and positive/negative/neutral tone"
+      },
+      {
+        "name": "comparison",
+        "type": "React.ReactNode",
+        "required": false,
+        "description": "Context for the measurement"
+      },
+      {
+        "name": "graphic",
+        "type": "React.ReactNode",
+        "required": false,
+        "description": "Supporting graphic; label meaningful graphics"
+      },
+      {
+        "name": "animateValue",
+        "type": "boolean",
+        "required": false,
+        "defaultValue": "true",
+        "description": "Briefly animate changes; initial render and reduced-motion mode are static"
+      }
+    ],
+    "variants": [
+      {
+        "name": "variant",
+        "options": [
+          "default",
+          "subtle"
+        ],
+        "defaultValue": "default"
+      },
+      {
+        "name": "size",
+        "options": [
+          "sm",
+          "default",
+          "lg"
+        ],
+        "defaultValue": "default"
+      }
+    ],
+    "examples": [
+      {
+        "title": "Answered calls",
+        "code": "import { MetricCard } from \"@/components/ui/v2/metric-card\"\n\n<MetricCard label=\"Answered calls\" value={1248} trend={{ change: \"12%\", direction: \"up\", tone: \"positive\" }} comparison=\"Compared with the previous 7 days\" />",
+        "description": "Explicit sample value; the consumer owns the data and comparison"
+      }
+    ]
+  },
+  "v2-empty-states": {
+    "name": "EmptyStates",
+    "description": "An illustrated block for no-results, offline, caught-up and not-found views. Uses v2 EmptyState, Tabs and Button; recovery actions remain owned by the consumer.",
+    "dependencies": [
+      "clsx",
+      "tailwind-merge@^2.6.0"
+    ],
+    "props": [
+      {
+        "name": "value",
+        "type": "EmptyStatesValue",
+        "required": false,
+        "description": "Controlled selected view"
+      },
+      {
+        "name": "defaultValue",
+        "type": "EmptyStatesValue",
+        "required": false,
+        "defaultValue": "no-results",
+        "description": "Initial uncontrolled view"
+      },
+      {
+        "name": "onValueChange",
+        "type": "(value: EmptyStatesValue) => void",
+        "required": false,
+        "description": "Observe view selection; does not mutate app data"
+      },
+      {
+        "name": "states",
+        "type": "Partial<Record<EmptyStatesValue, EmptyStatesView>>",
+        "required": false,
+        "description": "Override title, description, icon and action slots for each view"
+      },
+      {
+        "name": "onAction",
+        "type": "(value: EmptyStatesValue, event: React.MouseEvent<HTMLButtonElement>) => void",
+        "required": false,
+        "description": "Wires recovery buttons; omitting it shows no preset button"
+      },
+      {
+        "name": "tabListLabel",
+        "type": "string",
+        "required": false,
+        "defaultValue": "Empty state",
+        "description": "Accessible tab rail label"
+      }
+    ],
+    "variants": [
+      {
+        "name": "size",
+        "options": [
+          "sm",
+          "default",
+          "lg"
+        ],
+        "defaultValue": "default"
+      }
+    ],
+    "examples": [
+      {
+        "title": "Reconnect view",
+        "code": "import { EmptyStates } from \"@/components/ui/v2/empty-states\"\n\n<EmptyStates defaultValue=\"offline\" onAction={(view) => { if (view === \"offline\") retryConnection() }} />",
+        "description": "Install v2-empty-states to include v2-empty-state, v2-tabs and v2-button"
+      }
+    ]
+  },
+
   'v2-split-button': {
     name: 'SplitButton',
     description: 'A v2 Button main action joined to a collision-aware dropdown of related alternatives. Install v2-split-button to include v2-button and v2-dropdown-menu.',

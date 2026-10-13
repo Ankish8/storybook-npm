@@ -4,7 +4,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { execSync } from 'child_process'
-import { DEFAULT_CONFIG, detectTailwindPrefix as detectTailwindPrefixUtil } from '../utils/config.js'
+import { DEFAULT_CONFIG, detectTailwindPrefix as detectTailwindPrefixUtil, getUtilsContent, getUtilsAddition, upgradeUtilsContent } from '../utils/config.js'
 
 // ============================================================================
 // MYOPERATOR UI THEME FILE - Contains all CSS variables
@@ -755,103 +755,38 @@ export async function init() {
     }
 
     // Create utils file or add cn function if missing
-    const utilsFullPath = path.join(cwd, utilsPath)
+    const utilsFullPath = path.join(cwd, utilsPath);
 
-    // Generate utils content based on prefix - configures tailwind-merge to understand prefixed classes
-    const getCnUtilsContent = (prefix: string) => {
-      if (prefix) {
-        return `import { type ClassValue, clsx } from "clsx"
-import { extendTailwindMerge } from "tailwind-merge"
-
-// Configure tailwind-merge to understand the "${prefix}" prefix
-const twMerge = extendTailwindMerge({
-  prefix: "${prefix}",
-})
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
-      }
-      // No prefix - use standard twMerge
-      return `import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
-    }
-
-    const cnUtilsContent = getCnUtilsContent(userPrefix)
-    let utilsCreated = false
-    let utilsUpdated = false
+    const cnUtilsContent = getUtilsContent(userPrefix);
+    let utilsCreated = false;
+    let utilsUpdated = false;
 
     if (!(await fs.pathExists(utilsFullPath))) {
       // File doesn't exist - create it with full content
-      await fs.ensureDir(path.dirname(utilsFullPath))
-      await fs.writeFile(utilsFullPath, cnUtilsContent)
-      utilsCreated = true
+      await fs.ensureDir(path.dirname(utilsFullPath));
+      await fs.writeFile(utilsFullPath, cnUtilsContent);
+      utilsCreated = true;
     } else {
       // File exists - check if cn function is present
-      const existingUtils = await fs.readFile(utilsFullPath, 'utf-8')
-      const hasCn = existingUtils.includes('export function cn') || existingUtils.includes('export const cn')
+      const existingUtils = await fs.readFile(utilsFullPath, "utf-8");
+      const hasCn =
+        existingUtils.includes("export function cn") ||
+        existingUtils.includes("export const cn");
 
       if (!hasCn) {
-        // cn function missing - need to add it with proper imports
-        let updatedContent = existingUtils
-
-        // Check and add missing imports at the top
-        const hasClsxImport = existingUtils.includes('from "clsx"') || existingUtils.includes("from 'clsx'")
-        const hasTwMergeImport = existingUtils.includes('from "tailwind-merge"') || existingUtils.includes("from 'tailwind-merge'")
-        const hasExtendTwMerge = existingUtils.includes('extendTailwindMerge')
-
-        let importsToAdd = ''
-        if (!hasClsxImport) {
-          importsToAdd += `import { type ClassValue, clsx } from "clsx"\n`
+        // Unique aliases preserve any existing clsx/tailwind-merge imports and helpers.
+        const additions = getUtilsAddition(userPrefix);
+        await fs.writeFile(
+          utilsFullPath,
+          existingUtils.trimEnd() + "\n\n" + additions
+        );
+        utilsUpdated = true;
+      } else {
+        const updated = upgradeUtilsContent(existingUtils, userPrefix);
+        if (updated !== existingUtils) {
+          await fs.writeFile(utilsFullPath, updated);
+          utilsUpdated = true;
         }
-        if (!hasTwMergeImport && !hasExtendTwMerge) {
-          // Add the appropriate import based on prefix
-          if (userPrefix) {
-            importsToAdd += `import { extendTailwindMerge } from "tailwind-merge"\n`
-          } else {
-            importsToAdd += `import { twMerge } from "tailwind-merge"\n`
-          }
-        }
-
-        // Add imports at the top if needed
-        if (importsToAdd) {
-          updatedContent = importsToAdd + updatedContent
-        }
-
-        // Add cn function at the end (with prefix configuration if needed)
-        let cnFunction: string
-        if (userPrefix) {
-          cnFunction = `
-// Configure tailwind-merge to understand the "${userPrefix}" prefix
-const twMerge = extendTailwindMerge({
-  prefix: "${userPrefix}",
-})
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
-        } else {
-          cnFunction = `
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
-`
-        }
-        updatedContent = updatedContent.trimEnd() + '\n' + cnFunction
-
-        await fs.writeFile(utilsFullPath, updatedContent)
-        utilsUpdated = true
-      } else if (hasCn && userPrefix && !existingUtils.includes('extendTailwindMerge')) {
-        // cn exists but is not prefix-aware — replace with correct version
-        await fs.writeFile(utilsFullPath, cnUtilsContent)
-        utilsUpdated = true
       }
     }
 

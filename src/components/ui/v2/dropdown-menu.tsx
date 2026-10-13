@@ -91,7 +91,7 @@ const DropdownMenuSubTrigger = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-sm px-2.5 py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=open]:bg-semantic-bg-ui data-[state=open]:text-[var(--v2-text-primary,#484848)]",
+        "flex cursor-pointer select-none items-center gap-2 rounded-sm px-2.5 py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=open]:bg-semantic-bg-ui data-[state=open]:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary [&>svg]:shrink-0",
         inset && "pl-8",
         className
       )}
@@ -116,14 +116,21 @@ DropdownMenuSubTrigger.displayName =
  * rise in on a short stagger (35ms steps, capped at four), and reduced motion
  * keeps only a 120ms fade.
  */
-const menuSurface =
-  "relative z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[min(12rem,var(--radix-dropdown-menu-content-available-width))] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-[5px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal tracking-[-0.16px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]";
-const menuMotion =
-  "origin-[var(--radix-dropdown-menu-content-transform-origin)] data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:[animation-name:enter,v2-fade-in] data-[state=open]:motion-safe:[animation-duration:580ms,160ms] data-[state=open]:motion-safe:[animation-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1),cubic-bezier(0.16,1,0.3,1)] data-[state=open]:motion-safe:[animation-fill-mode:both] data-[state=open]:motion-safe:zoom-in-[0.97] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:[animation-duration:130ms] data-[state=closed]:motion-safe:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.985] data-[side=bottom]:motion-safe:slide-in-from-top-[5px] data-[side=top]:motion-safe:slide-in-from-bottom-[5px] data-[side=left]:motion-safe:slide-in-from-right-[5px] data-[side=right]:motion-safe:slide-in-from-left-[5px] data-[side=bottom]:motion-safe:slide-out-to-top-[2.5px] data-[side=top]:motion-safe:slide-out-to-bottom-[2.5px] data-[side=left]:motion-safe:slide-out-to-right-[2.5px] data-[side=right]:motion-safe:slide-out-to-left-[2.5px] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]";
-const menuItemMotion =
-  "[&>[role^=menuitem]]:data-[state=open]:motion-safe:[animation:enter_240ms_cubic-bezier(0.16,1,0.3,1)_backwards] [&>[role^=menuitem]]:data-[state=open]:motion-safe:[--tw-enter-opacity:0] [&>[role^=menuitem]]:data-[state=open]:data-[side=bottom]:motion-safe:[--tw-enter-translate-y:-2px] [&>[role^=menuitem]]:data-[state=open]:data-[side=top]:motion-safe:[--tw-enter-translate-y:2px] [&>[role^=menuitem]:nth-child(3)]:data-[state=open]:motion-safe:[animation-delay:35ms] [&>[role^=menuitem]:nth-child(4)]:data-[state=open]:motion-safe:[animation-delay:70ms] [&>[role^=menuitem]:nth-child(5)]:data-[state=open]:motion-safe:[animation-delay:105ms] [&>[role^=menuitem]:nth-child(n+6)]:data-[state=open]:motion-safe:[animation-delay:140ms]";
+const menuSurface = cn(
+  "relative z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[min(12rem,var(--radix-dropdown-menu-content-available-width))] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-[5px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal tracking-[-0.16px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+);
+const menuMotion = cn(
+  "origin-[var(--radix-dropdown-menu-content-transform-origin)] data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:[animation-name:enter,v2-fade-in] data-[state=open]:motion-safe:[animation-duration:580ms,160ms] data-[state=open]:motion-safe:[animation-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1),cubic-bezier(0.16,1,0.3,1)] data-[state=open]:motion-safe:[animation-fill-mode:both] data-[state=open]:motion-safe:zoom-in-[0.97] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:[animation-duration:130ms] data-[state=closed]:motion-safe:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.985] data-[side=bottom]:motion-safe:slide-in-from-top-[5px] data-[side=top]:motion-safe:slide-in-from-bottom-[5px] data-[side=left]:motion-safe:slide-in-from-right-[5px] data-[side=right]:motion-safe:slide-in-from-left-[5px] data-[side=bottom]:motion-safe:slide-out-to-top-[2.5px] data-[side=top]:motion-safe:slide-out-to-bottom-[2.5px] data-[side=left]:motion-safe:slide-out-to-right-[2.5px] data-[side=right]:motion-safe:slide-out-to-left-[2.5px] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]"
+);
+const menuItemMotion = cn(
+  "[&>[role^=menuitem]]:data-[state=open]:motion-safe:[animation:enter_240ms_cubic-bezier(0.16,1,0.3,1)_backwards] [&>[role^=menuitem]]:data-[state=open]:motion-safe:[--tw-enter-opacity:0] [&>[role^=menuitem]]:data-[state=open]:data-[side=bottom]:motion-safe:[--tw-enter-translate-y:-2px] [&>[role^=menuitem]]:data-[state=open]:data-[side=top]:motion-safe:[--tw-enter-translate-y:2px] [&>[role^=menuitem]:nth-child(3)]:data-[state=open]:motion-safe:[animation-delay:35ms] [&>[role^=menuitem]:nth-child(4)]:data-[state=open]:motion-safe:[animation-delay:70ms] [&>[role^=menuitem]:nth-child(5)]:data-[state=open]:motion-safe:[animation-delay:105ms] [&>[role^=menuitem]:nth-child(n+6)]:data-[state=open]:motion-safe:[animation-delay:140ms]"
+);
 // One highlight glides between rows, so rows themselves stay clear on focus.
-const menuHighlightOwner = "[&_[role^=menuitem]:focus]:bg-transparent";
+const menuHighlightOwner = cn(
+  "[&_[role^=menuitem]:focus]:bg-transparent",
+  // Inline submenus have their own focus surface, outside this highlight.
+  "[&_[role=menu]_[role^=menuitem]:focus]:bg-semantic-bg-ui [&_[role=menu]_[data-destructive]:focus]:bg-semantic-error-surface"
+);
 
 type MenuHighlight = {
   top: number;
@@ -180,6 +187,9 @@ const DropdownMenuContent = React.forwardRef(
         event.target instanceof HTMLElement
           ? event.target.closest<HTMLElement>('[role^="menuitem"]')
           : null;
+      // React focus bubbles through inline submenus. Their offsets belong to
+      // their own menu, so never move the parent highlight to a submenu row.
+      if (row && row.closest('[role="menu"]') !== event.currentTarget) return;
       window.clearTimeout(clearTimer.current);
       if (!row) {
         // A short grace keeps the highlight gliding across separators and gaps.
@@ -189,14 +199,26 @@ const DropdownMenuContent = React.forwardRef(
         );
         return;
       }
+      // Layout offsets stay unscaled while the surface animates. Walk any
+      // positioned groups so custom group layouts align with the same owner.
+      let top = row.offsetTop;
+      let left = row.offsetLeft;
+      let parent = row.offsetParent as HTMLElement | null;
+      while (parent && parent !== event.currentTarget) {
+        top += parent.offsetTop + parent.clientTop - parent.scrollTop;
+        left += parent.offsetLeft + parent.clientLeft - parent.scrollLeft;
+        parent = parent.offsetParent as HTMLElement | null;
+      }
       const next = {
-        top: row.offsetTop,
-        left: row.offsetLeft,
+        top,
+        left,
         width: row.offsetWidth,
         height: row.offsetHeight,
         danger: row.dataset.destructive !== undefined,
       };
-      const glide = pointer.current;
+      const glide =
+        pointer.current &&
+        window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       setHighlight((current) => ({
         ...next,
         glide: glide && current !== null,
@@ -219,7 +241,7 @@ const DropdownMenuContent = React.forwardRef(
             follow(event);
           }}
           onPointerMoveCapture={(event) => {
-            pointer.current = true;
+            pointer.current = event.pointerType !== "touch";
             onPointerMoveCapture?.(event);
           }}
           onKeyDownCapture={(event) => {

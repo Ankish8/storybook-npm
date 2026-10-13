@@ -1,7 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { Switch, type SwitchProps } from "./switch";
 
@@ -9,7 +8,7 @@ import { Switch, type SwitchProps } from "./switch";
  * Table size variants for row height.
  */
 const tableVariants = cva(
-  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)]",
+  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-primary))]",
   {
     variants: {
       size: {
@@ -23,6 +22,143 @@ const tableVariants = cva(
     },
   }
 );
+
+export type TableSortDirection = "asc" | "desc";
+
+export interface TableSort<Key extends string = string> {
+  key: Key;
+  direction: TableSortDirection;
+}
+
+export type TableSortValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | null
+  | undefined;
+
+export interface TableSortColumn<Row> {
+  /** Use the underlying value, rather than a formatted cell label. */
+  value: (row: Row) => TableSortValue;
+  /** Override the default numeric / natural text comparison for this column. */
+  compare?: (left: Row, right: Row) => number;
+}
+
+// Defers inference to the column keys without requiring TypeScript 5.4's global NoInfer.
+type TableNoInfer<Value> = [Value][Value extends unknown ? 0 : never];
+
+export interface UseTableSortOptions<Row, Key extends string> {
+  columns: Record<Key, TableSortColumn<Row>>;
+  /** Set to null for a controlled table in its original order. */
+  sort?: TableSort<TableNoInfer<Key>> | null;
+  defaultSort?: TableSort<TableNoInfer<Key>> | null;
+  onSortChange?: (sort: TableSort<TableNoInfer<Key>> | null) => void;
+}
+
+const tableCollator = new Intl.Collator("en", {
+  numeric: true,
+  sensitivity: "base",
+});
+
+function comparableTableValue(value: TableSortValue) {
+  return value instanceof Date ? value.getTime() : value;
+}
+
+function isEmptyTableValue(value: ReturnType<typeof comparableTableValue>) {
+  return (
+    value == null ||
+    value === "" ||
+    (typeof value === "number" && Number.isNaN(value))
+  );
+}
+
+/**
+ * Optional sorting for a composed Table. Input records are never mutated; ties
+ * retain their input order, and clearing the sort restores that order.
+ */
+function useTableSort<Row, Key extends string>(
+  data: readonly Row[],
+  {
+    columns,
+    sort: controlledSort,
+    defaultSort,
+    onSortChange,
+  }: UseTableSortOptions<Row, Key>
+) {
+  const [internalSort, setInternalSort] = React.useState<TableSort<Key> | null>(
+    defaultSort ?? null
+  );
+  const sort = controlledSort === undefined ? internalSort : controlledSort;
+  const rows = React.useMemo(() => {
+    if (!sort || !columns[sort.key]) return [...data];
+    const column = columns[sort.key];
+    return data
+      .map((row, index) => ({ row, index }))
+      .sort((left, right) => {
+        let comparison: number;
+        if (column.compare) {
+          comparison = column.compare(left.row, right.row);
+        } else {
+          const a = comparableTableValue(column.value(left.row));
+          const b = comparableTableValue(column.value(right.row));
+          const aEmpty = isEmptyTableValue(a);
+          const bEmpty = isEmptyTableValue(b);
+          // Empty values stay at the end in either direction.
+          if (aEmpty || bEmpty) {
+            return aEmpty === bEmpty
+              ? left.index - right.index
+              : aEmpty
+                ? 1
+                : -1;
+          }
+          comparison =
+            typeof a === "number" && typeof b === "number"
+              ? a === b
+                ? 0
+                : a < b
+                  ? -1
+                  : 1
+              : typeof a === "boolean" && typeof b === "boolean"
+                ? Number(a) - Number(b)
+                : tableCollator.compare(String(a), String(b));
+        }
+        if (Number.isNaN(comparison)) comparison = 0;
+        return (
+          (sort.direction === "asc" ? comparison : -comparison) ||
+          left.index - right.index
+        );
+      })
+      .map(({ row }) => row);
+  }, [columns, data, sort]);
+
+  const setSort = React.useCallback(
+    (next: TableSort<Key> | null) => {
+      if (controlledSort === undefined) setInternalSort(next);
+      onSortChange?.(next);
+    },
+    [controlledSort, onSortChange]
+  );
+  const sortBy = React.useCallback(
+    (key: Key, direction?: TableSortDirection | null) => {
+      const nextDirection =
+        direction === undefined
+          ? sort?.key !== key
+            ? "asc"
+            : sort.direction === "asc"
+              ? "desc"
+              : null
+          : direction;
+      setSort(nextDirection ? { key, direction: nextDirection } : null);
+    },
+    [setSort, sort]
+  );
+  const resetSort = React.useCallback(() => setSort(null), [setSort]);
+  const getSortDirection = (key: Key) =>
+    sort?.key === key ? sort.direction : null;
+
+  return { rows, sort, sortBy, resetSort, getSortDirection };
+}
 
 /**
  * Table component for displaying tabular data.
@@ -67,7 +203,7 @@ export interface TableProps
 // shadow on each header cell and the row border is removed. z-20 keeps the header above sticky
 // body cells (z-10) when both scroll.
 const stickyHeaderClasses =
-  "[&>thead>tr>th]:sticky [&>thead>tr>th]:top-0 [&>thead>tr>th]:z-20 [&>thead>tr>th]:bg-semantic-primary-surface [&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout,#E9EAEB)] [&>thead>tr]:border-b-0";
+  "[&>thead>tr>th]:sticky [&>thead>tr>th]:top-0 [&>thead>tr>th]:z-20 [&>thead>tr>th]:bg-semantic-primary-surface [&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout)] [&>thead>tr]:border-b-0";
 
 const Table = React.forwardRef(
   (
@@ -83,7 +219,7 @@ const Table = React.forwardRef(
   ) => (
     <div
       className={cn(
-        "relative w-full overflow-auto",
+        "relative w-full min-w-0 max-w-full overflow-auto",
         // A custom property reaches the frame through any wrapper; `inherit` covers a max-height on the direct parent.
         stickyHeader && "max-h-[var(--v2-table-max-height,inherit)]",
         !withoutBorder &&
@@ -129,6 +265,8 @@ export interface TableBodyProps extends React.HTMLAttributes<HTMLTableSectionEle
   loadingRows?: number;
   /** Number of skeleton columns to display when loading (default: 5) */
   loadingColumns?: number;
+  /** Animate existing keyed rows when their order changes. Off by default. */
+  animateRows?: boolean;
 }
 
 const TableBody = React.forwardRef(
@@ -138,23 +276,92 @@ const TableBody = React.forwardRef(
       isLoading,
       loadingRows = 5,
       loadingColumns = 5,
+      animateRows = false,
       children,
+      "aria-busy": ariaBusy,
       ...props
     }: TableBodyProps,
-    ref: React.Ref<HTMLTableSectionElement>
-  ) => (
-    <tbody
-      ref={ref}
-      className={cn("[&_tr:last-child]:border-0", className)}
-      {...props}
-    >
-      {isLoading ? (
-        <TableSkeleton rows={loadingRows} columns={loadingColumns} />
-      ) : (
-        children
-      )}
-    </tbody>
-  )
+    ref: React.ForwardedRef<HTMLTableSectionElement>
+  ) => {
+    const bodyRef = React.useRef<HTMLTableSectionElement | null>(null);
+    const previousPositions = React.useRef(
+      new Map<HTMLTableRowElement, number>()
+    );
+    const setRef = React.useCallback(
+      (node: HTMLTableSectionElement | null) => {
+        bodyRef.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLTableSectionElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              bodyRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
+      },
+      [ref]
+    );
+
+    React.useLayoutEffect(() => {
+      const body = bodyRef.current;
+      if (!body) return;
+      const top = body.getBoundingClientRect().top;
+      const nextPositions = new Map<HTMLTableRowElement, number>();
+      const animations: Animation[] = [];
+      const reducedMotion = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)"
+      )?.matches;
+      Array.from(body.rows).forEach((row) => {
+        const position = row.getBoundingClientRect().top - top;
+        nextPositions.set(row, position);
+        const previous = previousPositions.current.get(row);
+        if (
+          !animateRows ||
+          isLoading ||
+          reducedMotion ||
+          previous === undefined ||
+          !row.animate
+        )
+          return;
+        // Keep motion local and short even when a row moves across a large table.
+        const delta = Math.max(-80, Math.min(80, previous - position));
+        if (Math.abs(delta) < 1) return;
+        const baseTransform = window.getComputedStyle(row).transform || "none";
+        animations.push(
+          row.animate(
+            [
+              {
+                transform: `translateY(${delta}px) ${baseTransform === "none" ? "" : baseTransform}`,
+              },
+              { transform: baseTransform },
+            ],
+            { duration: 240, easing: "cubic-bezier(0.22,1,0.36,1)" }
+          )
+        );
+      });
+      previousPositions.current = nextPositions;
+      // Runs before the next layout measurement and on unmount; rapid sorts never stack transforms.
+      return () => animations.forEach((animation) => animation.cancel());
+    }, [animateRows, children, isLoading]);
+
+    return (
+      <tbody
+        ref={setRef}
+        aria-busy={ariaBusy ?? (isLoading || undefined)}
+        className={cn("[&_tr:last-child]:border-0", className)}
+        {...props}
+      >
+        {isLoading ? (
+          <TableSkeleton rows={loadingRows} columns={loadingColumns} />
+        ) : (
+          children
+        )}
+      </tbody>
+    );
+  }
 );
 TableBody.displayName = "TableBody";
 
@@ -166,7 +373,7 @@ const TableFooter = React.forwardRef(
     <tfoot
       ref={ref}
       className={cn(
-        "border-t border-solid bg-semantic-primary-surface font-medium [&>tr]:last:border-b-0",
+        "border-t border-solid border-semantic-border-layout bg-semantic-primary-surface font-medium [&>tr]:last:border-b-0",
         className
       )}
       {...props}
@@ -185,15 +392,12 @@ const TableRow = React.forwardRef(
     { className, highlighted, ...props }: TableRowProps,
     ref: React.Ref<HTMLTableRowElement>
   ) => {
-    const reducedMotion = useReducedMotion();
     return (
-      <motion.tr
-        layout={reducedMotion ? false : "position"}
-        // Arc "smooth": critically damped, settles visually in 0.4s, so rows that trade places never overshoot.
-        transition={{ type: "spring", visualDuration: 0.4, bounce: 0 }}
+      <tr
         ref={ref}
+        data-highlighted={highlighted || undefined}
         className={cn(
-          "border-b border-solid border-semantic-bg-ui transition-colors [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
+          "group/table-row border-b border-solid border-semantic-border-layout transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
           // Hover is gated so it never sticks after a tap. A selected row keeps its own tint under
           // the pointer, so selection and hover stay distinguishable (#ECF1FB vs #F5F5F5).
           highlighted
@@ -201,7 +405,7 @@ const TableRow = React.forwardRef(
             : "[@media(hover:hover)]:hover:bg-semantic-bg-ui data-[state=selected]:bg-semantic-info-surface data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface",
           className
         )}
-        {...(props as React.ComponentProps<typeof motion.tr>)}
+        {...props}
       />
     );
   }
@@ -218,6 +422,12 @@ export interface TableHeadProps extends React.ThHTMLAttributes<HTMLTableCellElem
    * and `aria-sort="none"`. Off by default so `sortDirection={null}` renders exactly like v1 (nothing).
    */
   sortable?: boolean;
+  /** Opt in to a native sort button. Cycles ascending → descending → unsorted. */
+  onSortChange?: (direction: TableSortDirection | null) => void;
+  /** Disable the built-in sort button without affecting other column content. */
+  sortDisabled?: boolean;
+  /** Accessible name for a sort button when the header content needs a shorter label. */
+  sortLabel?: string;
   /** Show info icon with tooltip */
   infoTooltip?: string;
 }
@@ -240,78 +450,179 @@ const TableHead = React.forwardRef(
       sticky,
       sortDirection,
       sortable,
+      onSortChange,
+      sortDisabled = false,
+      sortLabel,
       infoTooltip,
       children,
+      scope,
+      onClick,
+      onKeyDown,
       "aria-sort": ariaSort,
       ...props
     }: TableHeadProps,
     ref: React.Ref<HTMLTableCellElement>
-  ) => (
-    <th
-      ref={ref}
-      // A host-supplied aria-sort wins, but an explicit undefined (a common conditional) falls back to the
-      // derived value. `sortable` (opt-in) is what marks a column sortable-but-unsorted; null alone is v1's "no sort".
-      aria-sort={
-        ariaSort ??
-        (sortDirection === "asc"
-          ? "ascending"
-          : sortDirection === "desc"
-            ? "descending"
-            : sortable
-              ? "none"
-              : undefined)
-      }
-      className={cn(
-        "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,#707070)] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-semantic-primary-surface z-10",
-        sortDirection && "text-[var(--v2-text-primary,#484848)]",
-        (sortDirection || sortable) && "cursor-pointer select-none",
-        className
-      )}
-      {...props}
-    >
-      <div className="flex items-center gap-1.5">
-        {children}
-        {(sortDirection || sortable) && (
-          // v1 renders the arrow as text and its tests query it, so the glyph stays in the DOM (hidden). The visible
-          // 16px arrow is one element for every state, as in Arc: it fades and scales in where a column becomes sorted,
-          // flips on a spring when the direction changes, and shows faintly on hover while the column is unsorted.
-          <span
-            aria-hidden="true"
-            className="relative inline-flex size-4 shrink-0 items-center justify-center text-[var(--v2-text-primary,#484848)]"
-          >
-            {sortDirection && (
-              <span className="sr-only">
-                {sortDirection === "asc" ? "↑" : "↓"}
-              </span>
-            )}
-            <svg
-              {...SORT_ICON_PROPS}
-              strokeWidth={1.75}
-              className={cn(
-                "size-4 transition-[transform,opacity,filter] [transition-duration:500ms,160ms,160ms] [transition-timing-function:linear(0,0.0689,0.216,0.3825,0.5378,0.6687,0.7719,0.8492,0.9046,0.9428,0.9681,0.9841,0.9937,0.999,1.0017,1.0028,1.003,1.0027,1.0022,1.0017,1.0013,1.0009,1.0006,1.0004,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-                sortDirection
-                  ? "scale-100 opacity-100 [filter:none]"
-                  : "scale-[0.6] text-[var(--v2-text-muted,#707070)] opacity-0 blur-[2px] [@media(hover:hover)]:group-hover/head:scale-100 [@media(hover:hover)]:group-hover/head:opacity-60 [@media(hover:hover)]:group-hover/head:[filter:none]",
-                sortDirection === "desc" && "rotate-180"
-              )}
-            >
+  ) => {
+    const descriptionId = React.useId();
+    const canSort = sortable || !!onSortChange;
+    const nextDirection =
+      sortDirection === "asc"
+        ? "desc"
+        : sortDirection === "desc"
+          ? null
+          : "asc";
+    const indicator = (sortDirection || canSort) && (
+      <span
+        aria-hidden="true"
+        className="relative inline-flex size-4 shrink-0 items-center justify-center text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+      >
+        {sortDirection && (
+          <span className="sr-only">{sortDirection === "asc" ? "↑" : "↓"}</span>
+        )}
+        <svg
+          {...SORT_ICON_PROPS}
+          strokeWidth={1.75}
+          className={cn(
+            "size-4 transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
+            sortDirection
+              ? "scale-100 opacity-100"
+              : "text-semantic-text-muted opacity-40 group-focus-within/head:opacity-100 [@media(hover:hover)]:group-hover/head:opacity-70",
+            sortDirection === "desc" && "rotate-180"
+          )}
+        >
+          {sortDirection ? (
+            <>
               <path d="m5 12 7-7 7 7" />
               <path d="M12 19V5" />
-            </svg>
-          </span>
+            </>
+          ) : (
+            <>
+              <path d="m8 9 4-4 4 4" />
+              <path d="m8 15 4 4 4-4" />
+            </>
+          )}
+        </svg>
+      </span>
+    );
+
+    return (
+      <th
+        ref={ref}
+        scope={scope ?? (onSortChange ? "col" : undefined)}
+        // Host attributes retain priority. Null by itself keeps v1's indicator-free header.
+        aria-sort={
+          ariaSort ??
+          (sortDirection === "asc"
+            ? "ascending"
+            : sortDirection === "desc"
+              ? "descending"
+              : canSort
+                ? "none"
+                : undefined)
+        }
+        className={cn(
+          "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,var(--semantic-text-muted))] transition-colors duration-150 motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
+          sticky && "sticky left-0 bg-semantic-primary-surface z-10",
+          sortDirection &&
+            "text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+          (sortDirection || canSort) &&
+            !sortDisabled &&
+            "cursor-pointer select-none",
+          className
         )}
-        {infoTooltip && (
-          <span
-            className="text-[var(--color-neutral-400)] cursor-help"
-            title={infoTooltip}
-          >
-            ⓘ
-          </span>
-        )}
-      </div>
-    </th>
-  )
+        onClick={(event) => {
+          // Calling the host first makes preventDefault a reliable sorting veto.
+          onClick?.(event);
+          if (event.defaultPrevented || sortDisabled || !onSortChange) return;
+          const button = event.currentTarget.querySelector(
+            "[data-table-sort-button]"
+          );
+          if (button?.contains(event.target as Node))
+            onSortChange(nextDirection);
+        }}
+        onKeyDown={(event) => {
+          onKeyDown?.(event);
+          if (
+            event.defaultPrevented ||
+            !onSortChange ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.metaKey
+          )
+            return;
+          const target = event.target as HTMLElement;
+          if (!target.matches("[data-table-sort-button]")) return;
+          const row = event.currentTarget.closest("tr");
+          const buttons = Array.from(
+            row?.querySelectorAll<HTMLButtonElement>(
+              "[data-table-sort-button]:not(:disabled)"
+            ) ?? []
+          );
+          const index = buttons.indexOf(target as HTMLButtonElement);
+          const rtl = row && window.getComputedStyle(row).direction === "rtl";
+          const nextIndex =
+            event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? buttons.length - 1
+                : event.key === "ArrowRight"
+                  ? index + (rtl ? -1 : 1)
+                  : event.key === "ArrowLeft"
+                    ? index + (rtl ? 1 : -1)
+                    : -1;
+          const next = buttons[nextIndex];
+          if (next) {
+            event.preventDefault();
+            next.focus();
+          }
+        }}
+        {...props}
+      >
+        <div className="flex items-center gap-1.5">
+          {onSortChange ? (
+            <>
+              <button
+                type="button"
+                data-table-sort-button=""
+                disabled={sortDisabled}
+                aria-label={sortLabel}
+                aria-describedby={descriptionId}
+                className="m-0 relative -my-1 inline-flex min-h-7 min-w-0 items-center gap-1.5 rounded-sm bg-transparent p-0 text-left [font:inherit] text-inherit before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-border-focus disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {children}
+                {indicator}
+              </button>
+              <span id={descriptionId} hidden>
+                {sortDirection === "asc"
+                  ? "Sorted ascending."
+                  : sortDirection === "desc"
+                    ? "Sorted descending."
+                    : "Not sorted."}{" "}
+                {nextDirection === null
+                  ? "Activate to restore the original order."
+                  : nextDirection === "asc"
+                    ? "Activate to sort ascending."
+                    : "Activate to sort descending."}
+              </span>
+            </>
+          ) : (
+            <>
+              {children}
+              {indicator}
+            </>
+          )}
+          {infoTooltip && (
+            <span
+              className="text-semantic-text-muted cursor-help"
+              title={infoTooltip}
+            >
+              ⓘ
+            </span>
+          )}
+        </div>
+      </th>
+    );
+  }
 );
 TableHead.displayName = "TableHead";
 
@@ -328,8 +639,9 @@ const TableCell = React.forwardRef(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
-        sticky && "sticky left-0 bg-semantic-bg-primary z-10",
+        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-primary))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
+        sticky &&
+          "sticky left-0 bg-semantic-bg-primary z-10 [@media(hover:hover)]:group-hover/table-row:bg-semantic-bg-ui group-data-[state=selected]/table-row:bg-semantic-info-surface group-data-[highlighted=true]/table-row:bg-semantic-info-surface",
         className
       )}
       {...props}
@@ -346,7 +658,7 @@ const TableCaption = React.forwardRef(
     <caption
       ref={ref}
       className={cn(
-        "mt-4 text-sm text-[var(--v2-text-muted,#707070)]",
+        "mt-4 text-sm text-[var(--v2-text-muted,var(--semantic-text-muted))]",
         className
       )}
       {...props}
@@ -406,9 +718,9 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
     <TableCell
       colSpan={colSpan}
-      className="h-[120px] text-center py-8 text-[var(--v2-text-muted,#707070)]"
+      className="h-[120px] text-center py-8 text-[var(--v2-text-muted,var(--semantic-text-muted))]"
     >
-      {children || "No data available"}
+      {children ?? "No data available"}
     </TableCell>
   </TableRow>
 );
@@ -464,4 +776,5 @@ export {
   TableAvatar,
   TableToggle,
   tableVariants,
+  useTableSort,
 };

@@ -1,0 +1,59 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Label and helper text",
+      "description": "A visible label names the textarea. Helper copy is linked through `aria-describedby`."
+    },
+    {
+      "id": "sizes",
+      "title": "Sizes",
+      "description": "Compact, default and large text share the same native row count."
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled value",
+      "description": "Own the value through `onChange`. Resetting the value also updates the counter."
+    },
+    {
+      "id": "limits",
+      "title": "Hard and soft limits",
+      "description": "The default hard limit uses native `maxLength`. `enforceMaxLength={false}` keeps editing available; validate overflow in your form."
+    },
+    {
+      "id": "validation",
+      "title": "Validation feedback",
+      "description": "Helper and error rows ease into place. Errors keep their existing IDs and announcement semantics."
+    },
+    {
+      "id": "aria-invalid",
+      "title": "Form library invalid state",
+      "description": "`aria-invalid=\"true\"` gives the red border without an error prop. A form-owned message can supply its own description."
+    },
+    {
+      "id": "states",
+      "title": "Disabled and read-only",
+      "description": "Disabled fields leave the tab order. Read-only text stays selectable, focusable and available to forms."
+    },
+    {
+      "id": "resize",
+      "title": "Native resizing",
+      "description": "`rows` defaults to four and `resize` to none. Enable a native vertical resize handle when your layout allows it."
+    },
+    {
+      "id": "auto-resize",
+      "title": "Auto resize",
+      "description": "Opt into content-based height with `autoResize`. `minRows` and `maxRows` bound the height; longer content scrolls. Existing sizing defaults stay unchanged."
+    },
+    {
+      "id": "spaces",
+      "title": "Spaces and line breaks",
+      "description": "Repeated U+0020 spaces collapse to one. Single leading/trailing spaces, tabs and line breaks count and remain intact. IME drafts stay untouched until commit."
+    },
+    {
+      "id": "form",
+      "title": "Native form submission",
+      "description": "`name`, `required` and `minLength` work with native forms. This example shows the local `FormData` value after submission."
+    }
+  ]
+}

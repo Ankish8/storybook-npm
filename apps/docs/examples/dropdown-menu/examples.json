@@ -1,0 +1,53 @@
+{
+  "anatomy": true,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Actions",
+      "description": "Use a labelled trigger and real onSelect callbacks. Arrows move between actions, typing finds a label, and keyboard Escape returns focus.",
+      "minHeight": 340
+    },
+    {
+      "id": "choices",
+      "title": "Checkboxes and radio groups",
+      "description": "Control independent toggles with checked and one choice with value. Prevent default onSelect to keep the menu open after each change.",
+      "minHeight": 340
+    },
+    {
+      "id": "submenu",
+      "title": "Nested actions",
+      "description": "Use Sub, SubTrigger and SubContent for secondary actions. Right Arrow opens the submenu; Left Arrow returns. Portal keeps the nested menu outside the scrolling parent.",
+      "minHeight": 340
+    },
+    {
+      "id": "descriptions",
+      "title": "Descriptions, shortcuts and disabled items",
+      "description": "Descriptions wrap within the available width. suffix and Shortcut add supporting content. Shortcut text is a hint; your app owns the actual shortcut handler. Disabled items are skipped.",
+      "minHeight": 340
+    },
+    {
+      "id": "links",
+      "title": "Compose a native link",
+      "description": "asChild preserves a single anchor, its href, callbacks and ref, including descriptions. Change only the import path when migrating existing v1 compositions.",
+      "minHeight": 340
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled and non-modal",
+      "description": "modal stays true by default. Opt into modal={false} when outside controls should respond on the first click; open and onOpenChange remain controlled.",
+      "minHeight": 340
+    },
+    {
+      "id": "scrollable",
+      "title": "Long menus and narrow viewports",
+      "description": "Content and SubContent use Radix available dimensions, cap at 20rem and scroll inside the popup. Keyboard navigation brings the active row into view.",
+      "minHeight": 420
+    },
+    {
+      "id": "dialog",
+      "title": "Inside a dialog",
+      "description": "The menu remains the top dismissible layer. First Escape closes the menu and restores its trigger; the next closes the dialog.",
+      "minHeight": 420
+    }
+  ]
+}

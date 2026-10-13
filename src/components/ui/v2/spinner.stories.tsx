@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Spinner } from "./spinner";
+import { Spinner, type SpinnerProps } from "./spinner";
 import { Spinner as V1 } from "../spinner";
 import { Button } from "./button";
 import { gallery } from "../../../storybook/v2-preview";
@@ -31,7 +31,17 @@ const meta: Meta<typeof Spinner> = {
           summary:
             "Animated loading indicators with four sizes and five color treatments.",
           changes: [
-            ["Shape", "Track and quarter arc", "Same Figma loading shape"],
+            ["Shape", "Track and quarter arc", "Inset open ring"],
+            [
+              "Motion",
+              "Always rotates",
+              "Pauses when hidden; static under reduced motion",
+            ],
+            [
+              "Accessibility",
+              "Named status",
+              "Same default; aria-hidden removes decorative announcements",
+            ],
             ["Namespace", "ui/spinner", "ui/v2/spinner"],
           ],
           tokens: [
@@ -40,7 +50,7 @@ const meta: Meta<typeof Spinner> = {
             ["Inverted", "--semantic-text-inverted", "FFFFFF", "#FFFFFF"],
           ],
           guidance:
-            "Provide a specific aria-label such as Saving changes. Use current to inherit color inside a control. In reduced motion the arc remains visible without spinning.",
+            "Provide a specific aria-label such as Saving changes. Use current to inherit color inside a control, and aria-hidden when visible text or a parent status already announces loading. The open ring stays visible without rotation under reduced motion. Native div props, refs, sizes and variant names remain compatible with v1.",
         }),
       },
     },
@@ -56,25 +66,36 @@ const meta: Meta<typeof Spinner> = {
     "aria-label": { control: "text" },
   },
   decorators: [
-    (Story, context) => (
-      <div
-        className={
-          context.args.variant === "inverted"
-            ? "rounded-lg bg-semantic-primary p-6 text-semantic-text-inverted"
-            : "p-6"
-        }
-      >
+    (Story) => (
+      <div className="max-w-full p-4 sm:p-6">
         <Story />
       </div>
     ),
   ],
+  render: (args) => (
+    <div
+      className={
+        args.variant === "inverted"
+          ? "rounded-lg bg-semantic-primary p-4 text-semantic-text-inverted"
+          : "p-4"
+      }
+    >
+      <Spinner {...args} />
+    </div>
+  ),
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+export const Overview: Story = {
+  render: (args) => <LoadingExample {...args} />,
+};
+export const Default: Story = { args: { variant: "default" } };
+export const Secondary: Story = { args: { variant: "secondary" } };
 export const Muted: Story = { args: { variant: "muted" } };
 export const Inverted: Story = { args: { variant: "inverted" } };
+export const Current: Story = { args: { variant: "current" } };
 export const Small: Story = { args: { size: "sm" } };
+export const DefaultSize: Story = { args: { size: "default" } };
 export const Large: Story = { args: { size: "lg" } };
 export const ExtraLarge: Story = { args: { size: "xl" } };
 export const AllVariants: Story = {
@@ -116,28 +137,133 @@ export const AllSizes: Story = {
     </div>
   ),
 };
-function LoadingExample(args: Parameters<typeof Spinner>[0]) {
-  const [loading, setLoading] = useState(true);
+function LoadingExample(args: SpinnerProps) {
+  const [state, setState] = useState<"idle" | "loading" | "complete">(
+    "loading"
+  );
+  const loading = state === "loading";
   return (
-    <section className="w-[360px] max-w-full space-y-4">
-      <h3 className="m-0 text-base font-medium">Conversation list</h3>
-      <div className="flex min-h-[96px] items-center gap-3 rounded-lg border border-solid border-semantic-border-layout p-4">
+    <section className="w-[420px] max-w-full space-y-4 text-semantic-text-primary">
+      <div className="space-y-1">
+        <h3 className="m-0 text-base font-semibold">Team inbox</h3>
+        <p className="m-0 text-sm text-semantic-text-muted">
+          Load a local sample, then complete the preview.
+        </p>
+      </div>
+      <div
+        className="flex min-h-[168px] items-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4"
+        aria-busy={loading}
+      >
         {loading ? (
-          <>
-            <Spinner {...args} />
-            <p className="m-0 text-sm">Fetching conversations…</p>
-          </>
+          <div className="flex w-full items-center gap-3">
+            <div
+              className={
+                args.variant === "inverted"
+                  ? "inline-flex rounded-lg bg-semantic-primary p-3 text-semantic-text-inverted"
+                  : "inline-flex rounded-lg bg-semantic-bg-ui p-3"
+              }
+            >
+              <Spinner {...args} />
+            </div>
+            <div className="min-w-0 space-y-1">
+              <p className="m-0 text-sm font-medium">
+                Loading sample conversations…
+              </p>
+              <p className="m-0 text-sm text-semantic-text-muted">
+                Complete the preview to see the inbox.
+              </p>
+            </div>
+          </div>
+        ) : state === "complete" ? (
+          <ul className="m-0 grid w-full list-none gap-3 p-0">
+            {[
+              ["Riya Sharma", "Asked about the team plan"],
+              ["Karan Mehta", "Requested a callback"],
+              ["Amira Khan", "Shared a billing question"],
+            ].map(([name, message]) => (
+              <li key={name} className="min-w-0 space-y-0.5">
+                <p className="m-0 text-sm font-medium">{name}</p>
+                <p className="m-0 text-sm text-semantic-text-muted">
+                  {message}
+                </p>
+              </li>
+            ))}
+          </ul>
         ) : (
-          <p className="m-0 text-sm">12 conversations loaded</p>
+          <p className="m-0 text-sm text-semantic-text-secondary">
+            Ready to load three sample conversations.
+          </p>
         )}
       </div>
-      <Button variant="outline" onClick={() => setLoading(!loading)}>
-        {loading ? "Complete loading" : "Reload"}
-      </Button>
+      <p role="status" className="m-0 sr-only">
+        {state === "complete"
+          ? "Three sample conversations are ready."
+          : state === "idle"
+            ? "Loading preview reset."
+            : ""}
+      </p>
+      <div className="flex flex-wrap gap-2">
+        <Button
+          size="sm"
+          onClick={() => setState("loading")}
+          disabled={loading}
+        >
+          Start loading
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setState("complete")}
+          disabled={!loading}
+        >
+          Complete loading
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setState("idle")}
+          disabled={state === "idle"}
+        >
+          Reset
+        </Button>
+      </div>
     </section>
   );
 }
 export const Usage: Story = { render: (args) => <LoadingExample {...args} /> };
+export const Decorative: Story = {
+  render: (args) => (
+    <div
+      role="status"
+      className="flex items-center gap-2 text-semantic-text-secondary"
+    >
+      <Spinner {...args} size="sm" variant="current" aria-hidden="true" />
+      <span className="text-sm">Saving draft…</span>
+    </div>
+  ),
+};
+export const CallerStyles: Story = {
+  render: (args) => (
+    <div className="flex flex-wrap items-center gap-8">
+      <div className="flex items-center gap-3">
+        <Spinner
+          {...args}
+          aria-label="Loading with a slower rotation"
+          style={{ animationDuration: "1.4s" }}
+        />
+        <span className="text-sm">Slower rotation</span>
+      </div>
+      <div className="flex items-center gap-3">
+        <Spinner
+          {...args}
+          aria-label="Paused loading preview"
+          style={{ animationPlayState: "paused" }}
+        />
+        <span className="text-sm">Paused</span>
+      </div>
+    </div>
+  ),
+};
 export const V1VsV2: Story = {
   name: "v1 vs v2",
   render: (args) => (

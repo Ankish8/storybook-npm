@@ -1,0 +1,94 @@
+{
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Country picker",
+      "description": "Enable `countrySelector` for the anchored searchable list. The number remains national digits; the country selection never formats or rewrites it.",
+      "minHeight": 420
+    },
+    {
+      "id": "fixed-country",
+      "title": "Fixed country",
+      "description": "Keep a known country fixed with `countryIso`, `countryCode` and `showChevron={false}`. Existing v1 defaults and props still work.",
+      "minHeight": 220
+    },
+    {
+      "id": "preferred-countries",
+      "title": "Preferred countries",
+      "description": "Pin ISO codes with `preferredCountries`; the remaining choices follow alphabetically. Search matches names, ISO codes and calling codes.",
+      "minHeight": 420
+    },
+    {
+      "id": "custom-countries",
+      "title": "Custom country list",
+      "description": "Pass `countries` to restrict or extend the choices. Each entry carries `iso`, `name` and `dialCode`; this list does not perform number validation.",
+      "minHeight": 420
+    },
+    {
+      "id": "keyboard",
+      "title": "Keyboard",
+      "description": "Open with Enter, Space or the arrow keys. Arrows, PageUp/PageDown and Home/End move through results; Enter picks and focuses the number, Escape returns to the country button.",
+      "minHeight": 420
+    },
+    {
+      "id": "digit-limit",
+      "title": "Digit limit",
+      "description": "`phoneMaxNumber` takes precedence over `maxLength` and counts sanitized digits. The field does not assume every country has the same number length.",
+      "minHeight": 420
+    },
+    {
+      "id": "paste",
+      "title": "Formatted national paste",
+      "description": "Try pasting `98765 43210`. Separators are removed before the ten-digit limit; selected digits are replaced and the remaining suffix is preserved. Full international numbers starting with + stay rejected; supply national digits.",
+      "minHeight": 420
+    },
+    {
+      "id": "disabled",
+      "title": "Disabled",
+      "description": "`disabled` prevents typing and country selection. The gray surface keeps the same 44px field height.",
+      "minHeight": 220
+    },
+    {
+      "id": "read-only",
+      "title": "Read only",
+      "description": "In built-in picker mode `readOnly` locks both the country and number. For compatibility, legacy callback mode continues to apply read-only behavior to the number alone.",
+      "minHeight": 220
+    },
+    {
+      "id": "custom-flag",
+      "title": "Custom flag",
+      "description": "`countryFlag` replaces the default SVG flag. Keep its display in sync with the selected country when combining it with a picker.",
+      "minHeight": 220
+    },
+    {
+      "id": "controlled",
+      "title": "Controlled country and number",
+      "description": "`countryIso` controls selection and `onCountryChange` receives `{ iso, name, dialCode }`. The original `value` and `onChange` still carry national digits.",
+      "minHeight": 420
+    },
+    {
+      "id": "validation",
+      "title": "Validation",
+      "description": "`validation` displays an associated error message; `aria-invalid={true}` also applies the red border. Validation is supplied by your form, not inferred from the country.",
+      "minHeight": 470
+    },
+    {
+      "id": "external-picker",
+      "title": "Existing country callback",
+      "description": "The default remains callback mode: `onCountryClick` opens your own chooser. This inline chooser demonstrates the old contract without a modal.",
+      "minHeight": 420
+    },
+    {
+      "id": "form",
+      "title": "Native form submission",
+      "description": "`name` submits the same national digits as v1. If your app needs the calling code, keep it separately; this form adds its own hidden field.",
+      "minHeight": 420
+    },
+    {
+      "id": "in-dialog",
+      "title": "Inside a dialog",
+      "description": "The country list is anchored to the field and escapes clipping. Search and scrolling remain usable inside a dialog; Escape closes the country list before the dialog.",
+      "minHeight": 600
+    }
+  ]
+}

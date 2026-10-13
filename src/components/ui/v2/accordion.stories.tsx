@@ -37,13 +37,13 @@ function Example({
   version = "v2",
   updateValue,
   forceState,
-  form,
+  panels,
 }: {
   args: Args;
   version?: "v1" | "v2";
   updateValue?: (value: string[]) => void;
   forceState?: "hover" | "focus";
-  form?: React.ReactNode;
+  panels?: Record<string, React.ReactNode>;
 }) {
   const UI = version === "v1" ? V1 : V2;
   const [value, setValue] = React.useState(args.value || []);
@@ -70,29 +70,31 @@ function Example({
           value={section.value}
           disabled={index === 0 && args.firstDisabled}
         >
-          <UI.AccordionTrigger
-            showChevron={args.showChevron}
-            className={
-              index === 0 && forceState === "hover"
-                ? "pseudo-hover"
-                : index === 0 && forceState === "focus"
-                  ? "pseudo-focus-visible"
-                  : undefined
-            }
-          >
-            {index === 0 ? args.label : section.title}
-          </UI.AccordionTrigger>
+          <h4 className="m-0">
+            <UI.AccordionTrigger
+              showChevron={args.showChevron}
+              className={
+                index === 0 && forceState === "hover"
+                  ? "pseudo-hover"
+                  : index === 0 && forceState === "focus"
+                    ? "pseudo-focus-visible"
+                    : undefined
+              }
+            >
+              {index === 0 ? args.label : section.title}
+            </UI.AccordionTrigger>
+          </h4>
           <UI.AccordionContent>
             <p
               className={
                 version === "v1"
                   ? "m-0 text-sm text-semantic-text-secondary"
-                  : "m-0 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+                  : "m-0 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
               }
             >
               {index === 0 ? args.content : section.content}
             </p>
-            {index === 0 && form}
+            {panels?.[section.value]}
           </UI.AccordionContent>
         </UI.AccordionItem>
       ))}
@@ -148,7 +150,7 @@ const meta: Meta<Args> = {
             [
               "Content",
               "Inherited 14px text",
-              "14px body, 32px right and 20px bottom padding; opens on a spring with a brief focus pull",
+              "14px body, 32px right and 20px bottom padding; a short height transition and quiet 3px settling motion",
             ],
             [
               "Selection",
@@ -164,7 +166,7 @@ const meta: Meta<Args> = {
             ["Font", "--font-v2", "Inter 14px / 500"],
           ],
           guidance:
-            "Use single when only one section should remain open. value is an array even in single mode. Use defaultValue for initial uncontrolled sections, or value plus onValueChange for synchronized selection. The showChevron control configures AccordionTrigger; firstDisabled configures the first AccordionItem. Use native Enter/Space to toggle a focused trigger.",
+            "Use single when only one section should remain open. value is an array even in single mode. Use defaultValue for initial uncontrolled sections, or value plus onValueChange for synchronized selection. The showChevron control configures AccordionTrigger; firstDisabled configures the first AccordionItem. Use native Enter/Space to toggle a focused trigger; Arrow Up/Down and Home/End move between enabled rows. Closed content stays mounted and inert, so form values are preserved. Reduced motion snaps all transitions. The root has no size or orientation prop.",
         }),
       },
     },
@@ -218,7 +220,12 @@ const meta: Meta<Args> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+export const Overview: Story = {
+  render: function Render(args) {
+    const [, update] = useArgs<Args>();
+    return <ContactExample args={args} update={update} />;
+  },
+};
 export const Default: Story = {};
 export const SingleMode: Story = { args: { type: "single" } };
 export const MultipleMode: Story = {
@@ -248,7 +255,7 @@ function Card({
 }) {
   return (
     <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
         {title}
       </h3>
       {children}
@@ -262,7 +269,7 @@ export const AllVariants: Story = {
   ),
   render: (args) => (
     <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[850px] grid-cols-2 gap-4">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {(["default", "bordered"] as const).map((variant) => (
           <Card key={variant} title={variant}>
             <Example args={{ ...args, variant }} />
@@ -279,7 +286,7 @@ export const AllModes: Story = {
   ),
   render: (args) => (
     <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[850px] grid-cols-2 gap-4">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {(["single", "multiple"] as const).map((type) => (
           <Card key={type} title={type}>
             <Example args={{ ...args, type }} />
@@ -296,7 +303,7 @@ export const States: Story = {
   ),
   render: (args) => (
     <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[850px] grid-cols-2 gap-4">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {["Closed", "Open", "Hover", "Focus", "Disabled"].map((state) => (
           <Card key={state} title={state}>
             <Example
@@ -327,7 +334,7 @@ export const V1VsV2: Story = {
   ),
   render: (args) => (
     <div className="max-w-full overflow-x-auto">
-      <div className="grid min-w-[900px] grid-cols-2 gap-4">
+      <div className="grid min-w-0 grid-cols-1 gap-4 md:grid-cols-2">
         {(["default", "bordered"] as const).flatMap((variant) =>
           (["single", "multiple"] as const).flatMap((type) =>
             (["v1", "v2"] as const).map((version) => (
@@ -349,62 +356,191 @@ function ContactExample({
   update,
 }: {
   args: Args;
-  update: (value: string[]) => void;
+  update: (patch: Partial<Args>) => void;
 }) {
   const id = React.useId();
   const [name, setName] = React.useState("Aditi Kumar");
+  const [email, setEmail] = React.useState("aditi@example.com");
+  const [company, setCompany] = React.useState("Northstar Studio");
+  const [stage, setStage] = React.useState("Customer");
+  const [owner, setOwner] = React.useState("Support team");
+  const [notify, setNotify] = React.useState(true);
   const [saved, setSaved] = React.useState(false);
+  const labelClass =
+    "mb-2 block text-xs font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]";
+  const selectClass =
+    "min-h-10 w-full min-w-0 rounded-md border border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary";
+
   return (
-    <section className="max-w-[720px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
-        Contact profile
-      </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
-        Expand a section and edit the local form. Open sections stay
-        synchronized with Controls.
-      </p>
-      <Example
-        args={args}
-        updateValue={update}
-        form={
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSaved(true);
-            }}
-            className="mt-4 flex flex-wrap items-end gap-3"
+    <section
+      aria-label="Contact profile"
+      className="w-full max-w-[680px] rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-5 sm:p-6"
+    >
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+            Contact profile
+          </h3>
+          <p className="m-0 mt-1 text-xs leading-relaxed text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+            Keep contact details, custom fields and routing in one place.
+          </p>
+        </div>
+        <div
+          role="group"
+          aria-label="Open sections"
+          className="flex flex-wrap gap-1"
+        >
+          <Button
+            type="button"
+            size="sm"
+            variant={args.type === "single" ? "secondary" : "ghost"}
+            aria-pressed={args.type === "single"}
+            onClick={() =>
+              update({ type: "single", value: args.value?.slice(0, 1) })
+            }
           >
-            <div className="min-w-[220px] flex-1">
-              <label
-                htmlFor={id}
-                className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,#484848)]"
-              >
-                Contact name
-              </label>
-              <Input
-                id={id}
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setSaved(false);
-                }}
-              />
-            </div>
-            <Button
-              type="submit"
-              size="sm"
-              disabled={args.firstDisabled || !name.trim()}
-            >
-              Save contact
-            </Button>
-            {saved && (
-              <p className="m-0 w-full text-xs text-semantic-success-text">
-                Saved locally: {name}
-              </p>
-            )}
-          </form>
-        }
-      />
+            One at a time
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={args.type === "multiple" ? "secondary" : "ghost"}
+            aria-pressed={args.type === "multiple"}
+            onClick={() => update({ type: "multiple" })}
+          >
+            Multiple
+          </Button>
+        </div>
+      </div>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          setSaved(true);
+        }}
+      >
+        <Example
+          args={args}
+          updateValue={(value) => update({ value })}
+          panels={{
+            basic: (
+              <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label htmlFor={id + "-name"} className={labelClass}>
+                    Contact name
+                  </label>
+                  <Input
+                    id={id + "-name"}
+                    value={name}
+                    onChange={(event) => {
+                      setName(event.target.value);
+                      setSaved(false);
+                    }}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <label htmlFor={id + "-email"} className={labelClass}>
+                    Email address
+                  </label>
+                  <Input
+                    id={id + "-email"}
+                    type="email"
+                    value={email}
+                    onChange={(event) => {
+                      setEmail(event.target.value);
+                      setSaved(false);
+                    }}
+                  />
+                </div>
+              </div>
+            ),
+            custom: (
+              <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label htmlFor={id + "-company"} className={labelClass}>
+                    Company
+                  </label>
+                  <Input
+                    id={id + "-company"}
+                    value={company}
+                    onChange={(event) => {
+                      setCompany(event.target.value);
+                      setSaved(false);
+                    }}
+                  />
+                </div>
+                <div className="min-w-0">
+                  <label htmlFor={id + "-stage"} className={labelClass}>
+                    Lifecycle stage
+                  </label>
+                  <select
+                    id={id + "-stage"}
+                    className={selectClass}
+                    value={stage}
+                    onChange={(event) => {
+                      setStage(event.target.value);
+                      setSaved(false);
+                    }}
+                  >
+                    <option>New lead</option>
+                    <option>Active lead</option>
+                    <option>Customer</option>
+                  </select>
+                </div>
+              </div>
+            ),
+            routing: (
+              <div className="mt-4 grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <label htmlFor={id + "-owner"} className={labelClass}>
+                    Assign conversations to
+                  </label>
+                  <select
+                    id={id + "-owner"}
+                    className={selectClass}
+                    value={owner}
+                    onChange={(event) => {
+                      setOwner(event.target.value);
+                      setSaved(false);
+                    }}
+                  >
+                    <option>Support team</option>
+                    <option>Sales team</option>
+                    <option>Account owner</option>
+                  </select>
+                </div>
+                <label
+                  htmlFor={id + "-notify"}
+                  className="flex items-center gap-2 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+                >
+                  <input
+                    id={id + "-notify"}
+                    type="checkbox"
+                    checked={notify}
+                    className="size-4 shrink-0 accent-semantic-primary"
+                    onChange={(event) => {
+                      setNotify(event.target.checked);
+                      setSaved(false);
+                    }}
+                  />
+                  Notify the assigned team
+                </label>
+              </div>
+            ),
+          }}
+        />
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+          <p
+            role="status"
+            aria-live="polite"
+            className="m-0 text-xs text-semantic-success-text"
+          >
+            {saved ? "Saved locally: " + name : ""}
+          </p>
+          <Button type="submit" size="sm" disabled={!name.trim()}>
+            Save contact
+          </Button>
+        </div>
+      </form>
     </section>
   );
 }
@@ -412,7 +548,7 @@ export const Usage: Story = {
   args: { variant: "bordered" },
   render: function Render(args) {
     const [, update] = useArgs<Args>();
-    return <ContactExample args={args} update={(value) => update({ value })} />;
+    return <ContactExample args={args} update={update} />;
   },
 };
 export const CustomContent: Story = { ...Usage, name: "Custom content" };
@@ -422,5 +558,84 @@ export const FAQ: Story = {
     content:
       "Open a contact profile, edit the required information and save your changes.",
     type: "single",
+  },
+};
+
+export const Uncontrolled: Story = {
+  parameters: gallery(
+    ["value"],
+    "An uncontrolled accordion starts with Basic information open. Each toggle updates its own state; onValueChange still reports the selection."
+  ),
+  render: (args) => (
+    <div className="max-w-[640px]">
+      <V2.Accordion
+        variant={args.variant}
+        type={args.type}
+        defaultValue={["basic"]}
+        onValueChange={args.onValueChange}
+      >
+        {sections.map((section, index) => (
+          <V2.AccordionItem
+            key={section.value}
+            value={section.value}
+            disabled={index === 0 && args.firstDisabled}
+          >
+            <h3 className="m-0">
+              <V2.AccordionTrigger showChevron={args.showChevron}>
+                {index === 0 ? args.label : section.title}
+              </V2.AccordionTrigger>
+            </h3>
+            <V2.AccordionContent>
+              <p className="m-0">
+                {index === 0 ? args.content : section.content}
+              </p>
+            </V2.AccordionContent>
+          </V2.AccordionItem>
+        ))}
+      </V2.Accordion>
+    </div>
+  ),
+};
+
+export const KeyboardNavigation: Story = {
+  parameters: gallery(
+    ["value", "firstDisabled"],
+    "Arrow Up/Down, Home and End move through enabled triggers. Enter and Space toggle. The middle section is disabled and skipped."
+  ),
+  render: (args) => (
+    <div className="max-w-[640px]">
+      <p className="m-0 mb-4 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+        Tab to a section, use Arrow Up/Down or Home/End to move, then Enter or
+        Space to expand.
+      </p>
+      <V2.Accordion variant={args.variant} type={args.type}>
+        {sections.map((section, index) => (
+          <V2.AccordionItem
+            key={section.value}
+            value={section.value}
+            disabled={index === 1}
+          >
+            <h3 className="m-0">
+              <V2.AccordionTrigger showChevron={args.showChevron}>
+                {section.title}
+              </V2.AccordionTrigger>
+            </h3>
+            <V2.AccordionContent>
+              <p className="m-0">{section.content}</p>
+            </V2.AccordionContent>
+          </V2.AccordionItem>
+        ))}
+      </V2.Accordion>
+    </div>
+  ),
+};
+
+export const LongContent: Story = {
+  args: {
+    label:
+      "Can I keep longer contact details and routing preferences together on a small screen?",
+    content:
+      "Yes. Section headings wrap without pushing the chevron outside the row, and long content stays inside the panel. CustomerReference_2026_Account_123456789012345678901234567890 can wrap when there is no convenient space.",
+    value: ["basic"],
   },
 };

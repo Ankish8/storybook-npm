@@ -1,0 +1,30 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Typing status",
+      "description": "The original three-dot loader remains available. Override the accessible label to name the work."
+    },
+    {
+      "id": "sizes",
+      "title": "Dot sizes",
+      "description": "size accepts a pixel number or a CSS length. These are examples of the existing size prop, rather than named variants."
+    },
+    {
+      "id": "spacing",
+      "title": "Dot spacing",
+      "description": "spacing accepts a pixel number or a CSS length independently of the dot size."
+    },
+    {
+      "id": "colors",
+      "title": "Semantic colors",
+      "description": "Use a CSS theme variable for the existing color prop."
+    },
+    {
+      "id": "conversation",
+      "title": "Conversation reply",
+      "description": "The dots disappear when a local reply is added. The parent keeps the status message and reply state."
+    }
+  ]
+}

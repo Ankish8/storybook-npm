@@ -28,7 +28,7 @@
     {
       "id": "loading",
       "title": "Loading",
-      "description": "`loading` shows a spinner, blocks activation and keeps keyboard focus. `loadingText` replaces the label meanwhile."
+      "description": "`loading` shows a spinner and natively disables the button, matching v1. `loadingText` replaces the label meanwhile."
     },
     {
       "id": "disabled",

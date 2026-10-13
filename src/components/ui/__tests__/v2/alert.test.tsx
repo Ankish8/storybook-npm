@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Alert, AlertTitle, AlertDescription } from "../../v2/alert";
 import { MotionGlobalConfig } from "motion/react";
 import { Bell } from "lucide-react";
@@ -11,6 +12,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   MotionGlobalConfig.skipAnimations = false;
+  vi.restoreAllMocks();
 });
 
 describe("Alert", () => {
@@ -65,7 +67,9 @@ describe("Alert", () => {
       );
       const element = screen.getByTestId("alert");
       expect(element).toHaveClass(bgClass);
-      expect(element).toHaveClass("text-[var(--v2-text-secondary,#5E5E5E)]");
+      expect(element).toHaveClass(
+        "text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+      );
       expect(element).toHaveClass(borderClass);
     }
   );
@@ -158,6 +162,20 @@ describe("Alert", () => {
     expect(alert.querySelector("svg")).not.toBeInTheDocument();
   });
 
+  it.each([false, 0, ""])(
+    "retains the v1 default icon for a falsy custom icon (%s)",
+    (icon) => {
+      render(
+        <Alert icon={icon} data-testid="alert">
+          <AlertTitle>Default icon</AlertTitle>
+        </Alert>
+      );
+      expect(
+        screen.getByTestId("alert").querySelector("svg")
+      ).toBeInTheDocument();
+    }
+  );
+
   // Close functionality
   it("renders close button when closable is true", () => {
     render(
@@ -179,7 +197,7 @@ describe("Alert", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("calls onClose when close button is clicked", () => {
+  it("calls onClose when close button is clicked", async () => {
     const handleClose = vi.fn();
     render(
       <Alert closable onClose={handleClose}>
@@ -188,6 +206,9 @@ describe("Alert", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /close/i }));
     expect(handleClose).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+    );
   });
 
   it("hides alert when close button is clicked (uncontrolled)", async () => {
@@ -314,6 +335,165 @@ describe("Alert", () => {
       "aria-describedby",
       "description"
     );
+  });
+
+  it("keeps native attributes, style, event callbacks and the ref on the alert box", () => {
+    const ref = { current: null as HTMLDivElement | null };
+    const onClick = vi.fn();
+    render(
+      <Alert
+        ref={ref}
+        id="sync-notice"
+        title="Connection status"
+        role="status"
+        aria-live="off"
+        tabIndex={0}
+        style={{ maxWidth: 384 }}
+        onClick={onClick}
+      >
+        <AlertTitle>Sync paused</AlertTitle>
+      </Alert>
+    );
+    const box = screen.getByRole("status");
+    expect(ref.current).toBe(box);
+    expect(box).toHaveAttribute("id", "sync-notice");
+    expect(box).toHaveAttribute("title", "Connection status");
+    expect(box).toHaveAttribute("aria-live", "off");
+    expect(box).toHaveAttribute("tabindex", "0");
+    expect(box).toHaveStyle({ maxWidth: "384px" });
+    fireEvent.click(box);
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it("only uses defaultOpen on the first uncontrolled render", () => {
+    const { rerender } = render(
+      <Alert defaultOpen>
+        <AlertTitle>Visible notice</AlertTitle>
+      </Alert>
+    );
+    rerender(
+      <Alert defaultOpen={false}>
+        <AlertTitle>Visible notice</AlertTitle>
+      </Alert>
+    );
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("keeps caller actions independent of dismissal and preserves secondary-first order", async () => {
+    const user = userEvent.setup();
+    const secondary = vi.fn();
+    const primary = vi.fn();
+    const onClose = vi.fn();
+    render(
+      <Alert
+        closable
+        onClose={onClose}
+        secondaryAction={<button onClick={secondary}>Later</button>}
+        action={<button onClick={primary}>Reconnect</button>}
+      >
+        <AlertTitle>Sync paused</AlertTitle>
+      </Alert>
+    );
+    expect(
+      screen.getAllByRole("button").map((button) => button.textContent)
+    ).toEqual(["Later", "Reconnect", ""]);
+    await user.tab();
+    await user.keyboard("{Enter}");
+    expect(secondary).toHaveBeenCalledOnce();
+    await user.tab();
+    await user.keyboard(" ");
+    expect(primary).toHaveBeenCalledOnce();
+    expect(onClose).not.toHaveBeenCalled();
+    expect(screen.getByRole("alert")).toBeInTheDocument();
+  });
+
+  it("dismisses from the keyboard without submitting a containing form", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn((event) => event.preventDefault());
+    const onClose = vi.fn();
+    render(
+      <form onSubmit={onSubmit}>
+        <Alert closable onClose={onClose}>
+          <AlertTitle>Notice</AlertTitle>
+        </Alert>
+      </form>
+    );
+    await user.tab();
+    expect(screen.getByRole("button", { name: "Close alert" })).toHaveFocus();
+    await user.keyboard("{Enter}");
+    expect(onClose).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument()
+    );
+  });
+
+  it("hides and disables all outgoing actions immediately, then restores the controlled alert on reopen", () => {
+    // Retain real motion here: the measured box remains in the DOM long enough to inspect its exit semantics.
+    MotionGlobalConfig.skipAnimations = false;
+    vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(80);
+    const action = vi.fn();
+    const onKeyDown = vi.fn();
+    const notice = (open: boolean) => (
+      <Alert
+        open={open}
+        animateExit
+        onKeyDown={onKeyDown}
+        action={<button onClick={action}>Reconnect</button>}
+      >
+        <AlertTitle>Sync paused</AlertTitle>
+      </Alert>
+    );
+    const { rerender } = render(notice(true));
+    const button = screen.getByRole("button", { name: "Reconnect" });
+    const box = screen.getByRole("alert");
+    rerender(notice(false));
+    expect(box).toBeInTheDocument();
+    expect(box.parentElement).toHaveAttribute("aria-hidden", "true");
+    expect(box.parentElement).toHaveAttribute("inert");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    fireEvent.click(button);
+    fireEvent.keyDown(button, { key: "Enter" });
+    expect(action).not.toHaveBeenCalled();
+    expect(onKeyDown).not.toHaveBeenCalled();
+
+    rerender(notice(true));
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+    expect(box.parentElement).not.toHaveAttribute("inert");
+    expect(box.parentElement).not.toHaveAttribute("aria-hidden");
+    fireEvent.click(button);
+    expect(action).toHaveBeenCalledOnce();
+  });
+
+  it("exposes only current title and description while outgoing copy fades", () => {
+    MotionGlobalConfig.skipAnimations = false;
+    const { rerender } = render(
+      <Alert>
+        <AlertTitle>Sync paused</AlertTitle>
+        <AlertDescription>Three local updates.</AlertDescription>
+      </Alert>
+    );
+    rerender(
+      <Alert variant="success">
+        <AlertTitle>All updates synced</AlertTitle>
+        <AlertDescription>Your team has the latest changes.</AlertDescription>
+      </Alert>
+    );
+    expect(screen.getByText("Sync paused")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+    expect(screen.getByText("Three local updates.")).toHaveAttribute(
+      "aria-hidden",
+      "true"
+    );
+    expect(
+      screen.getByRole("heading", { name: "All updates synced" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Your team has the latest changes.")
+    ).not.toHaveAttribute("aria-hidden", "true");
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
   });
 });
 
@@ -481,11 +661,11 @@ describe("v2 presentations", () => {
     );
     const close = screen.getByRole("button", { name: "Close alert" });
     expect(close).toHaveClass(
-      "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)]",
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
       "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui"
     );
     expect(close).not.toHaveClass(
-      "hover:text-[var(--v2-text-primary,#484848)]"
+      "hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]"
     );
   });
   it("keeps custom content and secondary actions usable in a header", () => {
@@ -503,4 +683,22 @@ describe("v2 presentations", () => {
     expect(act).toHaveBeenCalledOnce();
     expect(screen.getByText("Custom content")).toBeInTheDocument();
   });
+});
+
+it("removes an opt-in exit after its animation even when the layout has height", async () => {
+  vi.spyOn(HTMLElement.prototype, "offsetHeight", "get").mockReturnValue(80);
+  const { rerender } = render(
+    <Alert open animateExit data-testid="animated-alert">
+      Ready
+    </Alert>
+  );
+  rerender(
+    <Alert open={false} animateExit data-testid="animated-alert">
+      Ready
+    </Alert>
+  );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.queryByTestId("animated-alert")).not.toBeInTheDocument()
+  );
 });

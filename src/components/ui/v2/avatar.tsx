@@ -1,8 +1,34 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { cn } from "@/lib/utils";
+
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+const reducedMotionServerSnapshot = () => true;
+function reducedMotionSnapshot() {
+  return (
+    typeof window !== "undefined" &&
+    Boolean(window.matchMedia?.(reducedMotionQuery)?.matches)
+  );
+}
+function subscribeReducedMotion(listener: () => void) {
+  const media = window.matchMedia?.(reducedMotionQuery);
+  if (!media) return () => {};
+  if (media.addEventListener) {
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }
+  media.addListener(listener);
+  return () => media.removeListener(listener);
+}
+function useLiveReducedMotion() {
+  return React.useSyncExternalStore(
+    subscribeReducedMotion,
+    reducedMotionSnapshot,
+    reducedMotionServerSnapshot
+  );
+}
 
 /**
  * Extracts initials from a name string.
@@ -14,10 +40,11 @@ import { cn } from "@/lib/utils";
  * getInitials("John") // "JO"
  */
 function getInitials(name: string): string {
-  const parts = name.trim().split(/\s+/);
+  const trimmedName = name.trim();
+  const parts = trimmedName.split(/\s+/);
   return parts.length >= 2
     ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-    : name.slice(0, 2).toUpperCase();
+    : trimmedName.slice(0, 2).toUpperCase();
 }
 
 const avatarVariants = cva(
@@ -25,20 +52,19 @@ const avatarVariants = cva(
   {
     variants: {
       variant: {
-        // Arc's avatar always carries a 1px border; filled hides it in its own colour.
-        soft: "border border-solid border-semantic-border-layout bg-semantic-info-surface text-[var(--v2-text-muted,#707070)]",
+        soft: "border border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-muted",
         outline:
-          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-muted,#707070)]",
+          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-muted",
         filled:
           "border border-solid border-semantic-primary bg-semantic-primary text-semantic-text-inverted",
       },
-      // Arc's scale: sm 28 / md 36 / lg 48 / xl 88 with 10 / 12 / 14 / 22px initials. xs (24) has no Arc counterpart.
+      // Keep the v1 footprints when a consumer changes only the import path.
       size: {
         xs: "size-6 text-[10px]",
-        sm: "size-7 text-[10px]",
-        md: "size-9 text-xs",
-        lg: "size-12 text-sm",
-        xl: "size-[88px] text-[22px]",
+        sm: "size-8 text-xs",
+        md: "size-10 text-sm",
+        lg: "size-12 text-base",
+        xl: "size-16 text-lg",
       },
     },
     defaultVariants: {
@@ -48,19 +74,17 @@ const avatarVariants = cva(
   }
 );
 
-// Arc's status dot: 8 / 10 / 12 / 14px with a 2px surface ring (1.5px at 8px) and a hairline outside it; the 88px
-// avatar tucks it 4px in from the corner so it stays on the circle.
 const statusDotSizeMap = {
-  xs: "size-2 border-[1.5px] border-solid",
-  sm: "size-2 border-[1.5px] border-solid",
-  md: "size-2.5 border-2 border-solid",
-  lg: "size-3 border-2 border-solid",
-  xl: "size-3.5 border-2 border-solid !bottom-1 !right-1",
+  xs: "size-2 border border-solid",
+  sm: "size-2.5 border-[1.5px] border-solid",
+  md: "size-3 border-2 border-solid",
+  lg: "size-3.5 border-2 border-solid",
+  xl: "size-4 border-2 border-solid !bottom-1 !right-1",
 } as const;
 
 const statusColorMap = {
   online: "bg-semantic-success-primary",
-  offline: "bg-semantic-bg-grey",
+  offline: "bg-semantic-text-muted",
   busy: "bg-semantic-error-primary",
   away: "bg-semantic-warning-primary",
 } as const;
@@ -71,14 +95,55 @@ export interface AvatarProps
     VariantProps<typeof avatarVariants> {
   /** Name used to auto-generate initials and aria-label */
   name?: string;
-  /** Image URL — renders an <img> instead of initials */
+  /** Image URL — shows custom content or initials while loading and if it fails */
   src?: string;
   /** Alt text for the image (defaults to name) */
   alt?: string;
   /** Override auto-generated initials (e.g., "AS") */
   initials?: string;
-  /** Status indicator dot shown at bottom-right */
+  /** Status dot shown at bottom-right and included in the default accessible name */
   status?: "online" | "offline" | "busy" | "away";
+}
+
+function AvatarPhoto({
+  src,
+  alt,
+  fallback,
+}: {
+  src: string;
+  alt: string;
+  fallback: React.ReactNode;
+}) {
+  const image = React.useRef<HTMLImageElement>(null);
+  const [state, setState] = React.useState<"loading" | "loaded" | "error">(
+    "loading"
+  );
+
+  React.useLayoutEffect(() => {
+    const node = image.current;
+    if (node?.complete) {
+      setState(node.naturalWidth > 0 ? "loaded" : "error");
+    }
+  }, []);
+
+  if (state === "error") return <>{fallback}</>;
+
+  return (
+    <>
+      {state === "loading" && fallback}
+      <img
+        ref={image}
+        src={src}
+        alt={alt}
+        aria-hidden="true"
+        decoding="async"
+        data-loading={state === "loading" ? "" : undefined}
+        className="pointer-events-none absolute inset-0 size-full rounded-full object-cover transition-[opacity,filter] duration-200 ease-out data-[loading]:opacity-0 data-[loading]:blur-[2px] data-[loading]:transition-none motion-reduce:transition-none motion-reduce:data-[loading]:blur-none"
+        onLoad={() => setState("loaded")}
+        onError={() => setState("error")}
+      />
+    </>
+  );
 }
 
 /**
@@ -108,73 +173,60 @@ const Avatar = React.forwardRef(
     }: AvatarProps,
     ref: React.Ref<HTMLDivElement>
   ) => {
-    const reducedMotion = useReducedMotion();
+    const reducedMotion = useLiveReducedMotion();
     const resolvedSize = size ?? "md";
     const displayInitials = initials ?? (name ? getInitials(name) : undefined);
-    // A dead URL falls back exactly as if there were no src. Keyed by the failing URL so a new src gets a fresh
-    // attempt, and nothing changes while the image loads (no fade or placeholder: avatars stay static).
-    const [failedSrc, setFailedSrc] = React.useState<string | undefined>();
-    const showImage = Boolean(src) && failedSrc !== src;
-    // A photo that is already decoded shows at once. One still downloading waits invisible and soft, then fades in.
-    const image = React.useRef<HTMLImageElement>(null);
-    React.useLayoutEffect(() => {
-      const node = image.current;
-      if (node && !node.complete) node.dataset.loading = "";
-    }, [src]);
+    const identity =
+      name?.trim() ||
+      alt?.trim() ||
+      displayInitials?.trim() ||
+      (typeof children === "string" ? children.trim() : "") ||
+      "Avatar";
+    const fallback = children ? (
+      children
+    ) : displayInitials ? (
+      <span aria-hidden="true">{displayInitials}</span>
+    ) : null;
 
     return (
       <div
         ref={ref}
         className={cn(avatarVariants({ variant, size, className }))}
-        aria-label={name}
+        aria-label={identity}
+        aria-description={status}
         role="img"
         {...props}
       >
-        {showImage ? (
-          <img
+        {src ? (
+          <AvatarPhoto
             key={src}
-            ref={image}
             src={src}
             alt={alt ?? name ?? "Avatar"}
-            className="size-full rounded-full object-cover transition-[opacity,filter] [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] data-[loading]:opacity-0 data-[loading]:blur-[4px] data-[loading]:transition-none motion-reduce:transition-none motion-reduce:data-[loading]:blur-none"
-            onLoad={(event) => {
-              delete event.currentTarget.dataset.loading;
-            }}
-            onError={() => setFailedSrc(src)}
+            fallback={fallback}
           />
-        ) : children ? (
-          children
-        ) : displayInitials ? (
-          // Initials that replace a dead photo fade in rather than pop.
-          <motion.span
-            aria-hidden="true"
-            initial={src && !reducedMotion ? { opacity: 0 } : false}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-          >
-            {displayInitials}
-          </motion.span>
-        ) : null}
+        ) : (
+          fallback
+        )}
 
         <AnimatePresence initial={false}>
           {status && (
             <motion.span
               key={status}
               aria-hidden="true"
-              initial={{ opacity: 0, scale: reducedMotion ? 1 : 0.6 }}
+              initial={reducedMotion ? false : { opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{
                 opacity: 0,
-                scale: reducedMotion ? 1 : 0.6,
-                transition: { duration: reducedMotion ? 0 : 0.16 },
+                scale: reducedMotion ? 1 : 0.85,
+                transition: { duration: reducedMotion ? 0 : 0.12 },
               }}
               transition={
                 reducedMotion
-                  ? { duration: 0.12 }
-                  : { type: "spring", visualDuration: 0.26, bounce: 0.12 }
+                  ? { duration: 0 }
+                  : { duration: 0.18, ease: [0.16, 1, 0.3, 1] }
               }
               className={cn(
-                "absolute bottom-0 right-0 z-[2] rounded-full border-background shadow-[0_0_0_1px_color-mix(in_srgb,var(--semantic-border-layout)_70%,transparent)]",
+                "absolute bottom-0 right-0 z-[2] rounded-full border-semantic-bg-primary shadow-[0_0_0_1px_color-mix(in_srgb,var(--semantic-border-layout)_70%,transparent)]",
                 statusDotSizeMap[resolvedSize],
                 statusColorMap[status]
               )}
@@ -196,8 +248,7 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Overlapping stack of avatars (-6px) separated by a 2px ring in the surface colour and a hairline outside it. Pointing
- * at the stack fans it out from the centre; the avatar under the pointer lifts 2px and its neighbours ease aside.
+ * Overlapping stack of avatars (-6px) separated by a 2px surface ring and an outer hairline.
  * With `max`, the avatars past the limit become a "+N" tile of the same size.
  * The ring colour follows the surface: on a tinted background override it with
  * `className="[&>*]:ring-semantic-bg-ui"`.
@@ -231,6 +282,18 @@ const AvatarGroup = React.forwardRef(
     // The tile must match the avatars beside it: explicit group size, else the first avatar's own size.
     const tileSize = size ?? items.find(isAvatar)?.props.size ?? "md";
     const count = visible.length + (hidden > 0 ? 1 : 0);
+    const hiddenNames = items
+      .slice(visible.length)
+      .filter(isAvatar)
+      .map(
+        (child) =>
+          child.props["aria-label"] ||
+          child.props.name ||
+          child.props.alt ||
+          child.props.initials
+      )
+      .filter(Boolean)
+      .join(", ");
 
     return (
       <div
@@ -238,12 +301,7 @@ const AvatarGroup = React.forwardRef(
         role="group"
         className={cn(
           "inline-flex items-center [&>*]:ring-2 [&>*]:ring-semantic-bg-primary [&>*]:shadow-[0_0_0_3px_var(--semantic-border-layout)]",
-          // Arc overlaps every size by 6px.
           "[&>*:not(:first-child)]:-ms-1.5",
-          // Hover motion (hover-capable pointers only; reduced motion keeps the stack still). Each child carries its
-          // fan / aside / rise offsets as variables so one transform expresses all three, as in Arc.
-          "[&>*]:[transform:translate(calc(var(--fan,0px)_+_var(--aside,0px)),var(--rise,0px))] [&>*]:[transition:transform_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[&>*]:!transform-none motion-reduce:[&>*]:!transition-none",
-          "[@media(hover:hover)_and_(pointer:fine)]:[&:hover>*]:[--fan:calc((var(--index)_-_(var(--count)_-_1)_/_2)_*_4px)] [@media(hover:hover)_and_(pointer:fine)]:[&>*:hover]:z-[1] [@media(hover:hover)_and_(pointer:fine)]:[&>*:hover]:[--rise:-2px] [@media(hover:hover)_and_(pointer:fine)]:[&>*:hover~*]:[--aside:3px] [@media(hover:hover)_and_(pointer:fine)]:[&>*:has(~*:hover)]:[--aside:-3px]",
           className
         )}
         {...props}
@@ -265,13 +323,15 @@ const AvatarGroup = React.forwardRef(
           <Avatar
             size={tileSize}
             aria-label={`${hidden} more`}
+            aria-description={hiddenNames || undefined}
+            title={hiddenNames || undefined}
             style={
               {
                 "--index": visible.length,
                 "--count": count,
               } as React.CSSProperties
             }
-            className="bg-semantic-bg-ui tabular-nums text-[var(--v2-text-secondary,#5E5E5E)]"
+            className="bg-semantic-bg-ui text-semantic-text-secondary tabular-nums"
           >
             +{hidden}
           </Avatar>

@@ -108,14 +108,14 @@ describe("Button (v2)", () => {
       expect(button).toHaveClass("disabled:opacity-[0.52]");
     });
 
-    it("is aria-disabled and aria-busy, retaining focus when loading", () => {
+    it("is natively disabled and aria-busy when loading", () => {
       render(<Button loading>Submit</Button>);
       const button = screen.getByRole("button");
-      expect(button).not.toBeDisabled();
+      expect(button).toBeDisabled();
       expect(button).toHaveAttribute("aria-busy", "true");
       expect(button).toHaveAttribute("aria-disabled", "true");
       button.focus();
-      expect(button).toHaveFocus();
+      expect(button).not.toHaveFocus();
     });
 
     it("shows a spinner and the loading text when provided", () => {
@@ -218,27 +218,95 @@ describe("Button (v2)", () => {
       button.focus();
       await user.keyboard("{Enter} ");
       fireEvent.click(button);
-      expect(button).toHaveFocus();
+      expect(button).toBeDisabled();
       expect(onClick).not.toHaveBeenCalled();
       expect(onSubmit).not.toHaveBeenCalled();
       await user.tab();
       expect(screen.getByRole("textbox")).toHaveFocus();
     });
 
-    it("retains focus across the entire loading cycle", () => {
-      const { rerender } = render(<Button>Save</Button>);
+    it("restores native availability after the loading cycle", async () => {
+      const user = userEvent.setup();
+      const onClick = vi.fn();
+      const { rerender } = render(<Button onClick={onClick}>Save</Button>);
       const button = screen.getByRole("button");
       button.focus();
       rerender(
-        <Button loading loadingText="Saving…">
+        <Button loading loadingText="Saving…" onClick={onClick}>
           Save
         </Button>
       );
-      expect(button).toHaveFocus();
+      expect(button).toBeDisabled();
       expect(button).toHaveAccessibleName("Saving…");
-      rerender(<Button>Saved</Button>);
-      expect(button).toHaveFocus();
+      await user.click(button);
+      expect(onClick).not.toHaveBeenCalled();
+      rerender(<Button onClick={onClick}>Saved</Button>);
+      expect(screen.getByRole("button")).toBe(button);
+      expect(button).not.toBeDisabled();
       expect(button).not.toHaveAttribute("aria-disabled");
+      await user.click(button);
+      expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([ButtonV1, Button])(
+      "preserves the native v1 loading contract for %s",
+      async (Component) => {
+        const user = userEvent.setup();
+        const onSubmit = vi.fn((event) => event.preventDefault());
+        const { container, rerender } = render(
+          <form onSubmit={onSubmit}>
+            <Component type="submit" loading>
+              Save
+            </Component>
+            <input aria-label="Next field" />
+          </form>
+        );
+        const button = screen.getByRole("button");
+        expect(button).toBeDisabled();
+        expect(
+          container.querySelector("svg.lucide-loader-circle")
+        ).toBeInTheDocument();
+        await user.tab();
+        expect(screen.getByRole("textbox")).toHaveFocus();
+        button.click();
+        expect(onSubmit).not.toHaveBeenCalled();
+        rerender(
+          <form onSubmit={onSubmit}>
+            <Component type="submit">Save</Component>
+          </form>
+        );
+        expect(screen.getByRole("button")).not.toBeDisabled();
+        await user.click(screen.getByRole("button"));
+        expect(onSubmit).toHaveBeenCalledTimes(1);
+      }
+    );
+
+    it("disables a slotted native button while loading", () => {
+      const childClick = vi.fn();
+      render(
+        <Button asChild loading>
+          <button onClick={childClick}>Save</button>
+        </Button>
+      );
+      const button = screen.getByRole("button");
+      expect(button).toBeDisabled();
+      button.click();
+      expect(childClick).not.toHaveBeenCalled();
+    });
+
+    it("replaces side icons with the same loading SVG as v1", () => {
+      render(
+        <Button
+          loading
+          leftIcon={<span>Before</span>}
+          rightIcon={<span>After</span>}
+        >
+          Save
+        </Button>
+      );
+      expect(screen.getByRole("button")).toHaveAccessibleName("Save");
+      expect(screen.queryByText("Before")).not.toBeInTheDocument();
+      expect(screen.queryByText("After")).not.toBeInTheDocument();
     });
 
     it("blocks child callbacks and link navigation when asChild is busy", () => {
@@ -453,7 +521,7 @@ describe("Button (v2) — v1 parity", () => {
     expect(v2.match(/<button/g)).toHaveLength(1);
   });
 
-  it("preserves the loading label while v1 remains natively disabled", () => {
+  it("preserves the loading label and native disabled state from v1", () => {
     const v1 = render(
       <ButtonV1 loading loadingText="Saving...">
         Save
@@ -466,7 +534,7 @@ describe("Button (v2) — v1 parity", () => {
     ).container.innerHTML;
     expect(v1).toContain('disabled=""');
     expect(v1).toContain("Saving...");
-    expect(v2).not.toContain('disabled=""');
+    expect(v2).toContain('disabled=""');
     expect(v2).toContain('aria-disabled="true"');
     expect(v2).toContain("Saving...");
   });

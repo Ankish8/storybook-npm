@@ -1,6 +1,32 @@
+import * as React from "react";
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import { EmptyState } from "../../v2/empty-state";
+import { assertNoBootstrapMarginBleed } from "../utils/bootstrap-compat";
+
+const preference = vi.hoisted(() => ({ reduce: false }));
+const originalMatchMedia = window.matchMedia;
+vi.spyOn(window, "matchMedia").mockImplementation((query) => {
+  if (query !== "(prefers-reduced-motion: reduce)")
+    return originalMatchMedia(query);
+  return {
+    get matches() {
+      return preference.reduce;
+    },
+    media: query,
+    onchange: null,
+    addEventListener() {},
+    removeEventListener() {},
+    addListener() {},
+    removeListener() {},
+    dispatchEvent: () => true,
+  };
+});
+
+beforeEach(() => {
+  preference.reduce = false;
+});
 
 describe("EmptyState", () => {
   it("renders title correctly", () => {
@@ -35,8 +61,8 @@ describe("EmptyState", () => {
 
   it("does not render icon container when icon is omitted", () => {
     const { container } = render(<EmptyState title="No results" />);
-    const iconWrapper = container.querySelector(".bg-semantic-info-surface");
-    expect(iconWrapper).not.toBeInTheDocument();
+    expect(container.querySelector(".size-\\[90px\\]")).not.toBeInTheDocument();
+    expect(container.querySelector("svg")).not.toBeInTheDocument();
   });
 
   it("renders actions when provided", () => {
@@ -90,6 +116,114 @@ describe("EmptyState", () => {
     );
     expect(screen.getByText("Long description text")).not.toHaveClass(
       "max-w-xs"
+    );
+  });
+
+  it("forwards its ref and native labeling, styles and event handlers", async () => {
+    const ref = React.createRef<HTMLDivElement>();
+    const onClick = vi.fn();
+    const { container } = render(
+      <EmptyState
+        ref={ref}
+        id="contacts-empty"
+        title="No contacts"
+        role="region"
+        aria-label="Contact search results"
+        style={{ minHeight: 240 }}
+        onClick={onClick}
+      />
+    );
+    const region = screen.getByRole("region", {
+      name: "Contact search results",
+    });
+    expect(ref.current).toBe(container.firstChild);
+    expect(region).toHaveAttribute("id", "contacts-empty");
+    expect(region).toHaveStyle({ minHeight: "240px" });
+    await userEvent.click(region);
+    expect(onClick).toHaveBeenCalledOnce();
+  });
+
+  it("keeps caller supplied actions keyboard accessible without stealing focus", async () => {
+    const clear = vi.fn();
+    const help = vi.fn();
+    render(
+      <EmptyState
+        illustration="no-results"
+        title="No contacts"
+        actions={
+          <>
+            <button onClick={clear}>Clear search</button>
+            <button onClick={help}>Search help</button>
+          </>
+        }
+      />
+    );
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: "Clear search" })).toHaveFocus();
+    await userEvent.keyboard("{Enter}");
+    expect(clear).toHaveBeenCalledOnce();
+    await userEvent.tab();
+    expect(screen.getByRole("button", { name: "Search help" })).toHaveFocus();
+    await userEvent.keyboard(" ");
+    expect(help).toHaveBeenCalledOnce();
+  });
+
+  it("resets Bootstrap paragraph margins for title and description", () => {
+    const { container } = render(
+      <EmptyState title="No contacts" description="Try a different name." />
+    );
+    assertNoBootstrapMarginBleed(container);
+  });
+});
+
+describe("EmptyState illustrations", () => {
+  it.each(["no-results", "offline", "caught-up", "not-found"] as const)(
+    "renders the %s preset as decorative, unfocusable vector art",
+    (illustration) => {
+      const { container } = render(
+        <EmptyState illustration={illustration} title="Nothing here" />
+      );
+      const art = container.querySelector(
+        "[data-slot='empty-state-illustration']"
+      );
+      expect(art).toHaveAttribute("data-illustration", illustration);
+      expect(art).toHaveAttribute("aria-hidden", "true");
+      expect(art).toHaveAttribute("focusable", "false");
+      expect(art?.querySelector("path")).toBeInTheDocument();
+      expect(screen.queryByRole("img")).not.toBeInTheDocument();
+      expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    }
+  );
+
+  it("preserves a supplied icon's content and semantics over a preset", () => {
+    const { container } = render(
+      <EmptyState
+        illustration="offline"
+        title="Offline"
+        icon={<svg role="img" aria-label="Custom sync indicator" />}
+      />
+    );
+    expect(
+      screen.getByRole("img", { name: "Custom sync indicator" })
+    ).toBeInTheDocument();
+    expect(
+      container.querySelector("[data-slot='empty-state-illustration']")
+    ).not.toBeInTheDocument();
+  });
+
+  it("shows the artwork immediately without travel under reduced motion", () => {
+    preference.reduce = true;
+    const { container, rerender } = render(
+      <EmptyState illustration="offline" title="Offline" />
+    );
+    const art = container.querySelector("svg") as SVGSVGElement;
+    expect(art.style.opacity).toBe("1");
+    expect(art.style.transform).toBe("none");
+    rerender(<EmptyState illustration="caught-up" title="Caught up" />);
+    expect(container.querySelectorAll("svg")).toHaveLength(1);
+    expect(container.querySelector("svg")).toHaveAttribute(
+      "data-illustration",
+      "caught-up"
     );
   });
 });

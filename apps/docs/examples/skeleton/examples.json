@@ -1,0 +1,30 @@
+{
+  "anatomy": false,
+  "examples": [
+    {
+      "id": "basic",
+      "title": "Text placeholder",
+      "description": "The default is a full-width line. Name the loading region in its parent; individual placeholders are decorative."
+    },
+    {
+      "id": "variants",
+      "title": "Both fills",
+      "description": "default and subtle use the theme backgrounds. Width and height accept numbers or CSS lengths."
+    },
+    {
+      "id": "shapes",
+      "title": "All shapes",
+      "description": "line, circle and rectangle reserve the shape of the content that will arrive."
+    },
+    {
+      "id": "animations",
+      "title": "All animation modes",
+      "description": "pulse remains the default. shimmer and none are optional; reduced motion leaves a static placeholder."
+    },
+    {
+      "id": "loaded-card",
+      "title": "Loading to content",
+      "description": "Match the final card footprint. This local toggle exposes the content without claiming a network request."
+    }
+  ]
+}

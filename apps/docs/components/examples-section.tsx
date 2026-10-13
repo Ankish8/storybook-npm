@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { Check, Copy } from "lucide-react";
+import { fullscreenFrameStyle, useFrameFullscreen } from "./frame-fullscreen";
 
 const channel = "myoperator-v2-docs";
 
@@ -26,8 +27,7 @@ function InlineText({ text }: { text: string }) {
 }
 
 /**
- * A highlighted source block with a copy button. Long code is cut off with a fade and an "Expand code" pill,
- * the way HeroUI's examples read; short code is shown in full.
+ * A highlighted source block with a copy button and consistent Expand/Collapse control for each live example.
  */
 function CodeBlock({
   code,
@@ -41,8 +41,7 @@ function CodeBlock({
   collapsible?: boolean;
 }) {
   const bodyId = useId();
-  const lines = code.split("\n").length - 1;
-  const cut = collapsible && lines > 6;
+  const cut = collapsible;
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   return (
@@ -110,6 +109,9 @@ function ExampleFrame({
   );
   const [open, setOpen] = useState(false);
   const [ready, setReady] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  useFrameFullscreen(fullscreen);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -161,6 +163,8 @@ function ExampleFrame({
             : 0
         );
         setOpen(message.open === true);
+        setDialogOpen(message.dialogOpen === true);
+        setFullscreen(message.fullscreen === true);
         setReady(true);
       } else if (message.type === "ready") {
         frame.current?.contentWindow?.postMessage(
@@ -190,6 +194,7 @@ function ExampleFrame({
           ref={frame}
           title={`${example.title} example`}
           className="example-frame"
+          data-preview-fullscreen={fullscreen || undefined}
           src={src}
           loading="lazy"
           onLoad={() =>
@@ -204,8 +209,29 @@ function ExampleFrame({
             // Clipped to the card (and click-through below it) until a popup opens, then the popup shows over the page.
             clipPath: room && !open ? `inset(0 0 ${room}px 0)` : undefined,
             zIndex: open ? 30 : 1,
+            ...(fullscreen ? fullscreenFrameStyle : {}),
           }}
         />
+      )}
+      {dialogOpen && !fullscreen && (
+        <button
+          type="button"
+          className="doc-button doc-button-bordered migration-fullscreen"
+          onClick={() => {
+            frame.current?.focus({ preventScroll: true });
+            frame.current?.contentWindow?.postMessage(
+              {
+                channel,
+                type: "show-fullscreen",
+                component: slug,
+                example: example.id,
+              },
+              origin
+            );
+          }}
+        >
+          Open fullscreen
+        </button>
       )}
     </div>
   );

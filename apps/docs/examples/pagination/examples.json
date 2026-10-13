@@ -1,0 +1,35 @@
+{
+  "examples": [
+    {
+      "id": "window",
+      "title": "Animated page window",
+      "description": "Opt in with pageWindow={5}. Numbers shift horizontally as you move through the list; First and Last show both boundaries. The selected mark follows the active page. Reduced motion removes travel."
+    },
+    {
+      "id": "basic",
+      "title": "Existing ellipsis pagination",
+      "description": "Leave pageWindow unset to keep the v1 page range, first/last links, siblingCount and onPageChange behavior. Change only the import path when migrating."
+    },
+    {
+      "id": "summary",
+      "title": "Page a list with a summary",
+      "description": "The list changes with currentPage. totalItems and pageSize provide the polite range announcement, including the final partial page.",
+      "minHeight": 360
+    },
+    {
+      "id": "links",
+      "title": "Native links and disabled controls",
+      "description": "Compose the existing primitives for URL navigation. Active links use aria-current=page; disabled controls keep their anchor semantics, block activation and leave the tab order."
+    },
+    {
+      "id": "narrow",
+      "title": "Compact window",
+      "description": "Use three slots in a narrow container. Longer windows scroll locally when necessary. Number slots stay stable, and Previous/Next labels hide below the small breakpoint."
+    },
+    {
+      "id": "rtl",
+      "title": "Right to left",
+      "description": "Inherit dir=rtl from the app. Arrow icons mirror, page progression stays logical, and the animated belt follows the reading direction."
+    }
+  ]
+}

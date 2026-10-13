@@ -1,4 +1,12 @@
+"use client";
+
 import * as React from "react";
+import {
+  AnimatePresence,
+  motion,
+  useIsPresent,
+  useReducedMotion,
+} from "motion/react";
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -53,9 +61,11 @@ const PaginationContent = React.forwardRef<
     const list = listRef.current;
     if (!list) return;
     const measure = () => {
-      const active = list.querySelector<HTMLElement>(
-        '[data-slot="pagination-link"][data-active="true"]'
-      );
+      const active = Array.from(
+        list.querySelectorAll<HTMLElement>(
+          '[data-slot="pagination-link"][data-active="true"]'
+        )
+      ).find((link) => !link.closest('[aria-hidden="true"], [inert]'));
       if (!active) {
         list.removeAttribute("data-page-indicator");
         return;
@@ -65,7 +75,7 @@ const PaginationContent = React.forwardRef<
       if (!rect.width || !rect.height) return;
       list.style.setProperty(
         "--v2-page-x",
-        `${rect.left - bounds.left + list.scrollLeft - list.clientLeft}px`
+        `${active.parentElement?.hasAttribute("data-window-page") ? active.parentElement.offsetLeft + active.offsetLeft : rect.left - bounds.left + list.scrollLeft - list.clientLeft}px`
       );
       list.style.setProperty(
         "--v2-page-y",
@@ -80,7 +90,7 @@ const PaginationContent = React.forwardRef<
       subtree: true,
       childList: true,
       attributes: true,
-      attributeFilter: ["data-active"],
+      attributeFilter: ["data-active", "aria-hidden", "inert"],
     });
     const resize =
       typeof ResizeObserver === "undefined"
@@ -101,9 +111,9 @@ const PaginationContent = React.forwardRef<
       data-slot="pagination-content"
       className={cn(
         "relative isolate flex flex-row items-center gap-1 list-none m-0 p-0",
-        "before:pointer-events-none before:absolute before:left-0 before:top-0 before:-z-10 before:h-[var(--v2-page-height,0px)] before:w-[var(--v2-page-width,0px)] before:translate-x-[var(--v2-page-x,0px)] before:translate-y-[var(--v2-page-y,0px)] before:rounded-lg before:border before:border-solid before:border-semantic-border-layout before:bg-semantic-bg-primary before:shadow-[0_1px_2px_rgba(0,0,0,0.035)] before:content-[''] before:opacity-0 data-[page-indicator=true]:before:opacity-100 before:transition-[transform,width,height] before:[transition-duration:800ms] before:[transition-timing-function:linear(0,0.0408,0.1369,0.2586,0.3863,0.5079,0.6169,0.7102,0.7872,0.8488,0.8966,0.9327,0.9591,0.9778,0.9906,0.9989,1.0038,1.0065,1.0076,1.0077,1.0071,1.0063,1.0053,1.0043,1.0034,1.0026,1.002,1.0014,1.001,1.0007,1.0004,1.0002,1)] motion-reduce:before:transition-none",
+        "before:pointer-events-none before:absolute before:left-0 before:top-0 before:-z-10 before:h-[var(--v2-page-height,0px)] before:w-[var(--v2-page-width,0px)] before:translate-x-[var(--v2-page-x,0px)] before:translate-y-[var(--v2-page-y,0px)] before:rounded-lg before:border before:border-solid before:border-semantic-primary before:bg-semantic-primary before:shadow-[0_1px_2px_rgba(0,0,0,0.035)] before:content-[''] before:opacity-0 data-[page-indicator=true]:before:opacity-100 before:transition-[transform,width,height] before:[transition-duration:800ms] before:[transition-timing-function:linear(0,0.0408,0.1369,0.2586,0.3863,0.5079,0.6169,0.7102,0.7872,0.8488,0.8966,0.9327,0.9591,0.9778,0.9906,0.9989,1.0038,1.0065,1.0076,1.0077,1.0071,1.0063,1.0053,1.0043,1.0034,1.0026,1.002,1.0014,1.001,1.0007,1.0004,1.0002,1)] motion-reduce:before:transition-none",
         // The mark travels on Arc's morph spring (stiffness 155, damping ratio 0.84), sampled as linear() over 800ms.
-        "[&[data-page-indicator=true]_[data-active=true]]:border-transparent [&[data-page-indicator=true]_[data-active=true]]:bg-transparent [&[data-page-indicator=true]_[data-active=true]]:shadow-none",
+        "[&[data-page-indicator=true]_[data-active=true]]:border-transparent [&[data-page-indicator=true]_[data-active=true]]:bg-transparent [&[data-page-indicator=true]_[data-active=true]]:shadow-none [@media(hover:hover)_and_(pointer:fine)]:[&[data-page-indicator=true]_[data-active=true]:hover:not([aria-disabled=true])]:bg-semantic-primary-hover",
         className
       )}
       {...props}
@@ -137,6 +147,7 @@ function PaginationLink({
   isActive,
   size = "icon-sm",
   onClick,
+  onAuxClick,
   ...props
 }: PaginationLinkProps) {
   return (
@@ -154,18 +165,30 @@ function PaginationLink({
         }
         onClick?.(event);
       }}
+      onAuxClick={(event) => {
+        if (
+          props["aria-disabled"] === true ||
+          props["aria-disabled"] === "true"
+        ) {
+          event.preventDefault();
+          return;
+        }
+        onAuxClick?.(event);
+      }}
       className={cn(
         buttonVariants({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
-        // Arc's page button: 12px tabular numerals at regular weight, colour and fill fade in 160ms, and only the
-        // arrows press (0.96, see PaginationPrevious/Next). The ghost fill and text hover are re-declared behind
-        // (hover: hover) so a tapped link does not stay tinted on touch screens.
+        // The selected page and enabled hover use contrasting semantic fills. Hover stays
+        // behind fine-pointer media queries so touch never keeps a hovered tint. Only
+        // arrows press (0.96); the traveling indicator and window spring remain unchanged.
         "tabular-nums text-xs font-normal active:scale-100 transition-[background-color,color,opacity,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)]",
+        "motion-reduce:transition-none motion-reduce:active:transform-none",
         isActive
-          ? "bg-semantic-bg-primary text-[var(--v2-text-primary,#484848)] shadow-[0_1px_2px_rgba(0,0,0,0.035)] [@media(hover:hover)]:hover:bg-semantic-bg-primary"
-          : "text-[var(--v2-text-secondary,#5E5E5E)] hover:bg-transparent [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]",
+          ? "bg-semantic-primary text-semantic-text-inverted shadow-[0_1px_2px_rgba(0,0,0,0.035)]"
+          : "text-[var(--v2-text-secondary,#5E5E5E)]",
+        "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-semantic-primary-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-semantic-text-inverted",
         className
       )}
       {...props}
@@ -205,7 +228,7 @@ function PaginationPrevious({
       )}
       {...props}
     >
-      <ChevronLeftIcon />
+      <ChevronLeftIcon className="rtl:rotate-180" aria-hidden="true" />
       <span className="hidden sm:block">Previous</span>
     </PaginationLink>
   );
@@ -239,7 +262,7 @@ function PaginationNext({
       {...props}
     >
       <span className="hidden sm:block">Next</span>
-      <ChevronRightIcon />
+      <ChevronRightIcon className="rtl:rotate-180" aria-hidden="true" />
     </PaginationLink>
   );
 }
@@ -323,6 +346,8 @@ export interface PaginationWidgetProps {
   pageSize?: number;
   /** Horizontal placement of the page controls (default: "center", or "end" when the summary is shown) */
   align?: "start" | "center" | "end";
+  /** Opt in to a sliding, continuous window of 3–9 pages. Unset keeps the v1 ellipsis range. */
+  pageWindow?: number;
   /** Additional CSS classes for the outer wrapper */
   className?: string;
 }
@@ -365,6 +390,155 @@ function usePaginationRange(
   return pages;
 }
 
+// Stable page keys let existing numbers travel horizontally as the window moves.
+// The outgoing links leave the accessibility tree and tab order immediately.
+const WindowPage = React.forwardRef<
+  HTMLLIElement,
+  {
+    page: number;
+    currentPage: number;
+    shift: number;
+    reduced: boolean;
+    onPageChange: (page: number) => void;
+  }
+>(({ page, currentPage, shift, reduced, onPageChange }, ref) => {
+  const present = useIsPresent();
+  return (
+    <motion.li
+      ref={ref}
+      data-slot="pagination-item"
+      data-window-page=""
+      aria-hidden={present ? undefined : true}
+      className="relative shrink-0"
+      layout={reduced ? false : "position"}
+      custom={shift}
+      variants={{
+        enter: (direction: number) => ({
+          opacity: 0,
+          x: direction > 0 ? 40 : -40,
+        }),
+        center: { opacity: 1, x: 0 },
+        exit: (direction: number) => ({
+          opacity: 0,
+          x: direction > 0 ? -40 : 40,
+        }),
+      }}
+      initial={reduced ? false : "enter"}
+      animate="center"
+      exit={reduced ? { opacity: 0 } : "exit"}
+      transition={
+        reduced
+          ? { duration: 0 }
+          : {
+              layout: { type: "spring", stiffness: 240, damping: 30 },
+              x: { type: "spring", stiffness: 240, damping: 30 },
+              opacity: { duration: 0.16 },
+            }
+      }
+    >
+      <PaginationLink
+        href="#"
+        aria-label={"Page " + page}
+        isActive={page === currentPage}
+        tabIndex={present ? undefined : -1}
+        onClick={(event) => {
+          event.preventDefault();
+          if (present) onPageChange(page);
+        }}
+      >
+        {page}
+      </PaginationLink>
+    </motion.li>
+  );
+});
+WindowPage.displayName = "WindowPage";
+
+function PaginationWindow({
+  currentPage,
+  totalPages,
+  pageWindow,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalPages: number;
+  pageWindow: number;
+  onPageChange: (page: number) => void;
+}) {
+  const reduced = useReducedMotion() ?? false;
+  const count = Number.isFinite(totalPages)
+    ? Math.max(0, Math.floor(totalPages))
+    : 0;
+  const current = Math.max(1, Math.min(count, Math.floor(currentPage) || 1));
+  const size = Number.isFinite(pageWindow)
+    ? Math.max(3, Math.min(9, Math.floor(pageWindow)))
+    : 5;
+  const start = Math.max(
+    1,
+    Math.min(count - size + 1, current - Math.floor(size / 2))
+  );
+  const [previousStart, setPreviousStart] = React.useState(start);
+  const [shift, setShift] = React.useState(0);
+  if (start !== previousStart) {
+    setShift(start - previousStart);
+    setPreviousStart(start);
+  }
+  // Track direction from the inherited DOM rather than requiring a new v1 prop.
+  const listRef = React.useRef<HTMLUListElement>(null);
+  const [rtl, setRtl] = React.useState(false);
+  React.useEffect(() => {
+    if (listRef.current)
+      setRtl(getComputedStyle(listRef.current).direction === "rtl");
+  }, [start]);
+  const pages = Array.from(
+    { length: Math.min(count, size) },
+    (_, index) => start + index
+  );
+  return (
+    <PaginationContent
+      ref={listRef}
+      className="shrink-0"
+      data-page-window="true"
+    >
+      <PaginationItem>
+        <PaginationPrevious
+          href="#"
+          disabled={count === 0 || current <= 1}
+          onClick={(event) => {
+            event.preventDefault();
+            if (current > 1) onPageChange(current - 1);
+          }}
+        />
+      </PaginationItem>
+      <AnimatePresence
+        initial={false}
+        mode="popLayout"
+        custom={rtl ? -shift : shift}
+      >
+        {pages.map((page) => (
+          <WindowPage
+            key={page}
+            page={page}
+            currentPage={current}
+            shift={rtl ? -shift : shift}
+            reduced={reduced}
+            onPageChange={onPageChange}
+          />
+        ))}
+      </AnimatePresence>
+      <PaginationItem>
+        <PaginationNext
+          href="#"
+          disabled={count === 0 || current >= count}
+          onClick={(event) => {
+            event.preventDefault();
+            if (current < count) onPageChange(current + 1);
+          }}
+        />
+      </PaginationItem>
+    </PaginationContent>
+  );
+}
+
 const paginationAlignClasses = {
   start: "justify-start",
   center: "justify-center",
@@ -380,6 +554,7 @@ function PaginationWidget({
   pageSize,
   align,
   className,
+  pageWindow,
 }: PaginationWidgetProps) {
   const pages = usePaginationRange(currentPage, totalPages, siblingCount);
   const showInfo = totalItems !== undefined && pageSize !== undefined;
@@ -392,51 +567,62 @@ function PaginationWidget({
         paginationAlignClasses[resolvedAlign],
         !showInfo && "w-full",
         showInfo && "p-0",
+        pageWindow !== undefined &&
+          "max-w-full justify-start overflow-x-auto [&>ul]:mx-auto",
         !showInfo && className
       )}
     >
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#"
-            disabled={currentPage === 1}
-            onClick={(e) => {
-              e.preventDefault();
-              if (currentPage > 1) onPageChange(currentPage - 1);
-            }}
-          />
-        </PaginationItem>
-        {pages.map((page, idx) =>
-          page === "ellipsis" ? (
-            <PaginationItem key={`ellipsis-${idx}`}>
-              <PaginationEllipsis />
-            </PaginationItem>
-          ) : (
-            <PaginationItem key={page}>
-              <PaginationLink
-                href="#"
-                isActive={page === currentPage}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onPageChange(page);
-                }}
-              >
-                {page}
-              </PaginationLink>
-            </PaginationItem>
-          )
-        )}
-        <PaginationItem>
-          <PaginationNext
-            href="#"
-            disabled={currentPage === totalPages}
-            onClick={(e) => {
-              e.preventDefault();
-              if (currentPage < totalPages) onPageChange(currentPage + 1);
-            }}
-          />
-        </PaginationItem>
-      </PaginationContent>
+      {pageWindow !== undefined ? (
+        <PaginationWindow
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageWindow={pageWindow}
+          onPageChange={onPageChange}
+        />
+      ) : (
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              disabled={currentPage === 1}
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage > 1) onPageChange(currentPage - 1);
+              }}
+            />
+          </PaginationItem>
+          {pages.map((page, idx) =>
+            page === "ellipsis" ? (
+              <PaginationItem key={`ellipsis-${idx}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href="#"
+                  isActive={page === currentPage}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onPageChange(page);
+                  }}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            )
+          )}
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              disabled={currentPage === totalPages}
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) onPageChange(currentPage + 1);
+              }}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      )}
     </Pagination>
   );
 

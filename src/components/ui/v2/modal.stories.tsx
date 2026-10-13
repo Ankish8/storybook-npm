@@ -243,7 +243,7 @@ const meta: Meta<ConfirmArgs> = {
             [
               "Actions",
               "Buttons right-aligned on the dialog surface",
-              "Muted footer strip with a top border and compact 32px buttons; right-aligned, equal-width in size xs, stacked on mobile. Focus lands on Cancel",
+              "Muted footer strip with a top border and 44px buttons matching the fields; right-aligned, equal-width in size xs, stacked on mobile. Focus lands on Cancel",
             ],
             [
               "Close button",

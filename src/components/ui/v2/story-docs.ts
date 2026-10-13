@@ -73,7 +73,7 @@ export function v2ComponentDocs({
     summary +
     (hasV1
       ? " **v2 design** — existing v1 props remain available, so moving a screen starts with an import-path change."
-      : " **v2 design** — a new component from the v2 Figma library.") +
+      : " **v2 design** — an additive component in the v2 library.") +
     "\n\n```bash\nnpx myoperator-ui add v2-" +
     name +
     "\n```" +

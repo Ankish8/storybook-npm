@@ -43,6 +43,8 @@ describe("complete v2 registry", () => {
     const expected = new Set([
       "split-button",
       "action-button", // New async control; there is no v1 or Figma equivalent.
+      "metric-card", // Dedicated metric display beside the existing UiCard.
+      "empty-states", // Illustrated product patterns composed from EmptyState.
       ...inventory.map((item: { component: string }) => item.component),
       ...fs
         .readdirSync(path.join(root, "src/components/ui"))

@@ -36,7 +36,6 @@ categories:
       - unread-separator
       - v2-unread-separator
       - v2-button
-      - v2-button-group
       - v2-action-button
       - v2-split-button
 
@@ -128,6 +127,8 @@ categories:
       - v2-ui-card
       - v2-page-footer
       - v2-scrollbar
+      - v2-metric-card
+      - v2-empty-states
 
   custom:
     description: "Multi-file complex components"
@@ -2335,6 +2336,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
+    internalDependencies:
+      - v2-input
 
   v2-select-field:
     description: "V2 select field with search, groups and current pagination"
@@ -2347,7 +2350,6 @@ components:
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
     internalDependencies:
-      - v2-input
       - v2-select
 
   v2-phone-input:
@@ -2356,6 +2358,7 @@ components:
     path: "v2/phone-input"
     unprefixed: true
     dependencies:
+      - "@floating-ui/react-dom"
       - "class-variance-authority"
       - "lucide-react"
       - "react-country-flag@^3.1.0"
@@ -2439,6 +2442,7 @@ components:
     path: "v2/dropdown-menu"
     unprefixed: true
     dependencies:
+      - "motion@^14.0.0"
       - "@radix-ui/react-dropdown-menu@^2.1.16"
       - "lucide-react"
       - "clsx"
@@ -2478,7 +2482,6 @@ components:
       - "class-variance-authority"
       - "clsx"
       - "tailwind-merge@^2.6.0"
-      - "motion@^14.0.0"
     internalDependencies:
       - v2-switch
 
@@ -2535,6 +2538,7 @@ components:
     path: "v2/pagination"
     unprefixed: true
     dependencies:
+      - "motion@^14.0.0"
       - "lucide-react"
       - "clsx"
       - "tailwind-merge@^2.6.0"
@@ -2653,19 +2657,6 @@ components:
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
 
-  v2-button-group:
-    description: "Joined actions with a shared spring highlight, animated feedback and optional menu; preserves v2 selection compatibility"
-    category: core
-    path: "v2/button-group"
-    unprefixed: true
-    dependencies:
-      - "clsx"
-      - "tailwind-merge@^2.6.0"
-      - "motion@^14.0.0"
-      - "lucide-react"
-    internalDependencies:
-      - v2-dropdown-menu
-
   v2-date-range-picker:
     description: "DateRangePicker (v2 design); same API as date-range-picker"
     category: form
@@ -2731,6 +2722,7 @@ components:
     dependencies:
       - "clsx"
       - "tailwind-merge@^2.6.0"
+      - "motion@^14.0.0"
 
   v2-scrollbar:
     description: "Native scroll container with v2 scrollbar treatment"
@@ -2766,6 +2758,8 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "motion@^14.0.0"
+
+      - "lucide-react"
 
   v2-contact-list-item:
     description: "Contact row using v2 visual primitives"
@@ -2865,3 +2859,28 @@ components:
     internalDependencies:
       - v2-button
       - v2-dropdown-menu
+
+  v2-metric-card:
+    description: "A compact metric card with a value, trend and optional comparison"
+    category: layout
+    path: "v2/metric-card"
+    unprefixed: true
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+
+      - "lucide-react"
+
+  v2-empty-states:
+    description: "Illustrated empty-state patterns for search, connectivity and completion"
+    category: layout
+    path: "v2/empty-states"
+    unprefixed: true
+    dependencies:
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+    internalDependencies:
+      - v2-button
+      - v2-empty-state
+      - v2-tabs

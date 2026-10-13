@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig.app.json",
   "include": [
-    "../../src/components/ui/v2/button-group.stories.tsx",
     "../../src/components/ui/v2/otp-input.stories.tsx",
     "../../src/components/ui/v2/breadcrumbs.stories.tsx",
     "../../src/components/ui/v2/radio.stories.tsx",

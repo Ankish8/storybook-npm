@@ -5,7 +5,7 @@ import path from 'path'
 import prompts from 'prompts'
 import ora from 'ora'
 import { getRegistry } from '../utils/registry.js'
-import { configExists, getTailwindPrefix } from '../utils/config.js'
+import { configExists, getTailwindPrefix, ensureUtilsPrefixConfig } from '../utils/config.js'
 
 interface AddOptions {
   all: boolean
@@ -204,6 +204,9 @@ export async function add(components: string[], options: AddOptions) {
   const spinner = ora('Installing components...').start()
 
   try {
+    if (components.some((name) => registry[name].unprefixed)) {
+      await ensureUtilsPrefixConfig(cwd)
+    }
     const installed: { path: string; basePath: string }[] = []
     const dependencies: Set<string> = new Set()
     const installedComponents: Set<string> = new Set()

@@ -26,7 +26,13 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@storybook/addon-vitest",
     "storybook-addon-pseudo-states",
-    "storybook-design-token",
+    {
+      name: "storybook-design-token",
+      options: {
+        // Match preview.ts: do not scan generated builds and image evidence on every module transform.
+        designTokenGlob: "src/storybook/design-tokens.css",
+      },
+    },
     "@storybook/addon-designs"
   ],
   framework: {

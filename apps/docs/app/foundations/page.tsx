@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MigrationSection } from "@docs/components/migration-comparison";
 
 export const metadata = { title: "Foundations" };
 export default function Foundations() {
@@ -36,7 +37,7 @@ export default function Foundations() {
               </div>
             ))}
           </div>
-          <h2>Typography</h2>
+          <h2 id="typography">Typography</h2>
           <p>
             V2 uses Inter. Ordinary titles, labels, and tabs use weight 500.
             Body text, descriptions, counts, and metadata use 400. Filled
@@ -49,6 +50,7 @@ export default function Foundations() {
             trigger. Reduced motion removes spatial movement while keeping
             useful feedback.
           </p>
+          <MigrationSection slug="typography" title="Typography" />
           <h2>Using the library</h2>
           <pre>
             <code>

@@ -20,7 +20,7 @@ test("every catalogued CSF module imports and all stories expose JSON-safe args 
     const component = path.split("/").at(-1)!.replace(".stories.tsx", "");
     const entries = exportedStories(module);
     expect(
-      entries.some((entry: any) => entry.id === "Overview"),
+      entries.some((entry) => entry.id === "Overview"),
       component
     ).toBe(true);
     for (const entry of entries) {

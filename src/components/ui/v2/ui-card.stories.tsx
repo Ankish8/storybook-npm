@@ -8,8 +8,8 @@ import {
   waitFor,
   within,
 } from "storybook/test";
-import { useState } from "react";
-import { MessageSquare, Plus, TrendingUp } from "lucide-react";
+import { useId, useState } from "react";
+import { Check, MessageSquare, Plus, TrendingUp } from "lucide-react";
 import {
   UiCard,
   UiCardHeader,
@@ -22,7 +22,6 @@ import {
 import { Button } from "./button";
 import { Tag } from "./tag";
 import { gallery } from "../../../storybook/v2-preview";
-import { v2ComponentDocs } from "./story-docs";
 type Args = UiCardProps & {
   heading: string;
   description: string;
@@ -51,10 +50,16 @@ function Content(args: Args) {
   return (
     <UiCardContent>
       {args.variant === "icon" && (
-        <MessageSquare className="mb-2 size-6 text-[var(--v2-text-secondary,#5E5E5E)]" />
+        <MessageSquare
+          aria-hidden="true"
+          className="mb-2 size-6 text-semantic-text-secondary"
+        />
       )}
       {args.variant === "action" && (
-        <Plus className="mb-2 size-6 text-semantic-text-link" />
+        <Plus
+          aria-hidden="true"
+          className="mb-2 size-6 text-semantic-text-link"
+        />
       )}
       <UiCardHeader>
         <UiCardTitle>{args.heading}</UiCardTitle>
@@ -67,11 +72,11 @@ function Content(args: Args) {
       )}
       {args.variant === "metrics" && (
         <div className="flex items-end gap-3">
-          <span className="text-[32px] font-medium text-[var(--v2-text-primary,#484848)]">
+          <span className="text-[32px] font-medium text-semantic-text-primary">
             128
           </span>
           <span className="inline-flex items-center gap-1 text-xs text-semantic-success-text">
-            <TrendingUp className="size-3" />
+            <TrendingUp aria-hidden="true" className="size-3" />
             12%
           </span>
         </div>
@@ -89,10 +94,7 @@ function Content(args: Args) {
           >
             {preview ? "Close preview" : "Preview"}
           </Button>
-          <p
-            role="status"
-            className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
-          >
+          <p role="status" className="m-0 text-xs text-semantic-text-muted">
             {preview ? `Previewing ${args.heading}` : ""}
           </p>
         </UiCardFooter>
@@ -101,7 +103,7 @@ function Content(args: Args) {
   );
 }
 const meta: Meta<Args> = {
-  title: "V2/Components/UiCard",
+  title: "V2/Components/Card",
   component: UiCard,
   tags: ["autodocs"],
   parameters: {
@@ -119,38 +121,37 @@ const meta: Meta<Args> = {
     },
     docs: {
       description: {
-        component: v2ComponentDocs({
-          name: "ui-card",
-          exportName:
-            "UiCard, UiCardHeader, UiCardTitle, UiCardDescription, UiCardContent, UiCardFooter",
-          hasV1: false,
-          summary:
-            "Content cards for templates, actions, metrics and selectable options.",
-          changes: [
-            ["Container", "—", "16px padding; 12px corners; 1px border"],
-            ["Default", "—", "Skeuomorphic shadow; white surface"],
-            ["Hover", "—", "Light gradient and 0 2px 8px shadow"],
-            ["Selected", "—", "Teal border, brand surface and 4px glow"],
-          ],
-          tokens: [
-            ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            [
-              "Selected surface",
-              "--semantic-brand-surface",
-              "#EAF8FA",
-              "#EAF8FA",
-            ],
-            [
-              "Selected border",
-              "--semantic-border-accent",
-              "#27ABB8",
-              "#27ABB8",
-            ],
-            ["Action border", "--semantic-info-border", "#A8C0EC", "#A8C0EC"],
-          ],
-          guidance:
-            "Use content slots for your own data. Adding onClick gives the card keyboard activation; avoid nesting other interactive actions inside that card. Use a non-interactive card for cards with footer buttons.",
-        }),
+        component: `Card groups related content with optional selection or footer actions. The published exports remain \`UiCard\`, \`UiCardHeader\`, \`UiCardTitle\`, \`UiCardDescription\`, \`UiCardContent\` and \`UiCardFooter\`.
+
+\`\`\`bash
+npx myoperator-ui add v2-ui-card
+\`\`\`
+
+\`\`\`tsx
+import { UiCard, UiCardHeader, UiCardTitle, UiCardDescription, UiCardContent, UiCardFooter } from "@/components/ui/v2/ui-card";
+\`\`\`
+
+This is an existing v2 component with no v1 counterpart. Its defaults stay \`variant="default"\`, \`selected={false}\` and \`disabled={false}\`. Default, template and legacy metrics cards are 300px wide; icon and action cards are 200px wide. Override width with \`className\`; there is no size prop. v2 uses unprefixed Tailwind classes.
+
+The surface keeps 20px padding, 12px corners and a 1px border. Interactive cards use a subtle border change on fine-pointer hover, a selected surface and visible keyboard focus. They never lift, scale or gain a hover shadow. Reduced motion removes the color transition.
+
+Use \`onClick\` for a single card action; Enter and Space activate it from the card itself. A card with \`role="button"\` should not contain other interactive controls. For cards containing buttons, links or inputs, omit the root \`onClick\` and compose those controls in the content or footer. Legacy nested controls keep their own click and keyboard actions without activating the card. Host \`onKeyDown\` cancellation is respected. Disabled interactive cards ignore activation and leave the tab order.
+
+The \`metrics\` variant remains supported. For dedicated statistics, trends and chart compositions, use the separate MetricCard component.
+
+### Design Tokens
+
+| Purpose | CSS variable | Preview |
+| --- | --- | --- |
+| Surface | \`--semantic-bg-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-bg-primary);border:1px solid var(--semantic-border-layout);border-radius:4px"></span> |
+| Border | \`--semantic-border-layout\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-layout);border-radius:4px"></span> |
+| Hover border | \`--semantic-border-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-secondary);border-radius:4px"></span> |
+| Selected surface | \`--semantic-brand-surface\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-brand-surface);border-radius:4px"></span> |
+| Selected border | \`--semantic-border-accent\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-accent);border-radius:4px"></span> |
+| Keyboard focus | \`--semantic-border-focus\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-focus);border-radius:4px"></span> |
+| Title | \`--semantic-text-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-primary);border-radius:4px"></span> |
+| Description | \`--semantic-text-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-secondary);border-radius:4px"></span> |
+| Disabled text | \`--semantic-text-muted\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-muted);border-radius:4px"></span> |`,
       },
     },
     design: {
@@ -182,7 +183,7 @@ const meta: Meta<Args> = {
         {...cardProps(args)}
         className="max-w-full"
         onClick={
-          args.showActions
+          args.showActions || !args.onClick
             ? undefined
             : () => {
                 notifyCardClick(args.onClick);
@@ -197,25 +198,162 @@ const meta: Meta<Args> = {
 };
 export default meta;
 type Story = StoryObj<typeof meta>;
-export const Overview: Story = {};
+function RoutingCard() {
+  const [expanded, setExpanded] = useState(false);
+  const detailsId = useId();
+  const titleId = useId();
+  return (
+    <UiCard className="w-full" role="article" aria-labelledby={titleId}>
+      <UiCardContent>
+        <UiCardHeader>
+          <UiCardTitle id={titleId}>Conversation routing</UiCardTitle>
+        </UiCardHeader>
+        <UiCardDescription>
+          Keep new conversations in the right inbox.
+        </UiCardDescription>
+        <div id={detailsId} hidden={!expanded}>
+          <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-semantic-border-layout pt-3 text-xs">
+            <dt className="text-semantic-text-muted">Support</dt>
+            <dd className="m-0 text-semantic-text-primary">General inbox</dd>
+            <dt className="text-semantic-text-muted">Sales</dt>
+            <dd className="m-0 text-semantic-text-primary">Sales inbox</dd>
+          </dl>
+        </div>
+      </UiCardContent>
+      <UiCardFooter>
+        <Button
+          size="sm"
+          variant="outline"
+          aria-expanded={expanded}
+          aria-controls={detailsId}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Hide routing" : "Show routing"}
+        </Button>
+      </UiCardFooter>
+    </UiCard>
+  );
+}
+
+export const Overview: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Select a workspace card with a click, Enter or Space. The content card beside it keeps its own footer button, which reveals the routing details.",
+      },
+    },
+  },
+  render: function OverviewRender(args) {
+    const [, updateArgs] = useArgs();
+    return (
+      <div className="grid w-[640px] max-w-full items-start gap-4 sm:grid-cols-2">
+        <div className="min-w-0 space-y-3">
+          <UiCard
+            {...cardProps(args)}
+            className="w-full"
+            onClick={
+              args.showActions || !args.onClick
+                ? undefined
+                : () => {
+                    notifyCardClick(args.onClick);
+                    updateArgs({ selected: !args.selected });
+                  }
+            }
+          >
+            <Content {...args} />
+            {!args.showActions && (
+              <div className="mt-5 flex items-center gap-2 text-xs text-semantic-text-muted">
+                <Check
+                  aria-hidden="true"
+                  className={args.selected ? "size-3.5" : "size-3.5 opacity-0"}
+                />
+                <span>
+                  {args.selected ? "Selected workspace" : "Select workspace"}
+                </span>
+              </div>
+            )}
+          </UiCard>
+          <p role="status" className="m-0 text-xs text-semantic-text-muted">
+            {args.selected
+              ? `${args.heading} selected`
+              : "Choose a workspace to continue"}
+          </p>
+        </div>
+        <RoutingCard />
+      </div>
+    );
+  },
+};
 export const Template: Story = { args: { variant: "template" } };
 export const WithIcon: Story = { args: { variant: "icon" } };
 export const Action: Story = {
   args: {
     variant: "action",
-    heading: "Create new bot",
-    description: "Start with a blank configuration.",
+    heading: "Blank configuration",
+    description: "Select an empty starting point.",
   },
 };
 export const Metrics: Story = {
+  name: "Legacy metrics variant",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "The existing metrics variant remains compatible. Use MetricCard for dedicated statistics and trend compositions.",
+      },
+    },
+  },
   args: {
     variant: "metrics",
     heading: "Conversations",
     description: "Total conversations this week",
+    onClick: undefined,
   },
 };
 export const Selected: Story = { args: { variant: "icon", selected: true } };
 export const Disabled: Story = { args: { disabled: true } };
+export const ContentCard: Story = {
+  parameters: gallery(
+    [
+      "variant",
+      "heading",
+      "description",
+      "selected",
+      "disabled",
+      "showActions",
+      "onClick",
+    ],
+    "A passive card with a real footer action. Show routing reveals the local routing details; Hide routing closes them."
+  ),
+  render: () => (
+    <div className="w-[300px] max-w-full">
+      <RoutingCard />
+    </div>
+  ),
+};
+export const CustomWidths: Story = {
+  parameters: gallery(
+    ["variant", "selected", "showActions", "onClick"],
+    "Card has no size prop. These content cards use className to set narrow, default and container widths."
+  ),
+  render: (args) => (
+    <div className="flex w-[680px] max-w-full flex-wrap items-start gap-4">
+      {(["w-[200px]", "w-[300px]", "w-full"] as const).map((width) => (
+        <UiCard
+          {...cardProps(args)}
+          key={width}
+          variant="default"
+          className={width}
+          selected={false}
+          onClick={undefined}
+        >
+          <Content {...args} variant="default" showActions={false} />
+        </UiCard>
+      ))}
+    </div>
+  ),
+};
 export const AllVariants: Story = {
   parameters: gallery(
     ["variant"],
@@ -225,7 +363,7 @@ export const AllVariants: Story = {
     <div className="grid w-[1000px] max-w-full gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {variants.map((variant) => (
         <section key={variant} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium capitalize text-[var(--v2-text-primary,#484848)]">
+          <h3 className="m-0 text-sm font-medium capitalize text-semantic-text-primary">
             {variant}
           </h3>
           <UiCard {...cardProps(args)} variant={variant} onClick={undefined}>
@@ -239,20 +377,20 @@ export const AllVariants: Story = {
 export const States: Story = {
   parameters: gallery(
     ["selected", "disabled", "showActions"],
-    "Default, hover, selected and disabled. Content and card type stay editable."
+    "Default, selected and disabled interactive cards, plus a passive content card. Hover changes only an enabled, unselected interactive card's border."
   ),
   render: (args) => (
     <div className="grid w-[720px] max-w-full gap-5 sm:grid-cols-2">
-      {["Default", "Hover", "Selected", "Disabled"].map((state) => (
+      {["Default", "Selected", "Disabled", "Passive"].map((state) => (
         <section key={state} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]">
+          <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
             {state}
           </h3>
           <UiCard
             {...cardProps(args)}
             selected={state === "Selected"}
             disabled={state === "Disabled"}
-            className={state === "Hover" ? "pseudo-hover" : undefined}
+            onClick={state === "Passive" ? undefined : cardProps(args).onClick}
           >
             <Content {...args} showActions={false} />
           </UiCard>
@@ -268,10 +406,10 @@ function Workspace(
   return (
     <section className="w-[680px] max-w-full space-y-4">
       <div>
-        <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+        <h3 className="m-0 text-base font-medium text-semantic-text-primary">
           Choose a workspace
         </h3>
-        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
+        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
           Activate a card with the mouse, Enter or Space.
         </p>
       </div>
@@ -297,10 +435,7 @@ function Workspace(
           </UiCard>
         ))}
       </div>
-      <p
-        role="status"
-        className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
-      >
+      <p role="status" className="m-0 text-xs text-semantic-text-muted">
         {selected ? `Selected: ${selected}` : "Choose a workspace to continue"}
       </p>
     </section>

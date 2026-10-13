@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  * Accordion root variants
  */
 const accordionVariants = cva(
-  "w-full font-[family-name:var(--font-v2,Inter,sans-serif)]",
+  "min-w-0 w-full font-[family-name:var(--font-v2,Inter,sans-serif)]",
   {
     variants: {
       variant: {
@@ -43,7 +43,7 @@ const accordionItemVariants = cva("", {
  * Accordion trigger variants
  */
 const accordionTriggerVariants = cva(
-  "flex min-h-[50px] w-full items-center justify-between gap-5 py-2 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:enabled:hover:text-[var(--v2-text-secondary,#5E5E5E)] [@media(hover:hover)]:enabled:hover:[&_[data-accordion-chevron]]:text-[var(--v2-text-primary,#484848)]",
+  "flex min-h-[50px] w-full items-center justify-between gap-5 py-2 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,var(--semantic-text-primary))] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-[var(--v2-text-muted,var(--semantic-text-muted))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:text-[var(--v2-text-secondary,var(--semantic-text-secondary))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:[&_[data-accordion-chevron]]:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
   {
     variants: {
       // The bordered frame keeps a 16px inset so labels never touch its edge; the plain list is edge to edge, as in Arc.
@@ -62,9 +62,8 @@ const accordionTriggerVariants = cva(
  * Accordion content variants
  */
 const accordionContentVariants = cva(
-  // Height follows a critically damped spring (Arc "smooth": visualDuration 0.4, sampled over 700ms); the panel fades in
-  // over 240ms and out over 160ms. Reduced motion snaps the height and keeps a short fade.
-  "overflow-hidden text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] [overflow-wrap:anywhere] transition-[height,opacity] [transition-duration:700ms,240ms] [transition-timing-function:linear(0,0.0432,0.1402,0.2575,0.3764,0.4867,0.584,0.667,0.7361,0.7925,0.838,0.8743,0.9029,0.9254,0.9428,0.9564,0.9668,0.9748,0.9809,0.9856,0.9892,0.9918,0.9939,0.9954,0.9966,0.9974,0.9981,0.9986,1),cubic-bezier(0.16,1,0.3,1)] aria-hidden:[transition-duration:700ms,160ms] aria-hidden:[transition-timing-function:linear(0,0.0432,0.1402,0.2575,0.3764,0.4867,0.584,0.667,0.7361,0.7925,0.838,0.8743,0.9029,0.9254,0.9428,0.9564,0.9668,0.9748,0.9809,0.9856,0.9892,0.9918,0.9939,0.9954,0.9966,0.9974,0.9981,0.9986,1),cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-[opacity] motion-reduce:[transition-duration:150ms] motion-reduce:[transition-timing-function:ease-out] aria-hidden:opacity-0",
+  // Visibility waits for the finite collapse; closed panels start hidden even before hydration.
+  "overflow-hidden text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-secondary))] [overflow-wrap:anywhere] transition-[height,opacity,visibility] [transition-duration:280ms,180ms,0ms] [transition-delay:0ms,0ms,0ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] aria-hidden:invisible aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:[transition-duration:220ms,120ms,0ms] aria-hidden:[transition-delay:0ms,0ms,220ms] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] motion-reduce:[transition-delay:0ms] motion-reduce:aria-hidden:[transition-duration:0ms] motion-reduce:aria-hidden:[transition-delay:0ms]",
   {
     variants: {
       variant: {
@@ -95,7 +94,13 @@ interface AccordionItemContextValue {
   disabled?: boolean;
   triggerId: string;
   contentId: string;
+  setTriggerId: (id: string | undefined) => void;
+  setContentId: (id: string | undefined) => void;
+  triggerRef: React.MutableRefObject<HTMLButtonElement | null>;
 }
+
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
 
 // Contexts
 const AccordionContext = React.createContext<AccordionContextValue | null>(
@@ -139,7 +144,7 @@ export interface AccordionProps
   onValueChange?: (value: string[]) => void;
 }
 
-const Accordion = React.forwardRef(
+const Accordion = React.forwardRef<HTMLDivElement, AccordionProps>(
   (
     {
       className,
@@ -150,15 +155,24 @@ const Accordion = React.forwardRef(
       onValueChange,
       children,
       ...props
-    }: AccordionProps,
-    ref: React.Ref<HTMLDivElement>
+    },
+    ref
   ) => {
-    const rootRef = React.useRef<HTMLDivElement>(null);
+    const rootRef = React.useRef<HTMLDivElement | null>(null);
     const composedRef = React.useCallback(
       (node: HTMLDivElement | null) => {
         rootRef.current = node;
-        if (typeof ref === "function") ref(node);
-        else if (ref) ref.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLDivElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              rootRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
       },
       [ref]
     );
@@ -218,16 +232,16 @@ export interface AccordionItemProps
   disabled?: boolean;
 }
 
-const AccordionItem = React.forwardRef(
-  (
-    { className, value, disabled, children, ...props }: AccordionItemProps,
-    ref: React.Ref<HTMLDivElement>
-  ) => {
+const AccordionItem = React.forwardRef<HTMLDivElement, AccordionItemProps>(
+  ({ className, value, disabled, children, ...props }, ref) => {
     const { value: openValues, variant } = useAccordionContext();
     const isOpen = openValues.includes(value);
     const id = React.useId();
-    const triggerId = `${id}-trigger`;
-    const contentId = `${id}-content`;
+    const triggerRef = React.useRef<HTMLButtonElement | null>(null);
+    const [customTriggerId, setTriggerId] = React.useState<string>();
+    const [customContentId, setContentId] = React.useState<string>();
+    const triggerId = customTriggerId ?? `${id}-trigger`;
+    const contentId = customContentId ?? `${id}-content`;
 
     const contextValue = React.useMemo(
       () => ({
@@ -236,6 +250,9 @@ const AccordionItem = React.forwardRef(
         disabled,
         triggerId,
         contentId,
+        setTriggerId,
+        setContentId,
+        triggerRef,
       }),
       [value, isOpen, disabled, triggerId, contentId]
     );
@@ -267,7 +284,10 @@ export interface AccordionTriggerProps
   showChevron?: boolean;
 }
 
-const AccordionTrigger = React.forwardRef(
+const AccordionTrigger = React.forwardRef<
+  HTMLButtonElement,
+  AccordionTriggerProps
+>(
   (
     {
       className,
@@ -275,9 +295,11 @@ const AccordionTrigger = React.forwardRef(
       children,
       onClick,
       onKeyDown,
+      id,
+      disabled: triggerDisabled,
       ...props
-    }: AccordionTriggerProps,
-    ref: React.Ref<HTMLButtonElement>
+    },
+    ref
   ) => {
     const {
       type,
@@ -286,12 +308,41 @@ const AccordionTrigger = React.forwardRef(
       onValueChange,
       variant,
     } = useAccordionContext();
-    const { value, isOpen, disabled, triggerId, contentId } =
-      useAccordionItemContext();
+    const {
+      value,
+      isOpen,
+      disabled,
+      triggerId,
+      contentId,
+      setTriggerId,
+      triggerRef,
+    } = useAccordionItemContext();
+    const composedRef = React.useCallback(
+      (node: HTMLButtonElement | null) => {
+        triggerRef.current = node;
+        if (typeof ref === "function") {
+          const cleanup = (
+            ref as (node: HTMLButtonElement | null) => void | (() => void)
+          )(node);
+          if (typeof cleanup === "function") {
+            return () => {
+              triggerRef.current = null;
+              cleanup();
+            };
+          }
+        } else if (ref) ref.current = node;
+      },
+      [ref, triggerRef]
+    );
+
+    useIsomorphicLayoutEffect(() => {
+      setTriggerId(id);
+      return () => setTriggerId(undefined);
+    }, [id, setTriggerId]);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       onClick?.(event);
-      if (disabled || event.defaultPrevented) return;
+      if (disabled || triggerDisabled || event.defaultPrevented) return;
 
       let newValue: string[];
 
@@ -310,18 +361,22 @@ const AccordionTrigger = React.forwardRef(
 
     return (
       <button
-        ref={ref}
+        ref={composedRef}
         type="button"
-        id={triggerId}
+        id={id ?? triggerId}
         aria-controls={contentId}
         data-accordion-trigger=""
+        data-state={isOpen ? "open" : "closed"}
         aria-expanded={isOpen}
-        disabled={disabled}
+        disabled={disabled || triggerDisabled}
         onClick={handleClick}
         onKeyDown={(event) => {
           onKeyDown?.(event);
           if (
             event.defaultPrevented ||
+            event.altKey ||
+            event.ctrlKey ||
+            event.metaKey ||
             !["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)
           )
             return;
@@ -349,15 +404,17 @@ const AccordionTrigger = React.forwardRef(
         className={cn(accordionTriggerVariants({ variant, className }))}
         {...props}
       >
-        <span className="flex-1">{children}</span>
+        <span className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+          {children}
+        </span>
         {showChevron && (
           <ChevronDown
             aria-hidden="true"
             data-accordion-chevron=""
             className={cn(
-              // 17px, muted until the row is open; turns on Arc's "snappy" spring (sampled over 500ms).
-              "size-[17px] shrink-0 text-[var(--v2-text-muted,#707070)] transition-[transform,color] [transition-duration:500ms,160ms] [transition-timing-function:linear(0,0.0689,0.216,0.3825,0.5378,0.6687,0.7719,0.8492,0.9046,0.9428,0.9681,0.9841,0.9937,0.999,1.0017,1.0028,1.003,1.0027,1.0022,1.0017,1.0013,1.0009,1.0006,1.0004,1),cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-              isOpen && "rotate-180 text-[var(--v2-text-primary,#484848)]"
+              "size-[17px] shrink-0 text-[var(--v2-text-muted,var(--semantic-text-muted))] transition-[transform,color] [transition-duration:240ms,160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms]",
+              isOpen &&
+                "rotate-180 text-[var(--v2-text-primary,var(--semantic-text-primary))]"
             )}
           />
         )}
@@ -375,58 +432,92 @@ export interface AccordionContentProps
     React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof accordionContentVariants> {}
 
-const AccordionContent = React.forwardRef(
-  (
-    { className, children, ...props }: AccordionContentProps,
-    ref: React.Ref<HTMLDivElement>
-  ) => {
-    const { variant } = useAccordionContext();
-    const { isOpen, triggerId, contentId } = useAccordionItemContext();
-    const contentRef = React.useRef<HTMLDivElement>(null);
-    const [height, setHeight] = React.useState<number | undefined>(undefined);
+const AccordionContent = React.forwardRef<
+  HTMLDivElement,
+  AccordionContentProps
+>(({ className, children, id, style, ...props }, ref) => {
+  const { variant } = useAccordionContext();
+  const { isOpen, triggerId, contentId, setContentId, triggerRef } =
+    useAccordionItemContext();
+  const panelRef = React.useRef<HTMLDivElement | null>(null);
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const composedRef = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      panelRef.current = node;
+      if (typeof ref === "function") {
+        const cleanup = (
+          ref as (node: HTMLDivElement | null) => void | (() => void)
+        )(node);
+        if (typeof cleanup === "function") {
+          return () => {
+            panelRef.current = null;
+            cleanup();
+          };
+        }
+      } else if (ref) ref.current = node;
+    },
+    [ref]
+  );
+  const [height, setHeight] = React.useState<number | undefined>(
+    isOpen ? undefined : 0
+  );
 
-    React.useEffect(() => {
-      const content = contentRef.current;
-      if (!content) return;
-      content.parentElement?.toggleAttribute("inert", !isOpen);
+  useIsomorphicLayoutEffect(() => {
+    setContentId(id);
+    return () => setContentId(undefined);
+  }, [id, setContentId]);
 
-      // Keep the measured height current when fonts, images or nested content
-      // resize after opening. Retargeting the same transition avoids clipping.
-      const measure = () => setHeight(isOpen ? content.scrollHeight : 0);
-      measure();
-      if (typeof ResizeObserver === "undefined") return;
-      const observer = new ResizeObserver(measure);
-      observer.observe(content);
-      return () => observer.disconnect();
-    }, [isOpen, children]);
+  useIsomorphicLayoutEffect(() => {
+    const panel = panelRef.current;
+    const content = contentRef.current;
+    if (!panel || !content) return;
+    // A controlled collapse may happen while a field is focused. Return focus
+    // before making the panel inert so keyboard users keep their place.
+    if (!isOpen && panel.contains(panel.ownerDocument.activeElement)) {
+      triggerRef.current?.focus();
+    }
+    panel.toggleAttribute("inert", !isOpen);
 
-    return (
+    // Keep the measured height current when fonts, images or nested content
+    // resize after opening. Retargeting the same transition avoids clipping.
+    const measure = () => setHeight(isOpen ? content.scrollHeight : 0);
+    measure();
+    if (typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(measure);
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, [isOpen, children, triggerRef]);
+
+  return (
+    <div
+      ref={composedRef}
+      className={cn(accordionContentVariants({ variant, className }))}
+      style={{
+        height: height !== undefined ? `${height}px` : undefined,
+        ...style,
+      }}
+      id={id ?? contentId}
+      data-accordion-content=""
+      data-state={isOpen ? "open" : "closed"}
+      role="region"
+      aria-labelledby={triggerId}
+      aria-hidden={!isOpen}
+      {...props}
+    >
       <div
-        ref={ref}
-        className={cn(accordionContentVariants({ variant, className }))}
-        style={{ height: height !== undefined ? `${height}px` : undefined }}
-        id={contentId}
-        role="region"
-        aria-labelledby={triggerId}
-        aria-hidden={!isOpen}
-        {...props}
+        ref={contentRef}
+        className={cn(
+          "min-w-0 pb-5 pr-8 transition-transform [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:translate-y-0 motion-reduce:transition-none motion-reduce:[transition-duration:0ms]",
+          isOpen
+            ? "translate-y-0 [transition-duration:240ms]"
+            : "-translate-y-[3px] [transition-duration:150ms]"
+        )}
       >
-        <div
-          ref={contentRef}
-          className={cn(
-            // The answer settles down 6px with a brief 2px focus pull (spring on open, 160ms on close); no travel or blur under reduced motion.
-            "pb-5 pr-8 transition-[transform,filter] motion-reduce:translate-y-0 motion-reduce:[filter:none] motion-reduce:transition-none",
-            isOpen
-              ? "translate-y-0 [filter:none] [transition-duration:700ms,240ms] [transition-timing-function:linear(0,0.0432,0.1402,0.2575,0.3764,0.4867,0.584,0.667,0.7361,0.7925,0.838,0.8743,0.9029,0.9254,0.9428,0.9564,0.9668,0.9748,0.9809,0.9856,0.9892,0.9918,0.9939,0.9954,0.9966,0.9974,0.9981,0.9986,1),cubic-bezier(0.16,1,0.3,1)]"
-              : "-translate-y-1.5 blur-[2px] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
-          )}
-        >
-          {children}
-        </div>
+        {children}
       </div>
-    );
-  }
-);
+    </div>
+  );
+});
 AccordionContent.displayName = "AccordionContent";
 
 export {

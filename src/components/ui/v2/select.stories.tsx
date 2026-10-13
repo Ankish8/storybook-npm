@@ -214,18 +214,18 @@ const meta: Meta<SelectExampleArgs> = {
         component: v2ComponentDocs({
           name: "select",
           summary:
-            "Composable Radix select primitives with keyboard navigation, grouped options, wrapped labels and viewport callbacks.",
+            "Choose the complete SelectField for labels, search and validation, or compose Select primitives for custom layouts. Both share the same anchored dropdown.",
           changes: [
             ["Trigger height and radius", "42px / 4px", "44px / 8px"],
             [
               "Typography",
               "Inherited font",
-              "Inter 14px regular value and options",
+              "Timeless Sans with Inter fallback; 14px regular value and options",
             ],
             [
               "Focus",
               "Thin teal shadow",
-              "Primary border emphasis; no outer glow",
+              "No field focus border or glow; primary border while open",
             ],
             ["Error", "Red border", "Red border and soft 4px shadow"],
             [
@@ -241,29 +241,24 @@ const meta: Meta<SelectExampleArgs> = {
             [
               "Behavior",
               "Radix keyboard navigation, scrolling, wrapped/truncated labels",
-              "Same current props and behavior",
+              "Both v1 APIs remain available; invalid styling and searchable keyboard navigation are fixed",
             ],
           ],
           tokens: [
             ["Surface", "--semantic-bg-primary", "#FFFFFF", "#FFFFFF"],
             ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
-            [
-              "Placeholder",
-              "--semantic-text-placeholder",
-              "#A2A6B1",
-              "#A2A6B1",
-            ],
+            ["Placeholder", "--v2-text-placeholder", "#707070", "#707070"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover", "--color-primary-100", "#C0C3CA", "#C0C3CA"],
-            ["Focus", "--semantic-primary", "#343E55", "#343E55"],
+            ["Open border", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Selection check", "--semantic-brand", "#2BBCCA", "#2BBCCA"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Selection check", "--semantic-primary", "#343E55", "#343E55"],
+            ["Font", "--font-v2", "Timeless Sans / Inter 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:
-            "Compose Select, SelectTrigger, SelectValue, SelectContent and SelectItem. Root `value`/`onValueChange` and `open`/`onOpenChange` can be controlled. Items wrap by default; `truncateOptionText` changes presentation without shortening the stored value. The labelled, options-driven playground is a story composition: label, options, width, state and content settings are not additional Select root props. For an options-driven shipped component, use SelectField.",
+            "Compose Select, SelectTrigger, SelectValue, SelectContent and SelectItem. Root `value`/`onValueChange` and `open`/`onOpenChange` can be controlled. Items wrap by default; `truncateOptionText` changes presentation without shortening the stored value. The labelled, options-driven playground is a story composition: label, options, width, state and content settings are not additional Select root props. SelectField is exported from this same module with label, options, helperText, error, search and pagination. Existing ui/v2/select-field imports still work. Its required prop retains the v1 required marker; use required on the Select root for native constraint validation.",
         }),
       },
     },
@@ -352,7 +347,7 @@ const meta: Meta<SelectExampleArgs> = {
     },
     width: {
       control: { type: "number", min: 160, max: 700, step: 20 },
-      description: "Example container width; trigger stays 40px high.",
+      description: "Example container width; trigger stays 44px high.",
       table: { category: "Example" },
     },
     defaultValue: {
@@ -450,14 +445,14 @@ export const AllSizes: Story = {
   name: "Height and width",
   parameters: gallery(
     ["width", "open"],
-    "Select has one 40px height. These containers compare 420px and 280px widths; all other controls apply to both."
+    "Select has one 44px height. These containers compare 420px and 280px widths; all other controls apply to both."
   ),
   render: (args) => (
     <div className="flex max-w-full flex-col gap-6">
       {[420, 280].map((width) => (
         <section key={width} className="space-y-2">
           <p className="m-0 text-xs font-medium text-[var(--v2-text-muted,#707070)]">
-            40px height · {width}px container
+            44px height · {width}px container
           </p>
           <PreviewSelect {...args} key={String(args.value)} width={width} />
         </section>

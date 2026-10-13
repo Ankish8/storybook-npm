@@ -1,0 +1,9 @@
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent, TooltipArrow } from "@/components/ui/v2/tooltip";
+<TooltipProvider>
+  {/* Preserved v1 defaults: 700ms hover delay, 300ms skip window. */}
+  <Tooltip>
+    <TooltipTrigger asChild><button type="button">Help</button></TooltipTrigger>
+    {/* Default dark surface, 4px side offset; variant="light" is optional in v2. */}
+    <TooltipContent>Short contextual help<TooltipArrow /></TooltipContent>
+  </Tooltip>
+</TooltipProvider>

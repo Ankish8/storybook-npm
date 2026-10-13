@@ -2,6 +2,7 @@ import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
+import { cn } from "@/lib/utils";
 import { Copy, MoreHorizontal, Trash2 } from "lucide-react";
 import * as V2 from "./table";
 import * as V1 from "../table";
@@ -48,6 +49,33 @@ const CAMPAIGNS: Campaign[] = [
     name: "Appointment reminders",
     owner: "JD",
     contacts: 920,
+    enabled: true,
+  },
+];
+
+const SORT_COLUMNS: V2.UseTableSortOptions<
+  Campaign,
+  "name" | "contacts"
+>["columns"] = {
+  name: { value: (row) => row.name },
+  contacts: { value: (row) => row.contacts },
+};
+
+const SORTABLE_CAMPAIGNS: Campaign[] = [
+  ...CAMPAIGNS,
+  { id: 4, name: "Product launch", owner: "MT", contacts: 2180, enabled: true },
+  {
+    id: 5,
+    name: "Customer feedback",
+    owner: "AK",
+    contacts: 410,
+    enabled: false,
+  },
+  {
+    id: 6,
+    name: "Renewal reminders",
+    owner: "SP",
+    contacts: 1560,
     enabled: true,
   },
 ];
@@ -156,7 +184,7 @@ function TableExample({
                   className={
                     version === "v1"
                       ? "font-medium"
-                      : "font-medium text-[var(--v2-text-primary,#484848)]"
+                      : "font-medium text-semantic-text-primary"
                   }
                 >
                   {row.name}
@@ -247,10 +275,7 @@ function TableExample({
         </UI.TableBody>
       </UI.Table>
       {notice && (
-        <p
-          className="m-0 mt-3 text-xs text-[var(--v2-text-muted,#707070)]"
-          role="status"
-        >
+        <p className="m-0 mt-3 text-xs text-semantic-text-muted" role="status">
           {notice}
         </p>
       )}
@@ -312,7 +337,7 @@ const meta: Meta<ExampleArgs> = {
             [
               "Table behavior",
               "Composed markup, loading, wrapping and sticky cells",
-              "Same exports, props and behavior; optional stickyHeader keeps headers in view. Sortable headers set aria-sort and show a 16px arrow that flips on a spring (with the opt-in sortable prop it also appears faintly on hover over unsorted columns)",
+              "All existing exports and composed markup remain usable. Optional native sort buttons, immutable useTableSort, stickyHeader and opt-in animateRows support sortable records with a 16px indicator.",
             ],
           ],
           tokens: [
@@ -331,7 +356,7 @@ const meta: Meta<ExampleArgs> = {
             ["Font", "--font-v2", "Inter"],
           ],
           guidance:
-            "Table controls density, the outer border and wrapping. TableBody owns loading; TableRow owns highlights. The Example controls below configure a composed table, not extra Table props. Use scope on column headers, aria-sort on sortable headers and labelled row controls. A dense table may scroll horizontally inside its own frame. wrapContent permits taller rows when text needs more space.",
+            "Table controls density, the outer border and wrapping. TableBody owns loading and optional animateRows; TableRow owns highlights. The Example controls below configure a composed table, not extra Table props. TableHead onSortChange adds a native button; useTableSort optionally sorts data, preserving input and stable ties. Custom header children still work. A dense table scrolls horizontally in its frame; wrapContent permits taller rows.",
         }),
       },
     },
@@ -365,7 +390,8 @@ const meta: Meta<ExampleArgs> = {
     size: {
       control: "select",
       options: ["sm", "md", "lg"],
-      description: "Body-row density; the header stays 60px high.",
+      description:
+        "Body-row density; content can increase the minimum row height.",
       table: { defaultValue: { summary: "md" } },
     },
     withoutBorder: {
@@ -449,7 +475,19 @@ const PLAYGROUND = gallery(
   ["query"],
   "Edit the table and composed-example controls. Row switches and menus update the live rows argument."
 );
-export const Overview: Story = { parameters: PLAYGROUND };
+export const Overview: Story = {
+  args: {
+    rows: SORTABLE_CAMPAIGNS,
+    showToggle: false,
+    showActions: false,
+    wrapContent: false,
+  },
+  parameters: gallery(
+    ["query"],
+    "Sort campaign names and numeric contacts. Keyed rows move subtly, selection follows each record, and Reset sort restores the input order. Scroll the table horizontally on a narrow screen."
+  ),
+  render: SortableStoryRenderer,
+};
 export const Small: Story = { args: { size: "sm" }, parameters: PLAYGROUND };
 export const Medium: Story = { args: { size: "md" }, parameters: PLAYGROUND };
 export const Large: Story = { args: { size: "lg" }, parameters: PLAYGROUND };
@@ -485,10 +523,10 @@ function ExampleCard({
 }) {
   return (
     <section className="min-w-0 max-w-full rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+      <h3 className="m-0 text-base font-medium text-semantic-text-primary">
         {title}
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-[var(--v2-text-muted,#707070)]">
+      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
         {description}
       </p>
       {children}
@@ -533,7 +571,7 @@ export const AllSizes: Story = {
         <ExampleCard
           key={size}
           title={
-            { sm: "Small · 48px", md: "Medium · 54px", lg: "Large · 60px" }[
+            { sm: "Small · 48px", md: "Medium · 52px", lg: "Large · 60px" }[
               size
             ]
           }
@@ -672,7 +710,7 @@ export const V1VsV2: Story = {
                 }
                 description={
                   version === "v2"
-                    ? "Inter, 60px uppercase header, 24px cell padding."
+                    ? "Inter, sentence-case headers, 16px horizontal cell padding."
                     : "Current v1 component with its original styling."
                 }
               >
@@ -717,10 +755,10 @@ function CampaignManagement({
     <div className="max-w-full rounded-lg border border-semantic-border-layout p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
+          <h3 className="m-0 text-base font-medium text-semantic-text-primary">
             Campaigns
           </h3>
-          <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
+          <p className="m-0 mt-1 text-xs text-semantic-text-muted">
             Select campaigns, sort their names and update their enabled state.
           </p>
         </div>
@@ -755,10 +793,7 @@ function CampaignManagement({
             onChange={(event) => updateArgs({ query: event.target.value })}
           />
         </div>
-        <p
-          className="m-0 text-xs text-[var(--v2-text-muted,#707070)]"
-          role="status"
-        >
+        <p className="m-0 text-xs text-semantic-text-muted" role="status">
           {visibleSelected} of {data.length} visible campaigns selected
         </p>
       </div>
@@ -903,10 +938,7 @@ function CampaignManagement({
           )}
         </V2.TableBody>
       </V2.Table>
-      <p
-        className="m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]"
-        role="status"
-      >
+      <p className="m-0 mt-4 text-xs text-semantic-text-muted" role="status">
         {message ||
           "This example uses local data; actions affect only this preview."}
       </p>
@@ -969,84 +1001,307 @@ export const StickyHeader: Story = {
   ),
 };
 
-function SortableHeadersExample() {
-  const [sort, setSort] = React.useState<{
-    key: string;
-    direction: "asc" | "desc";
-  }>({ key: "name", direction: "asc" });
-  const rows = [...CAMPAIGNS].sort((a, b) => {
-    const left = sort.key === "name" ? a.name : a.contacts;
-    const right = sort.key === "name" ? b.name : b.contacts;
-    const order = left < right ? -1 : left > right ? 1 : 0;
-    return sort.direction === "asc" ? order : -order;
-  });
-  const direction = (key: string) => (sort.key === key ? sort.direction : null);
-  const toggle = (key: string) =>
-    setSort((previous) => ({
-      key,
-      direction:
-        previous.key === key && previous.direction === "asc" ? "desc" : "asc",
-    }));
-  const sortButton =
-    "rounded text-left font-medium uppercase focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-semantic-primary";
+function SortableTableExample({ args }: { args: ExampleArgs }) {
+  const [selected, setSelected] = React.useState<number[]>([]);
+  const [notice, setNotice] = React.useState("");
+  const { rows, sort, sortBy, resetSort, getSortDirection } = V2.useTableSort(
+    args.rows,
+    {
+      columns: SORT_COLUMNS,
+      defaultSort: { key: "contacts", direction: "desc" },
+    }
+  );
+  const visibleRows = args.empty ? [] : rows;
+  const selectedCount = visibleRows.filter((row) =>
+    selected.includes(row.id)
+  ).length;
+  const allSelected =
+    visibleRows.length > 0 && selectedCount === visibleRows.length;
+  const disabled = args.disabled || args.isLoading;
+  const columnCount = 5 + Number(args.showToggle) + Number(args.showActions);
+  const sortDescription = sort
+    ? "Sorted by " +
+      (sort.key === "name" ? "campaign" : "contacts") +
+      ", " +
+      (sort.direction === "asc" ? "ascending" : "descending") +
+      "."
+    : "Original order.";
+
   return (
-    <V2.Table aria-label="Sortable campaigns">
-      <V2.TableHeader>
-        <V2.TableRow>
-          <V2.TableHead scope="col" sortable sortDirection={direction("name")}>
-            <button
-              type="button"
-              className={sortButton}
-              onClick={() => toggle("name")}
+    <section className="min-w-0 max-w-full space-y-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h3 className="m-0 text-base font-medium text-semantic-text-primary">
+            Campaign performance
+          </h3>
+          <p className="m-0 mt-1 text-sm text-semantic-text-muted">
+            Compare contacts, sort campaigns and select the rows you need.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={disabled || selectedCount === 0}
+            onClick={() => setSelected([])}
+          >
+            Clear selection
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={disabled || !sort}
+            onClick={resetSort}
+          >
+            Reset sort
+          </Button>
+        </div>
+      </div>
+      <V2.Table
+        size={args.size}
+        withoutBorder={args.withoutBorder}
+        wrapContent={args.wrapContent}
+        stickyHeader={args.stickyHeader}
+        className={cn("min-w-[800px]", args.className)}
+        aria-label="Sortable campaign performance"
+        aria-busy={args.isLoading || undefined}
+        onKeyDown={(event) => {
+          if (event.defaultPrevented) return;
+          if (event.key === "Escape" && selectedCount > 0) {
+            setSelected([]);
+            event.preventDefault();
+            return;
+          }
+          const target = event.target as HTMLElement;
+          if (!target.matches("[data-table-select]")) return;
+          const controls = Array.from(
+            event.currentTarget.querySelectorAll<HTMLButtonElement>(
+              "[data-table-select]:not(:disabled)"
+            )
+          );
+          const index = controls.indexOf(target as HTMLButtonElement);
+          const nextIndex =
+            event.key === "Home"
+              ? 0
+              : event.key === "End"
+                ? controls.length - 1
+                : event.key === "ArrowDown"
+                  ? index + 1
+                  : event.key === "ArrowUp"
+                    ? index - 1
+                    : -1;
+          const next = controls[nextIndex];
+          if (next) {
+            event.preventDefault();
+            next.focus();
+          }
+        }}
+      >
+        <V2.TableHeader>
+          <V2.TableRow>
+            <V2.TableHead scope="col" className="w-12">
+              <Checkbox
+                data-table-select=""
+                checked={
+                  allSelected ? true : selectedCount ? "indeterminate" : false
+                }
+                disabled={disabled || visibleRows.length === 0}
+                aria-label="Select all visible campaigns"
+                onCheckedChange={(checked) =>
+                  setSelected(
+                    checked === true ? visibleRows.map((row) => row.id) : []
+                  )
+                }
+              />
+            </V2.TableHead>
+            <V2.TableHead
+              sortDirection={getSortDirection("name")}
+              onSortChange={(direction) => sortBy("name", direction)}
+              sortDisabled={disabled}
             >
               Campaign
-            </button>
-          </V2.TableHead>
-          <V2.TableHead scope="col">Status</V2.TableHead>
-          <V2.TableHead
-            scope="col"
-            sortable
-            sortDirection={direction("contacts")}
-          >
-            <button
-              type="button"
-              className={sortButton}
-              onClick={() => toggle("contacts")}
+            </V2.TableHead>
+            <V2.TableHead scope="col">Owner</V2.TableHead>
+            <V2.TableHead scope="col">Status</V2.TableHead>
+            <V2.TableHead
+              sortDirection={getSortDirection("contacts")}
+              onSortChange={(direction) => sortBy("contacts", direction)}
+              sortDisabled={disabled}
+              infoTooltip="Contacts included in this campaign"
             >
               Contacts
-            </button>
-          </V2.TableHead>
-        </V2.TableRow>
-      </V2.TableHeader>
-      <V2.TableBody>
-        {rows.map((row) => (
-          <V2.TableRow key={row.id}>
-            <V2.TableCell className="font-medium text-[var(--v2-text-primary,#484848)]">
-              {row.name}
-            </V2.TableCell>
-            <V2.TableCell>
-              <Badge variant={row.enabled ? "active" : "disabled"}>
-                {row.enabled ? "Active" : "Paused"}
-              </Badge>
-            </V2.TableCell>
-            <V2.TableCell>{row.contacts.toLocaleString("en-US")}</V2.TableCell>
+            </V2.TableHead>
+            {args.showToggle && (
+              <V2.TableHead scope="col">Enabled</V2.TableHead>
+            )}
+            {args.showActions && (
+              <V2.TableHead scope="col">Actions</V2.TableHead>
+            )}
           </V2.TableRow>
-        ))}
-      </V2.TableBody>
-    </V2.Table>
+        </V2.TableHeader>
+        <V2.TableBody
+          animateRows
+          isLoading={args.isLoading}
+          loadingRows={args.loadingRows}
+          loadingColumns={columnCount}
+        >
+          {visibleRows.length === 0 ? (
+            <V2.TableEmpty colSpan={columnCount}>
+              No campaigns to compare.
+            </V2.TableEmpty>
+          ) : (
+            visibleRows.map((row) => {
+              const rowSelected = selected.includes(row.id);
+              return (
+                <V2.TableRow
+                  key={row.id}
+                  highlighted={args.highlighted}
+                  data-state={rowSelected ? "selected" : undefined}
+                >
+                  <V2.TableCell>
+                    <Checkbox
+                      data-table-select=""
+                      checked={rowSelected}
+                      disabled={disabled}
+                      aria-label={"Select " + row.name}
+                      onCheckedChange={(checked) =>
+                        setSelected((previous) =>
+                          checked === true
+                            ? [...new Set([...previous, row.id])]
+                            : previous.filter((id) => id !== row.id)
+                        )
+                      }
+                    />
+                  </V2.TableCell>
+                  <V2.TableCell
+                    className={cn(
+                      "font-medium text-semantic-text-primary",
+                      sort?.key === "name" &&
+                        !rowSelected &&
+                        "bg-semantic-primary-surface/40"
+                    )}
+                  >
+                    {row.name}
+                  </V2.TableCell>
+                  <V2.TableCell>
+                    <V2.TableAvatar initials={row.owner} />
+                  </V2.TableCell>
+                  <V2.TableCell>
+                    <Badge variant={row.enabled ? "active" : "disabled"}>
+                      {row.enabled ? "Active" : "Paused"}
+                    </Badge>
+                  </V2.TableCell>
+                  <V2.TableCell
+                    className={cn(
+                      "tabular-nums",
+                      sort?.key === "contacts" &&
+                        !rowSelected &&
+                        "bg-semantic-primary-surface/40"
+                    )}
+                  >
+                    {row.contacts.toLocaleString("en-US")}
+                  </V2.TableCell>
+                  {args.showToggle && (
+                    <V2.TableCell>
+                      <V2.TableToggle
+                        checked={row.enabled}
+                        disabled={disabled}
+                        aria-label={"Enable " + row.name}
+                        onCheckedChange={(enabled) => {
+                          args.onEnabledChange(row.id, enabled);
+                          setNotice(
+                            row.name +
+                              (enabled
+                                ? " enabled in this preview."
+                                : " paused in this preview.")
+                          );
+                        }}
+                      />
+                    </V2.TableCell>
+                  )}
+                  {args.showActions && (
+                    <V2.TableCell>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        disabled={disabled}
+                        onClick={() => {
+                          args.onRowAction(row.id, "view");
+                          setNotice("Selected " + row.name + " for review.");
+                        }}
+                      >
+                        View details
+                      </Button>
+                    </V2.TableCell>
+                  )}
+                </V2.TableRow>
+              );
+            })
+          )}
+        </V2.TableBody>
+      </V2.Table>
+      <p
+        className="m-0 text-xs text-semantic-text-muted"
+        role="status"
+        aria-live="polite"
+      >
+        {visibleRows.length} campaigns · {sortDescription} {selectedCount}{" "}
+        selected.{notice && " " + notice}
+      </p>
+      <p className="m-0 text-xs text-semantic-text-muted">
+        Enter or Space sorts; a third activation restores the original order.
+        Arrow keys move between sort headers. On a narrow screen, scroll the
+        table horizontally.
+      </p>
+    </section>
   );
 }
-export const SortableHeaders: Story = {
-  name: "Sortable headers",
+
+function SortableStoryRenderer(args: ExampleArgs) {
+  const [, updateArgs] = useArgs<ExampleArgs>();
+  return (
+    <SortableTableExample
+      args={{
+        ...args,
+        onEnabledChange: (id, enabled) => {
+          args.onEnabledChange(id, enabled);
+          updateArgs({
+            rows: args.rows.map((row) =>
+              row.id === id ? { ...row, enabled } : row
+            ),
+          });
+        },
+      }}
+    />
+  );
+}
+
+export const SortableData: Story = {
+  name: "Sortable campaign performance",
+  args: {
+    rows: SORTABLE_CAMPAIGNS,
+    showToggle: false,
+    showActions: false,
+    wrapContent: false,
+  },
   parameters: {
+    ...gallery(
+      ["query"],
+      "Sort numeric contacts or campaign names. Selection stays attached to each record while keyed rows glide into place. Reset restores the input order. Sorting motion is explicitly enabled on this TableBody."
+    ),
     docs: {
       description: {
         story:
-          "Pass sortDirection to a sorted header: asc and desc show one arrow that turns over. Add sortable to a column that can be sorted but currently is not: it shows a faint two-way glyph that strengthens on hover (sortDirection={null} alone renders nothing, exactly as in v1). Leave both off on columns that cannot be sorted. Put the sort action on a button inside the header.",
+          "A composed Table with native TableHead sort buttons, useTableSort for real data ordering and opt-in TableBody animateRows. Sort controls cycle ascending, descending and unsorted. Natural text / numeric comparisons are stable and clearing restores input order. Header arrows remain visible on touch. Native checkbox selection, clear selection and keyboard navigation are example behavior. No grid dependency is required.",
       },
     },
   },
-  render: () => <SortableHeadersExample />,
+  render: SortableStoryRenderer,
+};
+
+export const SortableHeaders: Story = {
+  ...SortableData,
+  name: "Sortable headers",
 };
 
 export const Scroll: Story = {
