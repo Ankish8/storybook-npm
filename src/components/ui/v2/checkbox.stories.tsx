@@ -80,7 +80,7 @@ const meta: Meta<typeof Checkbox> = {
             [
               "Pointer target",
               "20px box",
-              "28 × 28 invisible target around the 18px box",
+              "32 × 32 invisible target around the 20px box",
             ],
             [
               "Description",
@@ -107,7 +107,7 @@ const meta: Meta<typeof Checkbox> = {
             [
               "Labels",
               "Inherited font",
-              "Inter 500 labels, 1.4 line height, 14px from the box (Arc spacing)",
+              "Timeless Sans (Inter fallback) 500 labels, 1.4 line height, 14px from the box (Arc spacing)",
             ],
             [
               "Behavior",
@@ -122,7 +122,7 @@ const meta: Meta<typeof Checkbox> = {
             [
               "Cards",
               "—",
-              'variant="card" on Checkbox and Radio: the whole option is a bordered, clickable card that tints when selected',
+              'variant="card" on Checkbox and Radio: the whole option is a bordered, clickable card that keeps a white surface with a clear border when selected',
             ],
             [
               "Groups",
@@ -176,7 +176,7 @@ const meta: Meta<typeof Checkbox> = {
               "#FFFFFF",
             ],
             ["Label", "--v2-text-primary", "#484848", "#484848"],
-            ["Font", "--font-v2", "Inter 500"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 500"],
           ],
           guidance:
             'Use Checkbox for independent choices or multi-selection and Radio for exactly one choice from a visible list; group radios in a RadioGroup and related checkboxes in a CheckboxGroup (give each Checkbox a `value`). Put an error on the group when the problem is with the set. Props mode (label, description, error) covers most cases; compose the parts when you need a custom layout or indicator. Pass `checked="indeterminate"` to represent a partially selected group. A visible `label` supplies an accessible name; use `aria-label` for a standalone box. With `separateLabel`, supply an `id` to link the label to the control.',
@@ -241,7 +241,7 @@ const meta: Meta<typeof Checkbox> = {
       control: "inline-radio",
       options: ["default", "card"],
       description:
-        "`card` makes the whole option a bordered, clickable card that tints when checked.",
+        "`card` makes the whole option a bordered, clickable card that keeps a white surface with a clear border when checked.",
     },
     error: {
       control: "text",
@@ -794,7 +794,7 @@ export const RadioCards: RadioStory = {
     docs: {
       description: {
         story:
-          'Pass `variant="card"` to make the whole option a bordered target: 12px padding, 8px radius, a hover surface, and one primary-bordered, tinted highlight that glides to the selected card. The default variant is a circle with a label.',
+          'Pass `variant="card"` to make the whole option a bordered target: 12px padding, 8px radius, a hover surface, and one primary-bordered, white highlight that glides to the selected card. The default variant is a circle with a label.',
       },
     },
   },

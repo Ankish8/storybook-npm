@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 import { Switch, type SwitchProps } from "./switch";
+import { Avatar } from "./avatar";
 
 /**
  * Table size variants for row height.
@@ -736,13 +737,22 @@ export interface TableAvatarProps {
   color?: string;
 }
 
-const TableAvatar = ({ initials, color = "#7C3AED" }: TableAvatarProps) => (
-  <div
-    className="w-7 h-7 rounded-full flex items-center justify-center text-semantic-text-inverted text-xs font-medium"
-    style={{ backgroundColor: color }}
-  >
-    {initials}
-  </div>
+const TableAvatar = ({ initials, color }: TableAvatarProps) => (
+  <Avatar
+    initials={initials}
+    size="sm"
+    variant={color ? "filled" : "soft"}
+    className={cn(
+      "size-7",
+      color &&
+        "bg-[var(--table-avatar-color)] border-[color:var(--table-avatar-color)]"
+    )}
+    style={
+      color
+        ? ({ "--table-avatar-color": color } as React.CSSProperties)
+        : undefined
+    }
+  />
 );
 TableAvatar.displayName = "TableAvatar";
 

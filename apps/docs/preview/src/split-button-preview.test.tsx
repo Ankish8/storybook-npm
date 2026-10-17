@@ -83,7 +83,7 @@ test("SplitButton label, sizes, icons and menu-item Controls change the real pre
     disableDraft: true,
   });
   const main = screen.getByRole("button", { name: "Send reply" });
-  expect(main).toHaveClass("h-9");
+  expect(main).toHaveClass("h-[30px]");
   expect(main.querySelector("svg")).toBeNull();
   screen.getByRole("button", { name: "Send reply more actions" }).focus();
   await userEvent.keyboard("{Enter}");

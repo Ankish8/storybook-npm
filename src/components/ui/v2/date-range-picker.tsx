@@ -120,7 +120,7 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-11 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-11 min-w-0 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
   {
     variants: {
       state: {
@@ -717,10 +717,14 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
         shift({ padding: POPOVER_MARGIN }),
         floatingSize({
           padding: POPOVER_MARGIN,
-          apply({ availableHeight, elements }) {
+          apply({ availableHeight, availableWidth, rects, elements }) {
             const maxHeight = Math.max(
               1,
               Math.min(MAX_POPOVER_HEIGHT, availableHeight)
+            );
+            elements.floating.style.setProperty(
+              "--date-range-picker-trigger-width",
+              `${Math.max(0, Math.min(rects.reference.width, availableWidth))}px`
             );
             elements.floating.style.setProperty(
               POPOVER_SCROLL_HEIGHT_VAR,
@@ -1170,12 +1174,16 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.95] motion-safe:slide-in-from-top-2 origin-top-left motion-safe:[animation-duration:350ms] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [animation-timing-function:var(--arc-snappy)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
             // Below `sm` the panel is a fixed compact width (the presets scroll inside it); it used to
             // stretch to the full length of the preset row.
-            "flex flex-col max-sm:w-[19rem] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "flex flex-col max-sm:w-[19rem] font-[family-name:var(--font-v2,Inter,sans-serif)] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
           style={{
             ...floatingStyles,
+            minWidth:
+              presets.length === 0
+                ? "var(--date-range-picker-trigger-width)"
+                : undefined,
             maxWidth: `calc(100vw - ${POPOVER_MARGIN * 2}px)`,
             maxHeight: `var(${POPOVER_SCROLL_HEIGHT_VAR}, min(${MAX_POPOVER_HEIGHT}px, calc(100dvh - ${
               POPOVER_MARGIN * 2
@@ -1733,7 +1741,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             dateRangePickerTriggerVariants({ state }),
             open && state !== "error" && "border-semantic-primary shadow-none",
             !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
-            showClear && "pr-9",
+            showClear && "pr-11",
             triggerClassName
           )}
           onClick={(event) => {
@@ -1751,6 +1759,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
         >
           <FigmaCalendarIcon className="size-[18px] shrink-0 text-[var(--v2-text-secondary,#5E5E5E)]" />
           <span
+            title={displayValue || placeholder}
             className={cn(
               "min-w-0 flex-1 truncate",
               !displayValue && "font-normal",
@@ -1765,7 +1774,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           <button
             type="button"
             aria-label={clearLabel}
-            className="absolute right-3 top-1/2 flex size-4 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
+            className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
             onClick={handleClear}
           >
             <X className="size-4" />

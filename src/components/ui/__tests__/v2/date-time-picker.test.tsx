@@ -22,7 +22,7 @@ describe("DateTimePicker", () => {
   afterEach(() => {
     vi.useRealTimers();
   });
-  it("renders a formatted date and start time", () => {
+  it("renders the selected date and both start and end times", () => {
     render(
       <DateTimePicker
         value={{
@@ -785,6 +785,7 @@ describe("DateTimePicker", () => {
 
     const input = screen.getByLabelText("Date and time") as HTMLInputElement;
 
+    fireEvent.focus(input);
     input.setSelectionRange(0, 2);
     fireEvent.keyDown(input, { key: "ArrowUp" });
 
@@ -1495,27 +1496,26 @@ describe("DateTimePicker calendar and time list refresh", () => {
       );
     });
 
-    it("pads, fades and snaps each list, with Arc's 36px rows", () => {
+    it("uses flat neutral 36px rows without unused time-list padding", () => {
       renderOpen();
       openStartTime();
       const list = screen.getByLabelText("Start Time hours");
 
-      // Spacers let the first and last row reach the centre of the 168px list.
+      // No artificial empty space before the first or after the last time option.
       expect(list).toHaveClass(
-        "py-[66px]",
+        "py-0",
         "overflow-y-auto",
         "[scroll-snap-type:y_proximity]"
       );
-      expect(list.className).toContain("[mask-image:linear-gradient(");
-      expect(list.className).toContain("black_12px");
-      expect(list.className).toContain("black_calc(100%-12px)");
+      expect(list.className).not.toContain("mask-image");
       expect(list).toHaveStyle({ maxHeight: "168px" });
 
       const row = option("Start Time hours", "09");
       expect(row).toHaveClass("h-9", "[scroll-snap-align:center]");
-      // Selected row = the existing info-surface fill + medium weight.
+      // A neutral fill marks selection without outlined adjacent cells.
       expect(option("Start Time hours", "10")).toHaveClass(
-        "bg-semantic-info-surface",
+        "bg-semantic-bg-hover",
+        "border-0",
         "font-medium"
       );
     });
@@ -2083,5 +2083,137 @@ describe("DateTimePicker rolling time", () => {
     const field = open();
     const before = wheels(field).map(visibleDigit);
     expect(wheels(field).map(visibleDigit)).toEqual(before);
+  });
+});
+
+describe("DateTimePicker issue-document regressions", () => {
+  it("opens time-only columns directly and keeps selection, steps, Escape and form values working", () => {
+    const onValueChange = vi.fn();
+    const { container } = render(
+      <DateTimePicker
+        variant="time-only"
+        name="reminder"
+        showEndTime={false}
+        minuteStep={15}
+        defaultValue={{ startTime: "10:30:00" }}
+        onValueChange={onValueChange}
+      />
+    );
+    const trigger = screen.getByRole("button", { name: "Open time picker" });
+    fireEvent.click(trigger);
+    expect(
+      screen.queryByRole("button", { name: "Start Time", exact: true })
+    ).not.toBeInTheDocument();
+    const hours = screen.getByLabelText("Start Time hours");
+    const minutes = screen.getByLabelText("Start Time minutes");
+    expect(
+      within(minutes).getAllByRole("option", { hidden: true })
+    ).toHaveLength(4);
+    fireEvent.click(within(hours).getByText("11", { exact: true }));
+    expect(onValueChange).toHaveBeenLastCalledWith({
+      date: undefined,
+      startTime: "11:30:00",
+      endTime: "",
+    });
+    expect(container.querySelector('input[name="reminder"]')).toHaveValue(
+      "11:30:00"
+    );
+    const fortyFive = within(minutes).getByText("45", { exact: true });
+    fortyFive.focus();
+    fireEvent.keyDown(fortyFive, { key: "Home" });
+    expect(onValueChange).toHaveBeenLastCalledWith({
+      date: undefined,
+      startTime: "11:00:00",
+      endTime: "",
+    });
+    fireEvent.keyDown(document.activeElement!, { key: "Escape" });
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("shows both time-only ranges directly without adding a second popup", () => {
+    render(
+      <DateTimePicker
+        variant="time-only"
+        showEndTime
+        defaultOpen
+        showSeconds
+        defaultValue={{ startTime: "10:30:15", endTime: "12:30:45" }}
+      />
+    );
+    expect(screen.getAllByRole("dialog", { hidden: true })).toHaveLength(1);
+    expect(screen.getByLabelText("Start Time seconds")).toBeInTheDocument();
+    expect(screen.getByLabelText("End Time seconds")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "End Time", exact: true })
+    ).not.toBeInTheDocument();
+  });
+
+  it("keeps an end-time selection when the existing typed start-time editor is used", () => {
+    const onValueChange = vi.fn();
+    render(
+      <DateTimePicker
+        defaultValue={{
+          date: mayTwelve,
+          startTime: "10:30:00",
+          endTime: "12:30:00",
+        }}
+        onValueChange={onValueChange}
+      />
+    );
+    const input = screen.getByLabelText("Date and time");
+    expect(input).toHaveValue("12/05/2026 10:30 AM");
+    expect(screen.getByLabelText("End Time: 12:30 PM")).toHaveTextContent(
+      "– 12:30 PM"
+    );
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "12/05/2026 11:45 AM" } });
+    expect(onValueChange).toHaveBeenLastCalledWith({
+      date: mayTwelve,
+      startTime: "11:45:00",
+      endTime: "12:30:00",
+    });
+    fireEvent.blur(input);
+    expect(screen.getByLabelText("End Time: 12:30 PM")).toHaveTextContent(
+      "– 12:30 PM"
+    );
+    expect(input).toHaveValue("12/05/2026 11:45 AM");
+  });
+
+  it("updates the visible end time from controlled props without changing the native serialization contract", () => {
+    const { rerender, container } = render(
+      <DateTimePicker
+        name="call"
+        value={{ date: mayTwelve, startTime: "10:30:00", endTime: "12:30:00" }}
+      />
+    );
+    rerender(
+      <DateTimePicker
+        name="call"
+        value={{ date: mayTwelve, startTime: "10:30:00", endTime: "13:45:00" }}
+      />
+    );
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 10:30 AM"
+    );
+    expect(screen.getByLabelText("End Time: 01:45 PM")).toHaveTextContent(
+      "– 01:45 PM"
+    );
+    expect(container.querySelector('input[name="call"]')).toHaveValue(
+      "2026-05-12T10:30:00"
+    );
+    rerender(
+      <DateTimePicker
+        showEndTime={false}
+        name="call"
+        value={{ date: mayTwelve, startTime: "10:30:00", endTime: "13:45:00" }}
+      />
+    );
+    expect(screen.getByLabelText("Date and time")).toHaveValue(
+      "12/05/2026 10:30 AM"
+    );
+    expect(
+      screen.queryByLabelText("End Time: 01:45 PM")
+    ).not.toBeInTheDocument();
   });
 });

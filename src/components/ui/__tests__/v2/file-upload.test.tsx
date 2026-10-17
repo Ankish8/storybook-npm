@@ -486,3 +486,18 @@ describe("uploads", () => {
     expect(zoneOf()).toHaveAttribute("data-drag", "over");
   });
 });
+
+it("keeps uploaded status text-only and the remove action borderless", () => {
+  render(
+    <FileUpload
+      defaultItems={[
+        { id: "uploaded", name: "ready.pdf", size: 1024, status: "uploaded" },
+      ]}
+    />
+  );
+  const status = screen.getByText("Uploaded");
+  expect(status.parentElement?.querySelector("svg")).toBeNull();
+  const remove = screen.getByRole("button", { name: "Remove ready.pdf" });
+  expect(remove).toHaveClass("border-0", "bg-transparent", "shadow-none");
+  expect(remove).toBeEnabled();
+});

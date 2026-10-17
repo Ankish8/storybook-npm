@@ -2,7 +2,7 @@
 
 ## Implementation
 
-New `ui/v2/split-button`, exported as `SplitButton`, `SplitButtonProps`, and `SplitButtonAction`. No v1 equivalent or automatic replacement. Composes existing v2 Button and Dropdown Menu; preserves the primary color and 8px outer radius. Supports primary/secondary plus default/outline aliases, 36/44/50px text sizes, icons, per-item disabled/destructive styles, loading, controlled/uncontrolled menu visibility, native main-button attributes and ref.
+New `ui/v2/split-button`, exported as `SplitButton`, `SplitButtonProps`, and `SplitButtonAction`. No v1 equivalent or automatic replacement. Composes existing v2 Button and Dropdown Menu; preserves the primary color and 8px outer radius. Supports primary/secondary plus default/outline aliases, 32/40/44px overall text sizes, icons, per-item disabled/destructive styles, loading, controlled/uncontrolled menu visibility, native main-button attributes and ref.
 
 The main action and alternative callbacks are independent. Empty actions render one normal button. Disabled/loading closes and blocks the menu. Shared Button label/icon/width feedback, a stable popup anchor, chevron rotation and staggered content fades provide restrained motion. Reduced motion removes movement. The divider is attached to the trigger edge with a pseudo-element, so it does not sit inside the centered icon content. The docs preview reserves a 420px minimum viewport in both closed and open states so opening the menu does not move the trigger during its animation.
 

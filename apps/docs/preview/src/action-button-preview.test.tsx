@@ -71,8 +71,8 @@ test("ActionButton Customize labels, size and palette stay live through a real a
     variant: "secondary",
   });
   const button = screen.getByRole("button", { name: "Publish" });
-  expect(button.classList.contains("h-[50px]")).toBe(true);
-  expect(button.className).toContain("--v2-button-surface");
+  expect(button.classList.contains("h-11")).toBe(true);
+  expect(button.classList.contains("bg-semantic-bg-ui")).toBe(true);
   button.focus();
   await act(async () => {
     fireEvent.click(button);
@@ -86,7 +86,7 @@ test("ActionButton Customize labels, size and palette stay live through a real a
   });
   expect(button.getAttribute("data-state")).toBe("success");
   expect(screen.getByRole("status").textContent).toBe("Done");
-  expect(button.classList.contains("h-9")).toBe(true);
+  expect(button.classList.contains("h-8")).toBe(true);
   view.update({ disabled: true });
   expect((button as HTMLButtonElement).disabled).toBe(true);
 });

@@ -89,7 +89,7 @@ const meta: Meta<SearchFilterProps> = {
             [
               "Field",
               "42px legacy input / 4px corners",
-              "40px v2 Input, 8px corners, 16px Inter",
+              "40px v2 Input, 8px corners, 16px Timeless Sans (Inter fallback)",
             ],
             [
               "Surface",

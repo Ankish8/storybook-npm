@@ -325,7 +325,7 @@ const meta: Meta<ExampleArgs> = {
             [
               "Header",
               "48px, semibold inherited font",
-              "44px, sentence-case Inter 14px / 500 in muted text",
+              "44px, sentence-case Timeless Sans (Inter fallback) 14px / 500 in muted text",
             ],
             [
               "Body density",
@@ -353,7 +353,7 @@ const meta: Meta<ExampleArgs> = {
             ["Highlight", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
             ["Hover", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
             ["Selected", "--semantic-info-surface", "#ECF1FB", "#ECF1FB"],
-            ["Font", "--font-v2", "Inter"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback)"],
           ],
           guidance:
             "Table controls density, the outer border and wrapping. TableBody owns loading and optional animateRows; TableRow owns highlights. The Example controls below configure a composed table, not extra Table props. TableHead onSortChange adds a native button; useTableSort optionally sorts data, preserving input and stable ties. Custom header children still work. A dense table scrolls horizontally in its frame; wrapContent permits taller rows.",
@@ -710,7 +710,7 @@ export const V1VsV2: Story = {
                 }
                 description={
                   version === "v2"
-                    ? "Inter, sentence-case headers, 16px horizontal cell padding."
+                    ? "Timeless Sans (Inter fallback), sentence-case headers, 16px horizontal cell padding."
                     : "Current v1 component with its original styling."
                 }
               >

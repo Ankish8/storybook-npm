@@ -86,7 +86,7 @@ const meta: Meta<TagStoryArgs> = {
             [
               "Label",
               "Inherited font, bold prefix",
-              "Inter 400 body and 500 prefix",
+              "Timeless Sans (Inter fallback) 400 body and 500 prefix",
             ],
             [
               "Spacing",
@@ -135,7 +135,7 @@ const meta: Meta<TagStoryArgs> = {
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Dismiss hover plate", "--semantic-bg-inverted", "#000000 at 8%"],
             ["Dismiss focus ring", "--semantic-primary", "#343E55", "#343E55"],
-            ["Font", "--font-v2", "Inter 400 / 600"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 400 / 600"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

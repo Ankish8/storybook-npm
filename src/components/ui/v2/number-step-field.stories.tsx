@@ -58,7 +58,7 @@ const meta: Meta<typeof NumberStepField> = {
             [
               "Steppers",
               '12px targets, always Tab stops, named "Increase value"',
-              "24 × 19 hover tiles (24px on touch) out of the Tab order, named after the field, ramping hold-to-repeat (400ms, then 150ms down to 40ms)",
+              "A flush 32px control rail with calm half-height hover areas (24px high on touch), out of the Tab order, named after the field, ramping hold-to-repeat (400ms, then 150ms down to 40ms)",
             ],
             [
               "At a limit",

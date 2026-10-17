@@ -32,14 +32,22 @@ const meta: Meta<typeof ReadableField> = {
               "Icon swap",
               "Cross-fade in a fixed 18px box; failed state; polite status for screen readers",
             ],
-            ["Container", "42px high, 4px corners", "44px high, 8px corners"],
-            ["Typography", "Inherited font", "Inter with 14px medium label"],
+            [
+              "Container",
+              "42px high, 4px corners",
+              "44px high, 8px corners; white read-only surface with no container hover",
+            ],
+            [
+              "Typography",
+              "Inherited font",
+              "Timeless Sans (Inter fallback) with 14px medium label",
+            ],
             ["Helper", "14px", "12px"],
           ],
           tokens: [
-            ["Surface", "--semantic-bg-ui", "F5F5F5", "#F5F5F5"],
+            ["Surface", "--semantic-bg-primary", "FFFFFF", "#FFFFFF"],
             ["Label", "--v2-text-primary", "#484848", "#484848"],
-            ["Value", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],
+            ["Value", "--v2-text-muted", "#707070", "#707070"],
             ["Helper", "--semantic-text-muted", "717680", "#717680"],
           ],
           guidance:

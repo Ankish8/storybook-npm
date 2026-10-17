@@ -188,7 +188,11 @@ const meta: Meta<Args> = {
             "Choose a saved role or type a custom one and press Enter. The selected value is controlled; the open draft is internal and reported through onInputValueChange.",
           changes: [
             ["Trigger", "42px height / 4px radius", "44px height / 8px radius"],
-            ["Value type", "Inherited font", "Inter 14px / 400"],
+            [
+              "Value type",
+              "Inherited font",
+              "Timeless Sans (Inter fallback) 14px / 400",
+            ],
             [
               "Host label / helper",
               "Host styling",
@@ -219,7 +223,7 @@ const meta: Meta<Args> = {
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
-            ["Family", "--font-v2", "Inter"],
+            ["Family", "--font-v2", "Timeless Sans (Inter fallback)"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

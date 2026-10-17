@@ -135,7 +135,7 @@ const meta: Meta<Args> = {
             [
               "Trigger",
               "Inherited semibold type",
-              "Inter 14px medium title, 50px minimum height",
+              "Timeless Sans (Inter fallback) 14px medium title, 50px minimum height",
             ],
             [
               "Spacing",
@@ -163,7 +163,7 @@ const meta: Meta<Args> = {
             ["Body", "--semantic-text-secondary", "#414651", "#414651"],
             ["Hover", "--semantic-text-secondary", "#5E5E5E", "#5E5E5E"],
             ["Border", "--semantic-border-layout", "#E9EAEB", "#E9EAEB"],
-            ["Font", "--font-v2", "Inter 14px / 500"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 14px / 500"],
           ],
           guidance:
             "Use single when only one section should remain open. value is an array even in single mode. Use defaultValue for initial uncontrolled sections, or value plus onValueChange for synchronized selection. The showChevron control configures AccordionTrigger; firstDisabled configures the first AccordionItem. Use native Enter/Space to toggle a focused trigger; Arrow Up/Down and Home/End move between enabled rows. Closed content stays mounted and inert, so form values are preserved. Reduced motion snaps all transitions. The root has no size or orientation prop.",

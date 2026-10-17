@@ -43,6 +43,7 @@ export async function componentTokenDocumentation(slug: string) {
       ])
     );
     const used = new Set<string>();
+    if (source.includes("--font-v2")) used.add("--font-v2");
     for (const match of source.matchAll(
       /var\((--(?:semantic|v2-text|color)-[\w-]+)/g
     ))
@@ -73,6 +74,7 @@ export async function componentTokenDocumentation(slug: string) {
       (neutral
         ? "The source uses the optional v2 text variables listed below, with its semantic or literal fallback. Semantic status and surface colors keep their theme values."
         : "The source uses semantic theme colors directly. It does not require the optional v2 neutral text variables.") +
+      " Timeless Sans is the v2 font, with Inter and sans-serif fallbacks when it is not hosted." +
       "\n\n| CSS variable used in source | Current theme value | Preview |\n| --- | --- | --- |\n" +
       rows.join("\n")
     );

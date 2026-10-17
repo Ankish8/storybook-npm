@@ -176,47 +176,6 @@ function Thumb({ name, preview }: { name: string; preview?: string }) {
   );
 }
 
-/** The circle closes, then the tick draws through it (stroke-dashoffset on a path of length 1). */
-function DrawnCheck() {
-  const [drawn, setDrawn] = React.useState(false);
-  React.useEffect(() => {
-    const frame = requestAnimationFrame(() => setDrawn(true));
-    return () => cancelAnimationFrame(frame);
-  }, []);
-  const path =
-    "fill-none [stroke-dasharray:1] [transition:stroke-dashoffset_340ms_cubic-bezier(0.16,1,0.3,1)] motion-reduce:[transition:none]";
-  return (
-    <svg
-      width={14}
-      height={14}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2.25}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      className="shrink-0 text-semantic-success-primary"
-    >
-      <path
-        pathLength={1}
-        d="M12 2.5a9.5 9.5 0 1 1 0 19a9.5 9.5 0 1 1 0-19"
-        className={path}
-        style={{ strokeDashoffset: drawn ? 0 : 1 }}
-      />
-      <path
-        pathLength={1}
-        d="m8.2 12.4 2.6 2.6 5-5.2"
-        className={path}
-        style={{
-          strokeDashoffset: drawn ? 0 : 1,
-          transitionDelay: drawn ? "160ms" : undefined,
-        }}
-      />
-    </svg>
-  );
-}
-
 interface RowModel extends FileUploadItem {
   /** Whether the row came from a File the visitor chose (and so is part of `value`). */
   owned: boolean;
@@ -234,7 +193,7 @@ interface RowProps {
 
 /**
  * One row. The upload bar opens with the upload, fills on a smooth curve, then folds away just after the count reads
- * 100% and the check draws; a failure tints the border, shakes the row once and offers Retry.
+ * 100% and the plain Uploaded label appears; a failure tints the border, shakes the row once and offers Retry.
  */
 function FileRow({
   row,
@@ -352,10 +311,7 @@ function FileRow({
                     {shownPhase === "uploading" ? (
                       <span>Uploading {Math.round(target)}%</span>
                     ) : shownPhase === "uploaded" ? (
-                      <>
-                        <DrawnCheck />
-                        <span>Uploaded</span>
-                      </>
+                      <span>Uploaded</span>
                     ) : (
                       <>
                         <CircleAlert
@@ -440,7 +396,7 @@ function FileRow({
               data-action="remove"
               disabled={disabled}
               aria-label={`Remove ${row.name}`}
-              className="h-8 w-8"
+              className="h-8 w-8 border-0 bg-transparent shadow-none"
               onClick={onRemove}
             >
               <X />

@@ -704,7 +704,7 @@ function PhoneCountrySelector({
                           }}
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => pick(country)}
-                          className="relative flex min-h-9 cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-sm"
+                          className="relative flex min-h-9 cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-sm aria-selected:bg-semantic-bg-subtle aria-selected:font-medium aria-selected:text-semantic-primary aria-selected:ring-1 aria-selected:ring-inset aria-selected:ring-semantic-primary"
                         >
                           <ReactCountryFlag
                             svg
@@ -721,7 +721,7 @@ function PhoneCountrySelector({
                           <Check
                             aria-hidden="true"
                             className={cn(
-                              "relative size-3.5 shrink-0 text-semantic-text-primary",
+                              "relative size-4 shrink-0 text-semantic-primary [stroke-width:2]",
                               country.iso !== countryIso && "invisible"
                             )}
                           />

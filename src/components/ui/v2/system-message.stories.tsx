@@ -29,7 +29,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; 12px event text, 1.4 leading, -0.01em",
+              "Timeless Sans (Inter fallback); 12px event text, 1.4 leading, -0.01em",
             ],
             [
               "Formatting",

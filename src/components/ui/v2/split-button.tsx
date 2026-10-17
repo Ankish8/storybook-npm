@@ -80,7 +80,15 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
       if (open === undefined) setLocalOpen(allowed);
       onOpenChange?.(allowed);
     };
-    const solid = variant === "primary" || variant === "default";
+    // SplitButton keeps its original two-style API even when Button gains
+    // a distinct Outline treatment. Existing outline callers still get Secondary.
+    const resolvedVariant =
+      variant === "outline"
+        ? "secondary"
+        : variant === "default"
+          ? "primary"
+          : variant;
+    const solid = resolvedVariant === "primary";
     // No focus ring on the segments or the joined pair.
     const segmentFocus =
       "focus-visible:outline-none focus-visible:[outline-width:0px]";
@@ -99,6 +107,10 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
           "motion-reduce:transition-none motion-reduce:has-[>button:first-child:active]:scale-100"
         )
       : "";
+    // The joined pair owns its 1px border, so segments leave room for it
+    // inside the approved 32 / 40 / 44px overall sizes.
+    const segmentHeight =
+      size === "sm" ? "h-[30px]" : size === "lg" ? "h-[42px]" : "h-[38px]";
     const triggerWidth =
       size === "sm" ? "w-8" : size === "lg" ? "w-[42px]" : "w-[38px]";
 
@@ -116,7 +128,7 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
           {...props}
           ref={ref}
           type={type}
-          variant={variant}
+          variant={resolvedVariant}
           size={size}
           disabled={disabled}
           loading={loading}
@@ -125,6 +137,7 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
             "min-w-0 focus-visible:z-10",
             hasActions &&
               "rounded-s-[7px] rounded-e-none border-0 active:scale-100",
+            hasActions && segmentHeight,
             hasActions && segmentFocus,
             className
           )}
@@ -136,13 +149,14 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
             <DropdownMenuTrigger asChild>
               <Button
                 type="button"
-                variant={variant}
+                variant={resolvedVariant}
                 size={iconSize}
                 disabled={blocked}
                 aria-label={menuLabel ?? `${label} more actions`}
                 className={cn(
                   "shrink-0 rounded-s-none rounded-e-[7px] border-0 focus-visible:z-10 active:scale-100 before:pointer-events-none before:absolute before:inset-y-0 before:start-0 before:w-px before:content-['']",
                   triggerWidth,
+                  segmentHeight,
                   segmentFocus,
                   // Full-height divider: the pill's own tone mixed toward the page
                   // on primary, the lighter hairline on secondary.

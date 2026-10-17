@@ -91,28 +91,32 @@ describe("OtpInput feedback", () => {
     expect(first).toHaveAttribute("data-filled", "false");
   });
 
-  it("pops digits in: transparent 14.4px text when empty, colour and size transition over 180ms", () => {
+  it("keeps glyph size stable while empty-slot colour transitions and the caret stays visible", () => {
     render(<OtpInput />);
     const slot = screen.getByLabelText("Digit 1 of 4");
     expect(slot).toHaveClass(
       "data-[filled=false]:text-transparent",
-      "data-[filled=false]:text-[14.4px]",
-      "motion-reduce:data-[filled=false]:text-base",
-      "caret-[var(--v2-text-secondary,#5E5E5E)]"
+      "text-base",
+      "caret-semantic-primary",
+      "focus:border-semantic-primary"
     );
     expect(slot.className).toContain(
-      "[transition-property:border-color,background-color,color,font-size]"
+      "[transition-property:border-color,background-color,color]"
     );
-    expect(slot.className).toContain(
-      "[transition-duration:160ms,160ms,180ms,180ms]"
-    );
+    expect(slot.className).toContain("[transition-duration:160ms,160ms,180ms]");
   });
 
-  it("keeps the Figma sizes and gap", () => {
+  it("keeps desktop cell sizes while making mobile gaps smaller", () => {
     render(<OtpInput />);
     const slot = screen.getByLabelText("Digit 1 of 4");
-    expect(slot).toHaveClass("h-[60px]", "w-[54px]");
-    expect(slot.parentElement).toHaveClass("gap-6");
+    expect(slot).toHaveClass(
+      "h-[60px]",
+      "w-[54px]",
+      "box-border",
+      "px-0",
+      "min-w-0"
+    );
+    expect(slot.parentElement).toHaveClass("gap-2", "sm:gap-6");
   });
 
   it("shakes the slot row (300ms, motion-safe only) when error turns on after mount", () => {
@@ -143,4 +147,26 @@ describe("OtpInput feedback", () => {
       screen.getByLabelText("Digit 1 of 4").parentElement!.className
     ).not.toContain("v2-otp-shake");
   });
+});
+
+it("preserves leading zeroes, paste, native name and selection navigation in six-digit cells", () => {
+  const onComplete = vi.fn();
+  const { container } = render(
+    <OtpInput length={6} name="verification" onComplete={onComplete} />
+  );
+  const first = screen.getByLabelText("Digit 1 of 6");
+  fireEvent.paste(first, { clipboardData: { getData: () => "012345" } });
+  expect(onComplete).toHaveBeenCalledWith("012345");
+  expect(first).toHaveValue("0");
+  expect(container.querySelector('input[name="verification"]')).toHaveValue(
+    "012345"
+  );
+  fireEvent.keyDown(screen.getByLabelText("Digit 6 of 6"), { key: "Home" });
+  expect(first).toHaveFocus();
+  expect((first as HTMLInputElement).selectionStart).toBe(0);
+  expect((first as HTMLInputElement).selectionEnd).toBe(1);
+  fireEvent.keyDown(first, { key: "Delete" });
+  expect(container.querySelector('input[name="verification"]')).toHaveValue(
+    "12345"
+  );
 });

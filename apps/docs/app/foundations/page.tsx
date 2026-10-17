@@ -39,9 +39,10 @@ export default function Foundations() {
           </div>
           <h2 id="typography">Typography</h2>
           <p>
-            V2 uses Inter. Ordinary titles, labels, and tabs use weight 500.
-            Body text, descriptions, counts, and metadata use 400. Filled
-            primary and status actions retain their deliberate emphasis.
+            V2 uses Timeless Sans with Inter and sans-serif fallbacks. Ordinary
+            titles, labels, and tabs use weight 500. Body text, descriptions,
+            counts, and metadata use 400. Filled primary and status actions
+            retain their deliberate emphasis.
           </p>
           <h2>Motion</h2>
           <p>

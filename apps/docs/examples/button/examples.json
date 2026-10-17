@@ -8,12 +8,12 @@
     {
       "id": "variants",
       "title": "Variants",
-      "description": "Choose the emphasis with `variant`: solid for the main action, quieter outlined and ghost styles for the rest, and `destructive` for risky ones."
+      "description": "The same eight variants as the preview: Primary, Secondary, Outline, Ghost, Destructive, Success, Dashed and Link. Secondary has a neutral fill, Outline a white bordered surface, Ghost stays transparent, and Success uses a filled green surface."
     },
     {
       "id": "sizes",
       "title": "Sizes",
-      "description": "`size` sets the height: 36, 44 and 50px."
+      "description": "`size` sets the height: 32, 40 and 44px."
     },
     {
       "id": "icons",

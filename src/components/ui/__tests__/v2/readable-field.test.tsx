@@ -301,7 +301,12 @@ describe("ReadableField", () => {
     expect(inputContainer).toHaveClass("rounded-lg");
     expect(inputContainer).toHaveClass("border");
     expect(inputContainer).toHaveClass("border-semantic-border-layout");
-    expect(inputContainer).toHaveClass("bg-semantic-bg-ui");
+    expect(inputContainer).toHaveClass("bg-semantic-bg-primary");
+    expect(inputContainer?.className).not.toContain("hover:");
+    expect(screen.getByText(defaultProps.value)).toHaveClass(
+      "font-normal",
+      "text-[var(--v2-text-muted,#707070)]"
+    );
   });
 });
 

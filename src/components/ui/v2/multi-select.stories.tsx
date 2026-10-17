@@ -239,7 +239,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited font",
-              "Inter 14px value; 14px medium label; 12px helper/error",
+              "Timeless Sans (Inter fallback) 14px value; 14px medium label; 12px helper/error",
             ],
             [
               "Selected chips",
@@ -299,7 +299,7 @@ const meta: Meta<Args> = {
               "#F5F5F5",
               "#F5F5F5",
             ],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

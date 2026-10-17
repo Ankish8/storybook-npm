@@ -171,7 +171,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited semibold title / 14px body",
-              "Inter 14px medium title / 12px normal body",
+              "Timeless Sans (Inter fallback) 14px medium title / 12px normal body",
             ],
             [
               "Surface and border",

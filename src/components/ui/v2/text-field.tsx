@@ -352,7 +352,7 @@ const TextField = React.forwardRef(
         className={cn(
           hasAddons
             ? cn(
-                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
+                "min-w-0 flex-1 bg-transparent border-0 outline-none focus:ring-0 px-0 h-full font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed",
                 size === "sm"
                   ? "font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4]"
                   : "text-sm leading-[1.4]",

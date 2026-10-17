@@ -114,8 +114,16 @@ const meta: Meta<Args> = {
             "Calm empty views with custom content, optional illustrated presets, and a useful next action.",
           changes: [
             ["Padding", "64px vertical / 16px horizontal", "24px on all sides"],
-            ["Title", "16px semibold", "24px medium Inter, 32px line height"],
-            ["Description", "14px body", "16px regular Inter"],
+            [
+              "Title",
+              "16px semibold",
+              "24px medium Timeless Sans (Inter fallback), 32px line height",
+            ],
+            [
+              "Description",
+              "14px body",
+              "16px regular Timeless Sans (Inter fallback)",
+            ],
             ["Actions", "v1 buttons", "v2 Small buttons"],
             [
               "Size",

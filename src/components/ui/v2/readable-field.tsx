@@ -180,7 +180,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui px-3 transition-[border-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] hover:border-semantic-primary focus-within:shadow-none",
+            "flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3",
             inputClassName
           )}
         >
@@ -188,7 +188,7 @@ export const ReadableField = React.forwardRef(
           <span
             ref={valueRef}
             className={cn(
-              "text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] tracking-[-0.01em] truncate",
+              "text-sm font-normal leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[-0.01em] truncate",
               !(secret && !isVisible) && "select-all"
             )}
           >

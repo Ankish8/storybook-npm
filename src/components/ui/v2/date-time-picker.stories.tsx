@@ -155,18 +155,18 @@ const meta: Meta<Args> = {
         component: v2ComponentDocs({
           name: "date-time-picker",
           summary:
-            "A typed date/time field with calendar and time-column selection. The recorded v2 input family applies to its field; the calendar now matches the date range picker and the time lists centre the selected row. Props, aria-labels, value formats and parsing are unchanged.",
+            "A typed date/time field with calendar and time-column selection. The recorded v2 input family applies to its field; the calendar now matches the date range picker and time-only mode opens the time columns directly. Props, aria-labels, value formats and parsing are unchanged.",
           changes: [
             [
               "Field dimensions",
               "36px small / 42px default and large; 4px corners",
-              "40px field in all width sizes; 8px corners; 16px horizontal padding",
+              "44px field in all width sizes; 8px corners; 16px horizontal padding",
             ],
             ["Width sizes", "280px / 336px / 360px", "Preserved"],
             [
               "Type",
               "Inherited type",
-              "Inter 14px values; label 14px / 500; supporting text 12px",
+              "Timeless Sans (Inter fallback) 14px values; label 14px / 500; supporting text 12px",
             ],
             ["Hover", "Old teal stroke", "C0C3CA border"],
             [
@@ -187,7 +187,7 @@ const meta: Meta<Args> = {
             [
               "Panel size",
               "336px panel (up to 360px with the field), 16px padding, 40px day cells",
-              "At most 288px (264px minimum), 12px padding, 2px gaps and 36px day cells, so the calendar covers about 70px less height; the field itself keeps its sizes",
+              "Matches the field width, with a 264px calendar minimum bounded by the viewport; the field keeps its 280, 336 and 360px widths",
             ],
             [
               "Time field",
@@ -217,7 +217,7 @@ const meta: Meta<Args> = {
             [
               "Time lists",
               "Selected row could sit under the edge; first row clipped half-way",
-              "Selected row centred on open; 12px edge fade; 32px rows (36px for coarse pointers); arrows, Home and End move the selection",
+              "Compact time columns without empty edge padding; 32px rows (36px for coarse pointers); arrows, Home and End move the selection",
             ],
             [
               "Parsing and selection",
@@ -236,7 +236,7 @@ const meta: Meta<Args> = {
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
-            ["Family", "--font-v2", "Inter"],
+            ["Family", "--font-v2", "Timeless Sans (Inter fallback)"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

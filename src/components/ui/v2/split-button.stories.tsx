@@ -117,7 +117,7 @@ const meta = {
               "—",
               "Primary and secondary; default and outline remain accepted aliases",
             ],
-            ["Sizes", "—", "36px / 44px / 50px; 8px outer corners"],
+            ["Sizes", "—", "32px / 40px / 44px; 8px outer corners"],
             [
               "Menu",
               "—",
@@ -246,7 +246,7 @@ export const AllSizes: Story = {
       {(["sm", "default", "lg"] as const).map((size) => (
         <div key={size} className="flex flex-col items-center gap-3">
           <span className="text-sm text-[var(--v2-text-muted,#707070)]">
-            {size} · {size === "sm" ? 36 : size === "lg" ? 50 : 44}px
+            {size} · {size === "sm" ? 32 : size === "lg" ? 44 : 40}px
           </span>
           <Example {...args} size={size} />
         </div>

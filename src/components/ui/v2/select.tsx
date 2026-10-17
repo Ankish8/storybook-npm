@@ -4,7 +4,6 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown, ChevronUp, Loader2, Search } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Input } from "./input";
 
 /**
  * Arc's chevron turns on a 580ms spring that settles with a hint of life. The
@@ -572,7 +571,7 @@ const SelectLabel = React.forwardRef(
     <SelectPrimitive.Label
       ref={ref}
       className={cn(
-        "px-4 py-1.5 text-xs font-medium text-[var(--v2-text-muted,#707070)]",
+        "px-[11px] pb-1.5 pt-2.5 text-xs font-semibold leading-4 text-[var(--v2-text-muted,#707070)]",
         className
       )}
       {...props}
@@ -1130,26 +1129,13 @@ const SelectField = React.forwardRef(
             className={contentClassName}
           >
             {/* Search input */}
-            {searchable &&
-              (separateGroups ? (
-                // Figma "routing" style — a bordered, rounded search box that
-                // reuses the shared Input component (no leading icon).
-                <div className="px-1 pb-1.5">
-                  <Input
-                    ref={searchRef}
-                    type="text"
-                    placeholder={searchPlaceholder}
-                    aria-label={searchPlaceholder}
-                    value={effectiveSearchQuery}
-                    onChange={handleSearchChange}
-                    // Prevent closing dropdown when clicking input
-                    onClick={(e) => e.stopPropagation()}
-                    onKeyDown={handleSearchKeyDown}
+            {searchable && (
+              <div className="border-b border-solid border-semantic-border-layout p-2">
+                <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 focus-within:border-semantic-primary">
+                  <Search
+                    aria-hidden="true"
+                    className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
                   />
-                </div>
-              ) : (
-                <div className="flex items-center gap-2 px-3 pb-1.5 border-b border-solid border-semantic-border-layout">
-                  <Search className="size-4 text-[var(--v2-text-muted,#707070)] shrink-0" />
                   <input
                     ref={searchRef}
                     type="text"
@@ -1157,13 +1143,14 @@ const SelectField = React.forwardRef(
                     aria-label={searchPlaceholder}
                     value={effectiveSearchQuery}
                     onChange={handleSearchChange}
-                    className="w-full h-10 text-base text-[var(--v2-text-secondary,#5E5E5E)] bg-transparent placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none"
+                    className="h-full min-w-0 w-full border-0 bg-transparent p-0 text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none focus:shadow-none"
                     // Prevent closing dropdown when clicking input
-                    onClick={(e) => e.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
                     onKeyDown={handleSearchKeyDown}
                   />
                 </div>
-              ))}
+              </div>
+            )}
 
             {/* Ungrouped options. Non-matching options stay mounted but hidden
                 (only the selected option is ever kept while filtering). */}
@@ -1187,17 +1174,15 @@ const SelectField = React.forwardRef(
                   // out (i.e. only a hidden selected item remains).
                   const hasVisible = groupOptions.some((o) => !o.hidden);
                   return (
-                    <SelectGroup key={groupName}>
-                      {hasVisible && (
-                        <SelectLabel
-                          className={cn(
-                            separateGroups &&
-                              "mt-1 border-t border-solid border-semantic-border-layout pt-2.5 uppercase tracking-[0.5px]"
-                          )}
-                        >
-                          {groupName}
-                        </SelectLabel>
+                    <SelectGroup
+                      key={groupName}
+                      className={cn(
+                        "mt-2 first:mt-0",
+                        separateGroups &&
+                          "border-t border-solid border-semantic-border-layout pt-1"
                       )}
+                    >
+                      {hasVisible && <SelectLabel>{groupName}</SelectLabel>}
                       {groupOptions.map((option) => (
                         <SelectItem
                           key={option.value}

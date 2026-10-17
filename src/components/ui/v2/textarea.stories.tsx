@@ -97,7 +97,7 @@ const meta: Meta<typeof Textarea> = {
             [
               "Typography",
               "Inherited font; default 16px / compact 14px",
-              "Inter; compact 12px / default 14px / large 16px; 14px medium label",
+              "Timeless Sans (Inter fallback); compact 12px / default 14px / large 16px; 14px medium label",
             ],
             [
               "Helper and counter",
@@ -138,7 +138,7 @@ const meta: Meta<typeof Textarea> = {
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318", "#B42318"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

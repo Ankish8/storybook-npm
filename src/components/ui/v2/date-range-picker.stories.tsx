@@ -253,7 +253,7 @@ const meta: Meta<Args> = {
             [
               "Trigger",
               "40px height / 4px corners / 14px type",
-              "44px height / 8px corners / Inter 14px",
+              "44px height / 8px corners / Timeless Sans (Inter fallback) 14px",
             ],
             ["Host text", "Host styling", "14px / 500 label; 12px helper"],
             ["Hover", "Old teal stroke", "C0C3CA border"],
@@ -340,7 +340,7 @@ const meta: Meta<Args> = {
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error text", "--semantic-error-text", "#B42318"],
-            ["Family", "--font-v2", "Inter"],
+            ["Family", "--font-v2", "Timeless Sans (Inter fallback)"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

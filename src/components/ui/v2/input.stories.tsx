@@ -70,7 +70,7 @@ const meta: Meta<typeof Input> = {
             [
               "Typography",
               "16px, inherited family",
-              "Inter 14/1.4, -0.01em tracking, regular",
+              "Timeless Sans (Inter fallback) 14/1.4, -0.01em tracking, regular",
             ],
             ["Horizontal padding", "16px", "12px"],
             [
@@ -108,7 +108,7 @@ const meta: Meta<typeof Input> = {
             ["Placeholder", "--v2-text-placeholder", "#707070", "#707070"],
             ["Error border", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Disabled surface", "--semantic-bg-ui", "#F5F5F5", "#F5F5F5"],
-            ["Font", "--font-v2", "Inter 400"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback) 400"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

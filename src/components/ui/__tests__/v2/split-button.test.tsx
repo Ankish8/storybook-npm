@@ -206,9 +206,9 @@ describe("SplitButton", () => {
     expect(screen.getAllByRole("button")).toHaveLength(1);
   });
   it.each([
-    ["sm", "h-9", "w-8"],
-    ["default", "h-11", "w-[38px]"],
-    ["lg", "h-[50px]", "w-[42px]"],
+    ["sm", "h-[30px]", "w-8"],
+    ["default", "h-[38px]", "w-[38px]"],
+    ["lg", "h-[42px]", "w-[42px]"],
   ] as const)(
     "keeps %s heights and trigger width aligned inside one bordered pill",
     (size, height, width) => {
@@ -230,6 +230,19 @@ describe("SplitButton", () => {
       );
     }
   );
+  it.each([
+    ["sm", "h-8"],
+    ["default", "h-10"],
+    ["lg", "h-11"],
+  ] as const)(
+    "keeps the standard %s Button height without a menu",
+    (size, height) => {
+      render(<SplitButton label="Run" actions={[]} size={size} />);
+      expect(screen.getByRole("button")).toHaveClass(height);
+      expect(screen.getByRole("group")).not.toHaveClass("border");
+    }
+  );
+
   it.each([
     ["default", "primary"],
     ["outline", "secondary"],

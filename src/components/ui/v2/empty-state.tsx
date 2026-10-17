@@ -320,37 +320,55 @@ function Illustration({
 
       {kind === "not-found" && (
         <>
-          <path
-            d="m84 62 50-15 51 17 50-15v99l-50 16-51-17-50 15Z"
+          <rect
+            x="88"
+            y="31"
+            width="144"
+            height="128"
+            rx="14"
             className="fill-semantic-bg-primary stroke-semantic-text-secondary"
           />
-          <path d="m134 48 51 16v99l-51-16Z" className="fill-semantic-bg-ui" />
+          <path d="M89 57h142" className="stroke-semantic-border-layout" />
+          <circle cx="102" cy="44" r="2" className="fill-semantic-text-muted" />
+          <circle
+            cx="111"
+            cy="44"
+            r="2"
+            className="fill-semantic-border-layout"
+          />
+          <circle
+            cx="120"
+            cy="44"
+            r="2"
+            className="fill-semantic-border-layout"
+          />
           <path
-            d="M134 48v98m51-82v99"
+            d="M143 78h27l13 13v43h-40Z"
+            strokeDasharray="4 4"
+            className="fill-semantic-bg-ui stroke-semantic-text-muted"
+          />
+          <path
+            d="M170 78v13h13m-29 17h18m-18 9h10"
             className="stroke-semantic-border-layout"
           />
           <path
-            d="M104 132c20-27 34 14 55-10s40-9 55-28"
+            d="M74 142c-17-24-5-49 17-44m141 30c27-2 32-27 20-41"
             strokeDasharray="3 6"
-            className="stroke-semantic-text-muted"
+            className="stroke-semantic-border-layout"
           />
           <circle
-            cx="104"
-            cy="132"
-            r="3"
-            className="fill-semantic-text-secondary"
-          />
-          <path
-            d="M202 35a24 24 0 0 0-24 24c0 18 24 37 24 37s24-19 24-37a24 24 0 0 0-24-24Z"
-            className="fill-semantic-primary-surface stroke-semantic-text-secondary"
+            cx="226"
+            cy="136"
+            r="24"
+            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
           />
           <motion.path
-            d="M197 53a5 5 0 0 1 10 0c0 5-5 4-5 9m0 7h.01"
+            d="m218 128 16 16m0-16-16 16"
             className="stroke-semantic-text-secondary"
             {...trace}
           />
           <path
-            d="M77 35h9m-5-4v8M255 120h7"
+            d="M69 61h8m-4-4v8M250 64h8m-4-4v8"
             className="stroke-semantic-border-layout"
           />
         </>

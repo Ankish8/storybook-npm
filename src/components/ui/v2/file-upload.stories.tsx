@@ -97,14 +97,18 @@ const meta: Meta<typeof FileUpload> = {
               "—",
               "No flicker over child elements; red tint for a type that will be rejected",
             ],
-            ["Typography", "—", "Inter; 14px label and 12px supporting text"],
+            [
+              "Typography",
+              "—",
+              "Timeless Sans (Inter fallback); 14px label and 12px supporting text",
+            ],
             ["Drop zone", "—", "12px corners; dashed border; 24px padding"],
             ["File rows", "—", "8px corners; 12px padding"],
             ["Validation", "—", "Allowed extensions/MIME types and size limit"],
             [
               "Uploads",
               "—",
-              "`onUpload` runs each file with a progress bar, a count, a drawn check on success, the reason on failure and a Retry pill; removing a row aborts it",
+              "`onUpload` runs each file with a progress bar, a count, a plain Uploaded label on success, the reason on failure and a Retry pill; removing a row aborts it",
             ],
             [
               "Drag light",
@@ -136,12 +140,6 @@ const meta: Meta<typeof FileUpload> = {
               "#27ABB8",
             ],
             ["Error", "--semantic-error-text", "#B42318", "#B42318"],
-            [
-              "Uploaded check",
-              "--semantic-success-primary",
-              "#17B26A",
-              "#17B26A",
-            ],
             ["Progress fill", "--semantic-primary", "#343E55", "#343E55"],
           ],
           guidance:
@@ -250,7 +248,7 @@ export const Uploads: Story = {
     docs: {
       description: {
         story:
-          "`onUpload` runs each added file. Rows show a count and a bar while uploading, a drawn check when done, and the reason with a Retry pill when it fails. Add a file named `fail-demo.pdf` to see a failure; rows above arrive already finished.",
+          "`onUpload` runs each added file. Rows show a count and a bar while uploading, the Uploaded label when done, and the reason with a Retry pill when it fails. Add a file named `fail-demo.pdf` to see a failure; rows above arrive already finished.",
       },
     },
   },

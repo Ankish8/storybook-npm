@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Button } from "../../v2/button";
 
@@ -256,5 +256,124 @@ describe("v2 Button content motion", () => {
     animations.forEach((animation) =>
       expect(animation.cancel).toHaveBeenCalled()
     );
+  });
+
+  function rippleTarget(element: HTMLElement) {
+    vi.spyOn(element, "getBoundingClientRect").mockReturnValue({
+      x: 10,
+      y: 20,
+      left: 10,
+      top: 20,
+      width: 120,
+      height: 44,
+      right: 130,
+      bottom: 64,
+      toJSON: () => ({}),
+    });
+    return element.querySelector<HTMLElement>("[data-v2-button-ripple]")!;
+  }
+
+  it("ripples from pointer coordinates without changing the label, ref or click callbacks", () => {
+    const onClick = vi.fn();
+    const onCapture = vi.fn();
+    const ref = { current: null as HTMLButtonElement | null };
+    render(
+      <Button ref={ref} onClick={onClick} onClickCapture={onCapture}>
+        Save
+      </Button>
+    );
+    const button = screen.getByRole("button", { name: "Save" });
+    const ripple = rippleTarget(button);
+    fireEvent.click(button, { detail: 1, clientX: 30, clientY: 32 });
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(onCapture).toHaveBeenCalledTimes(1);
+    expect(ref.current).toBe(button);
+    expect(screen.getByRole("button")).toHaveAccessibleName("Save");
+    expect(animations).toHaveLength(1);
+    expect(animations[0].duration).toBe(420);
+    const radius = parseFloat(ripple.style.width) / 2;
+    expect(parseFloat(ripple.style.left) + radius).toBeCloseTo(20);
+    expect(parseFloat(ripple.style.top) + radius).toBeCloseTo(12);
+    expect(ripple.parentElement).toHaveAttribute("aria-hidden", "true");
+    expect(ripple.parentElement).toHaveClass(
+      "pointer-events-none",
+      "overflow-hidden"
+    );
+  });
+
+  it("centers keyboard activation and keeps native form submission once", () => {
+    const onSubmit = vi.fn((event) => event.preventDefault());
+    render(
+      <form onSubmit={onSubmit}>
+        <Button type="submit">Submit</Button>
+      </form>
+    );
+    const button = screen.getByRole("button");
+    const ripple = rippleTarget(button);
+    fireEvent.click(button, { detail: 0 });
+    expect(onSubmit).toHaveBeenCalledTimes(1);
+    const radius = parseFloat(ripple.style.width) / 2;
+    expect(parseFloat(ripple.style.left) + radius).toBeCloseTo(60);
+    expect(parseFloat(ripple.style.top) + radius).toBeCloseTo(22);
+  });
+
+  it("preserves slotted anchor semantics and both child and parent callbacks once", () => {
+    const parentClick = vi.fn();
+    const childClick = vi.fn();
+    render(
+      <Button asChild onClick={parentClick}>
+        <a href="#details" onClick={childClick}>
+          Details
+        </a>
+      </Button>
+    );
+    const link = screen.getByRole("link", { name: "Details" });
+    rippleTarget(link);
+    fireEvent.click(link);
+    expect(link).toHaveAttribute("href", "#details");
+    expect(parentClick).toHaveBeenCalledTimes(1);
+    expect(childClick).toHaveBeenCalledTimes(1);
+    expect(animations).toHaveLength(1);
+    expect(screen.queryByRole("button")).toBeNull();
+  });
+
+  it("skips ripple for canceled activation and unavailable actions", () => {
+    const childClick = vi.fn((event) => event.preventDefault());
+    const { rerender } = render(
+      <Button asChild>
+        <a href="#details" onClick={childClick}>
+          Details
+        </a>
+      </Button>
+    );
+    rippleTarget(screen.getByRole("link"));
+    fireEvent.click(screen.getByRole("link"));
+    expect(childClick).toHaveBeenCalledTimes(1);
+    expect(animations).toHaveLength(0);
+    rerender(<Button loading>Details</Button>);
+    rippleTarget(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("button"));
+    expect(animations).toHaveLength(0);
+  });
+
+  it("restarts a rapid ripple and cancels it on reduced motion and unmount", () => {
+    const { unmount } = render(<Button>Save</Button>);
+    const button = screen.getByRole("button");
+    rippleTarget(button);
+    fireEvent.click(button);
+    fireEvent.click(button);
+    expect(animations).toHaveLength(2);
+    expect(animations[0].cancel).toHaveBeenCalledTimes(1);
+    reduced = true;
+    act(() => preferenceListeners.forEach((listener) => listener()));
+    expect(animations[1].cancel).toHaveBeenCalledTimes(1);
+    fireEvent.click(button);
+    expect(animations).toHaveLength(2);
+    reduced = false;
+    fireEvent.click(button);
+    expect(animations).toHaveLength(3);
+    unmount();
+    expect(animations[2].cancel).toHaveBeenCalledTimes(1);
+    expect(preferenceListeners.size).toBe(0);
   });
 });

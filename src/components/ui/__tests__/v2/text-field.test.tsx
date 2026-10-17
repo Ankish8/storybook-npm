@@ -5,6 +5,38 @@ import userEvent from "@testing-library/user-event";
 import { TextField } from "../../v2/text-field";
 
 describe("TextField", () => {
+  it.each([false, true])(
+    "keeps label, value and placeholder hierarchy with addons=%s",
+    (withAddons) => {
+      const { container } = render(
+        <TextField
+          label="Workspace name"
+          placeholder="Enter a workspace name"
+          defaultValue="Sales team"
+          prefix={withAddons ? "myoperator/" : undefined}
+        />
+      );
+      const input = screen.getByRole("textbox", { name: "Workspace name" });
+      const label = container.querySelector("label");
+      expect(label).toHaveClass(
+        "font-medium",
+        "text-[var(--v2-text-primary,#484848)]"
+      );
+      expect(input).toHaveClass(
+        "font-normal",
+        "font-[family-name:var(--font-v2,Inter,sans-serif)]",
+        "text-[var(--v2-text-secondary,#5E5E5E)]",
+        "placeholder:text-[var(--v2-text-placeholder,#707070)]"
+      );
+      fireEvent.change(input, { target: { value: "Customer success" } });
+      expect(input).toHaveValue("Customer success");
+      expect(label).toHaveTextContent("Workspace name");
+      fireEvent.change(input, { target: { value: "" } });
+      expect(input).toHaveValue("");
+      expect(input).toHaveAttribute("placeholder", "Enter a workspace name");
+    }
+  );
+
   // Basic rendering
   it("renders correctly", () => {
     render(<TextField data-testid="input" />);

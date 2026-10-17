@@ -10,7 +10,7 @@ import {
   type Placement,
 } from "@floating-ui/react-dom";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, CircleAlert, Loader2, X } from "lucide-react";
+import { ChevronDown, CircleAlert, Loader2, Search, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Checkbox } from "./checkbox";
@@ -965,6 +965,7 @@ const MultiSelect = React.forwardRef(
         }
         const items: DisplayItem[] = [];
         for (const g of order) {
+          if (items.length > 0) items.push({ type: "divider" });
           if (g) {
             items.push({ type: "header", label: g });
           }
@@ -1664,17 +1665,25 @@ const MultiSelect = React.forwardRef(
                 >
                   {/* Search input */}
                   {searchable && (
-                    <div className="p-2 border-b border-solid border-semantic-border-layout">
-                      <input
-                        type="text"
-                        data-multi-select-search=""
-                        placeholder={searchPlaceholder}
-                        aria-label={searchPlaceholder}
-                        value={searchQuery}
-                        onChange={(e) => updateSearchQuery(e.target.value)}
-                        className="w-full h-11 px-3 text-sm text-[var(--v2-text-secondary,#5E5E5E)] border border-solid border-semantic-border-input rounded-lg bg-semantic-bg-primary placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none focus:shadow-none"
-                        onClick={(e) => e.stopPropagation()}
-                      />
+                    <div className="border-b border-solid border-semantic-border-layout p-2">
+                      <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 focus-within:border-semantic-primary">
+                        <Search
+                          aria-hidden="true"
+                          className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
+                        />
+                        <input
+                          type="text"
+                          data-multi-select-search=""
+                          placeholder={searchPlaceholder}
+                          aria-label={searchPlaceholder}
+                          value={searchQuery}
+                          onChange={(event) =>
+                            updateSearchQuery(event.target.value)
+                          }
+                          className="h-full min-w-0 w-full border-0 bg-transparent p-0 text-sm leading-[1.4] text-[var(--v2-text-secondary,#5E5E5E)] placeholder:text-[var(--v2-text-placeholder,#707070)] focus:outline-none focus:shadow-none"
+                          onClick={(event) => event.stopPropagation()}
+                        />
+                      </div>
                     </div>
                   )}
 
@@ -1741,7 +1750,7 @@ const MultiSelect = React.forwardRef(
                           return (
                             <div
                               key={`header-${item.label}-${itemIndex}`}
-                              className="px-3 pt-2 pb-1 text-sm font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]"
+                              className="px-[11px] pb-1.5 pt-2.5 text-xs font-semibold leading-4 text-[var(--v2-text-muted,#707070)]"
                             >
                               {item.label}
                             </div>

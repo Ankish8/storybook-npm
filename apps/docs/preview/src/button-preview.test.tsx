@@ -72,9 +72,9 @@ test("icon-only Controls offer square sizes and keep the icon mounted through lo
   expect(controls.size.options).toEqual(["icon-sm", "icon", "icon-lg"]);
   const button = screen.getByRole("button", { name: "Add item" });
   for (const [size, width] of [
-    ["icon-sm", "w-9"],
-    ["icon", "w-11"],
-    ["icon-lg", "w-[50px]"],
+    ["icon-sm", "w-8"],
+    ["icon", "w-10"],
+    ["icon-lg", "w-11"],
   ]) {
     view.update({ size });
     expect(button.classList.contains(width)).toBe(true);
@@ -98,10 +98,24 @@ test("icon-only Controls offer square sizes and keep the icon mounted through lo
   expect((button as HTMLButtonElement).disabled).toBe(false);
 });
 
-test("canonical gallery shows five styles while v1 comparison retains all nine names", () => {
+test("canonical gallery shows the same eight styles as the examples while v1 comparison retains all nine names", () => {
   const view = preview("AllVariants");
-  expect(screen.getAllByRole("button")).toHaveLength(5);
+  expect(screen.getAllByRole("button")).toHaveLength(8);
   expect(view.prepared.parameters.layout).toBe("centered");
+  for (const label of [
+    "primary",
+    "secondary",
+    "outline",
+    "ghost",
+    "destructive",
+    "success",
+    "dashed",
+    "link",
+  ]) {
+    expect(view.container.textContent).toContain(
+      label[0].toUpperCase() + label.slice(1)
+    );
+  }
   view.unmount();
   const comparison = preview("V1VsV2");
   expect(screen.getAllByRole("button")).toHaveLength(9 * 3 * 2);

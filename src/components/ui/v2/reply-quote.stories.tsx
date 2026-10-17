@@ -47,7 +47,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; existing 14px sender/message",
+              "Timeless Sans (Inter fallback); existing 14px sender/message",
             ],
             [
               "Dimensions",

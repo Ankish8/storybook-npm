@@ -41,7 +41,7 @@ const meta: Meta<typeof Typography> = {
           summary:
             "The v2 type hierarchy: display, headline, title, label and body styles.",
           changes: [
-            ["Font", "Inherited font", "Inter"],
+            ["Font", "Inherited font", "Timeless Sans (Inter fallback)"],
             ["Titles", "Semibold", "Medium"],
             [
               "Default text",
@@ -51,7 +51,7 @@ const meta: Meta<typeof Typography> = {
             ["Labels", "Semibold", "Semibold with recorded letter spacing"],
           ],
           tokens: [
-            ["Font", "--font-v2", "Inter"],
+            ["Font", "--font-v2", "Timeless Sans (Inter fallback)"],
             ["Primary", "--semantic-text-primary", "181D27", "#181D27"],
             ["Muted", "--semantic-text-muted", "717680", "#717680"],
           ],

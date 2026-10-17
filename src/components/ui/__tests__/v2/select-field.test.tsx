@@ -168,13 +168,15 @@ describe("SelectField", () => {
     expect(searchInput).toHaveFocus();
   });
 
-  it("adds separator styling to group labels when separateGroups is set", async () => {
+  it("separates compact group headings when separateGroups is set", async () => {
     const user = userEvent.setup();
     render(<SelectField options={groupedOptions} separateGroups />);
 
     await user.click(screen.getByRole("combobox"));
     const groupLabel = screen.getByText("Group A");
-    expect(groupLabel).toHaveClass("border-t", "uppercase");
+    expect(groupLabel).toHaveClass("text-xs", "font-semibold", "leading-4");
+    expect(groupLabel.parentElement).toHaveClass("border-t", "pt-1");
+    expect(groupLabel).not.toHaveClass("uppercase");
   });
 
   // Selection

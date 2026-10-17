@@ -27,7 +27,7 @@
     {
       "id": "groups",
       "title": "Groups and dividers",
-      "description": "The group property creates labelled sections. separateGroups adds dividers and uppercase group labels. Disabled options remain visible and cannot be selected.",
+      "description": "The group property creates labelled sections. Group headings use compact semibold text and spacing; separateGroups adds dividers. Disabled options remain visible and cannot be selected.",
       "minHeight": 480
     },
     {

@@ -54,7 +54,7 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; existing 14px name and 12px supporting text",
+              "Timeless Sans (Inter fallback); existing 14px name and 12px supporting text",
             ],
             ["Avatar", "Legacy avatar", "v2 Avatar, 30px small size"],
             [

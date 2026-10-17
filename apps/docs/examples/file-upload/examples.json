@@ -33,7 +33,7 @@
     {
       "id": "uploads",
       "title": "Uploads with progress",
-      "description": "`onUpload` runs for each added file. Call `onProgress(0-100)` to fill the bar, resolve when the file has landed and the row turns to Uploaded with a drawn check."
+      "description": "`onUpload` runs for each added file. Call `onProgress(0-100)` to fill the bar, resolve when the file has landed and the row displays Uploaded."
     },
     {
       "id": "failure-retry",

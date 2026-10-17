@@ -37,7 +37,7 @@ describe("Checkbox error and invalid", () => {
   it("styles an invalid box with the error colour", () => {
     render(<Checkbox label="I agree" invalid />);
     expect(screen.getByRole("checkbox").className).toContain(
-      "aria-[invalid=true]:data-[state=unchecked]:border-semantic-error-primary"
+      "enabled:aria-[invalid=true]:data-[state=unchecked]:border-semantic-error-primary"
     );
   });
 
@@ -50,6 +50,78 @@ describe("Checkbox error and invalid", () => {
     expect(screen.queryAllByRole("checkbox")[0]).not.toHaveAttribute(
       "aria-invalid"
     );
+  });
+
+  it.each(["default", "card"] as const)(
+    "keeps an uncontrolled %s control, state and focus while its error changes",
+    async (variant) => {
+      const onCheckedChange = vi.fn();
+      const view = (error?: string) => (
+        <Checkbox
+          variant={variant}
+          label="Accept terms"
+          error={error}
+          onCheckedChange={onCheckedChange}
+        />
+      );
+      const { rerender } = render(view());
+      const checkbox = screen.getByRole("checkbox");
+      await userEvent.click(checkbox);
+      expect(checkbox).toBeChecked();
+      checkbox.focus();
+      rerender(view("Please review the terms"));
+      expect(screen.getByRole("checkbox")).toBe(checkbox);
+      expect(checkbox).toBeChecked();
+      expect(checkbox).toHaveFocus();
+      expect(checkbox).toHaveAccessibleDescription("Please review the terms");
+      expect(checkbox).toHaveAttribute("aria-invalid", "true");
+      rerender(view());
+      expect(screen.getByRole("checkbox")).toBe(checkbox);
+      expect(checkbox).toBeChecked();
+      expect(checkbox).toHaveFocus();
+      expect(checkbox).not.toHaveAttribute("aria-invalid");
+      expect(checkbox).not.toHaveAttribute("aria-describedby");
+      expect(onCheckedChange).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it("keeps a controlled error toggle keyboard-operable without dropping focus or the checked state", async () => {
+    function Required() {
+      const [checked, setChecked] = useState(false);
+      return (
+        <Checkbox
+          label="Accept terms"
+          checked={checked}
+          onCheckedChange={(next) => setChecked(next === true)}
+          error={checked ? undefined : "Required"}
+        />
+      );
+    }
+    render(<Required />);
+    const checkbox = screen.getByRole("checkbox");
+    checkbox.focus();
+    await userEvent.keyboard(" ");
+    expect(checkbox).toBeChecked();
+    expect(checkbox).toHaveFocus();
+    expect(screen.queryByText("Required")).not.toBeInTheDocument();
+    await userEvent.keyboard(" ");
+    expect(checkbox).not.toBeChecked();
+    expect(checkbox).toHaveFocus();
+    expect(checkbox).toHaveAccessibleDescription("Required");
+    expect(checkbox).toHaveAttribute("aria-invalid", "true");
+  });
+
+  it("retains a persistent error while toggling either checked state", async () => {
+    render(<Checkbox label="Accept terms" error="Still requires review" />);
+    const checkbox = screen.getByRole("checkbox");
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+    expect(checkbox).toHaveAttribute("aria-invalid", "true");
+    expect(checkbox).toHaveAccessibleDescription("Still requires review");
+    await userEvent.click(checkbox);
+    expect(checkbox).not.toBeChecked();
+    expect(checkbox).toHaveAttribute("aria-invalid", "true");
+    expect(checkbox).toHaveAccessibleDescription("Still requires review");
   });
 });
 
@@ -71,7 +143,7 @@ describe("Checkbox card variant", () => {
     expect(onCheckedChange).toHaveBeenCalledWith(true);
   });
 
-  it("draws a bordered card that tints when checked and disables as one", () => {
+  it("draws a white bordered card with a separate disabled surface", () => {
     render(<Checkbox variant="card" label="Email" defaultChecked disabled />);
     const card = screen.getByText("Email").closest("label") as HTMLElement;
     expect(card).toHaveAttribute("data-checkbox-card");
@@ -79,8 +151,9 @@ describe("Checkbox card variant", () => {
       "rounded-lg",
       "border",
       "p-3",
-      "has-[[data-state=checked]]:border-semantic-primary",
-      "has-[[data-state=checked]]:bg-semantic-primary-surface",
+      "has-[[data-state=checked]:enabled:not([aria-invalid=true])]:border-semantic-primary",
+      "bg-semantic-bg-primary",
+      "has-[:disabled]:border-semantic-disabled-border",
       "has-[:disabled]:cursor-not-allowed"
     );
   });
@@ -581,4 +654,55 @@ describe("Radio anatomy (Content, Control, Description, Error)", () => {
   it("has no Indicator part: the dot is drawn by the input itself", () => {
     expect("Indicator" in Radio).toBe(false);
   });
+});
+
+describe("Choice validation stability", () => {
+  it("inherits disabled and invalid for group children with their own checked state", async () => {
+    const change = vi.fn();
+    render(
+      <CheckboxGroup disabled error="Unavailable">
+        <Checkbox checked onCheckedChange={change} label="Controlled" />
+        <Checkbox
+          defaultChecked
+          onCheckedChange={change}
+          label="Uncontrolled"
+        />
+      </CheckboxGroup>
+    );
+    for (const checkbox of screen.getAllByRole("checkbox")) {
+      expect(checkbox).toBeDisabled();
+      expect(checkbox).toHaveAttribute("aria-invalid", "true");
+      await userEvent.click(checkbox);
+      expect(checkbox).toBeChecked();
+    }
+    expect(change).not.toHaveBeenCalled();
+  });
+
+  it.each(["default", "card"] as const)(
+    "retains the same %s radio and keyboard focus when a group error is added or removed",
+    async (variant) => {
+      const change = vi.fn();
+      const view = (error?: string) => (
+        <RadioGroup defaultValue="a" onValueChange={change} error={error}>
+          <Radio value="a" variant={variant} label="A" />
+          <Radio value="b" variant={variant} label="B" />
+        </RadioGroup>
+      );
+      const { rerender } = render(view());
+      const radio = screen.getByRole("radio", { name: "B" });
+      await userEvent.click(radio);
+      radio.focus();
+      rerender(view("Review this choice"));
+      expect(screen.getByRole("radio", { name: "B" })).toBe(radio);
+      expect(radio).toBeChecked();
+      expect(radio).toHaveFocus();
+      expect(radio).toHaveAttribute("aria-invalid", "true");
+      rerender(view());
+      expect(screen.getByRole("radio", { name: "B" })).toBe(radio);
+      expect(radio).toBeChecked();
+      expect(radio).toHaveFocus();
+      expect(radio).not.toHaveAttribute("aria-invalid");
+      expect(change).toHaveBeenCalledTimes(1);
+    }
+  );
 });

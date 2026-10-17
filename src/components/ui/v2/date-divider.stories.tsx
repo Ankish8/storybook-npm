@@ -28,9 +28,13 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; existing 12px label",
+              "Timeless Sans (Inter fallback); existing 12px label",
             ],
-            ["Spacing", "16px gap and vertical margins", "12px gap, 20px above / 14px below (Arc day separator)"],
+            [
+              "Spacing",
+              "16px gap and vertical margins",
+              "12px gap, 20px above / 14px below (Arc day separator)",
+            ],
             ["API", "ReactNode label and native root attributes", "Preserved"],
           ],
           tokens: [

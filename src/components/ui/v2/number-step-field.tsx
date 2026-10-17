@@ -308,7 +308,7 @@ export interface NumberStepFieldProps extends Omit<
 }
 
 const STEP_BUTTON_CLASSNAME = cn(
-  "flex w-full flex-1 items-center justify-center rounded text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-ui enabled:[@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
+  "flex w-full flex-1 items-center justify-center rounded-none border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-hover enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
 );
 
 const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
@@ -674,11 +674,10 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               </motion.span>
             </span>
           </div>
-          {/* Steppers: each chevron is a half-height tile (24 x 19 in the 38px field) so the pointer target is
-              about 4x the 12px icon; markup otherwise matches Advanced Settings `ValidatedNumberSpinner`
-              (advanced-settings-card.tsx). The tile fill only shows on hover, so at rest it looks like bare chevrons.
-              They are out of the Tab order: the input already answers ArrowUp / ArrowDown / PageUp / PageDown. */}
-          <div className="flex h-full w-7 shrink-0 flex-col bg-semantic-bg-primary px-0.5">
+          {/* Two flush half-height targets share a neutral control rail. Hover fills the
+              available half without introducing detached rounded plates. Keyboard stepping
+              stays on the input, and coarse pointers retain 24px-high targets. */}
+          <div className="flex h-full w-8 shrink-0 flex-col border-l border-solid border-semantic-border-layout bg-semantic-bg-ui">
             <button
               type="button"
               tabIndex={-1}

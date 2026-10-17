@@ -193,7 +193,7 @@ const meta: Meta<Args> = {
             [
               "Type",
               "Inherited type",
-              "Inter 14px values; host label 14px / 500; helper 12px",
+              "Timeless Sans (Inter fallback) 14px values; host label 14px / 500; helper 12px",
             ],
             [
               "Selected chips",
@@ -259,7 +259,7 @@ const meta: Meta<Args> = {
             ["Focus", "--semantic-primary", "#343E55", "#343E55"],
             ["Error", "--semantic-error-primary", "#F04438", "#F04438"],
             ["Error message", "--semantic-error-text", "#B42318", "#B42318"],
-            ["Family", "--font-v2", "Inter"],
+            ["Family", "--font-v2", "Timeless Sans (Inter fallback)"],
             ["Radius", "--radius", "8px"],
           ],
           guidance:

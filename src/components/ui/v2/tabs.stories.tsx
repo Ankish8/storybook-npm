@@ -262,7 +262,11 @@ const meta: Meta<ExampleArgs> = {
               "--shadow-xs",
               "0 1px 2px rgba(16,24,40,0.05)",
             ],
-            ["Font", "--font-v2", "Inter 14 / 500 selected and inactive"],
+            [
+              "Font",
+              "--font-v2",
+              "Timeless Sans (Inter fallback) 14 / 500 selected and inactive",
+            ],
             ["Selected label", "--v2-text-primary", "#484848", "#484848"],
             ["Inactive label", "--v2-text-muted", "#707070", "#707070"],
             ["Panel body / count", "--v2-text-secondary", "#5E5E5E", "#5E5E5E"],

@@ -32,7 +32,7 @@ describe("Button (v2)", () => {
     const button = screen.getByRole("button");
     expect(button).toHaveClass("bg-semantic-primary");
     expect(button).toHaveClass("text-semantic-text-inverted");
-    expect(button).toHaveClass("h-11");
+    expect(button).toHaveClass("h-10");
   });
 
   it.each(VARIANTS)("renders %s with a flat surface", (variant) => {
@@ -45,12 +45,12 @@ describe("Button (v2)", () => {
   });
 
   it.each([
-    ["default", ["h-11", "px-4"]],
-    ["sm", ["h-9", "px-3"]],
-    ["lg", ["h-[50px]", "px-5"]],
-    ["icon", ["h-11", "w-11", "p-0"]],
-    ["icon-sm", ["h-9", "w-9", "p-0"]],
-    ["icon-lg", ["h-[50px]", "w-[50px]", "p-0"]],
+    ["default", ["h-10", "px-4"]],
+    ["sm", ["h-8", "px-3"]],
+    ["lg", ["h-11", "px-5"]],
+    ["icon", ["h-10", "w-10", "p-0"]],
+    ["icon-sm", ["h-8", "w-8", "p-0"]],
+    ["icon-lg", ["h-11", "w-11", "p-0"]],
   ] as const)("renders %s size", (size, expectedClasses) => {
     render(<Button size={size}>Test</Button>);
     const button = screen.getByRole("button");
@@ -98,6 +98,24 @@ describe("Button (v2)", () => {
       );
     }
   );
+
+  it("distinguishes neutral Secondary, white Outline and filled green Success", () => {
+    const { rerender } = render(<Button variant="secondary">Secondary</Button>);
+    expect(screen.getByRole("button")).toHaveClass(
+      "bg-semantic-bg-ui",
+      "border-transparent"
+    );
+    rerender(<Button variant="outline">Outline</Button>);
+    expect(screen.getByRole("button")).toHaveClass(
+      "border-semantic-border-input"
+    );
+    expect(screen.getByRole("button")).not.toHaveClass("bg-semantic-bg-ui");
+    rerender(<Button variant="success">Success</Button>);
+    expect(screen.getByRole("button")).toHaveClass(
+      "bg-semantic-success-text",
+      "text-semantic-text-inverted"
+    );
+  });
 
   describe("disabled and loading", () => {
     it("is disabled when the disabled prop is set, without aria-busy", () => {
@@ -416,7 +434,7 @@ describe("Button (v2)", () => {
     const button = screen.getByRole("button");
     expect(button).toHaveClass("custom-class");
     expect(button).toHaveClass("h-14");
-    expect(button).not.toHaveClass("h-11");
+    expect(button).not.toHaveClass("h-10");
   });
 
   it("forwards ref correctly", () => {
@@ -444,7 +462,7 @@ describe("Button (v2)", () => {
   });
 
   it("exposes buttonVariants for styling links as buttons", () => {
-    expect(buttonVariants({ variant: "outline", size: "sm" })).toContain("h-9");
+    expect(buttonVariants({ variant: "outline", size: "sm" })).toContain("h-8");
   });
 });
 
@@ -456,7 +474,7 @@ describe("Button (v2) — v1 parity", () => {
   const unknown = <T,>(value: string) => value as unknown as T;
 
   it.each(SIZES)(
-    "maps legacy names to identical canonical styles at %s size",
+    "preserves the primary alias and distinct secondary/outline styles at %s size",
     (size) => {
       const options = { size, className: "consumer-class" };
       expect(buttonVariants({ ...options, variant: "default" })).toBe(
@@ -465,7 +483,7 @@ describe("Button (v2) — v1 parity", () => {
       expect(buttonVariants(options)).toBe(
         buttonVariants({ ...options, variant: "primary" })
       );
-      expect(buttonVariants({ ...options, variant: "outline" })).toBe(
+      expect(buttonVariants({ ...options, variant: "outline" })).not.toBe(
         buttonVariants({ ...options, variant: "secondary" })
       );
     }
@@ -480,13 +498,12 @@ describe("Button (v2) — v1 parity", () => {
       "focus-visible:outline"
     );
     view.rerender(<Button variant="ghost">More</Button>);
-    // Arc keeps a 1px transparent border on Ghost so it matches Secondary's box.
     expect(screen.getByRole("button")).toHaveClass(
-      "border-transparent",
+      "border-0",
       "bg-transparent",
       "focus-visible:outline"
     );
-    expect(screen.getByRole("button")).not.toHaveClass("border-0");
+    expect(screen.getByRole("button")).not.toHaveClass("border");
   });
 
   it.each(VARIANTS)("accepts the v1 variant %s", (variant) => {

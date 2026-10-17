@@ -37,8 +37,16 @@ const meta: Meta<typeof OtpInput> = {
               "—",
               "Digits ease in (180ms); error shakes once (4px, 300ms)",
             ],
-            ["Cells", "—", "54 × 60px; 8px radius; 24px gap"],
-            ["Typography", "—", "Inter 16px; supporting text 12px"],
+            [
+              "Cells",
+              "—",
+              "54 × 60px before shrinking; 8px radius; 8px mobile / 24px desktop gap",
+            ],
+            [
+              "Typography",
+              "—",
+              "Timeless Sans (Inter fallback) 16px; supporting text 12px",
+            ],
             [
               "Interaction",
               "—",

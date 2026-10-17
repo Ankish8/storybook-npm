@@ -169,14 +169,14 @@ describe("Radio controls and selectable cards", () => {
     );
     const card = screen.getByRole("radio").closest("label")!;
     expect(card).toHaveClass(
-      "has-[:checked]:border-semantic-primary",
-      "has-[:checked]:bg-semantic-primary-surface",
+      "has-[:checked:enabled:not([aria-invalid=true])]:border-semantic-primary",
+      "bg-semantic-bg-primary",
       "has-[:disabled]:bg-semantic-bg-ui",
       "[transition-duration:160ms]"
     );
     expect(card.className).toContain("[@media(hover:hover)]:hover:");
     expect(card.className).toContain("bg-semantic-bg-ui");
-    expect(card.className).not.toMatch(/\/\d+/);
+    expect(card.className).toContain("bg-semantic-bg-subtle");
   });
 
   it("draws the selected card with one highlight layer owned by the group", () => {
@@ -193,9 +193,33 @@ describe("Radio controls and selectable cards", () => {
     // the selected card hands its selected style to the highlight
     const cardA = screen.getByRole("radio", { name: "A" }).closest("label")!;
     expect(cardA.className).not.toContain(
-      "has-[:checked]:border-semantic-primary"
+      "has-[:checked:enabled:not([aria-invalid=true])]:border-semantic-primary"
     );
     expect(container.querySelectorAll("[data-radio-card]")).toHaveLength(2);
+  });
+
+  it("updates a selected card's error border without moving or remounting the highlight", () => {
+    const view = (invalid: boolean) => (
+      <RadioGroup defaultValue="a">
+        <Radio variant="card" value="a" label="A" invalid={invalid} />
+        <Radio variant="card" value="b" label="B" />
+      </RadioGroup>
+    );
+    const { rerender } = render(view(false));
+    const highlight = screen
+      .getByRole("radiogroup")
+      .querySelector('span[aria-hidden="true"]')!;
+    expect(highlight).toHaveAttribute("data-invalid", "false");
+    rerender(view(true));
+    expect(
+      screen.getByRole("radiogroup").querySelector('span[aria-hidden="true"]')
+    ).toBe(highlight);
+    expect(highlight).toHaveAttribute("data-invalid", "true");
+    expect(highlight).toHaveClass(
+      "data-[invalid=true]:border-semantic-error-primary"
+    );
+    rerender(view(false));
+    expect(highlight).toHaveAttribute("data-invalid", "false");
   });
 
   it("does not draw a highlight for plain circle radios", () => {

@@ -395,10 +395,17 @@ describe("Modal layout", () => {
     expect(screen.getByText("Details")).toHaveClass("text-sm", "leading-5");
   });
 
-  it("puts a muted, bordered footer strip behind the actions", () => {
+  it("keeps the footer on the header surface with compact vertical padding", () => {
     render(<Modal open title="Confirm" />);
     const footer = shell().querySelector("[data-slot=modal-footer]");
-    expect(footer).toHaveClass("border-t", "-mx-4", "-mb-4", "p-4");
+    expect(footer).toHaveClass(
+      "border-t",
+      "-mx-4",
+      "-mb-4",
+      "px-4",
+      "py-3",
+      "bg-semantic-bg-primary"
+    );
   });
 
   it("has exactly one description element, so aria-describedby is unambiguous", () => {

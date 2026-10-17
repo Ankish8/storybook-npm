@@ -34,7 +34,7 @@ describe("Checkbox v2", () => {
   });
 
   it.each([
-    ["default", "h-[18px]", "w-[18px]"],
+    ["default", "h-5", "w-5"],
     ["sm", "h-4", "w-4"],
     ["lg", "h-6", "w-6"],
   ] as const)("renders %s size", (size, heightClass, widthClass) => {
@@ -268,15 +268,21 @@ describe("Checkbox v2 tactile feedback and description", () => {
     const box = screen.getByRole("checkbox");
     const tick = box.querySelector("svg")!;
     expect(tick).toHaveAttribute("viewBox", "0 0 18 18");
-    const check = tick.querySelector('path[d="M4.25 9.25 L7.25 12.25 L13.75 5.75"]')!;
+    const check = tick.querySelector(
+      'path[d="M4.25 9.25 L7.25 12.25 L13.75 5.75"]'
+    )!;
     const checkClass = check.getAttribute("class")!;
     expect(checkClass).toContain("[stroke-dasharray:1]");
     expect(checkClass).toContain("[stroke-dashoffset:1]");
     expect(checkClass).toContain(
       "[transition:stroke-dashoffset_350ms_var(--arc-snappy),opacity_160ms_cubic-bezier(0.22,1,0.36,1)]"
     );
-    expect(checkClass).toContain("[[data-state=checked]_&]:[stroke-dashoffset:0]");
-    expect(checkClass).toContain("motion-reduce:[transition:opacity_120ms_ease-out]");
+    expect(checkClass).toContain(
+      "[[data-state=checked]_&]:[stroke-dashoffset:0]"
+    );
+    expect(checkClass).toContain(
+      "motion-reduce:[transition:opacity_120ms_ease-out]"
+    );
     expect(box).toHaveAttribute("data-state", "checked");
   });
 
@@ -329,7 +335,7 @@ describe("Checkbox v2 tactile feedback and description", () => {
   it("grows the hit ring to a 44px target on coarse pointers, per size", () => {
     const { rerender } = render(<Checkbox aria-label="Select" />);
     expect(screen.getByRole("checkbox")).toHaveClass(
-      "[@media(pointer:coarse)]:before:-inset-[14px]"
+      "[@media(pointer:coarse)]:before:-inset-[13px]"
     );
     rerender(<Checkbox aria-label="Select" size="sm" />);
     expect(screen.getByRole("checkbox")).toHaveClass(
@@ -393,7 +399,7 @@ describe("Checkbox v2 tactile feedback and description", () => {
     });
   });
 
-  it("adds an invisible 6px hit ring (box 18px -> 28px target) and a 0.95 press scale (120ms down, 580ms back)", () => {
+  it("adds an invisible 6px hit ring (box 20px -> 32px target) and a 0.95 press scale (120ms down, 580ms back)", () => {
     render(<Checkbox aria-label="Select" />);
     const box = screen.getByRole("checkbox");
     expect(box).toHaveClass(
@@ -458,10 +464,8 @@ describe("Checkbox v2 tactile feedback and description", () => {
   });
 
   it("places a described label on the left when asked", () => {
-    const { container } = render(
-      <Checkbox label="L" description="D" labelPosition="left" />
-    );
-    const row = container.firstElementChild!;
+    render(<Checkbox label="L" description="D" labelPosition="left" />);
+    const row = screen.getByRole("checkbox").parentElement!;
     expect(row.firstElementChild).toContainElement(screen.getByText("L"));
   });
 

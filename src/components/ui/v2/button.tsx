@@ -13,11 +13,10 @@ import { cn } from "@/lib/utils";
  * Same public props as `@/components/ui/button`, with Arc-inspired state styling
  * and v1-compatible loading. Brand primary and 8px radius are retained.
  *
- * Canonical variants: primary, secondary, ghost, link, destructive.
- * `default` aliases primary; `outline` aliases secondary. Success and dashed
- * remain available for existing v1 consumers. All legacy props remain accepted.
+ * Canonical variants: primary, secondary, outline, ghost, destructive, success,
+ * dashed and link. `default` aliases primary. All legacy props remain accepted.
  *
- * Sizes: sm 36 / default 44 / lg 50; square icon equivalents. Label Inter 500.
+ * Sizes: sm 32 / default 40 / lg 44; square icon equivalents. Label Inter 500.
  *
  * Disabled and loading use the native disabled attribute, as in v1. Slotted
  * links also use aria-disabled and capture guards to prevent activation.
@@ -37,22 +36,24 @@ const buttonVariants = cva(
         destructive:
           "bg-[var(--v2-button-surface,var(--semantic-bg-primary,#fff))] border-[var(--v2-button-border,oklch(0.935_0_0))] text-[var(--v2-button-danger,oklch(0.54_0.21_25))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:border-[var(--v2-button-danger,oklch(0.54_0.21_25))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [&:active:not([aria-disabled=true])]:border-[var(--v2-button-danger,oklch(0.54_0.21_25))] [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
         success:
-          "bg-[var(--v2-button-surface,var(--semantic-bg-primary,#fff))] border-[var(--v2-button-border,oklch(0.935_0_0))] text-semantic-success-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:border-semantic-success-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [&:active:not([aria-disabled=true])]:border-semantic-success-hover [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
-        outline: "",
-        secondary: "",
+          "bg-semantic-success-text border-semantic-success-text text-semantic-text-inverted [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:opacity-[0.95] [&:active:not([aria-disabled=true])]:opacity-[0.91]",
+        outline:
+          "bg-[var(--v2-button-surface,var(--semantic-bg-primary,#fff))] border-semantic-border-input text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [&:active:not([aria-disabled=true])]:bg-semantic-bg-hover",
+        secondary:
+          "bg-semantic-bg-ui border-transparent text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-semantic-bg-hover [&:active:not([aria-disabled=true])]:bg-semantic-bg-hover",
         ghost:
-          "bg-transparent text-[var(--v2-button-secondary,oklch(0.46_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [&:active:not([aria-disabled=true])]:text-[var(--v2-button-foreground,oklch(0.15_0_0))] [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
+          "border-0 bg-transparent text-[var(--v2-button-secondary,oklch(0.46_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [&:active:not([aria-disabled=true])]:text-[var(--v2-button-foreground,oklch(0.15_0_0))] [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
         link: "border-0 bg-transparent active:scale-100 text-semantic-text-link underline underline-offset-4 decoration-current [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not(:active):not([aria-disabled=true])]:opacity-[0.91] [&:active:not([aria-disabled=true])]:opacity-[0.84]",
         dashed:
           "border-dashed bg-[var(--v2-button-surface,var(--semantic-bg-primary,#fff))] border-[var(--v2-button-border,oklch(0.935_0_0))] text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:shadow-[0_1px_2px_var(--v2-button-shadow,rgba(0,0,0,0.035))] [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
       },
       size: {
-        default: "h-11 px-4",
-        sm: "h-9 px-3",
-        lg: "h-[50px] px-5",
-        icon: "h-11 w-11 p-0 [--v2-button-press:0.96]",
-        "icon-sm": "h-9 w-9 p-0 [--v2-button-press:0.96]",
-        "icon-lg": "h-[50px] w-[50px] p-0 [--v2-button-press:0.96]",
+        default: "h-10 px-4",
+        sm: "h-8 px-3",
+        lg: "h-11 px-5",
+        icon: "h-10 w-10 p-0 [--v2-button-press:0.96]",
+        "icon-sm": "h-8 w-8 p-0 [--v2-button-press:0.96]",
+        "icon-lg": "h-11 w-11 p-0 [--v2-button-press:0.96]",
       },
     },
     // Legacy names resolve to the same style definition, so they cannot drift.
@@ -61,11 +62,6 @@ const buttonVariants = cva(
         variant: ["default", "primary"],
         class:
           "bg-semantic-primary border-semantic-primary text-semantic-text-inverted [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not(:active):not([aria-disabled=true])]:opacity-[0.91] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:shadow-[0_1px_2px_var(--v2-button-shadow,rgba(0,0,0,0.035))] [&:active:not([aria-disabled=true])]:opacity-[0.84]",
-      },
-      {
-        variant: ["outline", "secondary"],
-        class:
-          "bg-[var(--v2-button-surface,var(--semantic-bg-primary,#fff))] border-[var(--v2-button-border,oklch(0.935_0_0))] text-[var(--v2-button-foreground,oklch(0.15_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:shadow-[0_1px_2px_var(--v2-button-shadow,rgba(0,0,0,0.035))] [&:active:not([aria-disabled=true])]:bg-[var(--v2-button-surface-muted,oklch(0.978_0_0))]",
       },
       { variant: "link", class: "active:scale-100" },
     ],
@@ -325,6 +321,66 @@ const Button = React.forwardRef(
     }: ButtonProps,
     ref: React.Ref<HTMLButtonElement>
   ) => {
+    const rippleRef = React.useRef<HTMLSpanElement>(null);
+    const rippleAnimation = React.useRef<Animation | undefined>(undefined);
+    React.useEffect(() => {
+      const preference = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)"
+      );
+      const cancel = () => {
+        rippleAnimation.current?.cancel();
+        rippleAnimation.current = undefined;
+      };
+      const motionChanged = () => {
+        if (preference?.matches) cancel();
+      };
+      preference?.addEventListener("change", motionChanged);
+      return () => {
+        preference?.removeEventListener("change", motionChanged);
+        cancel();
+      };
+    }, []);
+    const playRipple = (event: React.MouseEvent<HTMLButtonElement>) => {
+      const ripple = rippleRef.current;
+      if (
+        !ripple ||
+        typeof ripple.animate !== "function" ||
+        window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+      )
+        return;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      if (!bounds.width || !bounds.height) return;
+      // Use local coordinates even while the press transform scales the button.
+      // Keyboard and assistive activation start from the center.
+      const width = event.currentTarget.offsetWidth || bounds.width;
+      const height = event.currentTarget.offsetHeight || bounds.height;
+      const x = event.detail
+        ? Math.min(
+            width,
+            Math.max(0, ((event.clientX - bounds.left) / bounds.width) * width)
+          )
+        : width / 2;
+      const y = event.detail
+        ? Math.min(
+            height,
+            Math.max(0, ((event.clientY - bounds.top) / bounds.height) * height)
+          )
+        : height / 2;
+      const diameter =
+        Math.hypot(Math.max(x, width - x), Math.max(y, height - y)) * 2;
+      ripple.style.width = `${diameter}px`;
+      ripple.style.height = `${diameter}px`;
+      ripple.style.left = `${x - diameter / 2}px`;
+      ripple.style.top = `${y - diameter / 2}px`;
+      rippleAnimation.current?.cancel();
+      rippleAnimation.current = ripple.animate(
+        [
+          { transform: "scale(0.12)", opacity: 0.12 },
+          { transform: "scale(1)", opacity: 0 },
+        ],
+        { duration: 420, easing: "cubic-bezier(0.22,1,0.36,1)" }
+      );
+    };
     const Comp = asChild ? Slot : "button";
     const child =
       asChild &&
@@ -360,6 +416,17 @@ const Button = React.forwardRef(
     const centeredLoading = loading && (iconOnly || !loadingText);
     const content = (
       <>
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]"
+        >
+          <span
+            ref={rippleRef}
+            data-v2-button-ripple=""
+            className="absolute rounded-full bg-current"
+            style={{ opacity: 0 }}
+          />
+        </span>
         <ButtonContent
           conceal={centeredLoading}
           iconOnly={iconOnly}
@@ -445,7 +512,10 @@ const Button = React.forwardRef(
         data-popup-anchor={anchorsLayer || undefined}
         onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
           if (unavailable) block(event);
-          else onClick?.(event);
+          else {
+            onClick?.(event);
+            if (!event.defaultPrevented) playRipple(event);
+          }
         }}
         onClickCapture={(event: React.MouseEvent<HTMLButtonElement>) => {
           if (unavailable) block(event);

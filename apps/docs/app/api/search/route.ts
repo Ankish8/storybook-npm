@@ -12,7 +12,7 @@ const pages = [
     title: "Foundations",
     url: "/foundations",
     description:
-      "Design tokens for neutral text, semantic colors, Inter typography, spacing, radius, shadows, focus and reduced motion.",
+      "Design tokens for neutral text, semantic colors, Timeless Sans typography with Inter fallback, spacing, radius, shadows, focus and reduced motion.",
     breadcrumbs: ["myOperator UI"],
   },
   ...visibleEntries.map((component) => ({

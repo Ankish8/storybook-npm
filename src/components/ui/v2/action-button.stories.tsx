@@ -131,11 +131,11 @@ const meta: Meta<Args> = {
               "Managed by application code",
               "Idle → pending → success; errors return to idle",
             ],
-            ["Sizes", "—", "Small 36px, default 44px, large 50px; 8px corners"],
+            ["Sizes", "—", "Small 32px, default 40px, large 44px; 8px corners"],
             [
               "Variants",
               "—",
-              "Five canonical Button styles; default/outline aliases and legacy success/dashed accepted",
+              "Five showcased styles; all Button variants accepted, default aliases primary",
             ],
           ],
           tokens: [
@@ -323,7 +323,7 @@ export const AllSizes: Story = {
       {(["sm", "default", "lg"] as const).map((size) => (
         <div key={size} className="flex flex-col items-center gap-3">
           <span className="text-sm text-[var(--v2-text-muted,#707070)]">
-            {size} · {size === "sm" ? 36 : size === "lg" ? 50 : 44}px
+            {size} · {size === "sm" ? 32 : size === "lg" ? 44 : 40}px
           </span>
           <Example {...args} size={size} />
         </div>

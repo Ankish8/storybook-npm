@@ -108,7 +108,11 @@ const meta: Meta<Args> = {
               "24 / 32 / 40 / 48 / 64px",
               "Same v1 footprints and md default",
             ],
-            ["Type", "Semibold inherited font", "Medium Inter"],
+            [
+              "Type",
+              "Semibold inherited font",
+              "Medium Timeless Sans (Inter fallback)",
+            ],
             ["Outline", "Custom styling", "Named outline variant"],
             [
               "Broken image",

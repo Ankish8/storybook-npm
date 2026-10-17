@@ -234,7 +234,7 @@ const ModalFooter = ({
   <div
     data-slot="modal-footer"
     className={cn(
-      "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-solid border-semantic-border-layout bg-[color-mix(in_oklab,var(--semantic-bg-ui,#F5F5F5)_50%,transparent)] p-4 group-data-[layout=stack]/modal:grid group-data-[layout=stack]/modal:grid-cols-2 sm:flex-row sm:justify-end",
+      "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 py-3 group-data-[layout=stack]/modal:grid group-data-[layout=stack]/modal:grid-cols-2 sm:flex-row sm:justify-end",
       className
     )}
     {...props}

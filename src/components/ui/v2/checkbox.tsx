@@ -8,17 +8,16 @@ import { cn } from "@/lib/utils";
  * Checkbox box variants (the outer container)
  */
 const checkboxVariants = cva(
-  // Arc box: 18px, 1px border. The fill is the ::after layer (scale .6 -> 1 on a snappy spring, opacity 120ms in / 160ms
+  // Checkbox box: 20px, 1px border. The fill is the ::after layer (scale .6 -> 1 on a snappy spring, opacity 120ms in / 160ms
   // out), so the shell colour never jumps; the mark draws inside it. before: = an invisible ring reaching 6px beyond the
-  // padding box so the pointer target is 28px for the default box without moving layout (44px on coarse pointers, Arc's 44px control).
+  // padding box so the pointer target is 32px for the default box without moving layout (44px on coarse pointers, Arc's 44px control).
   // Press scales the box .95 (120ms down, 580ms spring back); disabled under reduced motion.
   // --arc-snappy samples Arc's snappy spring (visualDuration .26, bounce .12), settling in 350ms.
-  "peer relative isolate inline-flex items-center justify-center shrink-0 box-border rounded border border-solid before:absolute before:-inset-[6px] before:content-[''] after:pointer-events-none after:absolute after:-inset-px after:content-[''] after:rounded-[inherit] after:bg-semantic-primary after:opacity-0 after:scale-[0.6] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition-property:border-color,box-shadow,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] after:[transition:opacity_160ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.95] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:border-color,box-shadow] motion-reduce:enabled:active:scale-100 motion-reduce:after:scale-100 motion-reduce:after:[transition:opacity_120ms_ease-out] focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_var(--semantic-primary-surface)] disabled:cursor-not-allowed text-semantic-text-inverted data-[state=checked]:border-semantic-primary data-[state=checked]:after:opacity-100 data-[state=checked]:after:scale-100 data-[state=checked]:after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] data-[state=checked]:disabled:border-semantic-disabled-primary data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:after:opacity-100 data-[state=indeterminate]:after:scale-100 data-[state=indeterminate]:after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] data-[state=indeterminate]:disabled:border-semantic-disabled-primary data-[state=indeterminate]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:enabled:[@media(hover:hover)]:hover:border-[var(--color-primary-100)] data-[state=unchecked]:focus-visible:border-semantic-primary data-[state=unchecked]:disabled:border-semantic-bg-ui aria-[invalid=true]:data-[state=unchecked]:border-semantic-error-primary aria-[invalid=true]:data-[state=checked]:border-semantic-error-primary aria-[invalid=true]:data-[state=checked]:after:bg-semantic-error-primary aria-[invalid=true]:data-[state=indeterminate]:border-semantic-error-primary aria-[invalid=true]:data-[state=indeterminate]:after:bg-semantic-error-primary",
+  "peer relative isolate inline-flex items-center justify-center shrink-0 box-border rounded border border-solid before:absolute before:-inset-[6px] before:content-[''] after:pointer-events-none after:absolute after:-inset-px after:content-[''] after:rounded-[inherit] after:bg-semantic-primary after:opacity-0 after:scale-[0.6] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition-property:border-color,box-shadow,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] after:[transition:opacity_160ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.95] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:border-color,box-shadow] motion-reduce:enabled:active:scale-100 motion-reduce:after:scale-100 motion-reduce:after:[transition:opacity_120ms_ease-out] focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_var(--semantic-primary-surface)] disabled:cursor-not-allowed text-semantic-text-inverted data-[state=checked]:border-semantic-primary data-[state=checked]:after:opacity-100 data-[state=checked]:after:scale-100 data-[state=checked]:after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] data-[state=checked]:disabled:border-semantic-disabled-primary data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=indeterminate]:border-semantic-primary data-[state=indeterminate]:after:opacity-100 data-[state=indeterminate]:after:scale-100 data-[state=indeterminate]:after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] data-[state=indeterminate]:disabled:border-semantic-disabled-primary data-[state=indeterminate]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-bg-primary data-[state=unchecked]:border-semantic-border-input data-[state=unchecked]:enabled:[@media(hover:hover)]:hover:border-[var(--color-primary-100)] data-[state=unchecked]:focus-visible:border-semantic-primary data-[state=unchecked]:disabled:border-semantic-bg-ui enabled:aria-[invalid=true]:data-[state=unchecked]:border-semantic-error-primary enabled:aria-[invalid=true]:data-[state=unchecked]:hover:border-semantic-error-primary enabled:aria-[invalid=true]:data-[state=checked]:border-semantic-error-primary enabled:aria-[invalid=true]:data-[state=checked]:after:bg-semantic-error-primary enabled:aria-[invalid=true]:data-[state=indeterminate]:border-semantic-error-primary enabled:aria-[invalid=true]:data-[state=indeterminate]:after:bg-semantic-error-primary",
   {
     variants: {
       size: {
-        default:
-          "h-[18px] w-[18px] [@media(pointer:coarse)]:before:-inset-[14px]",
+        default: "h-5 w-5 [@media(pointer:coarse)]:before:-inset-[13px]",
         sm: "h-4 w-4 [@media(pointer:coarse)]:before:-inset-[15px]",
         lg: "h-6 w-6 [@media(pointer:coarse)]:before:-inset-[11px]",
       },
@@ -38,22 +37,6 @@ const labelSizeVariants = cva("", {
       default: "text-sm leading-[1.4]",
       sm: "text-xs leading-[1.4]",
       lg: "text-base leading-[1.4]",
-    },
-  },
-  defaultVariants: {
-    size: "default",
-  },
-});
-
-/**
- * With a description the first line of text is centred on the box (Arc: the label's 1.4 line box against the box height)
- */
-const labelRowVariants = cva("", {
-  variants: {
-    size: {
-      default: "-mt-[0.8px]",
-      sm: "-mt-[0.4px]",
-      lg: "mt-[0.8px]",
     },
   },
   defaultVariants: {
@@ -311,7 +294,7 @@ export interface CheckboxProps
   invalid?: boolean;
   /**
    * `card` makes the whole option a bordered target (12px padding, 8px radius): hover surface, and a primary border
-   * with a tinted surface when checked. Defaults to `default`, the box with a label beside it.
+   * with a calm white surface when checked. Defaults to `default`, the box with a label beside it.
    */
   variant?: "default" | "card";
 }
@@ -388,8 +371,7 @@ const CheckboxBase = React.forwardRef(
           <label
             data-checkbox-card=""
             className={cn(
-              "group/checkbox relative flex items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer [transition-property:border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:none] [@media(hover:hover)]:hover:bg-semantic-bg-ui has-[[data-state=checked]]:border-semantic-primary has-[[data-state=checked]]:bg-semantic-primary-surface has-[[data-state=indeterminate]]:border-semantic-primary has-[[data-state=indeterminate]]:bg-semantic-primary-surface has-[:focus-visible]:border-semantic-primary has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-semantic-bg-ui",
-              description && "items-start"
+              "group/checkbox relative flex items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer [transition-property:border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:none] [@media(hover:hover)]:hover:[&:not(:has(:disabled)):not(:has([aria-invalid=true]))]:border-semantic-border-secondary [@media(hover:hover)]:hover:[&:not(:has(:disabled))]:bg-semantic-bg-subtle has-[[data-state=checked]:enabled:not([aria-invalid=true])]:border-semantic-primary has-[[data-state=indeterminate]:enabled:not([aria-invalid=true])]:border-semantic-primary has-[:focus-visible]:border-semantic-primary has-[[aria-invalid=true]:enabled]:border-semantic-error-primary has-[:disabled]:cursor-not-allowed has-[:disabled]:border-semantic-disabled-border has-[:disabled]:bg-semantic-bg-ui"
             )}
           >
             {checkbox}
@@ -400,7 +382,6 @@ const CheckboxBase = React.forwardRef(
                     id={labelId}
                     className={cn(
                       labelSizeVariants({ size }),
-                      description && labelRowVariants({ size }),
                       "m-0 block font-medium text-[var(--v2-text-primary,#484848)]",
                       labelClassName
                     )}
@@ -431,7 +412,6 @@ const CheckboxBase = React.forwardRef(
                 htmlFor={controlId}
                 className={cn(
                   labelSizeVariants({ size }),
-                  labelRowVariants({ size }),
                   "block font-medium text-[var(--v2-text-primary,#484848)]",
                   disabled ? "cursor-not-allowed" : "cursor-pointer",
                   labelClassName
@@ -449,7 +429,7 @@ const CheckboxBase = React.forwardRef(
           </div>
         );
         return (
-          <div className="inline-flex items-start gap-3.5 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+          <div className="inline-flex items-center gap-3.5 font-[family-name:var(--font-v2,Inter,sans-serif)]">
             {labelPosition === "left" && text}
             {checkbox}
             {labelPosition === "right" && text}
@@ -532,30 +512,34 @@ const CheckboxBase = React.forwardRef(
 
       return checkbox;
     })();
-    if (!error) return layout;
-    // The message sits under the whole row, lined up with the text when the label is on the right.
+    // Keep the control mounted when validation changes, preserving uncontrolled state and keyboard focus.
+    // A contents shell leaves the default layout unchanged; errors add a vertical message beneath the row.
     return (
       <div
         className={cn(
-          "inline-flex flex-col gap-1 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+          error
+            ? "inline-flex flex-col gap-1 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+            : "contents"
         )}
       >
         {layout}
-        <ChoiceError
-          id={errorId}
-          className={cn(
-            "mt-0",
-            variant !== "card" &&
-              labelPosition === "right" &&
-              (size === "sm"
-                ? "pl-[30px]"
-                : size === "lg"
-                  ? "pl-[38px]"
-                  : "pl-8")
-          )}
-        >
-          {error}
-        </ChoiceError>
+        {error && (
+          <ChoiceError
+            id={errorId}
+            className={cn(
+              "mt-0",
+              variant !== "card" &&
+                labelPosition === "right" &&
+                (size === "sm"
+                  ? "pl-[30px]"
+                  : size === "lg"
+                    ? "pl-[38px]"
+                    : "pl-[34px]")
+            )}
+          >
+            {error}
+          </ChoiceError>
+        )}
       </div>
     );
   }
@@ -780,7 +764,7 @@ const CheckboxField = React.forwardRef(
                 ? "[--choice-indent:30px]"
                 : size === "lg"
                   ? "[--choice-indent:38px]"
-                  : "[--choice-indent:32px]",
+                  : "[--choice-indent:34px]",
               className
             )}
             style={style}
@@ -929,7 +913,13 @@ const CheckboxRoot = React.forwardRef(
             props.onCheckedChange?.(next);
           },
         }
-      : props;
+      : group
+        ? {
+            ...props,
+            disabled: props.disabled || group.disabled,
+            invalid: props.invalid || group.invalid,
+          }
+        : props;
     return merged.children !== undefined && merged.children !== null ? (
       <CheckboxField ref={ref} {...merged} />
     ) : (
@@ -1012,7 +1002,7 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
     const descriptionId = generatedName + "-description";
     const errorId = generatedName + "-error";
     const isInvalid = Boolean(invalid || error);
-    // A label, description or error adds a frame around the options; without them the markup is unchanged.
+    // Keep the options in one stable container when validation appears or clears.
     const framed = Boolean(label || description || error);
     const itemsClass = cn(
       "flex gap-3 has-[[data-radio-card]]:gap-2",
@@ -1050,6 +1040,10 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
         setHighlighted(false);
         return;
       }
+      // Validation can change without moving the selected card. Update it before the geometry early return.
+      highlight.dataset.invalid = String(
+        row.querySelector("input")?.getAttribute("aria-invalid") === "true"
+      );
       const next = `${row.offsetLeft} ${row.offsetTop} ${row.offsetWidth} ${row.offsetHeight}`;
       if (next === placedAt.current) return;
       // Glide only between two placed cards; the first placement and resizes snap.
@@ -1104,26 +1098,23 @@ const RadioGroup = React.forwardRef<HTMLDivElement, RadioGroupProps>(
           <span
             ref={highlightRef}
             aria-hidden="true"
-            className="pointer-events-none absolute left-0 top-0 z-[1] box-border rounded-lg border border-solid border-semantic-primary bg-semantic-primary-surface will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] motion-reduce:!transition-none"
+            className={cn(
+              "pointer-events-none absolute left-0 top-0 z-[1] box-border rounded-lg border border-solid border-semantic-primary bg-semantic-bg-primary data-[invalid=true]:border-semantic-error-primary will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] motion-reduce:!transition-none",
+              isInvalid && "border-semantic-error-primary"
+            )}
             style={{ opacity: 0 }}
           />
-          {framed ? (
-            <>
-              <ChoiceGroupHeader
-                label={label}
-                description={description}
-                labelId={labelId}
-                descriptionId={descriptionId}
-              />
-              <div className={itemsClass}>{children}</div>
-              {error && (
-                <ChoiceError id={errorId} className="mt-0">
-                  {error}
-                </ChoiceError>
-              )}
-            </>
-          ) : (
-            children
+          <ChoiceGroupHeader
+            label={label}
+            description={description}
+            labelId={labelId}
+            descriptionId={descriptionId}
+          />
+          <div className={framed ? itemsClass : "contents"}>{children}</div>
+          {error && (
+            <ChoiceError id={errorId} className="mt-0">
+              {error}
+            </ChoiceError>
           )}
         </div>
       </RadioContext.Provider>
@@ -1145,7 +1136,7 @@ export interface RadioProps extends Omit<
   description?: React.ReactNode;
   /**
    * `card` makes the whole option a bordered target (16px padding, 8px radius): hover border, and a primary border
-   * with a tinted surface when selected. Defaults to `default`, the circle with a label beside it.
+   * with a calm white surface when selected. Defaults to `default`, the circle with a label beside it.
    */
   variant?: "default" | "card";
   onCheckedChange?: (checked: boolean) => void;
@@ -1176,7 +1167,7 @@ const RadioInput = React.forwardRef<
       aria-invalid={invalid || context?.invalid || undefined}
       className={cn(
         // Dot, hit area and press: see the comment above RadioProps.
-        "relative size-[17px] shrink-0 appearance-none rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] before:absolute before:-inset-[5px] before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:m-auto after:size-[7px] after:rounded-full after:bg-semantic-text-inverted after:content-[''] after:opacity-0 after:scale-[0.4] after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy)] [transition-property:background-color,border-color,box-shadow,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.88] enabled:active:[transition-duration:160ms,160ms,160ms,100ms] [&:not(:checked):enabled:active]:after:opacity-[0.22] [&:not(:checked):enabled:active]:after:scale-100 motion-reduce:[transition-property:background-color,border-color,box-shadow] motion-reduce:enabled:active:scale-100 motion-reduce:after:scale-100 motion-reduce:after:[transition:opacity_120ms_ease-out] enabled:[@media(hover:hover)]:hover:border-[var(--color-primary-100)] checked:border-semantic-primary checked:bg-semantic-primary checked:after:opacity-100 checked:after:scale-100 checked:after:[transition:opacity_160ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy)] checked:enabled:[@media(hover:hover)]:hover:border-semantic-primary focus-visible:border-semantic-primary focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_var(--semantic-primary-surface)] disabled:cursor-not-allowed disabled:border-semantic-bg-ui disabled:checked:bg-semantic-disabled-primary disabled:checked:border-semantic-disabled-primary aria-[invalid=true]:border-semantic-error-primary aria-[invalid=true]:checked:border-semantic-error-primary aria-[invalid=true]:checked:bg-semantic-error-primary",
+        "relative size-[17px] shrink-0 appearance-none rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] before:absolute before:-inset-[5px] before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:m-auto after:size-[7px] after:rounded-full after:bg-semantic-text-inverted after:content-[''] after:opacity-0 after:scale-[0.4] after:[transition:opacity_120ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy)] [transition-property:background-color,border-color,box-shadow,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.88] enabled:active:[transition-duration:160ms,160ms,160ms,100ms] [&:not(:checked):enabled:active]:after:opacity-[0.22] [&:not(:checked):enabled:active]:after:scale-100 motion-reduce:[transition-property:background-color,border-color,box-shadow] motion-reduce:enabled:active:scale-100 motion-reduce:after:scale-100 motion-reduce:after:[transition:opacity_120ms_ease-out] enabled:[@media(hover:hover)]:hover:border-[var(--color-primary-100)] checked:border-semantic-primary checked:bg-semantic-primary checked:after:opacity-100 checked:after:scale-100 checked:after:[transition:opacity_160ms_cubic-bezier(0.22,1,0.36,1),transform_350ms_var(--arc-snappy)] checked:enabled:[@media(hover:hover)]:hover:border-semantic-primary focus-visible:border-semantic-primary focus-visible:outline-none focus-visible:shadow-[0_0_0_2px_var(--semantic-primary-surface)] disabled:cursor-not-allowed disabled:border-semantic-bg-ui disabled:checked:bg-semantic-disabled-primary disabled:checked:border-semantic-disabled-primary enabled:aria-[invalid=true]:border-semantic-error-primary enabled:aria-[invalid=true]:hover:border-semantic-error-primary enabled:aria-[invalid=true]:checked:border-semantic-error-primary enabled:aria-[invalid=true]:checked:bg-semantic-error-primary checked:enabled:aria-[invalid=true]:[@media(hover:hover)]:hover:border-semantic-error-primary",
         className
       )}
       onChange={(event) => {
@@ -1244,14 +1235,14 @@ const RadioBase = React.forwardRef<HTMLInputElement, RadioProps>(
           data-radio-card=""
           className={cn(
             // Arc row: 12px padding and gap, mark centred on the row, surface on hover/press. While the group's travelling highlight is drawing the selected card the card skips its own selected style.
-            "group/radio relative flex items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer [transition-property:border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] [&>*:not(input)]:relative [&>*]:z-[2] motion-reduce:[transition-property:none] [@media(hover:hover)]:hover:[&:not(:has(:disabled))]:bg-semantic-bg-ui active:[&:not(:has(:disabled))]:bg-semantic-bg-ui has-[:focus-visible]:border-semantic-primary has-[:disabled]:cursor-not-allowed has-[:disabled]:bg-semantic-bg-ui",
+            "group/radio relative flex items-center gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-3 font-[family-name:var(--font-v2,Inter,sans-serif)] cursor-pointer [transition-property:border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] [&>*:not(input)]:relative [&>*]:z-[2] motion-reduce:[transition-property:none] [@media(hover:hover)]:hover:[&:not(:has(:disabled)):not(:has([aria-invalid=true]))]:border-semantic-border-secondary [@media(hover:hover)]:hover:[&:not(:has(:disabled))]:bg-semantic-bg-subtle active:[&:not(:has(:disabled))]:bg-semantic-bg-subtle has-[:focus-visible]:border-semantic-primary has-[[aria-invalid=true]:enabled]:border-semantic-error-primary has-[:disabled]:cursor-not-allowed has-[:disabled]:border-semantic-disabled-border has-[:disabled]:bg-semantic-bg-ui",
             !highlighted &&
-              "has-[:checked]:border-semantic-primary has-[:checked]:bg-semantic-primary-surface"
+              "has-[:checked:enabled:not([aria-invalid=true])]:border-semantic-primary"
           )}
         >
           {input}
           {(label || description) && (
-            <span className="min-w-0 flex-1">
+            <span className={cn("min-w-0 flex-1", isDisabled && "opacity-50")}>
               {label && (
                 <span id={labelId} className={radioLabelClass(isDisabled)}>
                   {label}

@@ -19,7 +19,11 @@ const meta: Meta<typeof ShimmeringText> = {
           summary:
             "A short loading status with a moving highlight and a reduced-motion fallback.",
           changes: [
-            ["Text", "—", "Inter 16px; normal line height"],
+            [
+              "Text",
+              "—",
+              "Timeless Sans (Inter fallback) 16px; normal line height",
+            ],
             ["Highlight", "—", "Light sweep across text"],
             ["Motion", "—", "Disabled for reduced-motion preferences"],
           ],

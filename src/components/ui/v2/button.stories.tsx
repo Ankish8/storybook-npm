@@ -25,9 +25,12 @@ const LEGACY_VARIANTS = [
 const VARIANTS = [
   "primary",
   "secondary",
+  "outline",
   "ghost",
-  "link",
   "destructive",
+  "success",
+  "dashed",
+  "link",
 ] as const;
 
 function buttonStoryProps(args: React.ComponentProps<typeof Button>) {
@@ -106,11 +109,11 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
     </tr>
   </thead>
   <tbody>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 36 · default 44 · lg 50</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 32 · default 40 · lg 44</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Radius</td><td style="padding: 12px 16px;">4px</td><td style="padding: 12px 16px;">8px</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Inter 14px / 1.4; 500 on every variant</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Timeless Sans (Inter fallback) 14px / 1.4; 500 on every variant</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Flat primary fill; 91% opacity on hover, 84% while pressed</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">White surface with neutral hover fill</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">Filled neutral surface, distinct from the white bordered Outline</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Ghost / Link</td><td style="padding: 12px 16px;">Muted text / blue link</td><td style="padding: 12px 16px;">Ghost: muted text with a subtle hover fill. Link: blue, underlined and borderless</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Focus ring</td><td style="padding: 12px 16px;">2px ring, 2px offset</td><td style="padding: 12px 16px;">1px outline, 3px offset</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Minimum width</td><td style="padding: 12px 16px;">64 / 80 / 96px</td><td style="padding: 12px 16px;">None (hugs content)</td></tr>
@@ -123,20 +126,21 @@ Labels use medium weight (500) at 14px. Secondary actions use a neutral foregrou
 
 ## v1 compatibility
 
-Use five styles for new work: Primary, Secondary, Ghost, Link and Destructive. Existing calls keep working:
+Preview and examples show the same eight styles: Primary, Secondary, Outline, Ghost, Destructive, Success, Dashed and Link. Existing calls keep working:
 
 | Existing variant | v2 style |
 | --- | --- |
 | Omitted / default / primary | Primary |
-| secondary / outline | Secondary |
+| secondary | Filled neutral surface |
+| outline | White bordered surface |
 | ghost / link / destructive | Matching canonical style |
-| success / dashed | Supported legacy extensions |
+| success / dashed | Filled green / dashed outline |
 
-All six size names, icons, loadingText and asChild remain supported. Changing the import to v2 opts into its visual styling and 36/44/50px heights; it does not require rewriting variant props. The v1 component itself is unchanged.
+All six size names, icons, loadingText and asChild remain supported. Changing the import to v2 opts into its visual styling and 32/40/44px heights; it does not require rewriting variant props. The v1 component itself is unchanged.
 
 ## Interactions
 
-Press feedback uses a quick compression and a gentle spring return. Wide actions compress less than compact ones. Primary hover and press use opacity instead of a gradient; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
+Press feedback uses a quick compression, a gentle spring return and a subtle ripple from the activation point. Keyboard activation starts the ripple in the center. Reduced motion disables the ripple, including when the preference changes during activation. Wide actions compress less than compact ones. Primary hover and press use opacity instead of a gradient; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
 
 Loading keeps the original width and displays a centered spinner. Set \`loadingText\` to opt into an inline spinner with an explicit status label. Loading sets native \`disabled\`, \`aria-busy\` and \`aria-disabled\`, matching v1 and preventing repeat activation. Busy native buttons are skipped in the Tab order. Disabled actions use 52% opacity. Reduced motion removes scale, movement and blur; short fades remain. We retain a visible keyboard focus outline, unlike the reference.
 
@@ -184,9 +188,9 @@ Loading keeps the original width and displays a centered spinner. Set \`loadingT
       "oklch(0.54 0.21 25)",
       "oklch(0.54 0.21 25)"
     ),
-    tokenRow("Success", "--semantic-success-hover", "079455", "#079455"),
+    tokenRow("Success", "--semantic-success-text", "067647", "#067647"),
     tokenRow("Hover shadow", "--v2-button-shadow", "rgba(0,0,0,0.035)"),
-    tokenRow("Font", "--font-v2", "Inter", undefined),
+    tokenRow("Font", "--font-v2", "Timeless Sans (Inter fallback)", undefined),
     tokenRow("Heading text", "--v2-text-primary", "484848", "#484848"),
     tokenRow(
       "Neutral action label",
@@ -274,6 +278,15 @@ export const Primary: Story = {
 export const Secondary: Story = {
   args: { variant: "secondary", children: "Secondary" },
 };
+export const Outline: Story = {
+  args: { variant: "outline", children: "Outline" },
+};
+export const Success: Story = {
+  args: { variant: "success", children: "Success" },
+};
+export const Dashed: Story = {
+  args: { variant: "dashed", children: "Dashed" },
+};
 export const Ghost: Story = { args: { variant: "ghost", children: "Ghost" } };
 export const Link: Story = {
   args: { variant: "link", children: "Learn more" },
@@ -298,7 +311,7 @@ export const IconOnly: Story = {
   parameters: {
     ...gallery(
       ["children", "leftIcon", "rightIcon", "loadingText"],
-      "A centered, square icon button. Switch between 36, 44 and 50px, then try its loading and disabled states."
+      "A centered, square icon button. Switch between 32, 40 and 44px, then try its loading and disabled states."
     ),
     layout: "centered",
   },
@@ -308,9 +321,9 @@ export const IconOnly: Story = {
       control: {
         type: "select",
         labels: {
-          "icon-sm": "Small · 36px",
-          icon: "Default · 44px",
-          "icon-lg": "Large · 50px",
+          "icon-sm": "Small · 32px",
+          icon: "Default · 40px",
+          "icon-lg": "Large · 44px",
         },
       },
     },
@@ -339,7 +352,7 @@ export const AllVariants: Story = {
   parameters: {
     ...gallery(
       ["variant"],
-      "Five distinct styles. Default and Outline remain supported aliases; see v1 compatibility for all existing names."
+      "Eight distinct styles match the examples: Primary, Secondary, Outline, Ghost, Destructive, Success, Dashed and Link. Default remains an alias of Primary."
     ),
     layout: "centered",
   },
@@ -374,7 +387,7 @@ export const AllSizes: Story = {
             className="flex min-w-0 flex-col items-center gap-2 text-center"
           >
             <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-              {size} · {size === "sm" ? 36 : size === "lg" ? 50 : 44}px
+              {size} · {size === "sm" ? 32 : size === "lg" ? 44 : 40}px
             </span>
             <Button {...buttonStoryProps(args)} size={size} />
           </div>
@@ -387,7 +400,7 @@ export const AllSizes: Story = {
             className="flex min-w-0 flex-col items-center gap-2 text-center"
           >
             <span className="text-xs text-[var(--v2-text-muted,#707070)]">
-              {size} · {size === "icon-sm" ? 36 : size === "icon-lg" ? 50 : 44}
+              {size} · {size === "icon-sm" ? 32 : size === "icon-lg" ? 44 : 40}
               px
             </span>
             <Button
@@ -460,7 +473,7 @@ export const V1VsV2: Story = {
   parameters: {
     ...gallery(
       ["variant", "size"],
-      "All nine v1 names still work. Default maps to Primary; Outline maps to Secondary. Success and Dashed remain legacy extensions. Content, icon, disabled and loading controls apply to both versions."
+      "All nine v1 names still work. Default maps to Primary; Secondary has a neutral fill, Outline a white bordered surface, and Success a filled green surface. Content, icon, disabled and loading controls apply to both versions."
     ),
     layout: "padded",
   },

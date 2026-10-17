@@ -21,13 +21,13 @@
     {
       "id": "time-only",
       "title": "Time only",
-      "description": "`variant=\"time-only\"` shows only the time, chosen from scrolling hour, minute and AM/PM lists.",
+      "description": "`variant=\"time-only\"` opens the hour, minute and AM/PM lists directly in one popup.",
       "minHeight": 340
     },
     {
       "id": "time-range",
       "title": "Start and end time",
-      "description": "Leave `showEndTime` on (the default for date and time) to choose a start and an end time on one day.",
+      "description": "Leave `showEndTime` on (the default for date and time) to choose a start and an end time on one day. Both selected times appear in the field.",
       "minHeight": 640
     },
     {
@@ -63,7 +63,7 @@
     {
       "id": "sizes",
       "title": "Sizes",
-      "description": "`sm`, `default` and `lg` set the width of the field (280, 336 and 360px); the height is 44px for all three. The calendar panel is a compact 288px at most, whatever the field's width.",
+      "description": "`sm`, `default` and `lg` set the width of the field (280, 336 and 360px); the height is 44px for all three. The popup follows the field width and stays within the viewport.",
       "minHeight": 560
     },
     {

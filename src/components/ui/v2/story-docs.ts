@@ -10,6 +10,15 @@ const neutralTokens: Token[] = [
 
 function textTokens(tokens: Token[]): Token[] {
   const updated = tokens.map((token) => {
+    if (token[1] === "--font-v2") {
+      return [
+        token[0],
+        token[1],
+        token[2].includes("Timeless Sans")
+          ? token[2]
+          : token[2].replace("Inter", "Timeless Sans, Inter, sans-serif"),
+      ] as Token;
+    }
     const role = token[1].replace(/^--(?:semantic|v2)-text-/, "");
     const neutral = neutralTokens.find(
       (entry) => entry[1] === "--v2-text-" + role
@@ -95,7 +104,7 @@ export function v2ComponentDocs({
           "</tr>"
       )
     ) +
-    "\n\n## Text hierarchy\n\nV2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\n## Design Tokens\n\n" +
+    "\n\n## Text hierarchy\n\nV2 uses the `--font-v2` stack: Timeless Sans, with Inter and sans-serif fallbacks when Timeless Sans is not hosted. V2 uses neutral charcoal headings, medium gray body text and lighter supporting text. These v2-only variables replace the original Figma text colors following the October 2 visual refinement. Brand actions, status colors and v1 tokens retain their existing values. Each text utility includes a fallback, so the component works before these optional theme overrides are added.\n\n## Design Tokens\n\n" +
     table(
       ["Token", "CSS Variable", "Value", "Preview"],
       textTokens(tokens).map(

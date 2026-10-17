@@ -2336,8 +2336,6 @@ components:
       - "clsx"
       - "tailwind-merge@^2.6.0"
       - "tailwindcss-animate"
-    internalDependencies:
-      - v2-input
 
   v2-select-field:
     description: "V2 select field with search, groups and current pagination"
@@ -2484,6 +2482,7 @@ components:
       - "tailwind-merge@^2.6.0"
     internalDependencies:
       - v2-switch
+      - v2-avatar
 
   v2-accordion:
     description: "Accordion (v2 design); same API as accordion"

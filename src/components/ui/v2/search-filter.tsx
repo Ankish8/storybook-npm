@@ -478,7 +478,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
           className="group relative"
           data-filled={displaySearchValue ? "true" : undefined}
         >
-          {/* Arc: an 18px glass inset 12px, muted at rest and full contrast while the field is focused or holds text. */}
+          {/* Reserve 40px before text: 13px inset + 18px icon + 9px breathing room. */}
           <Search
             aria-hidden="true"
             className="pointer-events-none absolute left-[13px] top-1/2 size-[18px] -translate-y-1/2 text-[var(--v2-text-muted,#707070)] transition-[color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] group-focus-within:text-[var(--v2-text-primary,#484848)] group-data-[filled=true]:text-[var(--v2-text-primary,#484848)]"
@@ -500,7 +500,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             // (`aria-expanded`). The extra `hover` selector outranks the grey hover
             // border from Input (0,4,0 vs 0,3,0).
             className={cn(
-              "pl-[38px] pr-9 aria-expanded:border-semantic-primary aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
+              "pl-10 pr-11 aria-expanded:border-semantic-primary aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
               inputClassName
             )}
             {...searchInputProps}

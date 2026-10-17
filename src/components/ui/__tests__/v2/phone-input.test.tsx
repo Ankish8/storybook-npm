@@ -412,6 +412,38 @@ describe("PhoneInput opt-in country picker", () => {
     );
   });
 
+  it("keeps selection visible while keyboard navigation previews another country", async () => {
+    const user = userEvent.setup();
+    const onCountryChange = vi.fn();
+    render(
+      <PhoneInput
+        countrySelector
+        countryIso="IN"
+        preferredCountries={[]}
+        countries={[
+          { iso: "IN", name: "India", dialCode: "+91" },
+          { iso: "GB", name: "United Kingdom", dialCode: "+44" },
+        ]}
+        onCountryChange={onCountryChange}
+      />
+    );
+    await user.click(screen.getByTestId("phone-input-country"));
+    const search = screen.getByRole("combobox");
+    await waitFor(() => expect(search).toHaveFocus());
+    await user.keyboard("{End}");
+    const selected = screen.getByRole("option", { name: "India +91" });
+    const previewed = screen.getByRole("option", {
+      name: "United Kingdom +44",
+    });
+    expect(selected).toHaveAttribute("aria-selected", "true");
+    expect(selected).not.toHaveAttribute("data-active");
+    expect(previewed).toHaveAttribute("data-active", "true");
+    expect(previewed).toHaveAttribute("aria-selected", "false");
+    expect(selected.querySelector("svg")).not.toHaveClass("invisible");
+    expect(previewed.querySelector("svg")).toHaveClass("invisible");
+    expect(onCountryChange).not.toHaveBeenCalled();
+  });
+
   it("respects controlled countries and supports external updates", async () => {
     const user = userEvent.setup();
     const callback = vi.fn();

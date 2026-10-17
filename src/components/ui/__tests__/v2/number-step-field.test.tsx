@@ -368,22 +368,33 @@ describe("NumberStepField hold to repeat and tiles", () => {
     expect(onChange).not.toHaveBeenCalled();
   });
 
-  it("makes each chevron a half-height tile with a gated neutral hover fill, out of the Tab order", () => {
+  it("integrates half-height controls into a neutral rail without detached hover plates", () => {
     render(<Harness />);
     for (const name of ["Increase Qty", "Decrease Qty"]) {
       const tile = screen.getByLabelText(name);
-      expect(tile).toHaveClass("flex-1", "w-full", "rounded");
+      expect(tile).toHaveClass(
+        "flex-1",
+        "w-full",
+        "rounded-none",
+        "border-0",
+        "bg-transparent",
+        "p-0"
+      );
       expect(tile.className).toContain(
-        "enabled:[@media(hover:hover)]:hover:bg-semantic-bg-semantic-ui".replace(
-          "semantic-bg-semantic-ui",
-          "semantic-bg-ui"
-        )
+        "enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-hover"
       );
       // The input already answers the arrow and page keys, so the steppers are not Tab stops.
       expect(tile).toHaveAttribute("tabindex", "-1");
     }
     const column = screen.getByLabelText("Increase Qty").parentElement!;
-    expect(column).toHaveClass("h-full", "w-7", "flex-col");
+    expect(column).toHaveClass(
+      "h-full",
+      "w-8",
+      "flex-col",
+      "bg-semantic-bg-ui",
+      "border-l"
+    );
+    expect(column).not.toHaveClass("px-0.5");
   });
 
   it("marks a held stepper with data-pressed (pointer down cancels :active) and clears it on release", () => {

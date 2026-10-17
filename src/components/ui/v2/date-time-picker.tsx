@@ -50,14 +50,10 @@ const DEFAULT_PLACEHOLDER = "--/--/---- --:-- --";
 const DATE_SEGMENT_MASK = "--/--/----";
 const TIME_SEGMENT_MASK = "--:-- --";
 const TIME_SEGMENT_MASK_WITH_SECONDS = "--:--:-- --";
-// A compact panel: 288px gives 36px day cells (12px padding, 2px gaps) with a 14px number,
-// where the old 336px panel gave 40px cells.
 const POPOVER_WIDTH = 288;
-// The popover follows the trigger width but is clamped to a usable design range
-// so it neither stretches across a full-width desktop field nor overflows a
-// narrow mobile viewport.
+// Match the field width while preserving a usable calendar at narrow sizes.
+// Floating UI still limits the panel to the available viewport.
 const MIN_POPOVER_WIDTH = 264;
-const MAX_POPOVER_WIDTH = 288;
 const POPOVER_MARGIN = 8;
 const POPOVER_GAP = 4;
 const MAX_POPOVER_HEIGHT = 500;
@@ -85,7 +81,7 @@ const HOVER_BORDER =
 // 32px pills with a chevron that turns while the list is open.
 // Arc header controls: a fill on hover (160ms), a quick press (.96 over 120ms) and a spring release (580ms).
 const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.96] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,color] motion-reduce:enabled:active:scale-100 max-sm:size-9 ${HOVER_FILL}`;
-const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-[90px] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors ${HOVER_FILL}`;
+const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-0 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-2 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors ${HOVER_FILL}`;
 
 // Arc popup surfaces grow in on the snappy spring (visualDuration .26, bounce .12; sampled, settling in 350ms): the calendar
 // from 95% and 8px above, menus from 97% and 6px above. Positioned panels use transform: false, so the keyframes own transform.
@@ -108,11 +104,6 @@ const MONTH_MOTION_DIRECTION = {
 } as const;
 
 type MonthDirection = keyof typeof MONTH_MOTION_DIRECTION | null;
-
-// Time columns fade 12px at both edges so a row cut by the edge reads as
-// scrolling rather than as clipping.
-const TIME_COLUMN_FADE =
-  "[-webkit-mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)] [mask-image:linear-gradient(to_bottom,transparent,black_12px,black_calc(100%-12px),transparent)]";
 
 const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const DEFAULT_LOCALE = "en-US";
@@ -1397,7 +1388,7 @@ function CalendarDropdown({
     });
 
   return (
-    <div className="relative">
+    <div className="relative min-w-0 flex-1">
       <label className="sr-only" htmlFor={id}>
         {label}
       </label>
@@ -1439,7 +1430,7 @@ function CalendarDropdown({
             className={cn(
               MENU_MOTION,
               POPUP_SHADOW,
-              "flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+              "flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             )}
             style={{
               ...floatingStyles,
@@ -1569,12 +1560,7 @@ function TimeColumn({
         ref={listRef}
         role="listbox"
         aria-label={ariaLabel}
-        // py-[66px] = (168px list - 36px row) / 2, so the first and last row
-        // can reach the centre. Rows are Arc's 36px option height.
-        className={cn(
-          "relative flex flex-col overflow-y-auto px-1 py-[66px] [scroll-snap-type:y_proximity] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5",
-          TIME_COLUMN_FADE
-        )}
+        className="relative flex flex-col overflow-y-auto px-1 py-0 [scroll-snap-type:y_proximity] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
         style={{ maxHeight: `${TIME_COLUMN_MAX_HEIGHT}px` }}
         onKeyDown={handleKeyDown}
       >
@@ -1586,14 +1572,11 @@ function TimeColumn({
             role="option"
             aria-selected={option.selected}
             className={cn(
-              "flex h-9 shrink-0 items-center justify-center rounded-md border border-solid px-3 text-sm [font-variant-numeric:tabular-nums] [scroll-snap-align:center] [transition:background-color_80ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+              "flex h-9 shrink-0 items-center justify-center rounded-md border-0 bg-transparent px-1 text-sm [font-variant-numeric:tabular-nums] [scroll-snap-align:center] [transition:background-color_80ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
               FOCUS_RING_INSET,
               option.selected
-                ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
-                : cn(
-                    "border-transparent text-[var(--v2-text-secondary,#5E5E5E)]",
-                    HOVER_FILL
-                  )
+                ? "bg-semantic-bg-hover font-medium text-[var(--v2-text-primary,#484848)]"
+                : cn("text-[var(--v2-text-secondary,#5E5E5E)]", HOVER_FILL)
             )}
             onClick={() => onSelect(option.key)}
           >
@@ -1617,6 +1600,7 @@ function TimeField({
   onChange,
   portalMount,
   strategy,
+  inline = false,
 }: {
   id: string;
   label: string;
@@ -1629,6 +1613,7 @@ function TimeField({
   onChange: (time: string) => void;
   portalMount: HTMLElement | null;
   strategy: Strategy;
+  inline?: boolean;
 }) {
   const { hour12, minute, second, meridiem } = decomposeTime(value);
   const { setReference, setFloating, floatingStyles, isPositioned } =
@@ -1672,6 +1657,47 @@ function TimeField({
     { key: "PM", label: "PM", selected: meridiem === "PM" },
   ];
 
+  const columns = (
+    <>
+      <TimeColumn
+        header="Hours"
+        ariaLabel={`${label} hours`}
+        options={hourOptions}
+        onSelect={(key) =>
+          onChange(composeTime(Number(key), minute, effectiveSecond, meridiem))
+        }
+      />
+      <TimeColumn
+        header="Minutes"
+        ariaLabel={`${label} minutes`}
+        options={minuteOptions}
+        onSelect={(key) =>
+          onChange(composeTime(hour12, Number(key), effectiveSecond, meridiem))
+        }
+      />
+      {showSeconds && (
+        <TimeColumn
+          header="Seconds"
+          ariaLabel={`${label} seconds`}
+          options={secondOptions}
+          onSelect={(key) =>
+            onChange(composeTime(hour12, minute, Number(key), meridiem))
+          }
+        />
+      )}
+      <TimeColumn
+        header="AM/PM"
+        ariaLabel={`${label} meridiem`}
+        options={meridiemOptions}
+        onSelect={(key) =>
+          onChange(
+            composeTime(hour12, minute, effectiveSecond, key as Meridiem)
+          )
+        }
+      />
+    </>
+  );
+
   return (
     <div className="flex flex-col gap-1.5">
       <span
@@ -1680,42 +1706,55 @@ function TimeField({
       >
         {label}
       </span>
-      <button
-        ref={setReference}
-        id={id}
-        type="button"
-        aria-label={label}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        className={cn(
-          "flex h-11 w-full items-center gap-[9px] rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition:border-color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),box-shadow_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-          HOVER_BORDER,
-          FOCUS_RING,
-          open &&
-            "border-semantic-primary shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
-        )}
-        onClick={() => onOpenChange(!open)}
-      >
-        <Clock2
-          className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
-          aria-hidden="true"
-        />
-        <span className="m-0 min-w-0 flex-1 truncate">
-          {/* The text for assistive tech (and anything that reads the DOM); the wheels are for the eye. */}
-          <span className="sr-only">
-            {formatTimeForDisplay(value, showSeconds)}
-          </span>
-          <RollingTime text={formatTimeForDisplay(value, showSeconds)} />
-        </span>
-        <ChevronDown
+      {inline ? (
+        <div
+          role="group"
+          aria-labelledby={`${id}-label`}
           className={cn(
-            "size-4 shrink-0 text-[var(--v2-text-muted,#707070)]",
-            CHEVRON_TURN,
-            open && "rotate-180"
+            "grid min-w-0 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
+            showSeconds ? "grid-cols-4" : "grid-cols-3"
           )}
-          aria-hidden="true"
-        />
-      </button>
+        >
+          {columns}
+        </div>
+      ) : (
+        <button
+          ref={setReference}
+          id={id}
+          type="button"
+          aria-label={label}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          className={cn(
+            "flex h-11 w-full items-center gap-[9px] rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition:border-color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),box-shadow_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            HOVER_BORDER,
+            FOCUS_RING,
+            open &&
+              "border-semantic-primary shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+          )}
+          onClick={() => onOpenChange(!open)}
+        >
+          <Clock2
+            className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
+            aria-hidden="true"
+          />
+          <span className="m-0 min-w-0 flex-1 truncate">
+            {/* The text for assistive tech (and anything that reads the DOM); the wheels are for the eye. */}
+            <span className="sr-only">
+              {formatTimeForDisplay(value, showSeconds)}
+            </span>
+            <RollingTime text={formatTimeForDisplay(value, showSeconds)} />
+          </span>
+          <ChevronDown
+            className={cn(
+              "size-4 shrink-0 text-[var(--v2-text-muted,#707070)]",
+              CHEVRON_TURN,
+              open && "rotate-180"
+            )}
+            aria-hidden="true"
+          />
+        </button>
+      )}
       {open &&
         portalMount &&
         createPortal(
@@ -1727,7 +1766,7 @@ function TimeField({
             className={cn(
               MENU_MOTION,
               POPUP_SHADOW,
-              "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
+              "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
             style={{
@@ -1737,46 +1776,7 @@ function TimeField({
               visibility: isPositioned ? undefined : "hidden",
             }}
           >
-            <TimeColumn
-              header="Hours"
-              ariaLabel={`${label} hours`}
-              options={hourOptions}
-              onSelect={(key) =>
-                onChange(
-                  composeTime(Number(key), minute, effectiveSecond, meridiem)
-                )
-              }
-            />
-            <TimeColumn
-              header="Minutes"
-              ariaLabel={`${label} minutes`}
-              options={minuteOptions}
-              onSelect={(key) =>
-                onChange(
-                  composeTime(hour12, Number(key), effectiveSecond, meridiem)
-                )
-              }
-            />
-            {showSeconds && (
-              <TimeColumn
-                header="Seconds"
-                ariaLabel={`${label} seconds`}
-                options={secondOptions}
-                onSelect={(key) =>
-                  onChange(composeTime(hour12, minute, Number(key), meridiem))
-                }
-              />
-            )}
-            <TimeColumn
-              header="AM/PM"
-              ariaLabel={`${label} meridiem`}
-              options={meridiemOptions}
-              onSelect={(key) =>
-                onChange(
-                  composeTime(hour12, minute, effectiveSecond, key as Meridiem)
-                )
-              }
-            />
+            {columns}
           </div>,
           portalMount
         )}
@@ -1922,7 +1922,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               1,
               Math.min(MAX_POPOVER_HEIGHT, availableHeight)
             );
-            const maxWidth = Math.min(MAX_POPOVER_WIDTH, availableWidth);
+            const maxWidth = availableWidth;
             const width = Math.max(
               1,
               Math.min(
@@ -2529,7 +2529,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           className={cn(
             POPOVER_MOTION,
             POPUP_SHADOW,
-            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
             "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
             "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
           )}
@@ -2563,7 +2563,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 >
                   <ChevronLeft className="size-4" aria-hidden="true" />
                 </button>
-                <div className="flex min-w-0 items-center gap-1.5">
+                <div className="flex min-w-0 flex-1 items-center gap-1.5">
                   <CalendarDropdown
                     id={`${triggerId}-month`}
                     label="Month"
@@ -2808,6 +2808,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <TimeField
                 id={`${triggerId}-start-time`}
                 label={startTimeLabel}
+                inline={!showCalendar}
                 value={resolvedStartTime}
                 showSeconds={resolvedShowSeconds}
                 minuteStep={minuteStep}
@@ -2827,6 +2828,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 <TimeField
                   id={`${triggerId}-end-time`}
                   label={endTimeLabel}
+                  inline={!showCalendar}
                   value={resolvedEndTime}
                   showSeconds={resolvedShowSeconds}
                   minuteStep={minuteStep}
@@ -2931,6 +2933,21 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             onKeyDown={handleTypedDateKeyDown}
             onBlur={handleTypedDateBlur}
           />
+          {pickerVariant === "date-time" &&
+            resolvedShowEndTime &&
+            currentValue.endTime && (
+              <span
+                data-slot="date-time-end-time"
+                className="shrink-0 whitespace-nowrap text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
+                aria-label={`${endTimeLabel}: ${formatTimeForDisplay(currentValue.endTime, resolvedShowSeconds)}`}
+              >
+                –{" "}
+                {formatTimeForDisplay(
+                  currentValue.endTime,
+                  resolvedShowSeconds
+                )}
+              </span>
+            )}
           {showClear &&
             (hasValue || dateInputValue) &&
             !disabled &&

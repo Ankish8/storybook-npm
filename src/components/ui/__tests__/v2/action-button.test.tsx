@@ -353,9 +353,9 @@ describe("ActionButton", () => {
   });
 
   it.each([
-    ["sm", "h-9"],
-    ["default", "h-11"],
-    ["lg", "h-[50px]"],
+    ["sm", "h-8"],
+    ["default", "h-10"],
+    ["lg", "h-11"],
   ] as const)("matches Button's %s size and radius", (size, height) => {
     render(<ActionButton label="Run" onAction={() => {}} size={size} />);
     expect(screen.getByRole("button")).toHaveClass(
@@ -382,7 +382,7 @@ describe("ActionButton", () => {
     expect(ref.current).toBe(button);
     expect(button).toHaveAttribute("id", "task");
     expect(button).toHaveClass("h-14", "w-full");
-    expect(button).not.toHaveClass("h-11");
+    expect(button).not.toHaveClass("h-10");
   });
 
   it("coexists with both existing Button generations", () => {
@@ -399,11 +399,11 @@ describe("ActionButton", () => {
       "rounded"
     );
     expect(screen.getByRole("button", { name: "Current" })).toHaveClass(
-      "h-11",
+      "h-10",
       "rounded-lg"
     );
     expect(screen.getByRole("button", { name: "Async" })).toHaveClass(
-      "h-11",
+      "h-10",
       "rounded-lg"
     );
   });

@@ -29,14 +29,18 @@ const meta: Meta<Args> = {
             [
               "Typography",
               "Inherited Source Sans",
-              "Inter; existing 12px label",
+              "Timeless Sans (Inter fallback); existing 12px label",
             ],
             [
               "Count and label",
               "Singular/plural count or custom label",
               "Preserved, including empty custom labels",
             ],
-            ["Spacing", "16px gap, 8px vertical margin", "12px gap (Arc day separator), 8px margin"],
+            [
+              "Spacing",
+              "16px gap, 8px vertical margin",
+              "12px gap (Arc day separator), 8px margin",
+            ],
           ],
           tokens: [
             ["Text", "--semantic-text-muted", "#717680", "#717680"],

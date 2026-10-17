@@ -56,5 +56,10 @@ test("docs Button state rules outrank Bootstrap utilities", async () => {
     "running"
   );
   rule(".p-0", "padding", "0px");
+  rule(".w-8", "width", "2rem");
+  rule(".w-10", "width", "2.5rem");
   rule(".w-11", "width", "2.75rem");
+  rule(".h-8", "height", "2rem");
+  rule(".h-10", "height", "2.5rem");
+  rule(".h-11", "height", "2.75rem");
 });

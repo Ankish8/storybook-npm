@@ -75,6 +75,30 @@ describe("DateRangePicker", () => {
     expect(screen.getByRole("dialog", { hidden: true })).toBeInTheDocument();
   });
 
+  it("keeps long selected dates accessible while clear remains an independent action", () => {
+    const onClear = vi.fn();
+    const text = "A long localized date range from October through November";
+    render(
+      <DateRangePicker
+        clearable
+        defaultValue={{
+          start: new Date(2026, 9, 1),
+          end: new Date(2026, 10, 1),
+        }}
+        formatRange={({ start }) => (start ? text : "")}
+        onClear={onClear}
+      />
+    );
+    const trigger = screen.getByRole("button", { name: text });
+    expect(screen.getByTitle(text)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Clear date range" }));
+    expect(onClear).toHaveBeenCalledOnce();
+    expect(trigger).toHaveTextContent("Date Range");
+    expect(
+      screen.queryByRole("dialog", { hidden: true })
+    ).not.toBeInTheDocument();
+  });
+
   it("closes the popover when the trigger is clicked again", () => {
     render(<DateRangePicker />);
 

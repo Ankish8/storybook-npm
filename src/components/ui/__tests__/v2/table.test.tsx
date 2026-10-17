@@ -702,24 +702,33 @@ describe("TableAvatar", () => {
     expect(screen.getByText("JD")).toBeInTheDocument();
   });
 
-  it("uses default color when not specified", () => {
+  it("uses the native v2 Avatar surface and accessible identity by default", () => {
     render(<TableAvatar initials="AB" />);
-    const avatar = screen.getByText("AB");
-    expect(avatar).toHaveStyle({ backgroundColor: "#7C3AED" });
+    const avatar = screen.getByRole("img", { name: "AB" });
+    expect(avatar).toHaveClass(
+      "bg-semantic-info-surface",
+      "font-[family-name:var(--font-v2,Inter,sans-serif)]"
+    );
+    expect(avatar).not.toHaveAttribute("style");
   });
 
   it("uses custom color when specified", () => {
     render(<TableAvatar initials="XY" color="#FF0000" />);
-    const avatar = screen.getByText("XY");
-    expect(avatar).toHaveStyle({ backgroundColor: "#FF0000" });
+    const avatar = screen.getByRole("img", { name: "XY" });
+    expect(avatar.style.getPropertyValue("--table-avatar-color")).toBe(
+      "#FF0000"
+    );
+    expect(avatar).toHaveClass(
+      "bg-[var(--table-avatar-color)]",
+      "border-[color:var(--table-avatar-color)]"
+    );
   });
 
   it("has correct styling", () => {
     render(<TableAvatar initials="TS" />);
-    const avatar = screen.getByText("TS");
+    const avatar = screen.getByRole("img", { name: "TS" });
     expect(avatar).toHaveClass("rounded-full");
-    expect(avatar).toHaveClass("w-7");
-    expect(avatar).toHaveClass("h-7");
+    expect(avatar).toHaveClass("size-7");
   });
 });
 

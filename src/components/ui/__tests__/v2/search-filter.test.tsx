@@ -410,7 +410,7 @@ describe("SearchFilter v2 refresh", () => {
       <SearchFilter options={options} inputProps={{ className: "custom-x" }} />
     );
     const input = screen.getByRole("searchbox");
-    expect(input).toHaveClass("custom-x", "pl-[38px]", "pr-9");
+    expect(input).toHaveClass("custom-x", "pl-10", "pr-11");
   });
 
   it("gives rows a 4px radius and a keyboard-only ring", async () => {

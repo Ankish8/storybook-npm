@@ -29,7 +29,7 @@
     {
       "id": "sizes",
       "title": "Sizes",
-      "description": "Small (16px), default (18px) and large (24px)."
+      "description": "Small (16px), default (20px) and large (24px)."
     },
     {
       "id": "label-position",
@@ -49,7 +49,7 @@
     {
       "id": "card",
       "title": "Card",
-      "description": "`variant=\"card\"` makes the whole option a bordered, clickable card that tints when checked."
+      "description": "`variant=\"card\"` makes the whole option a bordered, clickable card that keeps a white surface with a clear border when checked."
     },
     {
       "id": "group",

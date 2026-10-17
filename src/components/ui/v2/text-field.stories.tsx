@@ -152,12 +152,7 @@ const meta: Meta<typeof TextField> = {
               "#717680",
               "#717680",
             ],
-            [
-              "Placeholder",
-              "--semantic-text-placeholder",
-              "#A2A6B1",
-              "#A2A6B1",
-            ],
+            ["Placeholder", "--v2-text-placeholder", "#707070", "#707070"],
             ["Border", "--semantic-border-input", "#E9EAEB", "#E9EAEB"],
             ["Hover border", "--semantic-primary", "#343E55", "#343E55"],
             [
