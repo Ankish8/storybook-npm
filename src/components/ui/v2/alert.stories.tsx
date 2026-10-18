@@ -111,8 +111,8 @@ function AlertExample({
         {args.description && <Description>{args.description}</Description>}
       </UI>
       {!visible && (
-        <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-semantic-border-layout p-4">
-          <p className="m-0 text-sm text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-dashed border-v2-semantic-border-layout p-4">
+          <p className="m-0 text-sm text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             Alert dismissed.
           </p>
           <Button
@@ -299,7 +299,7 @@ function SyncExample() {
         open={open}
         closable
         onClose={() => setOpen(false)}
-        className="border-semantic-border-layout bg-semantic-bg-primary"
+        className="border-v2-semantic-border-layout bg-v2-semantic-bg-primary"
       >
         <AlertTitle>
           {connected ? "All updates synced" : "Sync paused"}
@@ -425,8 +425,8 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
         {title}
       </h3>
       {children}
@@ -495,19 +495,19 @@ export const ContainerWidths: Story = {
   render: (args) => (
     <div className="grid w-full gap-5">
       <div className="w-full max-w-[320px]">
-        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+        <h3 className="m-0 mb-3 text-sm font-medium text-v2-semantic-text-muted">
           320px maximum
         </h3>
         <AlertExample args={{ ...args, presentation: "inline" }} />
       </div>
       <div className="w-full max-w-[384px]">
-        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+        <h3 className="m-0 mb-3 text-sm font-medium text-v2-semantic-text-muted">
           384px maximum
         </h3>
         <AlertExample args={{ ...args, presentation: "inline" }} />
       </div>
       <div className="w-full">
-        <h3 className="m-0 mb-3 text-sm font-medium text-semantic-text-muted">
+        <h3 className="m-0 mb-3 text-sm font-medium text-v2-semantic-text-muted">
           Full width
         </h3>
         <AlertExample args={{ ...args, presentation: "inline" }} />
@@ -550,11 +550,11 @@ function SettingsExample({
   const [name, setName] = React.useState("Support inbox");
   const [saved, setSaved] = React.useState(false);
   return (
-    <section className="max-w-[760px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+    <section className="max-w-[760px] rounded-lg border border-v2-semantic-border-layout p-5">
+      <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
         Inbox settings
       </h3>
-      <p className="m-0 mt-1 mb-5 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+      <p className="m-0 mt-1 mb-5 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
         Save a name to display local feedback. Dismissal stays synchronized with
         Controls.
       </p>
@@ -569,7 +569,7 @@ function SettingsExample({
         <div className="min-w-[220px] flex-1">
           <label
             htmlFor="alert-inbox-name"
-            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+            className="mb-2 block text-sm font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
           >
             Inbox name
           </label>
@@ -588,7 +588,7 @@ function SettingsExample({
         </Button>
       </form>
       {saved && (
-        <p className="m-0 mb-3 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+        <p className="m-0 mb-3 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
           Saved locally: {name}
         </p>
       )}

@@ -21,7 +21,7 @@ export default function RestrictCharacters() {
         onValidInput={() => setInvalid(false)}
       />
       {invalid && (
-        <p id={messageId} className="m-0 text-xs text-semantic-error-text">
+        <p id={messageId} className="m-0 text-xs text-v2-semantic-error-text">
           Use letters and spaces only.
         </p>
       )}

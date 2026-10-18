@@ -580,10 +580,10 @@ describe("Pagination polish", () => {
 
     const link = screen.getByText("2");
     expect(link).toHaveClass(
-      "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-semantic-primary-hover",
-      "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-semantic-text-inverted"
+      "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-v2-semantic-primary-hover",
+      "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-v2-semantic-text-inverted"
     );
-    expect(link).not.toHaveClass("hover:bg-semantic-bg-ui");
+    expect(link).not.toHaveClass("hover:bg-v2-semantic-bg-ui");
     expect(link).not.toHaveClass("hover:text-[var(--v2-text-primary,#484848)]");
   });
 

@@ -651,7 +651,7 @@ function AppointmentForm(args: Args) {
         </Button>
       </div>
       {saved && (
-        <p role="status" className="m-0 text-sm text-semantic-success-text">
+        <p role="status" className="m-0 text-sm text-v2-semantic-success-text">
           {saved}
         </p>
       )}

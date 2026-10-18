@@ -64,7 +64,7 @@ describe("Table", () => {
 
     const wrapper = screen.getByRole("table").parentElement;
     expect(wrapper).toHaveClass("border");
-    expect(wrapper).toHaveClass("border-semantic-border-layout");
+    expect(wrapper).toHaveClass("border-v2-semantic-border-layout");
   });
 
   it("renders without border when withoutBorder is true", () => {
@@ -164,7 +164,7 @@ describe("TableHeader", () => {
     );
 
     expect(screen.getByTestId("header")).toHaveClass(
-      "bg-semantic-primary-surface"
+      "bg-v2-semantic-primary-surface"
     );
   });
 });
@@ -195,7 +195,9 @@ describe("TableRow", () => {
       </Table>
     );
 
-    expect(screen.getByTestId("row")).toHaveClass("bg-semantic-info-surface");
+    expect(screen.getByTestId("row")).toHaveClass(
+      "bg-v2-semantic-info-surface"
+    );
   });
 
   it("renders non-highlighted row with hover styles", () => {
@@ -211,7 +213,7 @@ describe("TableRow", () => {
 
     // Hover is gated to hover-capable pointers so it never sticks after a tap.
     expect(screen.getByTestId("row")).toHaveClass(
-      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui"
     );
   });
 
@@ -228,12 +230,14 @@ describe("TableRow", () => {
 
     const row = screen.getByTestId("row");
     // info surface (#ECF1FB) for selection; bg-ui (#F5F5F5) stays the hover fill
-    expect(row).toHaveClass("data-[state=selected]:bg-semantic-info-surface");
     expect(row).toHaveClass(
-      "data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface"
+      "data-[state=selected]:bg-v2-semantic-info-surface"
     );
-    expect(row).not.toHaveClass("data-[state=selected]:bg-semantic-bg-ui");
-    expect(row).toHaveClass("[@media(hover:hover)]:hover:bg-semantic-bg-ui");
+    expect(row).toHaveClass(
+      "data-[state=selected]:[@media(hover:hover)]:hover:bg-v2-semantic-info-surface"
+    );
+    expect(row).not.toHaveClass("data-[state=selected]:bg-v2-semantic-bg-ui");
+    expect(row).toHaveClass("[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui");
   });
 
   it("shows a visible focus ring on a focusable row", () => {
@@ -249,7 +253,7 @@ describe("TableRow", () => {
 
     expect(screen.getByTestId("row")).toHaveClass(
       "focus-visible:outline",
-      "focus-visible:outline-semantic-primary"
+      "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
   });
 });
@@ -534,7 +538,7 @@ describe("TableFooter", () => {
 
     expect(screen.getByTestId("footer")).toHaveClass("border-t");
     expect(screen.getByTestId("footer")).toHaveClass(
-      "bg-semantic-primary-surface"
+      "bg-v2-semantic-primary-surface"
     );
   });
 });
@@ -706,7 +710,7 @@ describe("TableAvatar", () => {
     render(<TableAvatar initials="AB" />);
     const avatar = screen.getByRole("img", { name: "AB" });
     expect(avatar).toHaveClass(
-      "bg-semantic-info-surface",
+      "bg-v2-semantic-info-surface",
       "font-[family-name:var(--font-v2,Inter,sans-serif)]"
     );
     expect(avatar).not.toHaveAttribute("style");
@@ -841,7 +845,7 @@ describe("Composed table behavior", () => {
     const row = screen.getByRole("row");
     expect(row).toHaveAttribute("data-state", "selected");
     expect(row).toHaveAttribute("aria-selected", "true");
-    expect(row).toHaveClass("bg-semantic-info-surface");
+    expect(row).toHaveClass("bg-v2-semantic-info-surface");
   });
 
   it("keeps sticky cells when content wrapping is enabled", () => {
@@ -981,10 +985,10 @@ describe("Table stickyHeader", () => {
       "[&>thead>tr>th]:sticky",
       "[&>thead>tr>th]:top-0",
       "[&>thead>tr>th]:z-20",
-      "[&>thead>tr>th]:bg-semantic-primary-surface"
+      "[&>thead>tr>th]:bg-v2-semantic-primary-surface"
     );
     expect(table.className).toContain(
-      "[&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout)]"
+      "[&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--v2-semantic-border-layout,var(--semantic-border-layout))]"
     );
     expect(table.parentElement).toHaveClass(
       "max-h-[var(--v2-table-max-height,inherit)]",

@@ -261,6 +261,10 @@ export function ComponentPlayground({
       "Overview";
     url.searchParams.set("component", slug);
     url.searchParams.set("parentOrigin", browserOrigin);
+    url.searchParams.set(
+      "theme",
+      document.documentElement.dataset.theme || "light"
+    );
     url.searchParams.set("story", story);
     return { src: url.href, origin: url.origin, story };
   }, [browserOrigin, slug]);

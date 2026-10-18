@@ -53,3 +53,118 @@ test("keeps role, visibility and disabled contracts as behavior", () => {
     assert.equal(isStyleAssertion("Component behavior", message), false);
   }
 });
+
+const presenceMessage =
+  "expect(received).toBeInTheDocument()\nreceived value must be an HTMLElement";
+const classPresenceSource = (
+  selector,
+  extra = "",
+  target = "container.querySelector"
+) => `
+describe("A suite", () => {
+  describe("Nested suite", () => {
+    it("checks a container", () => {
+      const { container } = render(<Field leftIcon={<span>L</span>} />);
+      const inputContainer = ${target}(${JSON.stringify(selector)});
+      expect(inputContainer).toBeInTheDocument();
+      ${extra}
+    });
+  });
+});`;
+const classifySource = (source, message = presenceMessage) =>
+  isStyleAssertion("arbitrary name", message, {
+    source,
+    fullName: "A suite Nested suite checks a container",
+  });
+
+test("recognizes only AST-verified semantic class presence checks", () => {
+  for (const selector of [
+    ".border-semantic-error-primary",
+    ".border-semantic-border-input",
+    ".border-v2-semantic-border-input",
+    ".bg-semantic-bg-primary",
+  ]) {
+    assert.equal(classifySource(classPresenceSource(selector)), true, selector);
+  }
+  assert.equal(
+    isStyleAssertion("A style-like test title", presenceMessage),
+    false
+  );
+});
+
+test("does not hide id, role, text, attribute or structural selector failures", () => {
+  for (const selector of [
+    "#border-semantic-error-primary",
+    '[data-testid="border-semantic-error-primary"]',
+    '[role="alert"]',
+    "input.border-semantic-border-input",
+    ".border-semantic-border-input input",
+    ".border-semantic-border-input .child",
+    ".border-semantic-border-input, .other",
+    ".custom-class",
+  ]) {
+    assert.equal(
+      classifySource(classPresenceSource(selector)),
+      false,
+      selector
+    );
+  }
+  for (const query of [
+    "screen.getByRole",
+    "screen.getByText",
+    "screen.getByTestId",
+  ]) {
+    assert.equal(
+      classifySource(
+        classPresenceSource(".border-semantic-error-primary", "", query)
+      ),
+      false,
+      query
+    );
+  }
+});
+
+test("does not hide compound behavior, callback, ref or interaction checks", () => {
+  for (const extra of [
+    "expect(onChange).toHaveBeenCalledOnce();",
+    "expect(ref.current).toBe(inputContainer);",
+    "expect(inputContainer).toHaveAttribute('aria-invalid', 'true');",
+    "expect(screen.getByRole('textbox')).toBeInTheDocument();",
+    "fireEvent.click(inputContainer);",
+  ]) {
+    assert.equal(
+      classifySource(
+        classPresenceSource(".border-semantic-error-primary", extra)
+      ),
+      false,
+      extra
+    );
+  }
+  const source = classPresenceSource(".border-semantic-error-primary");
+  assert.equal(
+    classifySource(source, "ReferenceError: container is not defined"),
+    false
+  );
+  assert.equal(
+    classifySource(
+      source.replace("expect(inputContainer)", "expect(otherElement)")
+    ),
+    false
+  );
+  assert.equal(
+    classifySource(
+      source.replace("expect(inputContainer).", "expect(inputContainer).not.")
+    ),
+    false
+  );
+  assert.equal(
+    classifySource(
+      source.replace("container.querySelector", "container.querySelectorAll")
+    ),
+    false
+  );
+  assert.equal(
+    classifySource(source.replace("render(<Field", "someOtherFunction(<Field")),
+    false
+  );
+});

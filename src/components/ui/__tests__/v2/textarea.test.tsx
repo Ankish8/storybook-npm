@@ -25,7 +25,7 @@ describe("Textarea", () => {
   it("renders with required indicator", () => {
     render(<Textarea label="Name" required />);
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
+    expect(screen.getByText("*")).toHaveClass("text-v2-semantic-error-primary");
   });
 
   // 4. Shows error state with error message
@@ -33,7 +33,7 @@ describe("Textarea", () => {
     render(<Textarea error="This field is required" />);
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     const textarea = screen.getByRole("textbox");
-    expect(textarea).toHaveClass("border-semantic-error-primary");
+    expect(textarea).toHaveClass("border-v2-semantic-error-primary");
   });
 
   it("shows error with leading icon when errorIcon is true", () => {
@@ -135,7 +135,7 @@ describe("Textarea", () => {
       />
     );
     const countEl = screen.getByText("15/10");
-    expect(countEl).toHaveClass("text-semantic-error-text");
+    expect(countEl).toHaveClass("text-v2-semantic-error-text");
   });
 
   it("character count reflects normalized length when padding spaces collapse", () => {
@@ -149,13 +149,13 @@ describe("Textarea", () => {
       />
     );
     const countEl = screen.getByText(/^11\/10$/);
-    expect(countEl).toHaveClass("text-semantic-error-text");
+    expect(countEl).toHaveClass("text-v2-semantic-error-text");
   });
 
   // 8. All state variants render correct classes
   it.each([
-    ["default", "border-semantic-border-input"],
-    ["error", "border-semantic-error-primary"],
+    ["default", "border-v2-semantic-border-input"],
+    ["error", "border-v2-semantic-error-primary"],
   ] as const)(
     "renders %s state variant with correct classes",
     (state, expectedClass) => {
@@ -208,7 +208,7 @@ describe("Textarea", () => {
     const textarea = screen.getByTestId("textarea");
     expect(textarea).toBeDisabled();
     expect(textarea).toHaveClass("disabled:cursor-not-allowed");
-    expect(textarea).toHaveClass("disabled:bg-semantic-bg-ui");
+    expect(textarea).toHaveClass("disabled:bg-v2-semantic-bg-ui");
   });
 
   // 14. Controlled value
@@ -404,7 +404,7 @@ describe("Textarea message reveal", () => {
       "disabled:opacity-60"
     );
     expect(textarea).toHaveClass(
-      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary"
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))]"
     );
     expect(textarea.className).not.toContain("rgba(240,68,56");
     expect(screen.getByText("Notes")).toHaveClass("mb-2", "leading-[1.4]");

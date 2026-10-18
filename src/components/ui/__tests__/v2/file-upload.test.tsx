@@ -102,11 +102,11 @@ it("tints the drop zone red when every accept rule is a MIME type and the dragge
   fireEvent.dragEnter(root, transfer("text/csv"));
   fireEvent.dragOver(root, transfer("text/csv"));
   expect(zoneOf()).toHaveAttribute("data-drag", "reject");
-  expect(zoneOf()).toHaveClass("bg-semantic-error-surface");
+  expect(zoneOf()).toHaveClass("bg-v2-semantic-error-surface");
   fireEvent.dragOver(root, transfer("image/png"));
   expect(zoneOf()).toHaveAttribute("data-drag", "over");
-  expect(zoneOf()).toHaveClass("bg-semantic-brand-surface");
-  expect(zoneOf()).not.toHaveClass("bg-semantic-error-surface");
+  expect(zoneOf()).toHaveClass("bg-v2-semantic-brand-surface");
+  expect(zoneOf()).not.toHaveClass("bg-v2-semantic-error-surface");
 });
 
 it("keeps the neutral highlight when the type cannot prove a mismatch", () => {
@@ -119,7 +119,7 @@ it("keeps the neutral highlight when the type cannot prove a mismatch", () => {
   expect(zoneOf()).toHaveAttribute("data-drag", "over");
   rerender(<FileUpload />);
   fireEvent.dragOver(root, transfer("image/png"));
-  expect(zoneOf()).not.toHaveClass("bg-semantic-error-surface");
+  expect(zoneOf()).not.toHaveClass("bg-v2-semantic-error-surface");
 });
 
 it("does not highlight or tint while disabled", () => {

@@ -91,14 +91,14 @@ describe("Select", () => {
   it("applies default state styling", () => {
     renderSelect();
     expect(screen.getByTestId("trigger")).toHaveClass(
-      "border-semantic-border-input"
+      "border-v2-semantic-border-input"
     );
   });
 
   it("applies error state styling", () => {
     renderSelect({ triggerProps: { state: "error" } });
     expect(screen.getByTestId("trigger")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -530,12 +530,12 @@ describe("Select v2 refresh", () => {
     // Radix moves focus into the list, so the open look cannot rely on `focus:`.
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger.className).toContain(
-      "aria-expanded:border-semantic-primary"
+      "aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(trigger.className).toContain("aria-expanded:shadow-none");
     // Must outrank the grey hover border (specificity 0,4,0 vs 0,3,0).
     expect(trigger.className).toContain(
-      "enabled:aria-expanded:hover:border-semantic-primary"
+      "enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
 
     await user.click(trigger);
@@ -569,9 +569,9 @@ describe("Select v2 refresh", () => {
     renderSelect();
     const trigger = screen.getByTestId("trigger");
     expect(trigger).toHaveClass(
-      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui",
-      "enabled:active:bg-semantic-bg-ui",
-      "aria-expanded:bg-semantic-bg-ui"
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-v2-semantic-bg-ui",
+      "enabled:active:bg-v2-semantic-bg-ui",
+      "aria-expanded:bg-v2-semantic-bg-ui"
     );
     expect(trigger).toHaveClass("disabled:opacity-50");
   });
@@ -606,7 +606,7 @@ describe("Select v2 refresh", () => {
     const panel = screen.getByRole("listbox");
     expect(panel).toHaveClass("p-1.5");
     expect(panel).toHaveClass(
-      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+      "shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))]"
     );
     expect(panel).toHaveAttribute("data-side", "bottom");
     expect(document.querySelector("[data-select-viewport]")).toHaveClass(
@@ -724,10 +724,10 @@ describe("Select browser regressions", () => {
     (invalid) => {
       renderSelect({ triggerProps: { "aria-invalid": invalid } });
       expect(screen.getByRole("combobox")).toHaveClass(
-        "border-semantic-error-primary"
+        "border-v2-semantic-error-primary"
       );
       expect(screen.getByRole("combobox")).not.toHaveClass(
-        "aria-expanded:border-semantic-primary"
+        "aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
       );
     }
   );

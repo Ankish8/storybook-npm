@@ -15,7 +15,7 @@ export default function Example() {
           onClose={() => setOpen(false)}
           header={
             <div className="flex w-full items-center justify-between gap-3 p-3">
-              <span className="text-sm font-medium text-semantic-text-primary">
+              <span className="text-sm font-medium text-v2-semantic-text-primary">
                 Contact profile
               </span>
               <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
@@ -24,7 +24,7 @@ export default function Example() {
             </div>
           }
         >
-          <p className="m-0 p-4 text-sm text-semantic-text-secondary">
+          <p className="m-0 p-4 text-sm text-v2-semantic-text-secondary">
             Aditi Kumar · Active contact
           </p>
         </Panel>

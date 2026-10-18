@@ -405,7 +405,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
               : metrics.max - metrics.position <= 0.5)
           }
           className={cn(
-            "flex shrink-0 items-center justify-center text-semantic-text-muted transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-hover disabled:cursor-default disabled:opacity-40",
+            "flex shrink-0 items-center justify-center text-v2-semantic-text-muted transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-v2-semantic-bg-hover disabled:cursor-default disabled:opacity-40",
             vertical ? "h-8 w-4" : "h-4 w-8"
           )}
         >
@@ -493,7 +493,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
             } as React.CSSProperties
           }
           className={cn(
-            "min-h-0 min-w-0 flex-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
+            "min-h-0 min-w-0 flex-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
             vertical
               ? "overflow-y-auto overflow-x-hidden [-webkit-mask-image:linear-gradient(to_bottom,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)] [mask-image:linear-gradient(to_bottom,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)]"
               : "overflow-x-auto overflow-y-hidden [-webkit-mask-image:linear-gradient(to_right,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)] [mask-image:linear-gradient(to_right,transparent,#000_var(--v2-fade-start),#000_calc(100%_-_var(--v2-fade-end)),transparent)]"
@@ -530,7 +530,7 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
                   !overflowing && "invisible"
                 )
               : cn(
-                  "shrink-0 border-solid border-semantic-border-layout bg-semantic-bg-ui",
+                  "shrink-0 border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui",
                   vertical ? "w-4 flex-col border-l" : "h-4 border-t"
                 )
           )}
@@ -547,16 +547,16 @@ const Scrollbar = React.forwardRef<HTMLDivElement, ScrollbarProps>(
             aria-valuemax={Math.round(metrics.max)}
             aria-valuenow={Math.round(metrics.position)}
             tabIndex={overflowing ? 0 : -1}
-            className="relative min-h-0 min-w-0 flex-1 self-stretch touch-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary"
+            className="relative min-h-0 min-w-0 flex-1 self-stretch touch-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
           >
             <div
               ref={thumb}
               data-slot="scrollbar-thumb"
               className={cn(
-                "absolute after:absolute after:rounded-lg after:bg-[color-mix(in_oklab,var(--semantic-text-primary)_30%,transparent)] after:transition-[width,height,background-color] after:[transition-duration:160ms] after:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:after:transition-none after:content-['']",
-                "[@media(hover:hover)_and_(pointer:fine)]:group-hover/track:after:bg-[color-mix(in_oklab,var(--semantic-text-primary)_46%,transparent)]",
+                "absolute after:absolute after:rounded-lg after:bg-[color-mix(in_oklab,var(--v2-semantic-text-primary,var(--semantic-text-primary))_30%,transparent)] after:transition-[width,height,background-color] after:[transition-duration:160ms] after:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:after:transition-none after:content-['']",
+                "[@media(hover:hover)_and_(pointer:fine)]:group-hover/track:after:bg-[color-mix(in_oklab,var(--v2-semantic-text-primary,var(--semantic-text-primary))_46%,transparent)]",
                 dragging &&
-                  "after:bg-[color-mix(in_oklab,var(--semantic-text-primary)_46%,transparent)]",
+                  "after:bg-[color-mix(in_oklab,var(--v2-semantic-text-primary,var(--semantic-text-primary))_46%,transparent)]",
                 vertical
                   ? "inset-x-0 after:inset-y-0 after:left-1/2 after:w-[5px] after:-translate-x-1/2 [@media(hover:hover)_and_(pointer:fine)]:group-hover/track:after:w-[7px]"
                   : "inset-y-0 after:inset-x-0 after:top-1/2 after:h-[5px] after:-translate-y-1/2 [@media(hover:hover)_and_(pointer:fine)]:group-hover/track:after:h-[7px]",

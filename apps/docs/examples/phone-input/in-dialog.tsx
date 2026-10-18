@@ -20,7 +20,7 @@ export default function InDialog() {
         <div className="space-y-2">
           <label
             htmlFor="dialog-phone"
-            className="text-sm font-medium text-semantic-text-primary"
+            className="text-sm font-medium text-v2-semantic-text-primary"
           >
             Mobile number
           </label>

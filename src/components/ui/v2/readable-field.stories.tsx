@@ -177,7 +177,7 @@ export const States: Story = {
       ].map(({ title, description, ...state }) => (
         <section
           key={title}
-          className="min-w-0 space-y-4 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-4 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <div className="space-y-1">
             <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
@@ -258,7 +258,7 @@ export const V1VsV2: Story = {
         {["v1", "v2"].map((version) => (
           <section
             key={version}
-            className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+            className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
           >
             <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
               {version}

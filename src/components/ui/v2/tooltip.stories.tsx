@@ -63,11 +63,11 @@ function InlineTooltip({
       className={cn(
         version === "v2"
           ? "relative max-w-[15rem] whitespace-normal break-words rounded-md border border-solid px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-5 shadow-md"
-          : "relative max-w-xs whitespace-normal rounded-md bg-semantic-primary px-3 py-1.5 text-xs text-semantic-text-inverted shadow-md",
+          : "relative max-w-xs whitespace-normal rounded-md bg-v2-semantic-primary px-3 py-1.5 text-xs text-v2-semantic-text-inverted shadow-md",
         version === "v2" &&
           (args.variant === "light"
-            ? "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary [--tooltip-arrow-fill:var(--semantic-bg-primary)]"
-            : "border-semantic-bg-secondary bg-semantic-bg-secondary text-semantic-text-inverted [--tooltip-arrow-fill:var(--semantic-bg-secondary)]")
+            ? "border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-v2-semantic-text-primary [--tooltip-arrow-fill:var(--v2-semantic-bg-primary,var(--semantic-bg-primary))]"
+            : "border-v2-semantic-bg-secondary bg-v2-semantic-bg-secondary text-v2-semantic-text-inverted [--tooltip-arrow-fill:var(--v2-semantic-bg-secondary,var(--semantic-bg-secondary))]")
       )}
       data-v2-component={version === "v2" ? "tooltip" : undefined}
       data-side={args.side}
@@ -93,7 +93,7 @@ function InlineTooltip({
           className={cn(
             version === "v2"
               ? "fill-[var(--tooltip-arrow-fill)]"
-              : "fill-semantic-primary",
+              : "fill-v2-semantic-primary",
             args.side === "bottom"
               ? "absolute -top-[5px] rotate-180"
               : args.side === "right"
@@ -281,7 +281,7 @@ const meta: Meta<TooltipStoryArgs> = {
             {args.showArrow && <TooltipArrow />}
           </TooltipContent>
         </Tooltip>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
           Tooltip is {args.open ? "open" : "closed"}
         </p>
       </div>
@@ -392,25 +392,25 @@ export const Overview: Story = {
     return (
       <section
         aria-label="Conversation controls"
-        className="w-[400px] max-w-full rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 text-semantic-text-primary"
+        className="w-[400px] max-w-full rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 text-v2-semantic-text-primary"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <p className="m-0 text-sm font-medium">Priya Sharma</p>
-            <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+            <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
               Delivery update · assigned to you
             </p>
           </div>
-          <span className="shrink-0 rounded-md bg-semantic-bg-ui px-2 py-1 text-xs text-semantic-text-secondary">
+          <span className="shrink-0 rounded-md bg-v2-semantic-bg-ui px-2 py-1 text-xs text-v2-semantic-text-secondary">
             {archived ? "Archived" : "Open"}
           </span>
         </div>
-        <p className="m-0 my-5 text-sm leading-5 text-semantic-text-secondary">
+        <p className="m-0 my-5 text-sm leading-5 text-v2-semantic-text-secondary">
           Could you share the updated delivery date for my order?
         </p>
         <div
           aria-label="Conversation actions"
-          className="flex items-center gap-2 border-t border-solid border-semantic-border-layout pt-3"
+          className="flex items-center gap-2 border-t border-solid border-v2-semantic-border-layout pt-3"
         >
           <Tooltip>
             <TooltipTrigger asChild>
@@ -500,11 +500,14 @@ export const Overview: Story = {
               {args.showArrow && <TooltipArrow />}
             </TooltipContent>
           </Tooltip>
-          <span className="ml-auto text-xs text-semantic-text-muted">
+          <span className="ml-auto text-xs text-v2-semantic-text-muted">
             3 actions
           </span>
         </div>
-        <p role="status" className="m-0 mt-3 text-xs text-semantic-text-muted">
+        <p
+          role="status"
+          className="m-0 mt-3 text-xs text-v2-semantic-text-muted"
+        >
           {result}
         </p>
       </section>
@@ -541,7 +544,7 @@ export const AllVariants: Story = {
       <div className="grid min-w-[720px] grid-cols-2 items-start gap-8">
         {(["default", "light"] as const).map((variant) => (
           <div key={variant} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {variant === "light" ? "Light" : "Default"}
             </span>
             <InlineTooltip {...args} variant={variant} />
@@ -567,14 +570,14 @@ export const AllPositions: Story = {
         {SIDES.map((side) => (
           <span
             key={side}
-            className="text-xs font-normal text-semantic-text-muted"
+            className="text-xs font-normal text-v2-semantic-text-muted"
           >
             {side}
           </span>
         ))}
         {OFFSETS.map((sideOffset) => (
           <React.Fragment key={sideOffset}>
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {sideOffset}px
             </span>
             {SIDES.map((side) => (
@@ -604,7 +607,7 @@ export const States: Story = {
       <div className="grid min-w-[1100px] grid-cols-4 items-center gap-8">
         {["Closed", "Visible", "Hover", "Keyboard focus"].map((visualState) => (
           <div key={visualState} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {visualState}
             </span>
             <InlineTooltip {...args} visualState={visualState} />
@@ -628,7 +631,7 @@ export const V1VsV2: Story = {
       <div className="grid min-w-[720px] grid-cols-2 items-start gap-8">
         {(["v1", "v2"] as const).map((version) => (
           <div key={version} className="flex flex-col items-center gap-4">
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {version} · {version === "v1" ? "ui/tooltip" : "ui/v2/tooltip"}
             </span>
             <InlineTooltip {...args} version={version} />
@@ -655,12 +658,12 @@ function TourExample({
     updateArgs({ open });
   };
   return (
-    <div className="flex w-[520px] max-w-full flex-col items-center gap-6 rounded-xl border border-solid border-semantic-border-layout p-16 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[520px] max-w-full flex-col items-center gap-6 rounded-xl border border-solid border-v2-semantic-border-layout p-16 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1 text-center">
-        <p className="m-0 text-base font-medium text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-v2-semantic-text-primary">
           Inbox tour
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           A local three-step guide with working navigation.
         </p>
       </div>
@@ -706,7 +709,7 @@ function TourExample({
               {args.title}
             </p>
             <p className="m-0 text-xs leading-4">{args.tooltipText}</p>
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-v2-semantic-text-muted">
               Step {step} of 3
             </p>
           </div>
@@ -740,7 +743,7 @@ function TourExample({
           {args.showArrow && <TooltipArrow />}
         </TooltipContent>
       </Tooltip>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {result}
       </p>
     </div>
@@ -839,7 +842,7 @@ export const Touch: Story = {
         </Button>
         <p
           role="status"
-          className="m-0 w-full text-center text-xs text-semantic-text-muted"
+          className="m-0 w-full text-center text-xs text-v2-semantic-text-muted"
         >
           Tooltip is {args.open ? "open" : "closed"}
         </p>
@@ -881,7 +884,7 @@ export const NativeEvents: Story = {
         <Tooltip>
           <TooltipTrigger asChild>
             <a
-              className="text-sm text-semantic-text-link underline"
+              className="text-sm text-v2-semantic-text-link underline"
               href="#assignment"
             >
               Assignment link
@@ -908,7 +911,7 @@ export const NativeEvents: Story = {
             A cancelled click does not toggle touch help.
           </TooltipContent>
         </Tooltip>
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
           Submits: {submits}; changes:{" "}
           {changes.map((open) => (open ? "open" : "closed")).join(", ") ||
             "none"}

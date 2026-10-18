@@ -127,13 +127,13 @@ describe("Tag (v2)", () => {
   });
   it("uses the recorded status border and text palettes", () => {
     expect(tagVariants({ variant: "info" })).toContain(
-      "border-semantic-info-border"
+      "border-v2-semantic-info-border"
     );
     expect(tagVariants({ variant: "error" })).toContain(
-      "text-semantic-error-text"
+      "text-v2-semantic-error-text"
     );
     expect(tagVariants({ variant: "accent" })).toContain(
-      "bg-semantic-brand-surface"
+      "bg-v2-semantic-brand-surface"
     );
   });
   describe("dismiss button target", () => {
@@ -175,7 +175,7 @@ describe("Tag (v2)", () => {
     it("keeps the hover plate conditional on an enabled fine-pointer button", () => {
       const button = renderRemovable();
       expect(button).toHaveClass(
-        "before:bg-semantic-bg-inverted",
+        "before:bg-v2-semantic-bg-inverted",
         "before:opacity-0",
         "enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:before:opacity-[0.08]"
       );
@@ -199,7 +199,7 @@ describe("Tag (v2)", () => {
       expect(button).toHaveClass(
         "focus-visible:outline-none",
         "focus-visible:after:outline",
-        "focus-visible:after:outline-semantic-primary"
+        "focus-visible:after:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
       );
     });
     it("stays inert and flat when disabled", () => {

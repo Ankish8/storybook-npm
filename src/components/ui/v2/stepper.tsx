@@ -98,7 +98,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
         ref={ref}
         aria-label="Progress steps"
         className={cn(
-          "m-0 max-w-full list-none p-0 font-[family-name:var(--font-v2,Inter,sans-serif)] tracking-[-0.01em] text-semantic-text-primary",
+          "m-0 max-w-full list-none p-0 font-[family-name:var(--font-v2,Inter,sans-serif)] tracking-[-0.01em] text-v2-semantic-text-primary",
           small
             ? "[--v2-stepper-marker:1.5rem]"
             : "[--v2-stepper-marker:1.75rem]",
@@ -140,16 +140,16 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
             >
               <span
                 className={cn(
-                  "text-sm font-medium leading-5 text-semantic-text-muted transition-colors [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                  "text-sm font-medium leading-5 text-v2-semantic-text-muted transition-colors [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
                   small && "text-xs leading-4",
-                  complete && "text-semantic-text-secondary",
-                  current && "text-semantic-text-primary"
+                  complete && "text-v2-semantic-text-secondary",
+                  current && "text-v2-semantic-text-primary"
                 )}
               >
                 {step.title}
               </span>
               {step.description && (
-                <span className="pt-0.5 text-xs font-normal leading-[1.4] text-semantic-text-muted">
+                <span className="pt-0.5 text-xs font-normal leading-[1.4] text-v2-semantic-text-muted">
                   {step.description}
                 </span>
               )}
@@ -162,7 +162,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
             >
               <span
                 className={cn(
-                  "absolute -inset-1 rounded-full bg-[color-mix(in_oklab,var(--semantic-primary)_10%,transparent)] transition-[transform,opacity] motion-reduce:transition-none",
+                  "absolute -inset-1 rounded-full bg-[color-mix(in_oklab,var(--v2-semantic-primary,var(--semantic-primary))_10%,transparent)] transition-[transform,opacity] motion-reduce:transition-none",
                   current
                     ? "scale-100 opacity-100 [transition-delay:var(--v2-stepper-ring-delay)] [transition-duration:500ms,160ms] [transition-timing-function:linear(0,0.0689,0.216,0.3825,0.5378,0.6687,0.7719,0.8492,0.9046,0.9428,0.9681,0.9841,0.9937,0.999,1.0017,1.0028,1.003,1.0027,1.0022,1.0017,1.0013,1.0009,1.0006,1.0004,1),cubic-bezier(0.22,1,0.36,1)]"
                     : "scale-[0.6] opacity-0 [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]"
@@ -170,18 +170,18 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
               />
               <span
                 className={cn(
-                  "relative grid size-full place-items-center rounded-full bg-semantic-bg-primary text-xs font-medium tabular-nums leading-none text-semantic-text-muted shadow-[inset_0_0_0_1px_var(--semantic-border-layout)] transition-[background-color,box-shadow,color,transform] [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+                  "relative grid size-full place-items-center rounded-full bg-v2-semantic-bg-primary text-xs font-medium tabular-nums leading-none text-v2-semantic-text-muted shadow-[inset_0_0_0_1px_var(--v2-semantic-border-layout,var(--semantic-border-layout))] transition-[background-color,box-shadow,color,transform] [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
                   current &&
-                    "text-semantic-text-primary shadow-[inset_0_0_0_1.5px_var(--semantic-primary)]",
+                    "text-v2-semantic-text-primary shadow-[inset_0_0_0_1.5px_var(--v2-indicator,var(--semantic-primary))]",
                   complete &&
-                    "bg-semantic-primary text-semantic-text-inverted shadow-[inset_0_0_0_1px_var(--semantic-primary)]",
+                    "bg-v2-semantic-primary text-v2-semantic-text-inverted shadow-[inset_0_0_0_1px_var(--v2-semantic-primary,var(--semantic-primary))]",
                   onStepChange &&
                     !unavailable &&
                     "group-active:scale-[0.94] motion-reduce:group-active:scale-100",
                   onStepChange &&
                     !unavailable &&
                     complete &&
-                    "[@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-semantic-primary-hover"
+                    "[@media(hover:hover)_and_(pointer:fine)]:group-hover:bg-v2-semantic-primary-hover"
                 )}
               >
                 <span
@@ -262,7 +262,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "pointer-events-none absolute overflow-hidden rounded-full bg-semantic-border-layout",
+                    "pointer-events-none absolute overflow-hidden rounded-full bg-v2-semantic-border-layout",
                     vertical
                       ? "bottom-[calc(0.25rem_+_2px)] start-[calc(var(--v2-stepper-marker)/2_-_1px)] top-[calc(var(--v2-stepper-marker)_+_0.25rem_+_2px)] w-0.5"
                       : "start-[calc(var(--v2-stepper-marker)_+_0.5rem)] end-2 top-[calc(var(--v2-stepper-marker)/2_-_1px)] h-0.5"
@@ -271,7 +271,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   <span
                     key={orientation}
                     className={cn(
-                      "absolute inset-0 rounded-full bg-semantic-primary transition-transform [transition-duration:700ms] [transition-delay:var(--v2-stepper-travel-delay)] [transition-timing-function:linear(0,0.0432,0.1402,0.2575,0.3764,0.4867,0.584,0.667,0.7361,0.7925,0.838,0.8743,0.9029,0.9254,0.9428,0.9564,0.9668,0.9748,0.9809,0.9856,0.9892,0.9918,0.9939,0.9954,0.9966,0.9974,0.9981,0.9986,1)] motion-reduce:transition-none",
+                      "absolute inset-0 rounded-full bg-[var(--v2-indicator,var(--semantic-primary))] transition-transform [transition-duration:700ms] [transition-delay:var(--v2-stepper-travel-delay)] [transition-timing-function:linear(0,0.0432,0.1402,0.2575,0.3764,0.4867,0.584,0.667,0.7361,0.7925,0.838,0.8743,0.9029,0.9254,0.9428,0.9564,0.9668,0.9748,0.9809,0.9856,0.9892,0.9918,0.9939,0.9954,0.9966,0.9974,0.9981,0.9986,1)] motion-reduce:transition-none",
                       vertical ? "origin-top" : "origin-left rtl:origin-right",
                       complete
                         ? vertical
@@ -300,7 +300,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   onClick={() => onStepChange(index)}
                   className={cn(
                     headClass,
-                    "group w-full rounded-lg border-0 bg-transparent p-0 text-start focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-default"
+                    "group w-full rounded-lg border-0 bg-transparent p-0 text-start focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-default"
                   )}
                 >
                   {indicator}

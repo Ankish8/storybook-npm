@@ -4,15 +4,15 @@ export default function Example() {
   return (
     <div className="flex flex-wrap items-center gap-6">
       <BouncingLoader
-        color="var(--semantic-text-placeholder)"
+        color="var(--v2-semantic-text-placeholder,var(--semantic-text-placeholder))"
         aria-label="Muted loading"
       />
       <BouncingLoader
-        color="var(--semantic-info-primary)"
+        color="var(--v2-semantic-info-primary,var(--semantic-info-primary))"
         aria-label="Information loading"
       />
       <BouncingLoader
-        color="var(--semantic-success-primary)"
+        color="var(--v2-semantic-success-primary,var(--semantic-success-primary))"
         aria-label="Success loading"
       />
     </div>

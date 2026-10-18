@@ -6,7 +6,7 @@ export default function Disabled() {
   return (
     <div className="w-full max-w-lg space-y-8">
       <section className="space-y-3">
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           One unavailable step
         </p>
         <Stepper
@@ -20,7 +20,7 @@ export default function Disabled() {
         />
       </section>
       <section className="space-y-3">
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           All step actions disabled
         </p>
         <Stepper

@@ -32,11 +32,11 @@ const DateDivider = React.forwardRef(
       )}
       {...props}
     >
-      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <div className="flex-1 h-px bg-v2-semantic-border-layout" />
       <span className="shrink-0 text-xs font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)]">
         {children}
       </span>
-      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <div className="flex-1 h-px bg-v2-semantic-border-layout" />
     </div>
   )
 );

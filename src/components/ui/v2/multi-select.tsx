@@ -155,7 +155,7 @@ const chevronSpringClassName = cn(
 function RowCheck() {
   return (
     <svg
-      className="size-4 shrink-0 text-semantic-primary"
+      className="size-4 shrink-0 text-[var(--v2-selection-accent,var(--semantic-primary))]"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -262,7 +262,7 @@ function prefersFinePointer(): boolean {
  * prefixer transforms the literals.
  */
 const CHIP_BASE_CLASSNAME = cn(
-  "inline-flex min-w-0 max-w-[9rem] items-center gap-1 rounded-lg bg-semantic-bg-ui px-2 py-1 text-xs font-normal leading-[1.4] text-[var(--v2-text-primary,#484848)] ring-1 ring-inset ring-semantic-border-layout group-aria-expanded/ms:bg-semantic-bg-primary [@media(hover:hover)]:group-[:hover:not(:disabled)]/ms:bg-semantic-bg-primary"
+  "inline-flex min-w-0 max-w-[9rem] items-center gap-1 rounded-lg bg-v2-semantic-bg-ui px-2 py-1 text-xs font-normal leading-[1.4] text-[var(--v2-text-primary,#484848)] ring-1 ring-inset ring-v2-semantic-border-layout group-aria-expanded/ms:bg-v2-semantic-bg-primary [@media(hover:hover)]:group-[:hover:not(:disabled)]/ms:bg-v2-semantic-bg-primary"
 );
 const CHIP_ENTER_CLASSNAME = cn(
   "[transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
@@ -370,7 +370,7 @@ function OverflowCount({ value }: { value: number }) {
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "group/ms flex min-h-11 w-full items-center justify-between rounded-lg bg-semantic-bg-primary py-[5px] pl-3 pr-[11px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:opacity-50 disabled:shadow-none",
+  "group/ms flex min-h-11 w-full items-center justify-between rounded-lg bg-v2-semantic-bg-primary py-[5px] pl-3 pr-[11px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none",
   {
     variants: {
       state: {
@@ -379,9 +379,9 @@ const multiSelectTriggerVariants = cva(
           // `focus:` alone drops the primary border. `aria-expanded` keeps it, and the
           // extra `hover` selector outranks the grey hover border (0,4,0 vs 0,3,0).
           // Arc also tints the field on hover, press and while open (its muted surface).
-          "border border-solid border-semantic-border-input focus:outline-none enabled:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus:shadow-none aria-expanded:border-semantic-primary aria-expanded:bg-semantic-bg-ui aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
+          "border border-solid border-v2-semantic-border-input focus:outline-none enabled:hover:border-[var(--v2-semantic-border-primary,var(--color-primary-100,#C0C3CA))] [@media(hover:hover)]:enabled:hover:bg-v2-semantic-bg-ui enabled:active:bg-v2-semantic-bg-ui focus:shadow-none aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] aria-expanded:bg-v2-semantic-bg-ui aria-expanded:shadow-none enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none ",
+          "border border-solid border-v2-semantic-error-primary shadow-[var(--v2-shadow-error,0_0_4px_0_rgba(240,68,56,0.4))] focus:outline-none ",
       },
     },
     defaultVariants: {
@@ -1400,7 +1400,7 @@ const MultiSelect = React.forwardRef(
             className={cn(
               CHIP_REMOVE_CLASSNAME,
               !(disabled || loading) &&
-                "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+                "[@media(hover:hover)]:hover:bg-v2-semantic-bg-grey"
             )}
             aria-label={`Remove ${chip.label}`}
           >
@@ -1443,7 +1443,7 @@ const MultiSelect = React.forwardRef(
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="text-v2-semantic-error-primary ml-0.5">*</span>
             )}
           </label>
         )}
@@ -1557,7 +1557,7 @@ const MultiSelect = React.forwardRef(
                 )}
                 {showSeparatorBeforeChevron && (
                   <div
-                    className="w-px h-5 self-center border-l border-solid border-semantic-border-layout shrink-0"
+                    className="w-px h-5 self-center border-l border-solid border-v2-semantic-border-layout shrink-0"
                     aria-hidden
                   />
                 )}
@@ -1587,10 +1587,10 @@ const MultiSelect = React.forwardRef(
                 // the edge (11px padding + 1px border + 16px chevron + 8px gap),
                 // 45px with the separator.
                 className={cn(
-                  "absolute top-1/2 inline-flex size-[22px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                  "absolute top-1/2 inline-flex size-[22px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
                   showSeparatorBeforeChevron ? "right-[45px]" : "right-9",
                   !(disabled || loading) &&
-                    "[@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] motion-reduce:active:scale-100"
+                    "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] motion-reduce:active:scale-100"
                 )}
               >
                 <X className="size-3.5 [stroke-width:1.75]" />
@@ -1618,10 +1618,10 @@ const MultiSelect = React.forwardRef(
                       className="flex items-center gap-1.5 min-w-0 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
                     >
                       <CircleAlert
-                        className="size-3.5 shrink-0 text-semantic-error-primary"
+                        className="size-3.5 shrink-0 text-v2-semantic-error-primary"
                         aria-hidden
                       />
-                      <span className="min-w-0 break-words text-xs leading-[1.4] text-semantic-error-text">
+                      <span className="min-w-0 break-words text-xs leading-[1.4] text-v2-semantic-error-text">
                         {error}
                       </span>
                     </div>
@@ -1650,7 +1650,7 @@ const MultiSelect = React.forwardRef(
                   aria-multiselectable="true"
                   data-side={placement.split("-")[0]}
                   data-align={placement.split("-")[1] ?? "center"}
-                  className="rounded-lg bg-semantic-bg-primary border border-solid border-semantic-border-layout shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] data-[side=bottom]:slide-in-from-top-[6px] data-[side=top]:slide-in-from-bottom-[6px] data-[side=left]:slide-in-from-right-[6px] data-[side=right]:slide-in-from-left-[6px] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                  className="rounded-lg bg-v2-semantic-bg-primary border border-solid border-v2-semantic-border-layout shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] data-[side=bottom]:slide-in-from-top-[6px] data-[side=top]:slide-in-from-bottom-[6px] data-[side=left]:slide-in-from-right-[6px] data-[side=right]:slide-in-from-left-[6px] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
                   style={{
                     ...floatingStyles,
                     transformOrigin: panelTransformOrigin(placement),
@@ -1665,8 +1665,8 @@ const MultiSelect = React.forwardRef(
                 >
                   {/* Search input */}
                   {searchable && (
-                    <div className="border-b border-solid border-semantic-border-layout p-2">
-                      <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 focus-within:border-semantic-primary">
+                    <div className="border-b border-solid border-v2-semantic-border-layout p-2">
+                      <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 focus-within:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]">
                         <Search
                           aria-hidden="true"
                           className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
@@ -1700,7 +1700,7 @@ const MultiSelect = React.forwardRef(
                           toggleSelectAll();
                         }
                       }}
-                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-semantic-bg-ui focus-visible:bg-semantic-bg-ui focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent"
+                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-v2-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-v2-semantic-bg-ui focus-visible:bg-v2-semantic-bg-ui focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent"
                     >
                       <Checkbox
                         checked={
@@ -1742,7 +1742,7 @@ const MultiSelect = React.forwardRef(
                             <div
                               key={`divider-${itemIndex}`}
                               role="separator"
-                              className="my-1 h-px bg-semantic-border-layout"
+                              className="my-1 h-px bg-v2-semantic-border-layout"
                             />
                           );
                         }
@@ -1776,12 +1776,12 @@ const MultiSelect = React.forwardRef(
                           // highlight (ring) from a mouse hover (fill only). 4px radius = panel
                           // 8px minus its 4px list padding. Arc: 38px rows whose highlight follows
                           // quickly (80ms) and whose selection shows as the check, never as weight.
-                          "relative flex min-h-[38px] w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                          "relative flex min-h-[38px] w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
                           optionVariant === "detailed"
                             ? "gap-2 px-2 py-2 text-sm"
                             : "gap-3 px-[11px] py-2 text-sm",
                           isSelected && "text-[var(--v2-text-primary,#484848)]",
-                          "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                          "hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui",
                           isDisabled && "opacity-50 cursor-not-allowed",
                           option.isDeleted && "line-through opacity-70"
                         );
@@ -1884,7 +1884,7 @@ const MultiSelect = React.forwardRef(
                               </TooltipTrigger>
                               <TooltipContent
                                 side="top"
-                                className="max-w-sm bg-semantic-primary text-semantic-text-inverted border-semantic-primary border-solid"
+                                className="max-w-sm bg-v2-semantic-primary text-v2-semantic-text-inverted border-v2-semantic-primary border-solid"
                               >
                                 {overlayCopy}
                               </TooltipContent>
@@ -1917,7 +1917,7 @@ const MultiSelect = React.forwardRef(
 
                   {/* Footer with count */}
                   {maxSelections && showSelectionFooter ? (
-                    <div className="p-2 border-t border-solid border-semantic-border-layout text-sm text-[var(--v2-text-muted,#707070)]">
+                    <div className="p-2 border-t border-solid border-v2-semantic-border-layout text-sm text-[var(--v2-text-muted,#707070)]">
                       {selectedValues.length} / {maxSelections} selected
                     </div>
                   ) : null}

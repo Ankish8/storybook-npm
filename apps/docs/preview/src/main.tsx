@@ -1,3 +1,4 @@
+import { installPreviewTheme } from "./theme";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { PreviewContext, type Args, type PreparedStory } from "./preview-api";
@@ -96,6 +97,7 @@ const loaders: Record<string, () => Promise<unknown>> =
         ? currentLoaders
         : {};
 const parentOrigin = expectedParentOrigin(location, query.get("parentOrigin"));
+installPreviewTheme(parentOrigin, version === "v1");
 document.documentElement.dataset.previewVersion = version;
 if (query.has("comparison"))
   document.documentElement.dataset.liveComparison = "true";

@@ -242,10 +242,10 @@ function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
   return (
     <section
       aria-label="Component review"
-      className="w-[520px] max-w-full overflow-hidden rounded-2xl border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="w-[520px] max-w-full overflow-hidden rounded-2xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-semantic-border-layout px-6 py-4">
-        <p className="m-0 text-sm font-medium text-semantic-text-primary">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-v2-semantic-border-layout px-6 py-4">
+        <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
           Component review
         </p>
         <Badge variant="secondary" size="sm" leftIcon={<Layers />}>
@@ -255,14 +255,14 @@ function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
       <div className="flex flex-col gap-5 p-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-semantic-bg-ui text-semantic-text-secondary">
+            <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-v2-semantic-bg-ui text-v2-semantic-text-secondary">
               <FileCheck2 className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="m-0 text-base font-medium text-semantic-text-primary">
+              <p className="m-0 text-base font-medium text-v2-semantic-text-primary">
                 Status labels
               </p>
-              <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+              <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
                 Badge · Feedback and metadata
               </p>
             </div>
@@ -277,7 +277,7 @@ function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
             </Badge>
           </div>
         </div>
-        <p className="m-0 min-h-10 text-sm leading-5 text-semantic-text-secondary">
+        <p className="m-0 min-h-10 text-sm leading-5 text-v2-semantic-text-secondary">
           {autoApprove && status !== "approved"
             ? "Auto-approval is queued. You can turn it off before the review completes."
             : current.description}
@@ -306,7 +306,7 @@ function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2.5 border-t border-semantic-border-layout bg-semantic-bg-subtle px-6 py-4">
+      <div className="flex items-center gap-2.5 border-t border-v2-semantic-border-layout bg-v2-semantic-bg-subtle px-6 py-4">
         <Checkbox
           id={autoApproveId}
           checked={autoApprove}
@@ -314,7 +314,7 @@ function ReviewWorkflowDemo({ size }: Pick<BadgeProps, "size">) {
         />
         <label
           htmlFor={autoApproveId}
-          className="cursor-pointer text-sm text-semantic-text-secondary"
+          className="cursor-pointer text-sm text-v2-semantic-text-secondary"
         >
           Auto-approve
         </label>
@@ -370,7 +370,7 @@ export const AllVariants: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <span className="text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             {LABELS[variant]}
           </span>
           <Badge {...args} variant={variant} />
@@ -389,7 +389,7 @@ export const AllSizes: Story = {
     <div className="flex max-w-full flex-wrap items-end gap-8">
       {SIZES.map((size) => (
         <div key={size} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <span className="text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             {size} · {size === "sm" ? 22 : size === "lg" ? 30 : 26}px
           </span>
           <Badge {...args} size={size} />
@@ -411,7 +411,7 @@ export const Dot: Story = {
     <div className="flex max-w-full flex-wrap items-start gap-6">
       {VARIANTS.map((variant) => (
         <div key={variant} className="flex flex-col items-start gap-2">
-          <span className="text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <span className="text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             {LABELS[variant]}
           </span>
           <Badge {...args} variant={variant} dot />
@@ -441,14 +441,14 @@ export const VariantsAndSizes: Story = {
         {["Small · 22px", "Default · 26px", "Large · 30px"].map((label) => (
           <div
             key={label}
-            className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]"
+            className="text-xs font-medium text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]"
           >
             {label}
           </div>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))]">
+            <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]">
               {LABELS[variant]}
             </div>
             {SIZES.map((size) => (
@@ -485,15 +485,15 @@ export const V1VsV2: Story = {
       <div className="max-w-full overflow-x-auto">
         <div className="grid min-w-[820px] grid-cols-[110px_1fr_1fr] items-center gap-x-8 gap-y-4">
           <div />
-          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             v1 (ui/badge)
           </div>
-          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <div className="text-xs font-medium text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             v2 (ui/v2/badge)
           </div>
           {VARIANTS.map((variant) => (
             <React.Fragment key={variant}>
-              <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))]">
+              <div className="text-xs font-medium text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]">
                 {LABELS[variant]}
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -525,12 +525,12 @@ export const Usage: Story = {
     "Status words and palettes are fixed to the example. Controls update the badge size and icons."
   ),
   render: (args) => (
-    <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+        <p className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
           AI bots
         </p>
-        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+        <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
           Status at a glance across your workspace.
         </p>
       </div>
@@ -556,13 +556,13 @@ export const Usage: Story = {
       ].map((bot) => (
         <div
           key={bot.name}
-          className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4"
+          className="flex items-center justify-between gap-4 border-t border-v2-semantic-border-layout pt-4"
         >
           <div className="min-w-0">
-            <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+            <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
               {bot.name}
             </p>
-            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+            <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
               {bot.type}
             </p>
           </div>
@@ -591,7 +591,7 @@ export const AsLink: Story = {
     <Badge {...args} asChild>
       <a
         href="#storybook-root"
-        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-border-focus"
+        className="focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-border-focus"
       >
         {children}
       </a>

@@ -192,9 +192,9 @@ export const States: Story = {
             data-otp-state={state}
             className={
               state === "Hover"
-                ? "min-w-0 space-y-2 [&_input:enabled:not(:focus)]:border-[var(--color-primary-100)]"
+                ? "min-w-0 space-y-2 [&_input:enabled:not(:focus)]:border-[var(--v2-semantic-border-secondary,var(--color-primary-100))]"
                 : state === "Focus"
-                  ? "min-w-0 space-y-2 [&_input:first-child]:!border-semantic-primary [&_input:first-child]:!shadow-none"
+                  ? "min-w-0 space-y-2 [&_input:first-child]:!border-v2-semantic-primary [&_input:first-child]:!shadow-none"
                   : "min-w-0 space-y-2"
             }
           >

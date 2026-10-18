@@ -108,7 +108,7 @@ describe("Radio controls and selectable cards", () => {
       "after:size-[7px]",
       "after:scale-[0.4]",
       "after:opacity-0",
-      "checked:bg-semantic-primary",
+      "checked:bg-v2-semantic-primary",
       "checked:after:opacity-100",
       "checked:after:scale-100",
       "[&:not(:checked):enabled:active]:after:opacity-[0.22]"
@@ -154,7 +154,7 @@ describe("Radio controls and selectable cards", () => {
       "items-center",
       "rounded-lg",
       "border",
-      "border-semantic-border-layout"
+      "border-v2-semantic-border-layout"
     );
     await userEvent.click(screen.getByText("Unlimited agents"));
     expect(onValueChange).toHaveBeenCalledWith("team");
@@ -169,14 +169,14 @@ describe("Radio controls and selectable cards", () => {
     );
     const card = screen.getByRole("radio").closest("label")!;
     expect(card).toHaveClass(
-      "has-[:checked:enabled:not([aria-invalid=true])]:border-semantic-primary",
-      "bg-semantic-bg-primary",
-      "has-[:disabled]:bg-semantic-bg-ui",
+      "has-[:checked:enabled:not([aria-invalid=true])]:border-v2-semantic-primary",
+      "bg-v2-semantic-bg-primary",
+      "has-[:disabled]:bg-v2-semantic-bg-ui",
       "[transition-duration:160ms]"
     );
     expect(card.className).toContain("[@media(hover:hover)]:hover:");
-    expect(card.className).toContain("bg-semantic-bg-ui");
-    expect(card.className).toContain("bg-semantic-bg-subtle");
+    expect(card.className).toContain("bg-v2-semantic-bg-ui");
+    expect(card.className).toContain("bg-v2-semantic-bg-subtle");
   });
 
   it("draws the selected card with one highlight layer owned by the group", () => {
@@ -188,12 +188,12 @@ describe("Radio controls and selectable cards", () => {
     );
     const group = screen.getByRole("radiogroup");
     const highlight = group.querySelector('span[aria-hidden="true"]')!;
-    expect(highlight).toHaveClass("absolute", "border-semantic-primary");
+    expect(highlight).toHaveClass("absolute", "border-v2-semantic-primary");
     expect(highlight).toHaveStyle({ opacity: "1" });
     // the selected card hands its selected style to the highlight
     const cardA = screen.getByRole("radio", { name: "A" }).closest("label")!;
     expect(cardA.className).not.toContain(
-      "has-[:checked:enabled:not([aria-invalid=true])]:border-semantic-primary"
+      "has-[:checked:enabled:not([aria-invalid=true])]:border-v2-semantic-primary"
     );
     expect(container.querySelectorAll("[data-radio-card]")).toHaveLength(2);
   });
@@ -216,7 +216,7 @@ describe("Radio controls and selectable cards", () => {
     ).toBe(highlight);
     expect(highlight).toHaveAttribute("data-invalid", "true");
     expect(highlight).toHaveClass(
-      "data-[invalid=true]:border-semantic-error-primary"
+      "data-[invalid=true]:border-v2-semantic-error-primary"
     );
     rerender(view(false));
     expect(highlight).toHaveAttribute("data-invalid", "false");

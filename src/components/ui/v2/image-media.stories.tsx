@@ -100,7 +100,7 @@ const meta: Meta<Args> = {
     ),
   ],
   render: (args) => (
-    <div className="max-w-md overflow-hidden rounded-lg border border-semantic-border-layout">
+    <div className="max-w-md overflow-hidden rounded-lg border border-v2-semantic-border-layout">
       <ImageMedia {...imageProps(args)} />
     </div>
   ),
@@ -119,7 +119,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -189,7 +189,7 @@ export const Usage: Story = {
   render: function Render(args) {
     const [, update] = useArgs<Args>();
     return (
-      <section className="max-w-xl rounded-lg border border-semantic-border-layout p-4">
+      <section className="max-w-xl rounded-lg border border-v2-semantic-border-layout p-4">
         <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Image in a message
         </h3>
@@ -199,7 +199,7 @@ export const Usage: Story = {
         <button
           type="button"
           aria-label="Enlarge attachment"
-          className="block max-w-sm overflow-hidden rounded-lg border border-semantic-border-layout p-0 text-left focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary"
+          className="block max-w-sm overflow-hidden rounded-lg border border-v2-semantic-border-layout p-0 text-left focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
           onClick={() => update({ expanded: true })}
         >
           <ImageMedia
@@ -210,7 +210,7 @@ export const Usage: Story = {
         </button>
         <p className="m-0 mt-3 text-sm">Your delivery receipt is attached.</p>
         {args.expanded && (
-          <div className="mt-4 rounded-lg border border-semantic-border-layout p-4">
+          <div className="mt-4 rounded-lg border border-v2-semantic-border-layout p-4">
             <div className="mb-3 flex items-center justify-between gap-4">
               <p className="m-0 text-sm font-medium">Enlarged attachment</p>
               <Button

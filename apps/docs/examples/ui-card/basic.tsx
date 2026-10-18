@@ -18,7 +18,9 @@ export default function Example() {
         </UiCardDescription>
       </UiCardContent>
       <UiCardFooter>
-        <span className="text-xs text-semantic-text-muted">Updated today</span>
+        <span className="text-xs text-v2-semantic-text-muted">
+          Updated today
+        </span>
       </UiCardFooter>
     </UiCard>
   );

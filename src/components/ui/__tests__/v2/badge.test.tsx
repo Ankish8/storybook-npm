@@ -119,18 +119,18 @@ describe("Badge (v2)", () => {
   });
   it("uses the semantic information border", () => {
     expect(badgeVariants({ variant: "information" })).toContain(
-      "border-semantic-info-border"
+      "border-v2-semantic-info-border"
     );
   });
   it("uses status text tokens rather than the brighter action colors", () => {
     expect(badgeVariants({ variant: "active" })).toContain(
-      "text-semantic-success-text"
+      "text-v2-semantic-success-text"
     );
     expect(badgeVariants({ variant: "failed" })).toContain(
-      "text-semantic-error-text"
+      "text-v2-semantic-error-text"
     );
     expect(badgeVariants({ variant: "warning" })).toContain(
-      "text-semantic-warning-text"
+      "text-v2-semantic-warning-text"
     );
   });
   it.each(sizes)("allows height and gap overrides for %s", (size) => {
@@ -217,7 +217,7 @@ describe("Badge (v2)", () => {
     const link = screen.getByRole("link", { name: "View review status" });
     expect(childRef.current).toBe(link);
     expect(badgeRef).toHaveBeenLastCalledWith(link);
-    expect(link).toHaveClass("child-class", "bg-semantic-bg-ui");
+    expect(link).toHaveClass("child-class", "bg-v2-semantic-bg-ui");
     unmount();
     expect(childRef.current).toBeNull();
     expect(badgeRef).toHaveBeenLastCalledWith(null);
@@ -436,7 +436,7 @@ describe("Badge (v2)", () => {
         "shrink-0"
       );
       // currentColor resolves to the variant text colour, so the dot cannot drift from the label.
-      expect(badge).toHaveClass("text-semantic-success-text");
+      expect(badge).toHaveClass("text-v2-semantic-success-text");
       expect(dot).toBeEmptyDOMElement();
       expect(badge).toContainElement(screen.getByText("Online"));
     });

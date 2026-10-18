@@ -104,7 +104,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -189,7 +189,7 @@ function Timeline({
   const [history, setHistory] = React.useState<string[]>([]);
   return (
     <section
-      className="max-w-full rounded-lg border border-semantic-border-layout p-4"
+      className="max-w-full rounded-lg border border-v2-semantic-border-layout p-4"
       style={{ width: args.width }}
     >
       <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
@@ -208,7 +208,7 @@ function Timeline({
         <select
           id={id}
           value={args.agent}
-          className="h-9 min-w-0 rounded-lg border border-semantic-border-input bg-semantic-bg-primary px-3 text-sm"
+          className="h-9 min-w-0 rounded-lg border border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 text-sm"
           onChange={(e) => update({ agent: e.target.value })}
         >
           {["Mira Shah", "Noor Khan", "Aditi Kumar"].map((name) => (
@@ -227,7 +227,7 @@ function Timeline({
       </div>
       <div className="mt-5 space-y-3">
         <SystemMessage>Chat started by **Customer**</SystemMessage>
-        <div className="max-w-[85%] rounded-lg bg-semantic-bg-ui p-3">
+        <div className="max-w-[85%] rounded-lg bg-v2-semantic-bg-ui p-3">
           <p className="m-0 text-sm">Could you check the delivery status?</p>
         </div>
         {history.map((event, i) => (

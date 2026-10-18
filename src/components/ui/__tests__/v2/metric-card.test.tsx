@@ -152,12 +152,12 @@ describe("MetricCard content and accessible composition", () => {
     expect(trend).toHaveTextContent("Decreased by 18.7%");
     expect(trend).toHaveAttribute("data-tone", "positive");
     expect(trend?.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
-    expect(trend).toHaveClass("text-semantic-success-text");
+    expect(trend).toHaveClass("text-v2-semantic-success-text");
   });
 
   it.each([
-    ["up", "Increased by", "negative", "text-semantic-error-text"],
-    ["flat", "No change:", "neutral", "bg-semantic-bg-ui"],
+    ["up", "Increased by", "negative", "text-v2-semantic-error-text"],
+    ["flat", "No change:", "neutral", "bg-v2-semantic-bg-ui"],
   ] as const)(
     "makes %s direction readable and preserves the supplied tone",
     (direction, phrase, tone, colorClass) => {
@@ -270,8 +270,8 @@ describe("MetricCard content and accessible composition", () => {
   });
 
   it.each([
-    ["default", "bg-semantic-bg-primary"],
-    ["subtle", "bg-semantic-bg-ui"],
+    ["default", "bg-v2-semantic-bg-primary"],
+    ["subtle", "bg-v2-semantic-bg-ui"],
   ] as const)(
     "supports the %s surface without hover movement",
     (variant, bg) => {
@@ -300,7 +300,7 @@ describe("MetricCard content and accessible composition", () => {
   );
 
   it("exports the default CVA surface and resets Bootstrap paragraph margins", () => {
-    expect(metricCardVariants()).toContain("bg-semantic-bg-primary");
+    expect(metricCardVariants()).toContain("bg-v2-semantic-bg-primary");
     const { container } = render(
       <MetricCard label="Calls" value={1286} comparison="Previous 7 days" />
     );

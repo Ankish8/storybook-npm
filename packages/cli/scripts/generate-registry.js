@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { readFileSync as readV2Theme, writeFileSync as writeV2Theme } from "node:fs"
+import { fileURLToPath as v2ThemePath } from "node:url"
 
 /**
  * This script generates the registry files from components.yaml and source files.
@@ -1547,3 +1549,6 @@ async function main() {
 
 // Run
 main().catch(console.error)
+
+// Keep CLI theme installation identical to the library CSS.
+writeV2Theme(v2ThemePath(new URL("../src/utils/v2-theme.ts", import.meta.url)), "// Generated from src/styles/v2-theme.css. Do not edit directly.\nexport const V2_THEME_CSS =\n  " + JSON.stringify(readV2Theme(v2ThemePath(new URL("../../../src/styles/v2-theme.css", import.meta.url)), "utf8")) + ";\n")

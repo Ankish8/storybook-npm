@@ -130,8 +130,8 @@ const ProgressIndicator = React.forwardRef<
     const semi = variant === "semi-circle";
     const radius = 24.43256;
     const fillStroke = visuallyComplete
-      ? "var(--semantic-success-primary)"
-      : "var(--semantic-info-primary)";
+      ? "var(--v2-semantic-success-primary,var(--semantic-success-primary))"
+      : "var(--v2-semantic-info-primary,var(--semantic-info-primary))";
     const animationPlayState = canAnimate ? "running" : "paused";
 
     return (
@@ -156,7 +156,7 @@ const ProgressIndicator = React.forwardRef<
                 : "loading"
         }
         className={cn(
-          "font-[family-name:var(--font-v2)] text-semantic-text-secondary",
+          "font-[family-name:var(--font-v2)] text-v2-semantic-text-secondary",
           circle
             ? "relative inline-flex w-[54px] items-center justify-center text-xs leading-[15px]"
             : "flex w-[320px] max-w-full items-center gap-3 text-sm leading-[1.4]",
@@ -181,7 +181,7 @@ const ProgressIndicator = React.forwardRef<
                   <path
                     d={`M ${27 - radius} 27 A ${radius} ${radius} 0 0 1 ${27 + radius} 27`}
                     fill="none"
-                    stroke="var(--semantic-border-layout)"
+                    stroke="var(--v2-semantic-border-layout,var(--semantic-border-layout))"
                     strokeWidth="5.13488"
                   />
                   <path
@@ -208,7 +208,7 @@ const ProgressIndicator = React.forwardRef<
                     cy="27"
                     r={radius}
                     fill="none"
-                    stroke="var(--semantic-border-layout)"
+                    stroke="var(--v2-semantic-border-layout,var(--semantic-border-layout))"
                     strokeWidth="5.13488"
                   />
                   <circle
@@ -255,14 +255,14 @@ const ProgressIndicator = React.forwardRef<
           <>
             <div
               className={cn(
-                "relative h-[7px] w-full min-w-0 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui",
+                "relative h-[7px] w-full min-w-0 overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui",
                 labelPosition === "bottom" ? "shrink-0" : "flex-1"
               )}
             >
               <div
                 data-complete={visuallyComplete || undefined}
                 className={cn(
-                  "block h-full rounded-[inherit] bg-semantic-info-primary [transition-property:background-color] [transition-duration:180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[complete]:bg-semantic-success-primary motion-reduce:transition-none",
+                  "block h-full rounded-[inherit] bg-v2-semantic-info-primary [transition-property:background-color] [transition-duration:180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[complete]:bg-v2-semantic-success-primary motion-reduce:transition-none",
                   indeterminate ? "w-[30%]" : "w-full",
                   indeterminate &&
                     "motion-safe:[animation-name:myoperator-v2-progress-slide] motion-safe:[animation-duration:1.5s] motion-safe:[animation-timing-function:cubic-bezier(0.65,0,0.35,1)] motion-safe:[animation-iteration-count:infinite]"
@@ -285,9 +285,9 @@ const ProgressIndicator = React.forwardRef<
             {labelPosition !== "none" && !indeterminate && (
               <span
                 aria-hidden="true"
-                className="inline-flex shrink-0 items-center gap-1 text-semantic-text-muted"
+                className="inline-flex shrink-0 items-center gap-1 text-v2-semantic-text-muted"
               >
-                <span className="grid size-3.5 place-items-center text-semantic-success-primary">
+                <span className="grid size-3.5 place-items-center text-v2-semantic-success-primary">
                   {visuallyComplete &&
                     (canAnimate ? (
                       <motion.span

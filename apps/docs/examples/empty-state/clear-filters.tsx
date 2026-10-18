@@ -29,7 +29,7 @@ export default function Example() {
           </Button>
         </div>
       )}
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {filtered ? "No matches" : "Three contacts restored"}
       </p>
     </div>

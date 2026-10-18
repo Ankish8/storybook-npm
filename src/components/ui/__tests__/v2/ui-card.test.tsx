@@ -131,8 +131,8 @@ describe("UiCard compatibility and composition", () => {
     );
     expect(card).toHaveAttribute("aria-pressed", "true");
     expect(card).toHaveClass(
-      "border-semantic-border-accent",
-      "bg-semantic-brand-surface"
+      "border-v2-semantic-border-accent",
+      "bg-v2-semantic-brand-surface"
     );
   });
 

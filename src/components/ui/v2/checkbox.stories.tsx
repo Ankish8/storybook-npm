@@ -504,14 +504,14 @@ function ConversationSelection(args: CheckboxProps) {
         ? false
         : "indeterminate";
   return (
-    <div className="w-[420px] max-w-full rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="w-[420px] max-w-full rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Select conversations
       </p>
       <p className="m-0 mt-1 text-xs text-[var(--v2-text-muted,#707070)]">
         Choose the conversations to include in an export.
       </p>
-      <div className="mt-6 border-b border-semantic-border-layout pb-4">
+      <div className="mt-6 border-b border-v2-semantic-border-layout pb-4">
         <Checkbox
           {...args}
           id={generatedId + "all"}
@@ -543,7 +543,7 @@ function ConversationSelection(args: CheckboxProps) {
         ))}
       </div>
       <p
-        className="m-0 border-t border-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
+        className="m-0 border-t border-v2-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
         role="status"
       >
         {selected.length} of {names.length} selected

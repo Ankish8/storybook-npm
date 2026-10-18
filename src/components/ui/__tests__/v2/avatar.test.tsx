@@ -97,14 +97,14 @@ describe("Avatar", () => {
 
   it("applies soft (default) variant classes", () => {
     const { container } = render(<Avatar name="Test" />);
-    expect(container.firstChild).toHaveClass("bg-semantic-info-surface");
-    expect(container.firstChild).toHaveClass("text-semantic-text-muted");
+    expect(container.firstChild).toHaveClass("bg-v2-semantic-info-surface");
+    expect(container.firstChild).toHaveClass("text-v2-semantic-text-muted");
   });
 
   it("applies filled variant classes", () => {
     const { container } = render(<Avatar name="Test" variant="filled" />);
-    expect(container.firstChild).toHaveClass("bg-semantic-primary");
-    expect(container.firstChild).toHaveClass("text-semantic-text-inverted");
+    expect(container.firstChild).toHaveClass("bg-v2-semantic-primary");
+    expect(container.firstChild).toHaveClass("text-v2-semantic-text-inverted");
   });
 
   // --- Size classes ---
@@ -142,28 +142,28 @@ describe("Avatar", () => {
     const { container } = render(<Avatar name="Test" status="online" />);
     const dot = container.querySelector("[data-status='online']");
     expect(dot).toBeInTheDocument();
-    expect(dot).toHaveClass("bg-semantic-success-primary");
+    expect(dot).toHaveClass("bg-v2-semantic-success-primary");
   });
 
   it("busy status has correct class", () => {
     const { container } = render(<Avatar name="Test" status="busy" />);
     const dot = container.querySelector("[data-status='busy']");
     expect(dot).toBeInTheDocument();
-    expect(dot).toHaveClass("bg-semantic-error-primary");
+    expect(dot).toHaveClass("bg-v2-semantic-error-primary");
   });
 
   it("away status has correct class", () => {
     const { container } = render(<Avatar name="Test" status="away" />);
     const dot = container.querySelector("[data-status='away']");
     expect(dot).toBeInTheDocument();
-    expect(dot).toHaveClass("bg-semantic-warning-primary");
+    expect(dot).toHaveClass("bg-v2-semantic-warning-primary");
   });
 
   it("offline status has correct class", () => {
     const { container } = render(<Avatar name="Test" status="offline" />);
     const dot = container.querySelector("[data-status='offline']");
     expect(dot).toBeInTheDocument();
-    expect(dot).toHaveClass("bg-semantic-text-muted");
+    expect(dot).toHaveClass("bg-v2-semantic-text-muted");
   });
 
   it("does not render status dot when status not provided", () => {
@@ -336,7 +336,7 @@ describe("v2 outline", () => {
       />
     );
     const identity = screen.getByTestId("identity");
-    expect(identity).toHaveClass("border-semantic-border-layout");
+    expect(identity).toHaveClass("border-v2-semantic-border-layout");
     expect(identity).toHaveAttribute("aria-label", "Aditi Kumar");
     expect(identity).toHaveAttribute("aria-description", "busy");
     expect(identity).toHaveAttribute("title", "Support agent");
@@ -537,9 +537,9 @@ describe("v2 AvatarGroup", () => {
     expect(root).toHaveClass(
       "inline-flex",
       "[&>*]:ring-2",
-      "[&>*]:ring-semantic-bg-primary",
+      "[&>*]:ring-v2-semantic-bg-primary",
       "[&>*:not(:first-child)]:-ms-1.5",
-      "[&>*]:shadow-[0_0_0_3px_var(--semantic-border-layout)]"
+      "[&>*]:shadow-[0_0_0_3px_var(--v2-semantic-border-layout,var(--semantic-border-layout))]"
     );
     expect(screen.getAllByRole("img")).toHaveLength(4);
     expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
@@ -607,16 +607,16 @@ describe("v2 AvatarGroup", () => {
     render(
       <AvatarGroup
         size="md"
-        className="[&>*]:ring-semantic-bg-ui"
+        className="[&>*]:ring-v2-semantic-bg-ui"
         data-testid="g"
       >
         <Avatar name="Aditi Kumar" size="xl" />
       </AvatarGroup>
     );
     expect(screen.getByRole("img")).toHaveClass("size-16");
-    expect(screen.getByTestId("g")).toHaveClass("[&>*]:ring-semantic-bg-ui");
+    expect(screen.getByTestId("g")).toHaveClass("[&>*]:ring-v2-semantic-bg-ui");
     expect(screen.getByTestId("g")).not.toHaveClass(
-      "[&>*]:ring-semantic-bg-primary"
+      "[&>*]:ring-v2-semantic-bg-primary"
     );
   });
   it("forwards its ref and ignores empty children", () => {

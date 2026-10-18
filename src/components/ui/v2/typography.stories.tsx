@@ -86,7 +86,7 @@ const meta: Meta<typeof Typography> = {
       <div
         className={
           context.args.color === "inverted"
-            ? "max-w-full rounded-lg bg-semantic-primary p-6 text-semantic-text-inverted"
+            ? "max-w-full rounded-lg bg-v2-semantic-primary p-6 text-v2-semantic-text-inverted"
             : "max-w-full p-6"
         }
       >
@@ -113,10 +113,10 @@ export const AllVariants: Story = {
       {kinds.map((kind) => (
         <section
           key={kind}
-          className="min-w-0 space-y-2 border-b border-solid border-semantic-border-layout pb-5"
+          className="min-w-0 space-y-2 border-b border-solid border-v2-semantic-border-layout pb-5"
         >
           <p
-            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
+            className={`m-0 text-xs ${args.color === "inverted" ? "text-v2-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {kind}
           </p>
@@ -136,7 +136,7 @@ export const AllSizes: Story = {
       {sizes.map((variant) => (
         <section key={variant} className="min-w-0 space-y-2">
           <p
-            className={`m-0 text-xs ${args.color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
+            className={`m-0 text-xs ${args.color === "inverted" ? "text-v2-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {variant}
           </p>
@@ -158,12 +158,12 @@ export const AllColors: Story = {
           key={color}
           className={
             color === "inverted"
-              ? "min-w-0 space-y-2 rounded-lg bg-semantic-primary p-3"
+              ? "min-w-0 space-y-2 rounded-lg bg-v2-semantic-primary p-3"
               : "min-w-0 space-y-2 p-3"
           }
         >
           <p
-            className={`m-0 text-xs font-normal capitalize ${color === "inverted" ? "text-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
+            className={`m-0 text-xs font-normal capitalize ${color === "inverted" ? "text-v2-semantic-text-inverted" : "text-[var(--v2-text-muted,#707070)]"}`}
           >
             {color}
           </p>
@@ -225,7 +225,7 @@ export const V1VsV2: Story = {
       {["v1", "v2"].map((version) => (
         <section
           key={version}
-          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             {version}

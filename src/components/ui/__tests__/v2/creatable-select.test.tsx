@@ -185,11 +185,11 @@ describe("CreatableSelect v2 refresh", () => {
     const field = screen.getByRole("combobox").parentElement as HTMLElement;
     expect(field).toHaveAttribute("data-state", "open");
     expect(field.className).toContain(
-      "data-[state=open]:border-semantic-primary"
+      "data-[state=open]:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(field.className).toContain("data-[state=open]:shadow-none");
     expect(field.className).toContain(
-      "data-[state=open]:hover:border-semantic-primary"
+      "data-[state=open]:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
   });
 
@@ -208,7 +208,7 @@ describe("CreatableSelect v2 refresh", () => {
       "motion-safe:fade-in-0",
       "motion-safe:zoom-in-[0.97]",
       "motion-safe:[animation-duration:260ms]",
-      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+      "shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))]"
     );
     expect(screen.getByRole("listbox")).toHaveClass(
       "p-[5px]",
@@ -223,13 +223,13 @@ describe("CreatableSelect v2 refresh", () => {
     expect(closed).toHaveClass(
       "px-3",
       "gap-2",
-      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
-      "enabled:active:bg-semantic-bg-ui",
+      "[@media(hover:hover)]:enabled:hover:bg-v2-semantic-bg-ui",
+      "enabled:active:bg-v2-semantic-bg-ui",
       "disabled:opacity-50"
     );
     await user.click(closed);
     const field = screen.getByRole("combobox").parentElement as HTMLElement;
-    expect(field).toHaveClass("data-[state=open]:bg-semantic-bg-ui");
+    expect(field).toHaveClass("data-[state=open]:bg-v2-semantic-bg-ui");
     const chevron = field.querySelector("svg");
     expect(chevron).toHaveClass(
       "rotate-180",
@@ -268,18 +268,18 @@ describe("CreatableSelect v2 refresh", () => {
 
     // Mouse hover highlights with the fill only.
     await user.hover(alpha);
-    expect(alpha).toHaveClass("bg-semantic-bg-ui");
+    expect(alpha).toHaveClass("bg-v2-semantic-bg-ui");
     expect(alpha).not.toHaveClass("ring-1");
 
     // Arrow keys move the highlight and earn the ring.
     await user.keyboard("{ArrowDown}");
-    expect(beta).toHaveClass("bg-semantic-bg-ui", "ring-1", "ring-inset");
-    expect(beta).toHaveClass("ring-semantic-border-accent");
+    expect(beta).toHaveClass("bg-v2-semantic-bg-ui", "ring-1", "ring-inset");
+    expect(beta).toHaveClass("ring-v2-semantic-border-accent");
 
     // The mouse taking over removes it again (a stationary pointer fires no new enter).
     await user.unhover(alpha);
     await user.hover(alpha);
-    expect(alpha).toHaveClass("bg-semantic-bg-ui");
+    expect(alpha).toHaveClass("bg-v2-semantic-bg-ui");
     expect(alpha).not.toHaveClass("ring-1");
   });
 

@@ -17,7 +17,7 @@ describe("ReplyQuote", () => {
     );
     expect(container.firstChild).toHaveClass("custom-class");
     expect((container.firstChild as HTMLElement).className).toMatch(
-      /bg-\[var\(--semantic-bg-ui/
+      /bg-\[var\(--v2-semantic-bg-ui/
     );
   });
 
@@ -163,12 +163,16 @@ describe("ReplyQuote states", () => {
     render(<ReplyQuote sender="Mira" message="Hello" onClick={() => {}} />);
     const quote = screen.getByRole("button");
     expect(quote).toHaveClass(
-      "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-grey"
     );
     expect(quote).toHaveClass("active:scale-[0.985]");
     // Hover must differ from the resting fill.
-    expect(quote.className).toContain("bg-[var(--semantic-bg-ui");
-    expect(quote.className).not.toContain("hover:bg-[var(--semantic-bg-ui");
+    expect(quote.className).toContain(
+      "bg-[var(--v2-semantic-bg-ui,var(--semantic-bg-ui"
+    );
+    expect(quote.className).not.toContain(
+      "hover:bg-[var(--v2-semantic-bg-ui,var(--semantic-bg-ui"
+    );
   });
 
   it("is not interactive-styled when static", () => {

@@ -115,12 +115,12 @@ function TabsExample({
         <UI.TabsContent
           key={option.value}
           value={option.value}
-          className="min-w-0 flex-1 rounded-lg border border-semantic-border-layout p-4"
+          className="min-w-0 flex-1 rounded-lg border border-v2-semantic-border-layout p-4"
         >
           <h3
             className={
               version === "v1"
-                ? "m-0 text-base font-semibold text-semantic-text-primary"
+                ? "m-0 text-base font-semibold text-v2-semantic-text-primary"
                 : "m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]"
             }
           >
@@ -129,7 +129,7 @@ function TabsExample({
           <p
             className={
               version === "v1"
-                ? "m-0 mt-2 text-sm text-semantic-text-secondary"
+                ? "m-0 mt-2 text-sm text-v2-semantic-text-secondary"
                 : "m-0 mt-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)]"
             }
           >
@@ -148,7 +148,7 @@ function TabsExample({
           <p
             className={
               version === "v1"
-                ? "m-0 mt-4 text-xs text-semantic-text-muted"
+                ? "m-0 mt-4 text-xs text-v2-semantic-text-muted"
                 : "m-0 mt-4 text-xs text-[var(--v2-text-muted,#707070)]"
             }
           >
@@ -401,7 +401,7 @@ function GalleryCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -566,7 +566,7 @@ function InboxExample({
   ]);
   const visible = items.filter((item) => item.status === args.value);
   return (
-    <div className="max-w-[800px] rounded-lg border border-semantic-border-layout p-5">
+    <div className="max-w-[800px] rounded-lg border border-v2-semantic-border-layout p-5">
       <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {args.panelTitle}
       </h3>
@@ -623,7 +623,7 @@ function InboxExample({
                   visible.map((item) => (
                     <div
                       key={item.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-semantic-bg-ui p-4"
+                      className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-v2-semantic-bg-ui p-4"
                     >
                       <span className="text-sm text-[var(--v2-text-primary,#484848)]">
                         {item.title}

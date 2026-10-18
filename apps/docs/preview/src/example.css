@@ -20,6 +20,6 @@ body {
 .example-error {
   margin: 0;
   padding: 24px;
-  color: var(--semantic-error-text, #b42318);
+  color: var(--v2-semantic-error-text, var(--semantic-error-text, #b42318));
   font-size: 14px;
 }

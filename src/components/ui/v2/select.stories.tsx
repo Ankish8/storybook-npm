@@ -100,7 +100,7 @@ function SelectExample({
           htmlFor={id}
           className={
             version === "v1"
-              ? "text-sm font-medium text-semantic-text-secondary"
+              ? "text-sm font-medium text-v2-semantic-text-secondary"
               : "text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           }
         >
@@ -575,7 +575,7 @@ function AuthenticationForm(args: SelectExampleArgs) {
         setInvalid(false);
         setSavedValue(args.value);
       }}
-      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       <div>
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
@@ -597,11 +597,11 @@ function AuthenticationForm(args: SelectExampleArgs) {
         }}
       />
       {invalid && (
-        <p id={errorId} className="m-0 text-xs text-semantic-error-text">
+        <p id={errorId} className="m-0 text-xs text-v2-semantic-error-text">
           Choose an authentication method.
         </p>
       )}
-      <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
+      <div className="flex items-center justify-between gap-4 border-t border-v2-semantic-border-layout pt-4">
         <span
           role="status"
           className="text-xs text-[var(--v2-text-muted,#707070)]"

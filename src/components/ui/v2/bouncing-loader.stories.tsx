@@ -45,7 +45,7 @@ const meta: Meta<typeof BouncingLoader> = {
             [
               "Dot fill override",
               "--bouncing-loader-color",
-              "var(--semantic-text-placeholder)",
+              "var(--v2-semantic-text-placeholder,var(--semantic-text-placeholder))",
               "#A2A6B1",
             ],
             ["Dot diameter", "--bouncing-loader-size", "8px"],
@@ -60,7 +60,8 @@ const meta: Meta<typeof BouncingLoader> = {
   args: {
     size: 8,
     spacing: 6,
-    color: "var(--semantic-text-placeholder)",
+    color:
+      "var(--v2-semantic-text-placeholder,var(--semantic-text-placeholder))",
     "aria-label": "Sending draft",
   },
   argTypes: {
@@ -81,10 +82,10 @@ function SendingDraft(args: BouncingLoaderProps) {
   const sending = state === "sending";
 
   return (
-    <section className="w-[480px] max-w-full space-y-5 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 text-semantic-text-primary">
+    <section className="w-[480px] max-w-full space-y-5 rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 text-v2-semantic-text-primary">
       <header className="space-y-1">
         <h3 className="m-0 text-base font-semibold">Send a reply</h3>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-sm text-v2-semantic-text-muted">
           A local preview. Start sending, then finish when you’re ready.
         </p>
       </header>
@@ -104,14 +105,14 @@ function SendingDraft(args: BouncingLoaderProps) {
               setDraft(event.target.value);
               if (state === "sent") setState("idle");
             }}
-            className="block min-h-28 w-full resize-y rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary p-3 text-sm font-normal leading-relaxed text-semantic-text-primary outline-none focus-visible:border-semantic-border-focus focus-visible:ring-1 focus-visible:ring-semantic-border-focus"
+            className="block min-h-28 w-full resize-y rounded-lg border border-solid border-v2-semantic-border-input bg-v2-semantic-bg-primary p-3 text-sm font-normal leading-relaxed text-v2-semantic-text-primary outline-none focus-visible:border-v2-semantic-border-focus focus-visible:ring-1 focus-visible:ring-v2-semantic-border-focus"
           />
         </label>
         <div
           role="status"
           aria-live="polite"
           aria-atomic="true"
-          className="flex min-h-12 items-center gap-3 rounded-lg bg-semantic-bg-ui px-4 py-3 text-sm text-semantic-text-secondary"
+          className="flex min-h-12 items-center gap-3 rounded-lg bg-v2-semantic-bg-ui px-4 py-3 text-sm text-v2-semantic-text-secondary"
         >
           {sending && <BouncingLoader {...args} aria-hidden="true" />}
           <span>
@@ -190,7 +191,10 @@ export const AllVariants: Story = {
       {["placeholder", "muted", "secondary"].map((color) => (
         <section key={color} className="space-y-3">
           <h3 className="m-0 text-sm font-medium capitalize">{color}</h3>
-          <BouncingLoader {...args} color={`var(--semantic-text-${color})`} />
+          <BouncingLoader
+            {...args}
+            color={`var(--v2-semantic-text-,var(--semantic-text-${color}))`}
+          />
         </section>
       ))}
     </div>
@@ -211,7 +215,7 @@ export const Decorative: Story = {
   render: (args) => (
     <div role="status" aria-live="polite" className="flex items-center gap-3">
       <BouncingLoader {...args} aria-hidden="true" />
-      <span className="text-sm text-semantic-text-secondary">
+      <span className="text-sm text-v2-semantic-text-secondary">
         Checking availability
       </span>
     </div>
@@ -227,7 +231,7 @@ export const NativeStyles: Story = {
       spacing="0.5rem"
       tabIndex={0}
       style={{ animationDuration: "1.8s", padding: "12px", opacity: 0.9 }}
-      className="rounded-lg border border-solid border-semantic-border-layout focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-semantic-border-focus"
+      className="rounded-lg border border-solid border-v2-semantic-border-layout focus-visible:outline focus-visible:outline-offset-4 focus-visible:outline-v2-semantic-border-focus"
     />
   ),
 };
@@ -243,7 +247,7 @@ export const V1VsV2: Story = {
       {["v1", "v2"].map((version) => (
         <section
           key={version}
-          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <h3 className="m-0 text-base font-medium">{version}</h3>
           {version === "v1" ? <V1 {...args} /> : <BouncingLoader {...args} />}

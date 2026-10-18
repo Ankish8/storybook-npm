@@ -26,7 +26,7 @@ export default function Example() {
     <div className="grid w-full max-w-sm gap-3">
       <label
         htmlFor="toast-workspace-name"
-        className="text-sm text-semantic-text-secondary"
+        className="text-sm text-v2-semantic-text-secondary"
       >
         Workspace name
       </label>
@@ -38,7 +38,7 @@ export default function Example() {
       <Button size="sm" onClick={save}>
         Save name locally
       </Button>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         Current workspace: {name}
       </p>
       <Toaster

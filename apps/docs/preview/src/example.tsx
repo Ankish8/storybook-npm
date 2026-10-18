@@ -1,3 +1,4 @@
+import { installPreviewTheme } from "./theme";
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { CHANNEL, expectedParentOrigin } from "./model.mjs";
@@ -23,6 +24,7 @@ const minHeight = Math.min(
   900
 );
 const parentOrigin = expectedParentOrigin(location, query.get("parentOrigin"));
+installPreviewTheme(parentOrigin);
 // What counts as an open popup: menus, listboxes, Radix popper content and the non-modal dialogs the pickers use.
 const POPUP_SELECTOR =
   '[role="listbox"], [role="menu"], [data-radix-popper-content-wrapper], [role="dialog"][aria-modal="false"]';

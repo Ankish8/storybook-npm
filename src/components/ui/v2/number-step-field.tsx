@@ -308,7 +308,7 @@ export interface NumberStepFieldProps extends Omit<
 }
 
 const STEP_BUTTON_CLASSNAME = cn(
-  "flex w-full flex-1 items-center justify-center rounded-none border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-hover enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
+  "flex w-full flex-1 items-center justify-center rounded-none border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-hover enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:bg-v2-semantic-border-layout enabled:[&:is(:active,[data-pressed]):not(:disabled)]:text-[var(--v2-text-primary,#484848)] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-duration:60ms] enabled:[&:is(:active,[data-pressed]):not(:disabled)]:[transition-timing-function:linear] [&_svg]:transition-transform [&_svg]:[transition-duration:580ms] [&_svg]:[transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] [&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-[0.82] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-duration:90ms] [&:is(:active,[data-pressed]):not(:disabled)_svg]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.12s] motion-reduce:[&_svg]:transition-none motion-reduce:[&:is(:active,[data-pressed]):not(:disabled)_svg]:scale-100 disabled:cursor-not-allowed disabled:opacity-[0.35]"
 );
 
 const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
@@ -619,15 +619,15 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
           data-strain={strained ? "" : undefined}
           className={cn(
             // 44px, or 50px on a coarse pointer so each half-height stepper tile (shell minus 2px border, halved) is 24px.
-            "flex h-11 min-w-0 flex-1 items-center rounded-lg border border-solid overflow-hidden transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(pointer:coarse)]:h-[50px]",
+            "flex h-11 min-w-0 flex-1 items-center rounded-lg border border-solid overflow-hidden dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(pointer:coarse)]:h-[50px]",
             state === "error"
-              ? "border-semantic-error-primary"
-              : "border-semantic-border-layout",
+              ? "border-v2-semantic-error-primary"
+              : "border-v2-semantic-border-layout",
             // Arc: hover steps the hairline up to the input border, focus to the strong one; a disabled shell dims to 50%.
             disabled
-              ? "bg-semantic-bg-ui opacity-50"
+              ? "bg-v2-semantic-bg-ui opacity-50"
               : state !== "error" &&
-                  "group-hover:[&:not(:focus-within)]:border-semantic-border-input group-focus-within:shadow-none"
+                  "group-hover:[&:not(:focus-within)]:border-v2-semantic-border-input group-focus-within:shadow-none"
           )}
         >
           <div className="relative h-full min-w-0 flex-1">
@@ -651,7 +651,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               aria-valuetext={suffix ? `${value} ${suffix}` : undefined}
               hideNumberSpinners
               className={cn(
-                "rounded-none border-0 h-full min-w-0 w-full bg-semantic-bg-primary px-3 py-2.5 leading-[normal] [font-variant-numeric:tabular-nums] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none disabled:opacity-100",
+                "rounded-none border-0 h-full min-w-0 w-full bg-v2-semantic-bg-primary px-3 py-2.5 leading-[normal] [font-variant-numeric:tabular-nums] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none disabled:opacity-100",
                 // The wheels draw the number while nobody is typing; the caret stays so a click still lands.
                 !editing &&
                   "text-transparent caret-[var(--v2-text-secondary,#5E5E5E)]"
@@ -665,7 +665,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
                 "pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm leading-[1.4] tracking-[-0.01em] transition-[opacity,color] [transition-duration:80ms] motion-reduce:transition-none",
                 editing && "opacity-0",
                 strained
-                  ? "text-semantic-warning-text"
+                  ? "text-v2-semantic-warning-text"
                   : "text-[var(--v2-text-secondary,#5E5E5E)]"
               )}
             >
@@ -677,7 +677,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
           {/* Two flush half-height targets share a neutral control rail. Hover fills the
               available half without introducing detached rounded plates. Keyboard stepping
               stays on the input, and coarse pointers retain 24px-high targets. */}
-          <div className="flex h-full w-8 shrink-0 flex-col border-l border-solid border-semantic-border-layout bg-semantic-bg-ui">
+          <div className="flex h-full w-8 shrink-0 flex-col border-l border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui">
             <button
               type="button"
               tabIndex={-1}
@@ -715,7 +715,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
           </div>
           {suffix && (
             <span
-              className="inline-flex h-full items-center px-4 shrink-0 bg-semantic-bg-ui text-sm leading-[normal] text-[var(--v2-text-muted,#707070)]"
+              className="inline-flex h-full items-center px-4 shrink-0 bg-v2-semantic-bg-ui text-sm leading-[normal] text-[var(--v2-text-muted,#707070)]"
               aria-hidden
             >
               {suffix}

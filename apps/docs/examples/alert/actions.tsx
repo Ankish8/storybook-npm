@@ -33,7 +33,7 @@ export default function Example() {
             : "Three local changes are waiting for a connection."}
         </AlertDescription>
       </Alert>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {connected ? "Local connection restored" : "Local connection paused"}
       </p>
     </div>

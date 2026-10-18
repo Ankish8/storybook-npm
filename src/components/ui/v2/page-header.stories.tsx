@@ -165,7 +165,7 @@ const meta: Meta<Args> = {
   decorators: [
     (Story) => (
       // The header draws its own bottom divider; the -mb-px lets the frame's border be that line instead of a second one.
-      <div className="max-w-full overflow-hidden rounded-lg border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] [&>*]:-mb-px">
+      <div className="max-w-full overflow-hidden rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] [&>*]:-mb-px">
         <Story />
       </div>
     ),
@@ -262,11 +262,11 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
-      <div className="overflow-hidden rounded-lg border border-semantic-border-layout [&>*]:-mb-px">
+      <div className="overflow-hidden rounded-lg border border-v2-semantic-border-layout [&>*]:-mb-px">
         {children}
       </div>
     </section>
@@ -387,7 +387,7 @@ function WebhookExample({ args }: { args: Args }) {
           {items.map((item, index) => (
             <li
               key={item + index}
-              className="border-b border-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
+              className="border-b border-v2-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
             >
               {item}
             </li>

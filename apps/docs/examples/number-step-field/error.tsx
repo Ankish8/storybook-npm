@@ -20,7 +20,7 @@ export default function ErrorExample() {
       <p
         id="reminder-error"
         role={invalid ? "alert" : undefined}
-        className="m-0 text-xs text-semantic-error-text"
+        className="m-0 text-xs text-v2-semantic-error-text"
       >
         {invalid ? "Choose at least 1 minute." : ""}
       </p>

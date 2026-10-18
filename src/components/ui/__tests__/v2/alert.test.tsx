@@ -39,24 +39,36 @@ describe("Alert", () => {
 
   // Variants retain neutral body text; only the icon carries the status color.
   it.each([
-    ["default", "bg-semantic-bg-primary", "border-semantic-border-layout"],
+    [
+      "default",
+      "bg-v2-semantic-bg-primary",
+      "border-v2-semantic-border-layout",
+    ],
     [
       "success",
-      "bg-semantic-success-surface",
-      "border-[var(--color-success-200)]",
+      "bg-v2-semantic-success-surface",
+      "border-[var(--v2-semantic-success-border,var(--color-success-200))]",
     ],
-    ["error", "bg-semantic-error-surface", "border-[var(--color-error-200)]"],
+    [
+      "error",
+      "bg-v2-semantic-error-surface",
+      "border-[var(--v2-semantic-error-border,var(--color-error-200))]",
+    ],
     [
       "destructive",
-      "bg-semantic-error-surface",
-      "border-[var(--color-error-200)]",
+      "bg-v2-semantic-error-surface",
+      "border-[var(--v2-semantic-error-border,var(--color-error-200))]",
     ],
     [
       "warning",
-      "bg-semantic-warning-surface",
-      "border-[var(--color-warning-200)]",
+      "bg-v2-semantic-warning-surface",
+      "border-[var(--v2-semantic-warning-border,var(--color-warning-200))]",
     ],
-    ["info", "bg-semantic-info-surface", "border-[var(--color-info-200)]"],
+    [
+      "info",
+      "bg-v2-semantic-info-surface",
+      "border-[var(--v2-semantic-info-border,var(--color-info-200))]",
+    ],
   ] as const)(
     "renders %s variant with correct classes",
     (variant, bgClass, borderClass) => {
@@ -68,7 +80,7 @@ describe("Alert", () => {
       const element = screen.getByTestId("alert");
       expect(element).toHaveClass(bgClass);
       expect(element).toHaveClass(
-        "text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+        "text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]"
       );
       expect(element).toHaveClass(borderClass);
     }
@@ -96,7 +108,7 @@ describe("Alert", () => {
       </Alert>
     );
     expect(screen.getByTestId("alert")).toHaveClass(
-      "shadow-[0_1px_2px_rgba(0,0,0,0.035)]"
+      "shadow-[var(--v2-shadow-xs,0_1px_2px_rgba(0,0,0,0.035))]"
     );
     expect(screen.getByRole("heading", { name: "Saved" })).toHaveClass(
       "text-sm",
@@ -661,11 +673,11 @@ describe("v2 presentations", () => {
     );
     const close = screen.getByRole("button", { name: "Close alert" });
     expect(close).toHaveClass(
-      "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
-      "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui"
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui"
     );
     expect(close).not.toHaveClass(
-      "hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+      "hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
     );
   });
   it("keeps custom content and secondary actions usable in a header", () => {

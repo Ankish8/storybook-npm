@@ -5,7 +5,7 @@ export default function Example() {
     <div className="w-full max-w-[360px] space-y-2">
       <label
         htmlFor="preferred-countries-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>

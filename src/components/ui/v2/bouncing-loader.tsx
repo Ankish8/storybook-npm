@@ -43,7 +43,7 @@ export interface BouncingLoaderProps
    */
   size?: number | string;
   /**
-   * Dot fill. Any valid CSS color (e.g. semantic token: `var(--semantic-text-placeholder)`).
+   * Dot fill. Any valid CSS color (e.g. semantic token: `var(--v2-semantic-text-placeholder,var(--semantic-text-placeholder))`).
    */
   color?: string;
   /**
@@ -136,7 +136,7 @@ const BouncingLoader = React.forwardRef<HTMLSpanElement, BouncingLoaderProps>(
           <span
             key={i}
             data-v2-bounce-dot=""
-            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--semantic-text-placeholder,currentColor))] [animation-name:myoperator-v2-bouncing-typing-wave] [animation-duration:var(--v2-bouncing-loader-duration,1.4s)] [animation-timing-function:cubic-bezier(0.4,0,0.2,1)] [animation-delay:var(--v2-bouncing-loader-delay,0s)] [animation-iteration-count:infinite] [animation-fill-mode:both] [animation-play-state:var(--v2-bouncing-loader-play-state,running)]"
+            className="bouncing-loader__dot box-border block h-[var(--bouncing-loader-size,8px)] w-[var(--bouncing-loader-size,8px)] shrink-0 rounded-full bg-[var(--bouncing-loader-color,var(--v2-semantic-text-placeholder,var(--semantic-text-placeholder,currentColor)))] [animation-name:myoperator-v2-bouncing-typing-wave] [animation-duration:var(--v2-bouncing-loader-duration,1.4s)] [animation-timing-function:cubic-bezier(0.4,0,0.2,1)] [animation-delay:var(--v2-bouncing-loader-delay,0s)] [animation-iteration-count:infinite] [animation-fill-mode:both] [animation-play-state:var(--v2-bouncing-loader-play-state,running)]"
             style={{
               ["--v2-bouncing-loader-delay" as string]: `${DOT_DELAYS_SEC[i]}s`,
             }}

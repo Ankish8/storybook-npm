@@ -15,7 +15,7 @@ const chevronSpringClassName = cn(
 );
 
 const creatableSelectTriggerVariants = cva(
-  "flex h-11 w-full items-center justify-between gap-2 rounded-lg bg-semantic-bg-primary px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:opacity-50 disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-11 w-full items-center justify-between gap-2 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
   {
     variants: {
       state: {
@@ -24,9 +24,9 @@ const creatableSelectTriggerVariants = cva(
           // list moves focus out of it, so `focus-within` alone lets the glow drop while
           // the panel is still open. The `hover` variant outranks the grey hover border.
           // Arc also tints the field on hover, press and while open (its muted surface).
-          "border border-solid border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus-within:shadow-none data-[state=open]:border-semantic-primary data-[state=open]:bg-semantic-bg-ui data-[state=open]:shadow-none data-[state=open]:hover:border-semantic-primary",
+          "border border-solid border-v2-semantic-border-input hover:border-[var(--v2-semantic-border-primary,var(--color-primary-100,#C0C3CA))] [@media(hover:hover)]:enabled:hover:bg-v2-semantic-bg-ui enabled:active:bg-v2-semantic-bg-ui focus-within:shadow-none data-[state=open]:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] data-[state=open]:bg-v2-semantic-bg-ui data-[state=open]:shadow-none data-[state=open]:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
+          "border border-solid border-v2-semantic-error-primary shadow-[var(--v2-shadow-error,0_0_4px_0_rgba(240,68,56,0.4))]  ",
       },
     },
     defaultVariants: {
@@ -44,12 +44,12 @@ const creatableSelectTriggerVariants = cva(
  * strings will not compile.
  */
 export const creatableEnterHintKbdClassName = cn(
-  "inline-flex items-center gap-0.5 rounded border border-solid border-semantic-border-layout bg-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-[var(--v2-text-muted,#707070)]"
+  "inline-flex items-center gap-0.5 rounded border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui px-1.5 py-0.5 font-sans text-[10px] font-medium text-[var(--v2-text-muted,#707070)]"
 );
 
 /** Primary Role: hint row above the options list (custom role + Enter kbd). */
 export const creatablePrimaryRoleHintRowClassName = cn(
-  "flex items-center justify-between border-b border-solid border-semantic-border-layout px-4 py-2"
+  "flex items-center justify-between border-b border-solid border-v2-semantic-border-layout px-4 py-2"
 );
 
 /** Tone / CreatableMultiSelect: inner hint row (place inside a full-bleed wrapper with `-mx-4` + `border-b` on the panel). Matches Roles' row dimensions for visual parity. */
@@ -354,7 +354,7 @@ const CreatableSelect = React.forwardRef(
               creatableSelectTriggerVariants({ state }),
               "cursor-text",
               disabled &&
-                "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
+                "bg-v2-semantic-bg-ui border-v2-semantic-border-layout shadow-none hover:border-v2-semantic-border-layout focus-within:shadow-none"
             )}
             onClick={() => inputRef.current?.focus()}
           >
@@ -442,7 +442,7 @@ const CreatableSelect = React.forwardRef(
         {/* Dropdown. CSS-anchored 8px below the field (no flip), so it always grows from the
             top edge; there is no placement to derive the origin from. */}
         {open && (
-          <div className="absolute left-0 top-full z-[9999] mt-2 w-full origin-top rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
+          <div className="absolute left-0 top-full z-[9999] mt-2 w-full origin-top rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
             {creatableHint ? (
               <div className={creatablePrimaryRoleHintRowClassName}>
                 <span className="text-sm text-[var(--v2-text-muted,#707070)]">
@@ -481,13 +481,13 @@ const CreatableSelect = React.forwardRef(
                       // 4px radius = panel 8px minus its 4px padding (concentric corners). Arc: 36px
                       // rows with the check inline, an 80ms highlight, and no weight change on selection.
                       "relative flex min-h-9 w-full items-center justify-between gap-3 rounded-sm px-3 py-2 text-left text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-                      "hover:bg-semantic-bg-ui",
+                      "hover:bg-v2-semantic-bg-ui",
                       opt.value === value &&
                         "text-[var(--v2-text-primary,#484848)]",
-                      highlightIndex === i && "bg-semantic-bg-ui",
+                      highlightIndex === i && "bg-v2-semantic-bg-ui",
                       highlightIndex === i &&
                         highlightByKeyboard &&
-                        "ring-1 ring-inset ring-semantic-border-accent",
+                        "ring-1 ring-inset ring-v2-semantic-border-accent",
                       opt.disabled &&
                         "pointer-events-none opacity-50 cursor-not-allowed"
                     )}
@@ -496,7 +496,7 @@ const CreatableSelect = React.forwardRef(
                       {opt.label}
                     </span>
                     {opt.value === value && (
-                      <Check className="size-4 shrink-0 text-semantic-primary [stroke-width:1.75]" />
+                      <Check className="size-4 shrink-0 text-[var(--v2-selection-accent,var(--semantic-primary))] [stroke-width:1.75]" />
                     )}
                   </button>
                 ))}
@@ -515,11 +515,12 @@ const CreatableSelect = React.forwardRef(
                     }}
                     className={cn(
                       "flex min-h-9 w-full items-center gap-2 rounded-sm px-3 py-2 text-left text-sm leading-[1.4] tracking-[-0.01em] outline-none cursor-pointer select-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-                      "text-semantic-text-link hover:bg-semantic-bg-ui",
-                      highlightIndex === filtered.length && "bg-semantic-bg-ui",
+                      "text-v2-semantic-text-link hover:bg-v2-semantic-bg-ui",
+                      highlightIndex === filtered.length &&
+                        "bg-v2-semantic-bg-ui",
                       highlightIndex === filtered.length &&
                         highlightByKeyboard &&
-                        "ring-1 ring-inset ring-semantic-border-accent"
+                        "ring-1 ring-inset ring-v2-semantic-border-accent"
                     )}
                   >
                     Create &ldquo;{search.trim()}&rdquo;

@@ -104,7 +104,7 @@ const meta: Meta<Args> = {
   render: function Render(args) {
     const [, update] = useArgs<Args>();
     return (
-      <div className="max-w-lg rounded-lg border border-semantic-border-layout">
+      <div className="max-w-lg rounded-lg border border-v2-semantic-border-layout">
         <ContactListItem
           {...contactProps(args)}
           onClick={() => {
@@ -136,7 +136,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -235,7 +235,7 @@ function Directory({
     p.name.toLowerCase().includes(args.query.toLowerCase())
   );
   return (
-    <section className="max-w-3xl rounded-lg border border-semantic-border-layout p-4">
+    <section className="max-w-3xl rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contact directory
       </h3>
@@ -255,7 +255,7 @@ function Directory({
         onChange={(e) => update({ query: e.target.value })}
       />
       <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="min-w-0 overflow-hidden rounded-lg border border-semantic-border-layout">
+        <div className="min-w-0 overflow-hidden rounded-lg border border-v2-semantic-border-layout">
           {filtered.map((p) => (
             <ContactListItem
               key={p.name}
@@ -273,7 +273,7 @@ function Directory({
             </p>
           )}
         </div>
-        <div className="rounded-lg bg-semantic-bg-ui p-4">
+        <div className="rounded-lg bg-v2-semantic-bg-ui p-4">
           <p className="m-0 text-xs text-[var(--v2-text-muted,#707070)]">
             Selected contact
           </p>
@@ -315,7 +315,7 @@ export const Interaction: Story = {
     clearAllMocks();
     const canvas = within(canvasElement);
     const row = canvas.getByRole("button", { name: /aditi@example\.com/ });
-    const selectedSurface = "bg-semantic-bg-ui";
+    const selectedSurface = "bg-v2-semantic-bg-ui";
 
     await step("Renders one focusable row with the contact", async () => {
       await expect(row).toHaveAttribute("tabindex", "0");

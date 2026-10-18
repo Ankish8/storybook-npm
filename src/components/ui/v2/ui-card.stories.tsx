@@ -52,13 +52,13 @@ function Content(args: Args) {
       {args.variant === "icon" && (
         <MessageSquare
           aria-hidden="true"
-          className="mb-2 size-6 text-semantic-text-secondary"
+          className="mb-2 size-6 text-v2-semantic-text-secondary"
         />
       )}
       {args.variant === "action" && (
         <Plus
           aria-hidden="true"
-          className="mb-2 size-6 text-semantic-text-link"
+          className="mb-2 size-6 text-v2-semantic-text-link"
         />
       )}
       <UiCardHeader>
@@ -72,10 +72,10 @@ function Content(args: Args) {
       )}
       {args.variant === "metrics" && (
         <div className="flex items-end gap-3">
-          <span className="text-[32px] font-medium text-semantic-text-primary">
+          <span className="text-[32px] font-medium text-v2-semantic-text-primary">
             128
           </span>
-          <span className="inline-flex items-center gap-1 text-xs text-semantic-success-text">
+          <span className="inline-flex items-center gap-1 text-xs text-v2-semantic-success-text">
             <TrendingUp aria-hidden="true" className="size-3" />
             12%
           </span>
@@ -94,7 +94,7 @@ function Content(args: Args) {
           >
             {preview ? "Close preview" : "Preview"}
           </Button>
-          <p role="status" className="m-0 text-xs text-semantic-text-muted">
+          <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
             {preview ? `Previewing ${args.heading}` : ""}
           </p>
         </UiCardFooter>
@@ -143,15 +143,15 @@ The \`metrics\` variant remains supported. For dedicated statistics, trends and 
 
 | Purpose | CSS variable | Preview |
 | --- | --- | --- |
-| Surface | \`--semantic-bg-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-bg-primary);border:1px solid var(--semantic-border-layout);border-radius:4px"></span> |
-| Border | \`--semantic-border-layout\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-layout);border-radius:4px"></span> |
-| Hover border | \`--semantic-border-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-secondary);border-radius:4px"></span> |
-| Selected surface | \`--semantic-brand-surface\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-brand-surface);border-radius:4px"></span> |
-| Selected border | \`--semantic-border-accent\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-accent);border-radius:4px"></span> |
-| Keyboard focus | \`--semantic-border-focus\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-border-focus);border-radius:4px"></span> |
-| Title | \`--semantic-text-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-primary);border-radius:4px"></span> |
-| Description | \`--semantic-text-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-secondary);border-radius:4px"></span> |
-| Disabled text | \`--semantic-text-muted\` | <span style="display:inline-block;width:24px;height:24px;background:var(--semantic-text-muted);border-radius:4px"></span> |`,
+| Surface | \`--semantic-bg-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-bg-primary,var(--semantic-bg-primary));border:1px solid var(--v2-semantic-border-layout,var(--semantic-border-layout));border-radius:4px"></span> |
+| Border | \`--semantic-border-layout\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-border-layout,var(--semantic-border-layout));border-radius:4px"></span> |
+| Hover border | \`--semantic-border-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-border-secondary,var(--semantic-border-secondary));border-radius:4px"></span> |
+| Selected surface | \`--semantic-brand-surface\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-brand-surface,var(--semantic-brand-surface));border-radius:4px"></span> |
+| Selected border | \`--semantic-border-accent\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-border-accent,var(--semantic-border-accent));border-radius:4px"></span> |
+| Keyboard focus | \`--semantic-border-focus\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-border-focus,var(--semantic-border-focus));border-radius:4px"></span> |
+| Title | \`--semantic-text-primary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-text-primary,var(--semantic-text-primary));border-radius:4px"></span> |
+| Description | \`--semantic-text-secondary\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-text-secondary,var(--semantic-text-secondary));border-radius:4px"></span> |
+| Disabled text | \`--semantic-text-muted\` | <span style="display:inline-block;width:24px;height:24px;background:var(--v2-semantic-text-muted,var(--semantic-text-muted));border-radius:4px"></span> |`,
       },
     },
     design: {
@@ -212,11 +212,11 @@ function RoutingCard() {
           Keep new conversations in the right inbox.
         </UiCardDescription>
         <div id={detailsId} hidden={!expanded}>
-          <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-semantic-border-layout pt-3 text-xs">
-            <dt className="text-semantic-text-muted">Support</dt>
-            <dd className="m-0 text-semantic-text-primary">General inbox</dd>
-            <dt className="text-semantic-text-muted">Sales</dt>
-            <dd className="m-0 text-semantic-text-primary">Sales inbox</dd>
+          <dl className="m-0 mt-2 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-v2-semantic-border-layout pt-3 text-xs">
+            <dt className="text-v2-semantic-text-muted">Support</dt>
+            <dd className="m-0 text-v2-semantic-text-primary">General inbox</dd>
+            <dt className="text-v2-semantic-text-muted">Sales</dt>
+            <dd className="m-0 text-v2-semantic-text-primary">Sales inbox</dd>
           </dl>
         </div>
       </UiCardContent>
@@ -263,7 +263,7 @@ export const Overview: Story = {
           >
             <Content {...args} />
             {!args.showActions && (
-              <div className="mt-5 flex items-center gap-2 text-xs text-semantic-text-muted">
+              <div className="mt-5 flex items-center gap-2 text-xs text-v2-semantic-text-muted">
                 <Check
                   aria-hidden="true"
                   className={args.selected ? "size-3.5" : "size-3.5 opacity-0"}
@@ -274,7 +274,7 @@ export const Overview: Story = {
               </div>
             )}
           </UiCard>
-          <p role="status" className="m-0 text-xs text-semantic-text-muted">
+          <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
             {args.selected
               ? `${args.heading} selected`
               : "Choose a workspace to continue"}
@@ -363,7 +363,7 @@ export const AllVariants: Story = {
     <div className="grid w-[1000px] max-w-full gap-5 sm:grid-cols-2 lg:grid-cols-3">
       {variants.map((variant) => (
         <section key={variant} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium capitalize text-semantic-text-primary">
+          <h3 className="m-0 text-sm font-medium capitalize text-v2-semantic-text-primary">
             {variant}
           </h3>
           <UiCard {...cardProps(args)} variant={variant} onClick={undefined}>
@@ -383,7 +383,7 @@ export const States: Story = {
     <div className="grid w-[720px] max-w-full gap-5 sm:grid-cols-2">
       {["Default", "Selected", "Disabled", "Passive"].map((state) => (
         <section key={state} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+          <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             {state}
           </h3>
           <UiCard
@@ -406,10 +406,10 @@ function Workspace(
   return (
     <section className="w-[680px] max-w-full space-y-4">
       <div>
-        <h3 className="m-0 text-base font-medium text-semantic-text-primary">
+        <h3 className="m-0 text-base font-medium text-v2-semantic-text-primary">
           Choose a workspace
         </h3>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
           Activate a card with the mouse, Enter or Space.
         </p>
       </div>
@@ -435,7 +435,7 @@ function Workspace(
           </UiCard>
         ))}
       </div>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {selected ? `Selected: ${selected}` : "Choose a workspace to continue"}
       </p>
     </section>

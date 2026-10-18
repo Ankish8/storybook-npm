@@ -156,7 +156,7 @@ function isValueAlreadySelected(
 }
 
 /**
- * The field stays white while it is hovered, pressed and open. Chips are filled `bg-semantic-bg-ui` (#F5F5F5), the
+ * The field stays white while it is hovered, pressed and open. Chips are filled `bg-v2-semantic-bg-ui` (#F5F5F5), the
  * colour the shared trigger variants tint a hovered or open field, so on that tint a chip was told apart from its
  * field by a 1px border alone. Interaction shows on the border instead (hover, then the primary border when open).
  * A disabled field is grey, so its chips are filled white.
@@ -168,7 +168,7 @@ function isValueAlreadySelected(
  * transforms the literal.
  */
 const chipClassName = cn(
-  "inline-flex min-h-7 max-w-full items-center gap-[3px] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui pl-[9px] pr-1 text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
+  "inline-flex min-h-7 max-w-full items-center gap-[3px] rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui pl-[9px] pr-1 text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,#484848)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_240ms_cubic-bezier(0.16,1,0.3,1)] [@starting-style]:scale-90 [@starting-style]:opacity-0 [@starting-style]:blur-[4px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
 );
 
 /**
@@ -182,8 +182,8 @@ const chevronSpringClassName = cn(
 
 /**
  * Chip remove button: 22px plate (Arc), 24px hit area (the invisible `::before`
- * reaches 1px past the plate), 14px icon. The plate is `bg-semantic-bg-grey`, one step
- * darker than the chip fill: `bg-semantic-bg-ui` / `bg-semantic-bg-hover` are
+ * reaches 1px past the plate), 14px icon. The plate is `bg-v2-semantic-bg-grey`, one step
+ * darker than the chip fill: `bg-v2-semantic-bg-ui` / `bg-v2-semantic-bg-hover` are
  * both #F5F5F5, identical to the chip, so a hover plate in either was invisible.
  * Hover is gated so a tap on touch does not leave the plate stuck. Arc's press:
  * a quick dip to .96 (120ms) and a spring release (580ms).
@@ -192,7 +192,7 @@ function chipRemoveClassName(disabled: boolean) {
   return cn(
     "relative inline-flex size-[22px] shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,#707070)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] before:absolute before:-inset-px before:content-[''] motion-reduce:transition-none",
     !disabled &&
-      "[@media(hover:hover)]:hover:bg-semantic-bg-grey [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] active:[transition-duration:160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:active:scale-100"
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-grey [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] active:[transition-duration:160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:active:scale-100"
   );
 }
 
@@ -202,7 +202,7 @@ function chipRemoveClassName(disabled: boolean) {
  * and text; a press dips to .97 in 120ms and springs back over 580ms.
  */
 const presetChipClassName = cn(
-  "inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-[14px] text-left text-sm font-medium leading-5 tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:color,border-color,background-color,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [@media(hover:hover)]:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.97] active:[transition-duration:160ms,160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:active:scale-100"
+  "inline-flex h-9 items-center gap-2 whitespace-nowrap rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-[14px] text-left text-sm font-medium leading-5 tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:color,border-color,background-color,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [@media(hover:hover)]:hover:border-[var(--v2-semantic-border-primary,var(--color-primary-100,#C0C3CA))] [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.97] active:[transition-duration:160ms,160ms,160ms,120ms] active:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:active:scale-100"
 );
 
 /** Springs an element's height to `measure()` whenever `observed` resizes. Arc's tag input and combobox do this so wrapping chips and filtering never snap. */
@@ -530,9 +530,9 @@ const CreatableMultiSelect = React.forwardRef(
               className={cn(
                 creatableSelectTriggerVariants({ state: derivedState }),
                 "flex h-auto min-h-11 cursor-text items-start gap-2 overflow-hidden p-[7px] text-left",
-                !disabled && "data-[state=open]:bg-semantic-bg-primary",
+                !disabled && "data-[state=open]:bg-v2-semantic-bg-primary",
                 disabled &&
-                  "bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
+                  "bg-v2-semantic-bg-ui border-v2-semantic-border-layout shadow-none hover:border-v2-semantic-border-layout focus-within:shadow-none"
               )}
               onClick={(e) => {
                 if (disabled) return;
@@ -552,7 +552,7 @@ const CreatableMultiSelect = React.forwardRef(
                       key={val}
                       className={cn(
                         chipClassName,
-                        disabled && "bg-semantic-bg-primary"
+                        disabled && "bg-v2-semantic-bg-primary"
                       )}
                     >
                       <span className="min-w-0 truncate">
@@ -640,7 +640,7 @@ const CreatableMultiSelect = React.forwardRef(
                   className={cn(
                     "mr-2 mt-1 shrink-0 self-start text-sm leading-[1.4]",
                     atLimit
-                      ? "text-semantic-error-text"
+                      ? "text-v2-semantic-error-text"
                       : "text-[var(--v2-text-muted,#707070)]"
                   )}
                 >
@@ -688,7 +688,7 @@ const CreatableMultiSelect = React.forwardRef(
                 creatableSelectTriggerVariants({ state: derivedState }),
                 "flex h-auto min-h-11 cursor-pointer items-start gap-2 overflow-hidden p-[7px] text-left outline-none",
                 disabled &&
-                  "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
+                  "cursor-not-allowed bg-v2-semantic-bg-ui border-v2-semantic-border-layout shadow-none hover:border-v2-semantic-border-layout focus-within:shadow-none"
               )}
             >
               <div
@@ -707,7 +707,7 @@ const CreatableMultiSelect = React.forwardRef(
                       key={val}
                       className={cn(
                         chipClassName,
-                        disabled && "bg-semantic-bg-primary"
+                        disabled && "bg-v2-semantic-bg-primary"
                       )}
                     >
                       <span className="min-w-0 truncate">
@@ -760,7 +760,7 @@ const CreatableMultiSelect = React.forwardRef(
           {/* Dropdown panel: decorative hint row, counter, max-selections, presets. Input lives in the trigger above.
               CSS-anchored 8px below the field (no flip), so it always grows from the top edge. */}
           {isOpen && (
-            <div className="absolute left-0 top-full z-[9999] mt-2 flex w-full origin-top flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
+            <div className="absolute left-0 top-full z-[9999] mt-2 flex w-full origin-top flex-col overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.97] motion-safe:[animation-duration:260ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] motion-reduce:animate-[v2-fade-in_120ms_ease-out] motion-safe:slide-in-from-top-[6px]">
               {createHintText ? (
                 <div className={creatablePrimaryRoleHintRowClassName}>
                   <span className="text-sm text-[var(--v2-text-muted,#707070)]">
@@ -820,7 +820,7 @@ const CreatableMultiSelect = React.forwardRef(
                           e.preventDefault();
                         }}
                         onClick={() => addValue(inputValue)}
-                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-semantic-text-link outline-none transition-colors cursor-pointer select-none hover:bg-semantic-bg-ui"
+                        className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm text-v2-semantic-text-link outline-none transition-colors cursor-pointer select-none hover:bg-v2-semantic-bg-ui"
                       >
                         Create &ldquo;{trimmedInput}&rdquo;
                       </button>

@@ -9,7 +9,7 @@ export default function Invalid() {
       />
       <p
         id="textarea-form-error"
-        className="m-0 pt-2 text-xs text-semantic-error-text"
+        className="m-0 pt-2 text-xs text-v2-semantic-error-text"
       >
         Add a message before continuing.
       </p>

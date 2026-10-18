@@ -226,8 +226,8 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="flex min-w-0 flex-col items-center gap-4 rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+    <section className="flex min-w-0 flex-col items-center gap-4 rounded-lg border border-v2-semantic-border-layout p-5">
+      <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
         {title}
       </h3>
       {children}
@@ -252,27 +252,27 @@ function TeamPreview({
   const id = React.useId();
 
   return (
-    <section className="w-full max-w-[560px] rounded-xl border border-semantic-border-layout bg-semantic-bg-primary p-5 sm:p-6">
-      <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+    <section className="w-full max-w-[560px] rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 sm:p-6">
+      <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
         Support team
       </h3>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
         People behind every conversation.
       </p>
       <div className="my-6 grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 sm:flex sm:flex-wrap">
         <Sample args={normalized(args)} />
         <div className="min-w-0 flex-1">
-          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             {args.name || "Unnamed profile"}
           </p>
-          <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
             Team lead · {args.status || "No presence indicator"}
           </p>
         </div>
         <div className="col-span-2 w-full sm:w-32">
           <label
             htmlFor={id + "-presence"}
-            className="mb-1.5 block text-xs text-semantic-text-muted"
+            className="mb-1.5 block text-xs text-v2-semantic-text-muted"
           >
             Presence
           </label>
@@ -307,7 +307,7 @@ function TeamPreview({
           type="button"
           variant="secondary"
           size="sm"
-          className="aria-pressed:bg-semantic-bg-ui"
+          className="aria-pressed:bg-v2-semantic-bg-ui"
           aria-pressed={args.src === portrait}
           onClick={() =>
             update({
@@ -325,7 +325,7 @@ function TeamPreview({
           type="button"
           variant="secondary"
           size="sm"
-          className="aria-pressed:bg-semantic-bg-ui"
+          className="aria-pressed:bg-v2-semantic-bg-ui"
           aria-pressed={args.src === PEOPLE[1].src}
           onClick={() =>
             update({
@@ -343,7 +343,7 @@ function TeamPreview({
           type="button"
           variant="secondary"
           size="sm"
-          className="aria-pressed:bg-semantic-bg-ui"
+          className="aria-pressed:bg-v2-semantic-bg-ui"
           aria-pressed={!args.src}
           onClick={() =>
             update({ src: "", initials: "", customContent: "none" })
@@ -355,7 +355,7 @@ function TeamPreview({
           type="button"
           variant="secondary"
           size="sm"
-          className="aria-pressed:bg-semantic-bg-ui"
+          className="aria-pressed:bg-v2-semantic-bg-ui"
           aria-pressed={args.src === missingPortrait}
           onClick={() =>
             update({
@@ -368,9 +368,9 @@ function TeamPreview({
           Missing photo
         </Button>
       </div>
-      <div className="mt-6 border-t border-semantic-border-layout pt-5">
+      <div className="mt-6 border-t border-v2-semantic-border-layout pt-5">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="m-0 text-xs text-semantic-text-muted">
+          <p className="m-0 text-xs text-v2-semantic-text-muted">
             {PEOPLE.length} team members
           </p>
           <Button
@@ -415,7 +415,7 @@ export const AllSizes: Story = {
         {sizes.map((size) => (
           <Card key={size} title={size}>
             <Sample args={{ ...normalized(args), size }} />
-            <p className="m-0 text-xs text-semantic-text-muted">
+            <p className="m-0 text-xs text-v2-semantic-text-muted">
               {{ xs: 24, sm: 32, md: 40, lg: 48, xl: 64 }[size]}px
             </p>
           </Card>
@@ -450,7 +450,7 @@ export const WithStatus: Story = {
         {statuses.map((status) => (
           <Card key={status || "none"} title={status || "None"}>
             <Sample args={{ ...normalized(args), status }} />
-            <p className="m-0 text-xs capitalize text-semantic-text-muted">
+            <p className="m-0 text-xs capitalize text-v2-semantic-text-muted">
               {status || "No presence indicator"}
             </p>
           </Card>
@@ -521,7 +521,7 @@ export const V1VsV2: Story = {
                     key={version}
                     className="flex flex-col items-center gap-3"
                   >
-                    <p className="m-0 text-xs font-normal text-semantic-text-muted">
+                    <p className="m-0 text-xs font-normal text-v2-semantic-text-muted">
                       {version}
                     </p>
                     <Sample
@@ -579,7 +579,7 @@ export const Group: Story = {
     return (
       <div className="flex flex-col gap-6">
         <GroupSample args={args} max={args.max} />
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           {shown === PEOPLE.length
             ? "All six avatars shown."
             : `${shown} shown, ${PEOPLE.length - shown} hidden in the +N tile.`}
@@ -605,7 +605,9 @@ export const GroupSizes: Story = {
     <div className="grid max-w-full gap-4">
       {sizes.map((size) => (
         <div key={size} className="flex items-center gap-5">
-          <span className="w-8 text-xs text-semantic-text-muted">{size}</span>
+          <span className="w-8 text-xs text-v2-semantic-text-muted">
+            {size}
+          </span>
           <GroupSample args={{ ...args, size }} max={3} />
         </div>
       ))}
@@ -621,20 +623,20 @@ function ProfileExample({
 }) {
   const id = React.useId();
   return (
-    <section className="max-w-[600px] rounded-lg border border-semantic-border-layout p-5">
-      <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+    <section className="max-w-[600px] rounded-lg border border-v2-semantic-border-layout p-5">
+      <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
         Profile preview
       </h3>
-      <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
         Edit the name or presence. Both stay synchronized with Controls.
       </p>
       <div className="my-5 flex items-center gap-4">
         <Sample args={normalized(args)} />
         <div>
-          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             {args.name || "Unnamed profile"}
           </p>
-          <p className="m-0 mt-1 text-xs capitalize text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs capitalize text-v2-semantic-text-muted">
             {args.status || "No status"}
           </p>
         </div>
@@ -643,7 +645,7 @@ function ProfileExample({
         <div>
           <label
             htmlFor={id + "-name"}
-            className="mb-2 block text-sm font-medium text-semantic-text-primary"
+            className="mb-2 block text-sm font-medium text-v2-semantic-text-primary"
           >
             Name
           </label>
@@ -656,7 +658,7 @@ function ProfileExample({
         <div>
           <label
             htmlFor={id + "-status"}
-            className="mb-2 block text-sm font-medium text-semantic-text-primary"
+            className="mb-2 block text-sm font-medium text-v2-semantic-text-primary"
           >
             Presence
           </label>

@@ -15,7 +15,7 @@ describe("SystemMessage", () => {
     const boldSpan = screen.getByText("Alex Smith");
     expect(boldSpan.tagName).toBe("SPAN");
     expect(boldSpan).toHaveClass("font-medium");
-    expect(boldSpan).toHaveClass("text-semantic-text-link");
+    expect(boldSpan).toHaveClass("text-v2-semantic-text-link");
     // The plain text part should also be present
     expect(container.textContent).toBe("Assigned to Alex Smith");
   });
@@ -27,9 +27,9 @@ describe("SystemMessage", () => {
     const alexSpan = screen.getByText("Alex Smith");
     const adminSpan = screen.getByText("Admin");
     expect(alexSpan).toHaveClass("font-medium");
-    expect(alexSpan).toHaveClass("text-semantic-text-link");
+    expect(alexSpan).toHaveClass("text-v2-semantic-text-link");
     expect(adminSpan).toHaveClass("font-medium");
-    expect(adminSpan).toHaveClass("text-semantic-text-link");
+    expect(adminSpan).toHaveClass("text-v2-semantic-text-link");
   });
 
   it("applies custom className", () => {

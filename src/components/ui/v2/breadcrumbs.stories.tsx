@@ -137,7 +137,7 @@ export const LongLabels: Story = {
   },
 };
 export const CustomSeparator: Story = {
-  args: { separator: <span className="text-semantic-text-muted">/</span> },
+  args: { separator: <span className="text-v2-semantic-text-muted">/</span> },
 };
 export const RightToLeft: Story = {
   args: {
@@ -200,7 +200,7 @@ function Navigate(args: Parameters<NonNullable<Story["render"]>>[0]) {
       <button
         type="button"
         disabled={current >= args.items.length - 1}
-        className="text-sm text-semantic-text-link disabled:opacity-50"
+        className="text-sm text-v2-semantic-text-link disabled:opacity-50"
         onClick={() => setCurrent(current + 1)}
       >
         Open next level
@@ -211,7 +211,7 @@ function Navigate(args: Parameters<NonNullable<Story["render"]>>[0]) {
       </p>
       <button
         type="button"
-        className="text-sm text-semantic-text-link"
+        className="text-sm text-v2-semantic-text-link"
         onClick={() => setCurrent(args.items.length - 1)}
       >
         Restore path

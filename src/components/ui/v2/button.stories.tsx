@@ -524,7 +524,7 @@ export const Usage: Story = {
     "Action labels and palettes belong to the example. Controls update size, disabled and loading states for the actions."
   ),
   render: (args) => (
-    <div className="flex w-[420px] max-w-full flex-col gap-6 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[420px] max-w-full flex-col gap-6 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Delete workspace
@@ -545,7 +545,7 @@ export const Usage: Story = {
           Delete
         </Button>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-v2-semantic-border-layout pt-4">
         <Button {...buttonStoryProps(args)} variant="ghost">
           Learn more
         </Button>
@@ -580,7 +580,7 @@ function SaveFlowRender() {
   }
 
   return (
-    <div className="flex w-[400px] max-w-full flex-col items-start gap-5 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[400px] max-w-full flex-col items-start gap-5 rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="space-y-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Save a draft

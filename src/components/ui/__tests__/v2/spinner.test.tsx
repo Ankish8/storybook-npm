@@ -14,16 +14,16 @@ describe("Spinner", () => {
     expect(screen.getByRole("status", { name: "Loading" })).toBeInTheDocument();
     expect(container.querySelector("svg")).toHaveClass(
       "size-6",
-      "text-semantic-primary"
+      "text-[color:var(--v2-indicator,var(--semantic-primary))]"
     );
     expect(container.querySelector(".sr-only")).toHaveTextContent("Loading");
   });
 
   it.each([
-    ["default", "text-semantic-primary"],
-    ["secondary", "text-semantic-text-secondary"],
-    ["muted", "text-semantic-text-muted"],
-    ["inverted", "text-semantic-text-inverted"],
+    ["default", "text-[color:var(--v2-indicator,var(--semantic-primary))]"],
+    ["secondary", "text-v2-semantic-text-secondary"],
+    ["muted", "text-v2-semantic-text-muted"],
+    ["inverted", "text-v2-semantic-text-inverted"],
     ["current", "text-current"],
   ] as const)("keeps the %s color variant", (variant, expectedClass) => {
     const { container } = render(<Spinner variant={variant} />);
@@ -44,7 +44,7 @@ describe("Spinner", () => {
     const { container } = render(<Spinner size={null} variant={null} />);
     expect(container.querySelector("svg")).not.toHaveClass(
       "size-6",
-      "text-semantic-primary"
+      "text-[color:var(--v2-indicator,var(--semantic-primary))]"
     );
     expect(screen.getByRole("status", { name: "Loading" })).toBeInTheDocument();
   });

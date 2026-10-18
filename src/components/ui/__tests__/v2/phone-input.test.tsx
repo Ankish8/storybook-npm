@@ -135,7 +135,7 @@ describe("PhoneInput", () => {
     const wrapper = screen
       .getByTestId("phone")
       .closest("div[class*='flex items-center border']");
-    expect(wrapper).toHaveClass("bg-semantic-bg-ui");
+    expect(wrapper).toHaveClass("bg-v2-semantic-bg-ui");
   });
 
   it("applies empty state classes", () => {
@@ -144,7 +144,7 @@ describe("PhoneInput", () => {
       .getByTestId("phone")
       .closest("div[class*='flex items-center border']");
 
-    expect(wrapper).toHaveClass("border-semantic-border-input");
+    expect(wrapper).toHaveClass("border-v2-semantic-border-input");
     expect(screen.getByTestId("phone")).toHaveAttribute(
       "aria-invalid",
       "false"
@@ -157,7 +157,7 @@ describe("PhoneInput", () => {
       .getByTestId("phone")
       .closest("div[class*='flex items-center border']");
 
-    expect(wrapper).toHaveClass("border-semantic-error-primary");
+    expect(wrapper).toHaveClass("border-v2-semantic-error-primary");
     expect(screen.getByTestId("phone")).toHaveAttribute("aria-invalid", "true");
   });
 
@@ -170,8 +170,8 @@ describe("PhoneInput", () => {
     const validationMessage = screen.getByText("Enter a valid phone number");
     const wrapper = input.closest("div[class*='flex items-center border']");
 
-    expect(wrapper).toHaveClass("border-semantic-error-primary");
-    expect(validationMessage).toHaveClass("m-0", "text-semantic-error-text");
+    expect(wrapper).toHaveClass("border-v2-semantic-error-primary");
+    expect(validationMessage).toHaveClass("m-0", "text-v2-semantic-error-text");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAttribute("aria-describedby", validationMessage.id);
   });
@@ -313,7 +313,7 @@ describe("PhoneInput formatted paste", () => {
   it("applies the error border for a native aria-invalid value", () => {
     render(<PhoneInput aria-invalid="true" />);
     expect(screen.getByRole("textbox").parentElement).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -623,7 +623,7 @@ describe("PhoneInput message reveal and country focus", () => {
       "focus-visible:outline",
       "focus-visible:[outline-width:2px]",
       "focus-visible:-outline-offset-4",
-      "focus-visible:outline-semantic-primary",
+      "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
       "rounded-[10px]"
     );
   });
@@ -632,7 +632,7 @@ describe("PhoneInput message reveal and country focus", () => {
     render(<PhoneInput onCountryClick={() => {}} />);
     const trigger = screen.getByTestId("phone-input-country");
     expect(trigger).toHaveClass("my-[3px]", "ml-[3px]", "rounded-[10px]");
-    expect(trigger.className).toContain("hover:bg-semantic-bg-ui");
+    expect(trigger.className).toContain("hover:bg-v2-semantic-bg-ui");
   });
 });
 

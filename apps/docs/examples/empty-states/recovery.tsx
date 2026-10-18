@@ -16,8 +16,11 @@ export default function Example() {
   return (
     <div className="grid w-full max-w-lg gap-3">
       {result ? (
-        <div className="grid gap-3 rounded-xl border border-semantic-border-layout bg-semantic-bg-primary p-5">
-          <p role="status" className="m-0 text-sm text-semantic-text-secondary">
+        <div className="grid gap-3 rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5">
+          <p
+            role="status"
+            className="m-0 text-sm text-v2-semantic-text-secondary"
+          >
             {result}
           </p>
           <Button size="sm" variant="outline" onClick={() => setResult("")}>

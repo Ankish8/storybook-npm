@@ -300,8 +300,8 @@ describe("ReadableField", () => {
     expect(inputContainer).toHaveClass("h-11");
     expect(inputContainer).toHaveClass("rounded-lg");
     expect(inputContainer).toHaveClass("border");
-    expect(inputContainer).toHaveClass("border-semantic-border-layout");
-    expect(inputContainer).toHaveClass("bg-semantic-bg-primary");
+    expect(inputContainer).toHaveClass("border-v2-semantic-border-layout");
+    expect(inputContainer).toHaveClass("bg-v2-semantic-bg-primary");
     expect(inputContainer?.className).not.toContain("hover:");
     expect(screen.getByText(defaultProps.value)).toHaveClass(
       "font-normal",
@@ -405,7 +405,7 @@ describe("ReadableField copy feedback", () => {
         );
       });
       const button = screen.getByRole("button", { name: "Copy failed" });
-      expect(button).toHaveClass("text-semantic-error-primary");
+      expect(button).toHaveClass("text-v2-semantic-error-primary");
       expect(screen.getByRole("status")).toHaveTextContent("Copy failed");
       expect(window.getSelection()?.toString()).toBe(props.value);
       expect(onValueCopy).not.toHaveBeenCalled();

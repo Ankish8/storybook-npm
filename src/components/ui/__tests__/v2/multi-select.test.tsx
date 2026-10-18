@@ -86,7 +86,7 @@ describe("MultiSelect", () => {
       <MultiSelect label="Test Label" options={defaultOptions} required />
     );
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
+    expect(screen.getByText("*")).toHaveClass("text-v2-semantic-error-primary");
   });
 
   // Helper text tests
@@ -103,7 +103,7 @@ describe("MultiSelect", () => {
     render(<MultiSelect options={defaultOptions} error="Required field" />);
     expect(screen.getByText("Required field")).toBeInTheDocument();
     expect(screen.getByText("Required field")).toHaveClass(
-      "text-semantic-error-text"
+      "text-v2-semantic-error-text"
     );
   });
 
@@ -118,7 +118,7 @@ describe("MultiSelect", () => {
   it("applies error state styling when error is set", () => {
     render(<MultiSelect options={defaultOptions} error="Error" />);
     expect(screen.getByRole("combobox")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -1014,11 +1014,11 @@ describe("MultiSelect v2 refresh", () => {
 
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(trigger.className).toContain(
-      "aria-expanded:border-semantic-primary"
+      "aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(trigger.className).toContain("aria-expanded:shadow-none");
     expect(trigger.className).toContain(
-      "enabled:aria-expanded:hover:border-semantic-primary"
+      "enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
 
     await user.click(trigger);
@@ -1055,7 +1055,7 @@ describe("MultiSelect v2 refresh", () => {
     expect(panel).not.toHaveClass("zoom-in-[0.97]");
     // Arc's floating shadow.
     expect(panel).toHaveClass(
-      "shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+      "shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))]"
     );
   });
 
@@ -1090,9 +1090,9 @@ describe("MultiSelect v2 refresh", () => {
       "rounded-sm",
       "focus-visible:ring-1",
       "focus-visible:ring-inset",
-      "focus-visible:ring-semantic-border-accent"
+      "focus-visible:ring-v2-semantic-border-accent"
     );
-    expect(option).toHaveClass("hover:bg-semantic-bg-ui");
+    expect(option).toHaveClass("hover:bg-v2-semantic-bg-ui");
   });
 
   it("draws the selected check left to right, with a reduced-motion fade", async () => {
@@ -1130,7 +1130,7 @@ describe("MultiSelect v2 refresh", () => {
     );
     // One step darker than the chip fill (bg-ui would vanish), gated for touch, never red.
     expect(remove).toHaveClass(
-      "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-grey"
     );
     expect(remove.className).not.toContain("error");
     expect(remove.querySelector("svg")).toHaveClass("size-3");
@@ -1142,7 +1142,7 @@ describe("MultiSelect v2 refresh", () => {
     // Arc: a 22px plate around a 14px icon that pops in from .6 and dips to .96 on press.
     expect(clear).toHaveClass(
       "size-[22px]",
-      "[@media(hover:hover)]:hover:bg-semantic-bg-ui",
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui",
       "active:scale-[0.96]",
       "[@starting-style]:scale-[0.6]",
       "[@starting-style]:blur-[2px]"
@@ -1215,8 +1215,8 @@ describe("MultiSelect v2 refresh", () => {
       "pl-3",
       "pr-[11px]",
       "gap-2",
-      "[@media(hover:hover)]:enabled:hover:bg-semantic-bg-ui",
-      "aria-expanded:bg-semantic-bg-ui",
+      "[@media(hover:hover)]:enabled:hover:bg-v2-semantic-bg-ui",
+      "aria-expanded:bg-v2-semantic-bg-ui",
       "disabled:opacity-50"
     );
     // The chip: 12px regular text, 4px / 8px padding, 1px inset border, 9rem cap; it whitens while the field is hot.
@@ -1230,7 +1230,7 @@ describe("MultiSelect v2 refresh", () => {
       "max-w-[9rem]",
       "ring-1",
       "ring-inset",
-      "group-aria-expanded/ms:bg-semantic-bg-primary"
+      "group-aria-expanded/ms:bg-v2-semantic-bg-primary"
     );
     expect(chip.parentElement).toHaveClass("gap-x-[5px]", "min-h-[26px]");
 
@@ -1241,7 +1241,7 @@ describe("MultiSelect v2 refresh", () => {
       "min-h-[38px]",
       "px-[11px]",
       "[transition-duration:80ms]",
-      "hover:bg-semantic-bg-ui"
+      "hover:bg-v2-semantic-bg-ui"
     );
     expect(row.className).not.toContain("font-medium");
   });

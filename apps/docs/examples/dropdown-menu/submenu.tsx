@@ -50,7 +50,7 @@ export default function Submenu() {
           </DropdownMenuSub>
         </DropdownMenuContent>
       </DropdownMenu>
-      <p className="m-0 text-sm text-semantic-text-muted" role="status">
+      <p className="m-0 text-sm text-v2-semantic-text-muted" role="status">
         {result}
       </p>
     </div>

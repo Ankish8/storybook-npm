@@ -30,8 +30,8 @@ describe("Button (v2)", () => {
   it("applies default variant and size classes", () => {
     render(<Button>Default</Button>);
     const button = screen.getByRole("button");
-    expect(button).toHaveClass("bg-semantic-primary");
-    expect(button).toHaveClass("text-semantic-text-inverted");
+    expect(button).toHaveClass("bg-v2-semantic-primary");
+    expect(button).toHaveClass("text-v2-semantic-text-inverted");
     expect(button).toHaveClass("h-10");
   });
 
@@ -85,7 +85,9 @@ describe("Button (v2)", () => {
     // both keep the bare `outline` style class — see the note in button.tsx.
     expect(button).toHaveClass("focus-visible:[outline-width:1px]");
     expect(button).toHaveClass("focus-visible:outline-offset-[3px]");
-    expect(button).toHaveClass("focus-visible:outline-semantic-primary");
+    expect(button).toHaveClass(
+      "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
+    );
   });
 
   it.each(["default", "primary"] as const)(
@@ -93,8 +95,8 @@ describe("Button (v2)", () => {
     (variant) => {
       render(<Button variant={variant}>Save</Button>);
       expect(screen.getByRole("button")).toHaveClass(
-        "bg-semantic-primary",
-        "border-semantic-primary"
+        "bg-v2-semantic-primary",
+        "border-v2-semantic-primary"
       );
     }
   );
@@ -102,18 +104,18 @@ describe("Button (v2)", () => {
   it("distinguishes neutral Secondary, white Outline and filled green Success", () => {
     const { rerender } = render(<Button variant="secondary">Secondary</Button>);
     expect(screen.getByRole("button")).toHaveClass(
-      "bg-semantic-bg-ui",
+      "bg-v2-semantic-bg-ui",
       "border-transparent"
     );
     rerender(<Button variant="outline">Outline</Button>);
     expect(screen.getByRole("button")).toHaveClass(
-      "border-semantic-border-input"
+      "border-v2-semantic-border-input"
     );
-    expect(screen.getByRole("button")).not.toHaveClass("bg-semantic-bg-ui");
+    expect(screen.getByRole("button")).not.toHaveClass("bg-v2-semantic-bg-ui");
     rerender(<Button variant="success">Success</Button>);
     expect(screen.getByRole("button")).toHaveClass(
-      "bg-semantic-success-text",
-      "text-semantic-text-inverted"
+      "bg-[var(--v2-button-success,var(--semantic-success-text))]",
+      "text-v2-semantic-text-inverted"
     );
   });
 
@@ -494,7 +496,7 @@ describe("Button (v2) — v1 parity", () => {
     expect(screen.getByRole("button")).toHaveClass(
       "border-0",
       "underline",
-      "text-semantic-text-link",
+      "text-v2-semantic-text-link",
       "focus-visible:outline"
     );
     view.rerender(<Button variant="ghost">More</Button>);

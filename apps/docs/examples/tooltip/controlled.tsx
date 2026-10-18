@@ -24,7 +24,7 @@ export default function Example() {
         <Button size="sm" variant="ghost" onClick={() => setOpen(!open)}>
           {open ? "Hide help" : "Show help"}
         </Button>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
           {open ? "Help open" : "Help closed"}
         </p>
       </div>

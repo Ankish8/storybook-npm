@@ -26,7 +26,7 @@ export default function Example() {
         onValueChange={setView}
         tabListLabel="Workspace recovery views"
       />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         Selected: {view}
       </p>
     </div>

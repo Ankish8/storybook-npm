@@ -100,7 +100,7 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
       ? cn(
           "rounded-lg border border-solid",
           solid
-            ? "border-semantic-primary"
+            ? "border-v2-semantic-primary"
             : "border-[var(--v2-button-border,oklch(0.935_0_0))]",
           "transition-transform [transition-duration:580ms] [transition-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)]",
           "has-[>button:first-child:active:not(:disabled):not([aria-disabled=true])]:scale-[0.97] has-[>button:first-child:active:not(:disabled):not([aria-disabled=true])]:[transition-duration:120ms] has-[>button:first-child:active:not(:disabled):not([aria-disabled=true])]:[transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",

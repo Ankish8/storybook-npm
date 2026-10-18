@@ -29,7 +29,7 @@ export default function Invalid() {
       </Select>
       <p
         id="invalid-select-message"
-        className="m-0 text-xs text-semantic-error-text"
+        className="m-0 text-xs text-v2-semantic-error-text"
       >
         Choose an authentication method.
       </p>

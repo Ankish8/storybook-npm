@@ -110,7 +110,9 @@ describe("PageHeader", () => {
   // Base styles
   it("applies base styles", () => {
     render(<PageHeader title="Title" data-testid="header" />);
-    expect(screen.getByTestId("header")).toHaveClass("bg-semantic-bg-primary");
+    expect(screen.getByTestId("header")).toHaveClass(
+      "bg-v2-semantic-bg-primary"
+    );
     expect(screen.getByTestId("header")).toHaveClass("flex");
     expect(screen.getByTestId("header")).toHaveClass("flex-col");
     expect(screen.getByTestId("header")).toHaveClass("sm:items-center");

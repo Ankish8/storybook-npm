@@ -7,7 +7,7 @@ export default function Controlled() {
     <div className="w-full max-w-[360px] space-y-2">
       <label
         htmlFor="controlled-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>
@@ -20,12 +20,12 @@ export default function Controlled() {
         onChange={(event) => setNumber(event.target.value)}
         autoComplete="tel-national"
       />
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-v2-semantic-text-muted">
         {country} · {number || "No number yet"}
       </p>
       <button
         type="button"
-        className="text-sm text-semantic-text-link"
+        className="text-sm text-v2-semantic-text-link"
         onClick={() => {
           setCountry("GB");
           setNumber("");

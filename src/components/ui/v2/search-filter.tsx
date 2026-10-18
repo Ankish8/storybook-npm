@@ -430,13 +430,13 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                   // 4px radius = panel 8px minus its 4px list padding. Rows are real Tab
                   // stops, so the focus-visible pseudo-class separates a keyboard highlight (ring)
                   // from a mouse hover (fill only).
-                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-semantic-border-accent",
+                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
                   !isSelected &&
-                    "hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui",
+                    "hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui",
                   isSelected &&
-                    "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]",
+                    "bg-v2-semantic-bg-ui text-[var(--v2-text-primary,#484848)]",
                   optionDisabled &&
-                    "cursor-not-allowed text-semantic-disabled-primary"
+                    "cursor-not-allowed text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]"
                 )}
                 onClick={() => selectOption(option)}
               >
@@ -454,7 +454,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 {isSelected ? (
                   // Centred with auto margins, not `-translate-y-1/2`: the pop keyframe
                   // writes `transform` and would shove the icon 8px down while it plays.
-                  <Check className="pointer-events-none absolute inset-y-0 right-3 my-auto size-4 text-semantic-border-accent motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
+                  <Check className="pointer-events-none absolute inset-y-0 right-3 my-auto size-4 text-v2-semantic-border-accent motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
                 ) : null}
               </button>
             );
@@ -500,7 +500,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
             // (`aria-expanded`). The extra `hover` selector outranks the grey hover
             // border from Input (0,4,0 vs 0,3,0).
             className={cn(
-              "pl-10 pr-11 aria-expanded:border-semantic-primary aria-expanded:shadow-none enabled:aria-expanded:hover:border-semantic-primary",
+              "pl-10 pr-11 aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] aria-expanded:shadow-none enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
               inputClassName
             )}
             {...searchInputProps}
@@ -533,7 +533,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 key="clear"
                 type="button"
                 aria-label="Clear search"
-                className="absolute right-[13px] top-1/2 -mt-3 grid size-6 place-items-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-[background-color,color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:hover:bg-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-semantic-text-secondary focus-visible:outline-offset-[3px]"
+                className="absolute right-[13px] top-1/2 -mt-3 grid size-6 place-items-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-[background-color,color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-v2-semantic-text-secondary focus-visible:outline-offset-[3px]"
                 onClick={handleClearSearch}
                 initial={
                   reducedMotion
@@ -590,7 +590,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
               data-side={placement.split("-")[0]}
               data-align={placement.split("-")[1] ?? "center"}
               className={cn(
-                "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
+                "rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-[var(--v2-text-secondary,#5E5E5E)] shadow-md font-[family-name:var(--font-v2,Inter,sans-serif)]",
                 "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.98] data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 motion-safe:[animation-duration:200ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
                 searchFilterDropdownVariants()
               )}

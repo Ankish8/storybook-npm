@@ -114,7 +114,7 @@ describe("Tabs", () => {
     renderTabs();
     const tabsList = screen.getByRole("tablist");
     expect(tabsList).toHaveClass("border-b");
-    expect(tabsList).toHaveClass("border-semantic-border-layout");
+    expect(tabsList).toHaveClass("border-v2-semantic-border-layout");
   });
 
   it("applies fullWidth class to TabsList", () => {
@@ -345,7 +345,7 @@ describe("Tabs", () => {
     // The default list class string as shipped before the pill variant existed. Pinned so the additive
     // variant can never alter what underline consumers (and v1 look-alike layouts) render.
     const UNDERLINE_LIST =
-      "relative inline-flex items-center border-b border-solid border-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0 after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100 [&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent";
+      "relative inline-flex items-center border-b border-solid border-v2-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0 after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-[var(--v2-indicator,var(--semantic-primary))] after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100 [&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-v2-semantic-border-accent";
 
     const renderList = (listProps?: React.ComponentProps<typeof TabsList>) =>
       render(
@@ -376,7 +376,7 @@ describe("Tabs", () => {
         "px-3",
         "border-b-2",
         "-mb-px",
-        "data-[state=active]:border-semantic-primary"
+        "data-[state=active]:border-[color:var(--v2-indicator,var(--semantic-primary))]"
       );
       expect(trigger).not.toHaveClass("h-9");
     });
@@ -384,7 +384,7 @@ describe("Tabs", () => {
     it("gates hover colour behind a hover-capable pointer so taps do not stick", () => {
       renderList();
       expect(screen.getByRole("tab", { name: "Tab 2" })).toHaveClass(
-        "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+        "[@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
       );
       expect(screen.getByRole("tab", { name: "Tab 2" })).not.toHaveClass(
         "hover:text-[var(--v2-text-primary,#484848)]"
@@ -397,7 +397,7 @@ describe("Tabs", () => {
       expect(list).toHaveAttribute("data-variant", "pill");
       expect(list).toHaveClass(
         "p-1",
-        "bg-semantic-bg-ui",
+        "bg-v2-semantic-bg-ui",
         "rounded-lg",
         "w-fit"
       );
@@ -406,9 +406,9 @@ describe("Tabs", () => {
       // The cursor is the list's ::after (no extra DOM): white, 1px layout border, faint shadow, behind the labels.
       expect(list).toHaveClass(
         "isolate",
-        "after:bg-semantic-bg-primary",
-        "after:border-semantic-border-layout",
-        "after:shadow-xs",
+        "after:bg-v2-semantic-bg-primary",
+        "after:border-[color:var(--v2-selection-accent,var(--semantic-border-layout))]",
+        "after:shadow-[var(--v2-shadow-xs,var(--shadow-xs))]",
         "after:rounded-md",
         "after:-z-10"
       );
@@ -640,7 +640,10 @@ describe.each(["underline", "pill"] as const)(
         <Tabs
           value={value}
           onValueChange={onValueChange}
-          style={{ color: "var(--semantic-text-primary)" }}
+          style={{
+            color:
+              "var(--v2-semantic-text-primary,var(--semantic-text-primary))",
+          }}
           data-testid="root"
         >
           <TabsList variant={variant}>
@@ -662,7 +665,7 @@ describe.each(["underline", "pill"] as const)(
         screen.getByTestId("root").style.getPropertyValue("--v2-tab-dir")
       ).toBe("-1");
       expect(screen.getByTestId("root").style.color).toBe(
-        "var(--semantic-text-primary)"
+        "var(--v2-semantic-text-primary,var(--semantic-text-primary))"
       );
       expect(onValueChange).not.toHaveBeenCalled();
     });

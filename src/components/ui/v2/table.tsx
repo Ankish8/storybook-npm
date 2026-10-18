@@ -9,7 +9,7 @@ import { Avatar } from "./avatar";
  * Table size variants for row height.
  */
 const tableVariants = cva(
-  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-primary))]",
+  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
   {
     variants: {
       size: {
@@ -204,7 +204,7 @@ export interface TableProps
 // shadow on each header cell and the row border is removed. z-20 keeps the header above sticky
 // body cells (z-10) when both scroll.
 const stickyHeaderClasses =
-  "[&>thead>tr>th]:sticky [&>thead>tr>th]:top-0 [&>thead>tr>th]:z-20 [&>thead>tr>th]:bg-semantic-primary-surface [&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--semantic-border-layout)] [&>thead>tr]:border-b-0";
+  "[&>thead>tr>th]:sticky [&>thead>tr>th]:top-0 [&>thead>tr>th]:z-20 [&>thead>tr>th]:bg-v2-semantic-primary-surface [&>thead>tr>th]:shadow-[inset_0_-1px_0_0_var(--v2-semantic-border-layout,var(--semantic-border-layout))] [&>thead>tr]:border-b-0";
 
 const Table = React.forwardRef(
   (
@@ -224,7 +224,7 @@ const Table = React.forwardRef(
         // A custom property reaches the frame through any wrapper; `inherit` covers a max-height on the direct parent.
         stickyHeader && "max-h-[var(--v2-table-max-height,inherit)]",
         !withoutBorder &&
-          "rounded-lg border border-solid border-semantic-border-layout"
+          "rounded-lg border border-solid border-v2-semantic-border-layout"
       )}
     >
       <table
@@ -250,7 +250,7 @@ const TableHeader = React.forwardRef(
     <thead
       ref={ref}
       className={cn(
-        "bg-semantic-primary-surface [&_tr]:border-b [&_tr]:border-solid [&_tr]:border-semantic-border-layout",
+        "bg-v2-semantic-primary-surface [&_tr]:border-b [&_tr]:border-solid [&_tr]:border-v2-semantic-border-layout",
         className
       )}
       {...props}
@@ -374,7 +374,7 @@ const TableFooter = React.forwardRef(
     <tfoot
       ref={ref}
       className={cn(
-        "border-t border-solid border-semantic-border-layout bg-semantic-primary-surface font-medium [&>tr]:last:border-b-0",
+        "border-t border-solid border-v2-semantic-border-layout bg-v2-semantic-primary-surface font-medium [&>tr]:last:border-b-0",
         className
       )}
       {...props}
@@ -398,12 +398,12 @@ const TableRow = React.forwardRef(
         ref={ref}
         data-highlighted={highlighted || undefined}
         className={cn(
-          "group/table-row border-b border-solid border-semantic-border-layout transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-semantic-primary",
+          "group/table-row border-b border-solid border-v2-semantic-border-layout transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
           // Hover is gated so it never sticks after a tap. A selected row keeps its own tint under
           // the pointer, so selection and hover stay distinguishable (#ECF1FB vs #F5F5F5).
           highlighted
-            ? "bg-semantic-info-surface"
-            : "[@media(hover:hover)]:hover:bg-semantic-bg-ui data-[state=selected]:bg-semantic-info-surface data-[state=selected]:[@media(hover:hover)]:hover:bg-semantic-info-surface",
+            ? "bg-v2-semantic-info-surface"
+            : "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui data-[state=selected]:bg-v2-semantic-info-surface data-[state=selected]:[@media(hover:hover)]:hover:bg-v2-semantic-info-surface",
           className
         )}
         {...props}
@@ -475,7 +475,7 @@ const TableHead = React.forwardRef(
     const indicator = (sortDirection || canSort) && (
       <span
         aria-hidden="true"
-        className="relative inline-flex size-4 shrink-0 items-center justify-center text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+        className="relative inline-flex size-4 shrink-0 items-center justify-center text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
       >
         {sortDirection && (
           <span className="sr-only">{sortDirection === "asc" ? "↑" : "↓"}</span>
@@ -487,7 +487,7 @@ const TableHead = React.forwardRef(
             "size-4 transition-[transform,opacity] duration-200 ease-out motion-reduce:transition-none",
             sortDirection
               ? "scale-100 opacity-100"
-              : "text-semantic-text-muted opacity-40 group-focus-within/head:opacity-100 [@media(hover:hover)]:group-hover/head:opacity-70",
+              : "text-v2-semantic-text-muted opacity-40 group-focus-within/head:opacity-100 [@media(hover:hover)]:group-hover/head:opacity-70",
             sortDirection === "desc" && "rotate-180"
           )}
         >
@@ -522,10 +522,10 @@ const TableHead = React.forwardRef(
                 : undefined)
         }
         className={cn(
-          "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,var(--semantic-text-muted))] transition-colors duration-150 motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
-          sticky && "sticky left-0 bg-semantic-primary-surface z-10",
+          "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] transition-colors duration-150 motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
+          sticky && "sticky left-0 bg-v2-semantic-primary-surface z-10",
           sortDirection &&
-            "text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+            "text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
           (sortDirection || canSort) &&
             !sortDisabled &&
             "cursor-pointer select-none",
@@ -588,7 +588,7 @@ const TableHead = React.forwardRef(
                 disabled={sortDisabled}
                 aria-label={sortLabel}
                 aria-describedby={descriptionId}
-                className="m-0 relative -my-1 inline-flex min-h-7 min-w-0 items-center gap-1.5 rounded-sm bg-transparent p-0 text-left [font:inherit] text-inherit before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-border-focus disabled:cursor-not-allowed disabled:opacity-50"
+                className="m-0 relative -my-1 inline-flex min-h-7 min-w-0 items-center gap-1.5 rounded-sm bg-transparent p-0 text-left [font:inherit] text-inherit before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-border-focus disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {children}
                 {indicator}
@@ -614,7 +614,7 @@ const TableHead = React.forwardRef(
           )}
           {infoTooltip && (
             <span
-              className="text-semantic-text-muted cursor-help"
+              className="text-v2-semantic-text-muted cursor-help"
               title={infoTooltip}
             >
               ⓘ
@@ -640,9 +640,9 @@ const TableCell = React.forwardRef(
     <td
       ref={ref}
       className={cn(
-        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-primary))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [&:has([role=checkbox])]:pr-0",
+        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
         sticky &&
-          "sticky left-0 bg-semantic-bg-primary z-10 [@media(hover:hover)]:group-hover/table-row:bg-semantic-bg-ui group-data-[state=selected]/table-row:bg-semantic-info-surface group-data-[highlighted=true]/table-row:bg-semantic-info-surface",
+          "sticky left-0 bg-v2-semantic-bg-primary z-10 [@media(hover:hover)]:group-hover/table-row:bg-v2-semantic-bg-ui group-data-[state=selected]/table-row:bg-v2-semantic-info-surface group-data-[highlighted=true]/table-row:bg-v2-semantic-info-surface",
         className
       )}
       {...props}
@@ -659,7 +659,7 @@ const TableCaption = React.forwardRef(
     <caption
       ref={ref}
       className={cn(
-        "mt-4 text-sm text-[var(--v2-text-muted,var(--semantic-text-muted))]",
+        "mt-4 text-sm text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]",
         className
       )}
       {...props}
@@ -688,7 +688,7 @@ const TableSkeleton = ({ rows = 5, columns = 5 }: TableSkeletonProps) => (
         {Array.from({ length: columns }).map((_, colIndex) => (
           <TableCell key={colIndex}>
             <div
-              className="h-4 bg-semantic-bg-grey rounded animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)]"
+              className="h-4 bg-v2-semantic-bg-grey rounded animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)]"
               style={
                 {
                   width:
@@ -719,7 +719,7 @@ const TableEmpty = ({ colSpan, children }: TableEmptyProps) => (
   <TableRow>
     <TableCell
       colSpan={colSpan}
-      className="h-[120px] text-center py-8 text-[var(--v2-text-muted,var(--semantic-text-muted))]"
+      className="h-[120px] text-center py-8 text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]"
     >
       {children ?? "No data available"}
     </TableCell>

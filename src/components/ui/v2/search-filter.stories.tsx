@@ -405,7 +405,7 @@ function QueueExample({
     (option) => option.value === args.value
   )?.label;
   return (
-    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Conversation queue
@@ -422,7 +422,7 @@ function QueueExample({
         {label ? `Showing ${label}` : "Showing all teams"} · {filtered.length}{" "}
         conversations
       </p>
-      <ul className="m-0 list-none divide-y divide-semantic-border-layout p-0">
+      <ul className="m-0 list-none divide-y divide-v2-semantic-border-layout p-0">
         {filtered.map((row) => (
           <li
             key={row.name}

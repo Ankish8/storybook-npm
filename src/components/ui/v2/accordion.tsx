@@ -13,9 +13,9 @@ const accordionVariants = cva(
     variants: {
       variant: {
         // Arc's list: a hairline above the first row, one under every row.
-        default: "border-t border-solid border-semantic-border-layout",
+        default: "border-t border-solid border-v2-semantic-border-layout",
         bordered:
-          "border border-solid border-semantic-border-layout bg-semantic-bg-primary rounded-lg divide-y divide-semantic-border-layout",
+          "border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary rounded-lg divide-y divide-v2-semantic-border-layout",
       },
     },
     defaultVariants: {
@@ -30,7 +30,7 @@ const accordionVariants = cva(
 const accordionItemVariants = cva("", {
   variants: {
     variant: {
-      default: "border-b border-solid border-semantic-border-layout",
+      default: "border-b border-solid border-v2-semantic-border-layout",
       bordered: "",
     },
   },
@@ -43,7 +43,7 @@ const accordionItemVariants = cva("", {
  * Accordion trigger variants
  */
 const accordionTriggerVariants = cva(
-  "flex min-h-[50px] w-full items-center justify-between gap-5 py-2 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,var(--semantic-text-primary))] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:text-[var(--v2-text-muted,var(--semantic-text-muted))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:text-[var(--v2-text-secondary,var(--semantic-text-secondary))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:[&_[data-accordion-chevron]]:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+  "flex min-h-[50px] w-full items-center justify-between gap-5 py-2 text-left font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:ring-offset-2 focus-visible:ring-offset-v2-semantic-bg-primary disabled:cursor-not-allowed disabled:text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:[&_[data-accordion-chevron]]:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
   {
     variants: {
       // The bordered frame keeps a 16px inset so labels never touch its edge; the plain list is edge to edge, as in Arc.
@@ -63,7 +63,7 @@ const accordionTriggerVariants = cva(
  */
 const accordionContentVariants = cva(
   // Visibility waits for the finite collapse; closed panels start hidden even before hydration.
-  "overflow-hidden text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-secondary))] [overflow-wrap:anywhere] transition-[height,opacity,visibility] [transition-duration:280ms,180ms,0ms] [transition-delay:0ms,0ms,0ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] aria-hidden:invisible aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:[transition-duration:220ms,120ms,0ms] aria-hidden:[transition-delay:0ms,0ms,220ms] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] motion-reduce:[transition-delay:0ms] motion-reduce:aria-hidden:[transition-duration:0ms] motion-reduce:aria-hidden:[transition-delay:0ms]",
+  "overflow-hidden text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] [overflow-wrap:anywhere] transition-[height,opacity,visibility] [transition-duration:280ms,180ms,0ms] [transition-delay:0ms,0ms,0ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] aria-hidden:invisible aria-hidden:opacity-0 aria-hidden:pointer-events-none aria-hidden:[transition-duration:220ms,120ms,0ms] aria-hidden:[transition-delay:0ms,0ms,220ms] motion-reduce:transition-none motion-reduce:[transition-duration:0ms] motion-reduce:[transition-delay:0ms] motion-reduce:aria-hidden:[transition-duration:0ms] motion-reduce:aria-hidden:[transition-delay:0ms]",
   {
     variants: {
       variant: {
@@ -412,9 +412,9 @@ const AccordionTrigger = React.forwardRef<
             aria-hidden="true"
             data-accordion-chevron=""
             className={cn(
-              "size-[17px] shrink-0 text-[var(--v2-text-muted,var(--semantic-text-muted))] transition-[transform,color] [transition-duration:240ms,160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms]",
+              "size-[17px] shrink-0 text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] transition-[transform,color] [transition-duration:240ms,160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:[transition-duration:0ms]",
               isOpen &&
-                "rotate-180 text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+                "rotate-180 text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
             )}
           />
         )}

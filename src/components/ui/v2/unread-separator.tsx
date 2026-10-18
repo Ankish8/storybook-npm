@@ -33,11 +33,11 @@ const UnreadSeparator = React.forwardRef(
       )}
       {...props}
     >
-      <div className="flex-1 h-px bg-semantic-border-layout" />
-      <span className="shrink-0 rounded-md bg-semantic-bg-ui px-2.5 py-1 text-xs font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)]">
+      <div className="flex-1 h-px bg-v2-semantic-border-layout" />
+      <span className="shrink-0 rounded-md bg-v2-semantic-bg-ui px-2.5 py-1 text-xs font-medium leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-muted,#707070)]">
         {label ?? `${count} unread message${count !== 1 ? "s" : ""}`}
       </span>
-      <div className="flex-1 h-px bg-semantic-border-layout" />
+      <div className="flex-1 h-px bg-v2-semantic-border-layout" />
     </div>
   )
 );

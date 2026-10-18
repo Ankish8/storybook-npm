@@ -72,7 +72,7 @@ test("ActionButton Customize labels, size and palette stay live through a real a
   });
   const button = screen.getByRole("button", { name: "Publish" });
   expect(button.classList.contains("h-11")).toBe(true);
-  expect(button.classList.contains("bg-semantic-bg-ui")).toBe(true);
+  expect(button.classList.contains("bg-v2-semantic-bg-ui")).toBe(true);
   button.focus();
   await act(async () => {
     fireEvent.click(button);

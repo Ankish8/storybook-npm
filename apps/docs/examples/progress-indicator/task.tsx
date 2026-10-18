@@ -5,7 +5,7 @@ export default function Example() {
   const [value, setValue] = useState(20);
   return (
     <div className="grid w-full max-w-sm gap-4">
-      <p className="m-0 text-sm font-medium text-semantic-text-primary">
+      <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
         Import contacts
       </p>
       <ProgressIndicator
@@ -28,7 +28,7 @@ export default function Example() {
           Reset
         </Button>
       </div>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {value === 100
           ? "Import complete"
           : `${value} of 100 contacts imported locally`}

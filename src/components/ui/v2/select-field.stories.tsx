@@ -511,7 +511,7 @@ function UsageForm(args: Args) {
   return (
     <form
       noValidate
-      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
       onSubmit={(e) => {
         e.preventDefault();
         if (!args.value) {
@@ -539,7 +539,7 @@ function UsageForm(args: Args) {
           args.onValueChange?.(value);
         }}
       />
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-v2-semantic-border-layout pt-4">
         <span
           role="status"
           className="text-xs text-[var(--v2-text-muted,#707070)]"

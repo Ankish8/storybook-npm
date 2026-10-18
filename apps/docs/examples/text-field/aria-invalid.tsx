@@ -9,7 +9,7 @@ export default function Invalid() {
         aria-describedby="email-error"
         defaultValue="invalid"
       />
-      <p id="email-error" className="m-0 text-xs text-semantic-error-text">
+      <p id="email-error" className="m-0 text-xs text-v2-semantic-error-text">
         Enter a valid email address.
       </p>
       <TextField
@@ -19,7 +19,10 @@ export default function Invalid() {
         aria-describedby="workspace-error"
         defaultValue="taken"
       />
-      <p id="workspace-error" className="m-0 text-xs text-semantic-error-text">
+      <p
+        id="workspace-error"
+        className="m-0 text-xs text-v2-semantic-error-text"
+      >
         Choose another workspace address.
       </p>
     </div>

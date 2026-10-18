@@ -283,7 +283,7 @@ export const Usage: Story = {
   args: { label: "Publish reply" },
   render: function UsageExample(args) {
     return (
-      <section className="w-[440px] max-w-full space-y-5 rounded-xl border border-semantic-border-layout bg-semantic-bg-primary p-6">
+      <section className="w-[440px] max-w-full space-y-5 rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-6">
         <div className="space-y-2">
           <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
             Ready for your team

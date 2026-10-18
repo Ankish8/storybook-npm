@@ -7,12 +7,13 @@ import { ArrowDownRight, ArrowUpRight, Minus } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const metricCardVariants = cva(
-  "flex min-w-0 flex-col rounded-xl border border-solid border-semantic-border-layout font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+  "flex min-w-0 flex-col rounded-xl border border-solid border-v2-semantic-border-layout font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
   {
     variants: {
       variant: {
-        default: "bg-semantic-bg-primary shadow-sm",
-        subtle: "bg-semantic-bg-ui",
+        default:
+          "bg-v2-semantic-bg-primary shadow-[var(--v2-shadow-sm,var(--shadow-sm))]",
+        subtle: "bg-v2-semantic-bg-ui",
       },
       size: {
         sm: "gap-3 p-4",
@@ -29,10 +30,11 @@ const trendVariants = cva(
   {
     variants: {
       tone: {
-        positive: "bg-semantic-success-surface text-semantic-success-text",
-        negative: "bg-semantic-error-surface text-semantic-error-text",
+        positive:
+          "bg-v2-semantic-success-surface text-v2-semantic-success-text",
+        negative: "bg-v2-semantic-error-surface text-v2-semantic-error-text",
         neutral:
-          "bg-semantic-bg-ui text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+          "bg-v2-semantic-bg-ui text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
       },
     },
     defaultVariants: { tone: "neutral" },
@@ -172,7 +174,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
           <p
             id={labelId}
             data-slot="metric-card-label"
-            className="m-0 min-w-0 break-words text-sm font-medium leading-5 text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+            className="m-0 min-w-0 break-words text-sm font-medium leading-5 text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]"
           >
             {label}
           </p>
@@ -219,7 +221,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
           {comparison !== undefined && comparison !== null && (
             <div
               data-slot="metric-card-comparison"
-              className="min-w-0 break-words text-sm leading-5 text-[var(--v2-text-muted,var(--semantic-text-muted))]"
+              className="min-w-0 break-words text-sm leading-5 text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]"
             >
               {comparison}
             </div>
@@ -233,7 +235,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
         {children !== undefined && children !== null && children !== false && (
           <div
             data-slot="metric-card-footer"
-            className="min-w-0 border-t border-solid border-semantic-border-layout pt-3 text-sm leading-5 text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+            className="min-w-0 border-t border-solid border-v2-semantic-border-layout pt-3 text-sm leading-5 text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]"
           >
             {children}
           </div>

@@ -93,36 +93,36 @@ function ActivityItems({
                 aria-label={`View activity ${index + 1}: ${update.subject}`}
                 onClick={() => onSelect(index)}
                 className={cn(
-                  "flex w-full gap-3 rounded-lg border border-solid p-3 text-left text-sm transition-colors [transition-duration:160ms] motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-semantic-primary [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-hover",
+                  "flex w-full gap-3 rounded-lg border border-solid p-3 text-left text-sm transition-colors [transition-duration:160ms] motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-hover",
                   horizontal
-                    ? "h-full flex-col border-semantic-border-layout"
+                    ? "h-full flex-col border-v2-semantic-border-layout"
                     : "items-start border-transparent",
                   selected === index &&
-                    "border-semantic-border-layout bg-semantic-bg-ui"
+                    "border-v2-semantic-border-layout bg-v2-semantic-bg-ui"
                 )}
               >
                 <span
                   aria-hidden="true"
-                  className="flex size-9 shrink-0 items-center justify-center rounded-full bg-semantic-primary-surface text-xs font-medium text-semantic-text-secondary"
+                  className="flex size-9 shrink-0 items-center justify-center rounded-full bg-v2-semantic-primary-surface text-xs font-medium text-v2-semantic-text-secondary"
                 >
                   {update.initials}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block leading-5 text-semantic-text-primary">
+                  <span className="block leading-5 text-v2-semantic-text-primary">
                     <span className="font-medium">{update.person}</span>{" "}
                     {update.action}
                   </span>
-                  <span className="mt-0.5 block font-medium leading-5 text-semantic-text-secondary">
+                  <span className="mt-0.5 block font-medium leading-5 text-v2-semantic-text-secondary">
                     {update.subject}
                   </span>
-                  <span className="mt-1 block text-xs leading-4 text-semantic-text-muted">
+                  <span className="mt-1 block text-xs leading-4 text-v2-semantic-text-muted">
                     {update.time}
                   </span>
                 </span>
                 {!horizontal && (
                   <ArrowUpRight
                     aria-hidden="true"
-                    className="mt-1 size-3.5 shrink-0 text-semantic-text-muted"
+                    className="mt-1 size-3.5 shrink-0 text-v2-semantic-text-muted"
                   />
                 )}
               </button>
@@ -141,18 +141,18 @@ function ActivityFeed(args: Args & { height?: string }) {
   const selectedUpdate =
     selected === undefined ? undefined : updates[selected % updates.length];
   return (
-    <section className="w-[520px] max-w-full overflow-hidden rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-solid border-semantic-border-layout px-4 py-4">
+    <section className="w-[520px] max-w-full overflow-hidden rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary">
+      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-solid border-v2-semantic-border-layout px-4 py-4">
         <div className="flex items-center gap-2.5">
           <Activity
-            className="size-4 text-semantic-text-muted"
+            className="size-4 text-v2-semantic-text-muted"
             aria-hidden="true"
           />
           <div>
-            <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+            <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
               Recent activity
             </h3>
-            <p className="m-0 mt-0.5 text-xs text-semantic-text-muted">
+            <p className="m-0 mt-0.5 text-xs text-v2-semantic-text-muted">
               Support workspace · {count} updates
             </p>
           </div>
@@ -184,10 +184,10 @@ function ActivityFeed(args: Args & { height?: string }) {
           onSelect={setSelected}
         />
       </Scrollbar>
-      <footer className="min-h-16 border-t border-solid border-semantic-border-layout px-4 py-3">
+      <footer className="min-h-16 border-t border-solid border-v2-semantic-border-layout px-4 py-3">
         <p
           role="status"
-          className="m-0 text-xs leading-5 text-semantic-text-muted"
+          className="m-0 text-xs leading-5 text-v2-semantic-text-muted"
         >
           {selectedUpdate
             ? selectedUpdate.detail
@@ -289,7 +289,7 @@ export const AllVariants: Story = {
     <div className="grid w-[1080px] max-w-full gap-6 lg:grid-cols-2">
       {(["subtle", "dark"] as const).map((variant) => (
         <section key={variant} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium capitalize text-semantic-text-primary">
+          <h3 className="m-0 text-sm font-medium capitalize text-v2-semantic-text-primary">
             {variant}
           </h3>
           <ActivityFeed {...args} variant={variant} />
@@ -319,7 +319,7 @@ export const States: Story = {
     <div className="grid w-[1080px] max-w-full gap-6 lg:grid-cols-2">
       {[12, 1].map((itemCount) => (
         <section key={itemCount} className="min-w-0 space-y-3">
-          <h3 className="m-0 text-sm font-medium text-semantic-text-primary">
+          <h3 className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             {itemCount === 1 ? "Content fits" : "Content overflows"}
           </h3>
           <ActivityFeed {...args} itemCount={itemCount} />
@@ -335,7 +335,7 @@ export const KeyboardScrolling: Story = {
   ),
   render: (args) => (
     <div className="max-w-full space-y-3">
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-v2-semantic-text-muted">
         Focus the activity list, then press End to jump to the oldest update.
       </p>
       <ActivityFeed {...args} />

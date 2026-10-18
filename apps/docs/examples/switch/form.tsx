@@ -38,7 +38,7 @@ export default function Form() {
         label="Unavailable setting"
       />
       <Button type="submit">Read form values</Button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {submitted || "Nothing submitted yet."}
       </p>
     </form>

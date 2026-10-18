@@ -218,7 +218,7 @@ describe("SplitButton", () => {
       expect(screen.getByRole("group")).toHaveClass(
         "rounded-lg",
         "border",
-        "border-semantic-primary"
+        "border-v2-semantic-primary"
       );
       expect(main).toHaveClass(height, "rounded-e-none", "border-0");
       expect(trigger).toHaveClass(

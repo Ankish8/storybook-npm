@@ -12,7 +12,10 @@ export default function Example() {
         title="Edit contact"
         footer={
           <div className="grid w-full gap-3">
-            <p role="status" className="m-0 text-xs text-semantic-text-muted">
+            <p
+              role="status"
+              className="m-0 text-xs text-v2-semantic-text-muted"
+            >
               {saved ? `Saved ${name} locally` : "Unsaved local draft"}
             </p>
             <Button type="submit" size="sm" form={formId}>
@@ -31,7 +34,7 @@ export default function Example() {
         >
           <label
             htmlFor={`${formId}-name`}
-            className="text-sm text-semantic-text-secondary"
+            className="text-sm text-v2-semantic-text-secondary"
           >
             Name
           </label>

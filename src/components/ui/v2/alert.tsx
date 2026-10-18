@@ -233,25 +233,26 @@ function AlertPresence({
 }
 
 const alertVariants = cva(
-  "relative w-full rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+  "relative w-full rounded-lg border border-solid font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
   {
     variants: {
       variant: {
-        default: "bg-semantic-bg-primary border-semantic-border-layout",
+        default: "bg-v2-semantic-bg-primary border-v2-semantic-border-layout",
         success:
-          "bg-semantic-success-surface border-[var(--color-success-200)]",
-        error: "bg-semantic-error-surface border-[var(--color-error-200)]",
+          "bg-v2-semantic-success-surface border-[var(--v2-semantic-success-border,var(--color-success-200))]",
+        error:
+          "bg-v2-semantic-error-surface border-[var(--v2-semantic-error-border,var(--color-error-200))]",
         destructive:
-          "bg-semantic-error-surface border-[var(--color-error-200)]",
+          "bg-v2-semantic-error-surface border-[var(--v2-semantic-error-border,var(--color-error-200))]",
         warning:
-          "bg-semantic-warning-surface border-[var(--color-warning-200)]",
-        info: "bg-semantic-info-surface border-[var(--color-info-200)]",
+          "bg-v2-semantic-warning-surface border-[var(--v2-semantic-warning-border,var(--color-warning-200))]",
+        info: "bg-v2-semantic-info-surface border-[var(--v2-semantic-info-border,var(--color-info-200))]",
       },
       presentation: {
-        inline: "p-4 shadow-[0_1px_2px_rgba(0,0,0,0.035)]",
+        inline: "p-4 shadow-[var(--v2-shadow-xs,0_1px_2px_rgba(0,0,0,0.035))]",
         header: "rounded-none border-0 border-b-[1.2px] p-4",
         overlay:
-          "max-w-[384px] overflow-hidden bg-semantic-bg-primary shadow-[0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04)]",
+          "max-w-[384px] overflow-hidden bg-v2-semantic-bg-primary shadow-[var(--v2-shadow-xl,0_20px_24px_-4px_rgba(10,13,18,0.08),0_8px_8px_-4px_rgba(10,13,18,0.03),0_3px_3px_-1.5px_rgba(10,13,18,0.04))]",
       },
     },
     defaultVariants: { variant: "default", presentation: "inline" },
@@ -266,12 +267,13 @@ const defaultIcons: Record<string, React.ReactNode> = {
   info: <Info className="size-[18px]" />,
 };
 const iconColors = {
-  default: "text-[var(--v2-text-primary,var(--semantic-text-primary))]",
-  success: "text-semantic-success-primary",
-  error: "text-semantic-error-primary",
-  destructive: "text-semantic-error-primary",
-  warning: "text-semantic-warning-primary",
-  info: "text-semantic-info-primary",
+  default:
+    "text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
+  success: "text-v2-semantic-success-primary",
+  error: "text-v2-semantic-error-primary",
+  destructive: "text-v2-semantic-error-primary",
+  warning: "text-v2-semantic-warning-primary",
+  info: "text-v2-semantic-info-primary",
 };
 
 export interface AlertProps
@@ -369,7 +371,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         type="button"
         onClick={handleClose}
         aria-label="Close alert"
-        className="-my-[5px] -mr-1.5 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,var(--semantic-text-muted))] [transition:transform_580ms_var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96] active:[transition-duration:120ms] motion-reduce:transition-none motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary"
+        className="-my-[5px] -mr-1.5 inline-flex size-7 shrink-0 items-center justify-center rounded-md text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] [transition:transform_580ms_var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1)),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] active:scale-[0.96] active:[transition-duration:120ms] motion-reduce:transition-none motion-reduce:active:scale-100 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
       >
         <X className="size-4" strokeWidth={1.75} />
       </button>
@@ -407,7 +409,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         >
           {presentation === "overlay" ? (
             <>
-              <div className="flex items-center gap-4 border-b-[0.4px] border-solid border-semantic-border-layout p-4">
+              <div className="flex items-center gap-4 border-b-[0.4px] border-solid border-v2-semantic-border-layout p-4">
                 {iconElement}
                 <ContentFrame
                   className="min-w-0 flex-1 [overflow-wrap:anywhere]"
@@ -471,7 +473,7 @@ const AlertTitle = React.forwardRef<
     <h5
       ref={ref}
       className={cn(
-        "relative m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] text-[var(--v2-text-primary,var(--semantic-text-primary))]",
+        "relative m-0 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
         className
       )}
       {...props}
@@ -502,7 +504,7 @@ const AlertDescription = React.forwardRef<
     <p
       ref={ref}
       className={cn(
-        "relative m-0 mt-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-[1.4] text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+        "relative m-0 mt-1 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-[1.4] text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
         className
       )}
       {...props}

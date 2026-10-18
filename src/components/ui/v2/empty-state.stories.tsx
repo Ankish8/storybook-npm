@@ -217,7 +217,7 @@ const meta: Meta<Args> = {
   },
   decorators: [
     (Story) => (
-      <div className="max-w-full rounded-lg border border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]">
+      <div className="max-w-full rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]">
         <Story />
       </div>
     ),
@@ -345,7 +345,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -473,7 +473,7 @@ function SearchExample({
         <ul aria-label="Matching contacts" className="m-0 mt-4 list-none p-0">
           {matches.map((n) => (
             <li
-              className="border-b border-semantic-border-layout py-3 text-sm"
+              className="border-b border-v2-semantic-border-layout py-3 text-sm"
               key={n}
             >
               {n}
@@ -495,7 +495,7 @@ function SearchExample({
           }}
         />
       )}
-      <p role="status" className="m-0 mt-4 text-sm text-semantic-text-muted">
+      <p role="status" className="m-0 mt-4 text-sm text-v2-semantic-text-muted">
         {feedback ||
           (matches.length
             ? matches.length + " contacts found"

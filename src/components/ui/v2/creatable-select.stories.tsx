@@ -73,7 +73,7 @@ function Example({
           id={`${id}-label`}
           className={
             version === "v1"
-              ? "m-0 text-sm font-medium text-semantic-text-secondary"
+              ? "m-0 text-sm font-medium text-v2-semantic-text-secondary"
               : "m-0 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           }
         >
@@ -103,9 +103,9 @@ function Example({
           id={`${id}-hint`}
           className={
             props.state === "error" && !props.disabled
-              ? "m-0 text-xs text-semantic-error-text"
+              ? "m-0 text-xs text-v2-semantic-error-text"
               : version === "v1"
-                ? "m-0 text-xs text-semantic-text-muted"
+                ? "m-0 text-xs text-v2-semantic-text-muted"
                 : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
           }
         >
@@ -582,7 +582,7 @@ function UsageForm(args: Args) {
         </Button>
       </div>
       {feedback && (
-        <p role="status" className="m-0 text-sm text-semantic-success-text">
+        <p role="status" className="m-0 text-sm text-v2-semantic-success-text">
           {feedback}
         </p>
       )}

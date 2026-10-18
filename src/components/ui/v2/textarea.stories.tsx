@@ -481,7 +481,7 @@ export const V1VsV2: Story = {
                 version === "v1" && size === "lg" ? (
                   <p
                     key={version}
-                    className="m-0 rounded-lg border border-dashed border-semantic-border-layout p-4 text-xs text-[var(--v2-text-muted,#707070)]"
+                    className="m-0 rounded-lg border border-dashed border-v2-semantic-border-layout p-4 text-xs text-[var(--v2-text-muted,#707070)]"
                   >
                     Large is new in v2. v1 supports default and sm.
                   </p>
@@ -513,7 +513,7 @@ function DraftForm(args: TextareaProps) {
   const overflow = args.maxLength && text.length > args.maxLength;
   return (
     <form
-      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
       onSubmit={(event) => {
         event.preventDefault();
         if (text.trim().length < 10 || overflow) {
@@ -546,7 +546,7 @@ function DraftForm(args: TextareaProps) {
           setSavedValue(null);
         }}
       />
-      <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
+      <div className="flex items-center justify-between gap-4 border-t border-v2-semantic-border-layout pt-4">
         <span
           className="text-xs text-[var(--v2-text-muted,#707070)]"
           role="status"

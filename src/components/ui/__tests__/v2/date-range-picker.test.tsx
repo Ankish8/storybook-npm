@@ -202,9 +202,11 @@ describe("DateRangePicker", () => {
     // ends without extra DOM), not a fill on the wrapper itself.
     const dayInBand = screen.getByLabelText(dayLabelFor(new Date(2026, 7, 5)));
     expect(dayInBand.parentElement).toHaveClass(
-      "before:bg-semantic-info-surface"
+      "before:bg-v2-semantic-info-surface"
     );
-    expect(dayInBand.parentElement).not.toHaveClass("bg-semantic-info-surface");
+    expect(dayInBand.parentElement).not.toHaveClass(
+      "bg-v2-semantic-info-surface"
+    );
   });
 
   it("shows the visible month and year as separate dropdown triggers", () => {
@@ -441,7 +443,7 @@ describe("DateRangePicker", () => {
     render(<DateRangePicker state="error" />);
 
     expect(screen.getByRole("button", { name: "Date Range" })).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -684,7 +686,7 @@ describe("DateRangePicker calendar refresh", () => {
       expect(cell(1)).toHaveClass("before:rounded-l-full");
       expect(cell(1)).not.toHaveClass("before:rounded-r-full");
       // Fri 2 is mid-row: a plain rectangle.
-      expect(cell(2)).toHaveClass("before:bg-semantic-info-surface");
+      expect(cell(2)).toHaveClass("before:bg-v2-semantic-info-surface");
       expect(cell(2)).not.toHaveClass("before:rounded-l-full");
       expect(cell(2)).not.toHaveClass("before:rounded-r-full");
       // Sat 3 is the last column, so the row wraps here: right cap.
@@ -719,8 +721,12 @@ describe("DateRangePicker calendar refresh", () => {
     it("keeps the selected edges as filled primary circles above the band", () => {
       renderRange();
 
-      expect(circle(1)).toHaveClass("bg-semantic-primary", "relative", "z-[1]");
-      expect(circle(7)).toHaveClass("bg-semantic-primary");
+      expect(circle(1)).toHaveClass(
+        "bg-v2-semantic-primary",
+        "relative",
+        "z-[1]"
+      );
+      expect(circle(7)).toHaveClass("bg-v2-semantic-primary");
       expect(circle(1)).toHaveAttribute("aria-pressed", "true");
       expect(circle(4)).toHaveAttribute("aria-pressed", "false");
     });
@@ -777,12 +783,12 @@ describe("DateRangePicker calendar refresh", () => {
 
       // Lighter fill + dashed edges, not the committed band.
       expect(cell(14)).toHaveClass(
-        "before:bg-semantic-info-surface-subtle",
+        "before:bg-v2-semantic-info-surface-subtle",
         "before:border-y",
         "before:border-dashed",
-        "before:border-[color:var(--color-info-100)]"
+        "before:border-[color:var(--v2-semantic-info-border,var(--color-info-100))]"
       );
-      expect(cell(14)).not.toHaveClass("before:bg-semantic-info-surface");
+      expect(cell(14)).not.toHaveClass("before:bg-v2-semantic-info-surface");
       // Same cap rules: both ends, plus the Sat/Sun week wrap.
       expect(cell(12)).toHaveClass("before:rounded-l-full");
       expect(cell(17)).toHaveClass("before:rounded-r-full");
@@ -791,9 +797,12 @@ describe("DateRangePicker calendar refresh", () => {
       // Nothing past the hovered day.
       expect(hasPreview(cell(22))).toBe(false);
       // The hovered end is outlined, not filled; the anchor stays filled.
-      expect(circle(20)).toHaveClass("ring-1", "ring-semantic-primary");
-      expect(circle(20)).not.toHaveClass("bg-semantic-primary");
-      expect(circle(12)).toHaveClass("bg-semantic-primary");
+      expect(circle(20)).toHaveClass(
+        "ring-1",
+        "ring-[color:var(--v2-semantic-border-focus,var(--semantic-primary))]"
+      );
+      expect(circle(20)).not.toHaveClass("bg-v2-semantic-primary");
+      expect(circle(12)).toHaveClass("bg-v2-semantic-primary");
       // Purely visual: nothing selected, committed or announced by hovering.
       expect(circle(20)).toHaveAttribute("aria-pressed", "false");
       expect(onValueChange).not.toHaveBeenCalled();
@@ -809,7 +818,7 @@ describe("DateRangePicker calendar refresh", () => {
       expect(cell(12)).toHaveClass("before:rounded-l-full");
       expect(cell(20)).toHaveClass("before:rounded-r-full");
       expect(circle(12)).toHaveClass("ring-1");
-      expect(circle(20)).toHaveClass("bg-semantic-primary");
+      expect(circle(20)).toHaveClass("bg-v2-semantic-primary");
     });
 
     it("also previews from keyboard focus", () => {
@@ -892,7 +901,7 @@ describe("DateRangePicker calendar refresh", () => {
 
       expect(selected).toHaveAttribute("aria-current", "true");
       expect(selected).toHaveClass(
-        "bg-semantic-info-surface",
+        "bg-v2-semantic-info-surface",
         "font-medium",
         "text-[var(--v2-text-primary,#484848)]"
       );
@@ -970,7 +979,7 @@ describe("DateRangePicker calendar refresh", () => {
 
       expect(ungated).toEqual([]);
       expect(circle(20)).toHaveClass(
-        "[@media(hover:hover)]:hover:bg-semantic-bg-hover"
+        "[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover"
       );
     });
 
@@ -985,7 +994,7 @@ describe("DateRangePicker calendar refresh", () => {
         "focus-visible:outline",
         "focus-visible:[outline-width:2px]",
         "focus-visible:outline-offset-1",
-        "focus-visible:outline-semantic-primary",
+        "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
       ];
       const dialog = screen.getByRole("dialog", { hidden: true });
 

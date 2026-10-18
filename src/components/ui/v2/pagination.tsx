@@ -111,9 +111,9 @@ const PaginationContent = React.forwardRef<
       data-slot="pagination-content"
       className={cn(
         "relative isolate flex flex-row items-center gap-1 list-none m-0 p-0",
-        "before:pointer-events-none before:absolute before:left-0 before:top-0 before:-z-10 before:h-[var(--v2-page-height,0px)] before:w-[var(--v2-page-width,0px)] before:translate-x-[var(--v2-page-x,0px)] before:translate-y-[var(--v2-page-y,0px)] before:rounded-lg before:border before:border-solid before:border-semantic-primary before:bg-semantic-primary before:shadow-[0_1px_2px_rgba(0,0,0,0.035)] before:content-[''] before:opacity-0 data-[page-indicator=true]:before:opacity-100 before:transition-[transform,width,height] before:[transition-duration:800ms] before:[transition-timing-function:linear(0,0.0408,0.1369,0.2586,0.3863,0.5079,0.6169,0.7102,0.7872,0.8488,0.8966,0.9327,0.9591,0.9778,0.9906,0.9989,1.0038,1.0065,1.0076,1.0077,1.0071,1.0063,1.0053,1.0043,1.0034,1.0026,1.002,1.0014,1.001,1.0007,1.0004,1.0002,1)] motion-reduce:before:transition-none",
+        "before:pointer-events-none before:absolute before:left-0 before:top-0 before:-z-10 before:h-[var(--v2-page-height,0px)] before:w-[var(--v2-page-width,0px)] before:translate-x-[var(--v2-page-x,0px)] before:translate-y-[var(--v2-page-y,0px)] before:rounded-lg before:border before:border-solid before:border-v2-semantic-primary before:bg-v2-semantic-primary before:shadow-[var(--v2-shadow-xs,0_1px_2px_rgba(0,0,0,0.035))] before:content-[''] before:opacity-0 data-[page-indicator=true]:before:opacity-100 before:transition-[transform,width,height] before:[transition-duration:800ms] before:[transition-timing-function:linear(0,0.0408,0.1369,0.2586,0.3863,0.5079,0.6169,0.7102,0.7872,0.8488,0.8966,0.9327,0.9591,0.9778,0.9906,0.9989,1.0038,1.0065,1.0076,1.0077,1.0071,1.0063,1.0053,1.0043,1.0034,1.0026,1.002,1.0014,1.001,1.0007,1.0004,1.0002,1)] motion-reduce:before:transition-none",
         // The mark travels on Arc's morph spring (stiffness 155, damping ratio 0.84), sampled as linear() over 800ms.
-        "[&[data-page-indicator=true]_[data-active=true]]:border-transparent [&[data-page-indicator=true]_[data-active=true]]:bg-transparent [&[data-page-indicator=true]_[data-active=true]]:shadow-none [@media(hover:hover)_and_(pointer:fine)]:[&[data-page-indicator=true]_[data-active=true]:hover:not([aria-disabled=true])]:bg-semantic-primary-hover",
+        "[&[data-page-indicator=true]_[data-active=true]]:border-transparent [&[data-page-indicator=true]_[data-active=true]]:bg-transparent [&[data-page-indicator=true]_[data-active=true]]:shadow-none [@media(hover:hover)_and_(pointer:fine)]:[&[data-page-indicator=true]_[data-active=true]:hover:not([aria-disabled=true])]:bg-v2-semantic-primary-hover",
         className
       )}
       {...props}
@@ -186,9 +186,9 @@ function PaginationLink({
         "tabular-nums text-xs font-normal active:scale-100 transition-[background-color,color,opacity,transform] [transition-duration:160ms,160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)]",
         "motion-reduce:transition-none motion-reduce:active:transform-none",
         isActive
-          ? "bg-semantic-primary text-semantic-text-inverted shadow-[0_1px_2px_rgba(0,0,0,0.035)]"
+          ? "bg-v2-semantic-primary text-v2-semantic-text-inverted shadow-[var(--v2-shadow-xs,0_1px_2px_rgba(0,0,0,0.035))]"
           : "text-[var(--v2-text-secondary,#5E5E5E)]",
-        "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-semantic-primary-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-semantic-text-inverted",
+        "[@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:bg-v2-semantic-primary-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:text-v2-semantic-text-inverted",
         className
       )}
       {...props}

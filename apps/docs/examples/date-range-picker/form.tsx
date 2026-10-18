@@ -36,7 +36,7 @@ export default function Form() {
         id={`${id}-hint`}
         className={
           invalid
-            ? "m-0 text-xs text-semantic-error-text"
+            ? "m-0 text-xs text-v2-semantic-error-text"
             : "m-0 text-xs text-[var(--v2-text-muted)]"
         }
       >

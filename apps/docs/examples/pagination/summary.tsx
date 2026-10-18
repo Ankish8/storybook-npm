@@ -14,7 +14,7 @@ export default function Summary() {
         {contacts.slice((page - 1) * 5, page * 5).map((contact) => (
           <li
             key={contact}
-            className="border-b border-semantic-border-layout py-2 text-sm text-semantic-text-primary"
+            className="border-b border-v2-semantic-border-layout py-2 text-sm text-v2-semantic-text-primary"
           >
             {contact}
           </li>

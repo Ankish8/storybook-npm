@@ -44,7 +44,7 @@ export default function Example() {
           ))}
         </TableBody>
       </Table>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {selected.length} contacts selected
       </p>
     </div>

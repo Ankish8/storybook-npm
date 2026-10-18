@@ -467,7 +467,7 @@ describe("DropdownMenuSeparator", () => {
     expect(screen.getByTestId("separator")).toBeInTheDocument();
     expect(screen.getByTestId("separator")).toHaveClass("h-px");
     expect(screen.getByTestId("separator")).toHaveClass(
-      "bg-semantic-border-layout"
+      "bg-v2-semantic-border-layout"
     );
   });
 });
@@ -511,7 +511,7 @@ describe("DropdownMenuShortcut", () => {
     const shortcut = screen.getByTestId("shortcut");
     expect(shortcut).toHaveClass("ml-auto");
     expect(shortcut).toHaveClass("text-xs");
-    expect(shortcut).toHaveClass("border-semantic-border-layout");
+    expect(shortcut).toHaveClass("border-v2-semantic-border-layout");
   });
 });
 
@@ -606,7 +606,7 @@ describe("DropdownMenuContent styling", () => {
     expect(content).toHaveClass("overscroll-contain");
     expect(content).toHaveClass("rounded-lg");
     expect(content).toHaveClass("border");
-    expect(content).toHaveClass("bg-semantic-bg-primary");
+    expect(content).toHaveClass("bg-v2-semantic-bg-primary");
   });
 
   it("applies custom className", async () => {
@@ -802,9 +802,9 @@ describe("DropdownMenu v2 refresh", () => {
     );
     const del = screen.getByRole("menuitem", { name: "Delete" });
     expect(del).toHaveClass(
-      "text-semantic-error-text",
-      "focus:bg-semantic-error-surface",
-      "focus:text-semantic-error-text"
+      "text-v2-semantic-error-text",
+      "focus:bg-v2-semantic-error-surface",
+      "focus:text-v2-semantic-error-text"
     );
     expect(del).toHaveAttribute("data-destructive", "");
     // The tint is an explicit token, never a slash-alpha modifier (compiles to nothing on var()).
@@ -819,7 +819,7 @@ describe("DropdownMenu v2 refresh", () => {
     expect(edit).not.toHaveAttribute("data-destructive");
     expect(edit.className).not.toContain("semantic-error");
     expect(edit).toHaveClass(
-      "focus:bg-semantic-bg-ui",
+      "focus:bg-v2-semantic-bg-ui",
       "focus:text-[var(--v2-text-primary,#484848)]"
     );
   });
@@ -841,7 +841,7 @@ describe("DropdownMenu v2 refresh", () => {
     );
     // Disabled text still wins (data-[disabled]: has higher specificity than the base colour).
     expect(screen.getByRole("menuitem", { name: "Purge" })).toHaveClass(
-      "data-[disabled]:text-semantic-disabled-primary"
+      "data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]"
     );
     await user.click(screen.getByRole("menuitem", { name: "Delete" }));
     expect(onSelect).toHaveBeenCalledTimes(1);
@@ -856,7 +856,7 @@ describe("DropdownMenu v2 refresh", () => {
     const link = screen.getByRole("menuitem", { name: "Remove" });
     expect(link.tagName).toBe("A");
     expect(link).toHaveAttribute("data-destructive", "");
-    expect(link).toHaveClass("text-semantic-error-text");
+    expect(link).toHaveClass("text-v2-semantic-error-text");
   });
 
   it("gives every row type a 4px radius concentric with the 8px menu", async () => {

@@ -109,7 +109,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
     // medium-weight label (the ::after copy), so becoming the current page never shifts the path.
     const labelClass = (item: BreadcrumbItem) =>
       cn(
-        "inline-flex rounded-lg px-0.5 py-1 text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--semantic-text-secondary))] [&_svg]:size-[18px] [&_svg]:shrink-0",
+        "inline-flex rounded-lg px-0.5 py-1 text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] [&_svg]:size-[18px] [&_svg]:shrink-0",
         item.icon || labelWidth
           ? "items-center gap-2"
           : "flex-col after:invisible after:pointer-events-none after:block after:h-0 after:select-none after:overflow-hidden after:font-medium after:content-[attr(data-label)]"
@@ -130,7 +130,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
       </>
     );
     const separatorContent = separator ?? (
-      <ChevronRight className="size-4 stroke-[1.75] text-[var(--color-neutral-300)] rtl:-scale-x-100" />
+      <ChevronRight className="size-4 stroke-[1.75] text-[var(--v2-text-muted,var(--color-neutral-300))] rtl:-scale-x-100" />
     );
     return (
       <nav
@@ -218,7 +218,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                     title={labelWidth ? items[index].label : undefined}
                     className={cn(
                       labelClass(items[index]),
-                      "font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+                      "font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
                     )}
                   >
                     {labelContent(items[index])}
@@ -231,7 +231,7 @@ const Breadcrumbs = React.forwardRef<HTMLElement, BreadcrumbsProps>(
                     className={cn(
                       labelClass(items[index]),
                       // Colour and a 45% underline fade in together on hover (hover-capable pointers only).
-                      "underline decoration-transparent decoration-1 underline-offset-4 transition-[color,text-decoration-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))] [@media(hover:hover)_and_(pointer:fine)]:hover:decoration-[color-mix(in_oklab,currentColor_45%,transparent)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-semantic-primary focus-visible:outline-offset-[-2px] focus-visible:decoration-current"
+                      "underline decoration-transparent decoration-1 underline-offset-4 transition-[color,text-decoration-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] [@media(hover:hover)_and_(pointer:fine)]:hover:decoration-[color-mix(in_oklab,currentColor_45%,transparent)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-[-2px] focus-visible:decoration-current"
                     )}
                     onClick={(event) =>
                       onNavigate?.(items[index], index, event)

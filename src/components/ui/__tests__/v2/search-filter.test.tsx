@@ -395,10 +395,12 @@ describe("SearchFilter v2 refresh", () => {
     const input = screen.getByRole("searchbox");
 
     expect(input).toHaveAttribute("aria-expanded", "false");
-    expect(input.className).toContain("aria-expanded:border-semantic-primary");
+    expect(input.className).toContain(
+      "aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
+    );
     expect(input.className).toContain("aria-expanded:shadow-none");
     expect(input.className).toContain(
-      "enabled:aria-expanded:hover:border-semantic-primary"
+      "enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
 
     await user.click(input);
@@ -422,8 +424,8 @@ describe("SearchFilter v2 refresh", () => {
       "rounded-sm",
       "focus-visible:ring-1",
       "focus-visible:ring-inset",
-      "focus-visible:ring-semantic-border-accent",
-      "hover:bg-semantic-bg-ui"
+      "focus-visible:ring-v2-semantic-border-accent",
+      "hover:bg-v2-semantic-bg-ui"
     );
   });
 

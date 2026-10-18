@@ -14,7 +14,7 @@ export default function Form() {
     >
       <label
         htmlFor="form-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>
@@ -29,11 +29,11 @@ export default function Form() {
       <input type="hidden" name="country_code" value={code} />
       <button
         type="submit"
-        className="rounded-md bg-semantic-primary px-3 py-2 text-sm text-semantic-text-inverted"
+        className="rounded-md bg-v2-semantic-primary px-3 py-2 text-sm text-v2-semantic-text-inverted"
       >
         Read form value
       </button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {result || "Nothing submitted in this local example yet."}
       </p>
     </form>

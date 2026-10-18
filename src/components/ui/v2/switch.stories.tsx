@@ -398,7 +398,7 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
   const [sound, setSound] = React.useState(false);
   const generatedId = React.useId();
   return (
-    <div className="w-[420px] max-w-full rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="w-[420px] max-w-full rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Notification preferences
       </p>
@@ -432,7 +432,7 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
             aria-describedby={generatedId + "desktop-help"}
           />
         </div>
-        <div className="flex items-start justify-between gap-6 border-t border-semantic-border-layout pt-5">
+        <div className="flex items-start justify-between gap-6 border-t border-v2-semantic-border-layout pt-5">
           <div>
             <label
               htmlFor={generatedId + "sound"}
@@ -460,7 +460,7 @@ function NotificationPreferences({ label: _label, ...args }: SwitchProps) {
         </div>
       </div>
       <p
-        className="m-0 mt-6 border-t border-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
+        className="m-0 mt-6 border-t border-v2-semantic-border-layout pt-4 text-xs text-[var(--v2-text-muted,#707070)]"
         role="status"
       >
         Desktop {desktop ? "on" : "off"} · Sound {sound ? "on" : "off"}

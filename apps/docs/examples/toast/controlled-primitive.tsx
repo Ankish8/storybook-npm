@@ -24,7 +24,7 @@ export default function Example() {
           <ToastClose />
         </Toast>
         <ToastViewport className="relative bottom-auto left-auto right-auto top-auto m-0 max-h-[none] w-full max-w-full p-0 sm:bottom-auto sm:right-auto sm:top-auto md:max-w-full" />
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
           {open ? "Notification open" : "Notification closed"}
         </p>
       </div>

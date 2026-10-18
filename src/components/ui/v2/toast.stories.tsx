@@ -98,8 +98,8 @@ function ToastBody({
         onClick={() => args.onOpenChange?.(false)}
         className={
           version === "v1"
-            ? "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
-            : "-mr-0.5 -mt-px inline-flex size-8 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-semantic-text-muted"
+            ? "inline-flex size-6 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-v2-semantic-text-muted"
+            : "-mr-0.5 -mt-px inline-flex size-8 shrink-0 items-center justify-center rounded-md border-0 bg-transparent p-0 text-v2-semantic-text-muted"
         }
       >
         <X className={version === "v1" ? "size-3" : "size-4"} />
@@ -120,8 +120,8 @@ function ToastBody({
         aria-label={args.actionAltText}
         className={cn(
           version === "v1"
-            ? "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-semibold text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50"
-            : "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 text-xs font-medium text-semantic-text-secondary hover:bg-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
+            ? "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 text-xs font-semibold text-v2-semantic-text-secondary hover:bg-v2-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50"
+            : "inline-flex h-8 shrink-0 items-center justify-center border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 text-xs font-medium text-v2-semantic-text-secondary hover:bg-v2-semantic-bg-ui disabled:pointer-events-none disabled:opacity-50",
           version === "v2"
             ? "rounded-lg tracking-[0.06px] shadow-[4px_4px_40px_0_rgba(0,0,0,0.02)]"
             : "rounded-md px-3"
@@ -160,13 +160,13 @@ function ToastBody({
           className={cn(
             "grid size-[30px] shrink-0 place-items-center rounded-full border border-solid",
             variant === "success" &&
-              "border-semantic-success-border/40 bg-semantic-success-surface text-semantic-success-primary",
+              "border-v2-semantic-success-border/40 bg-v2-semantic-success-surface text-v2-semantic-success-primary",
             (variant === "error" || variant === "destructive") &&
-              "border-semantic-error-border/40 bg-semantic-error-surface text-semantic-error-primary",
+              "border-v2-semantic-error-border/40 bg-v2-semantic-error-surface text-v2-semantic-error-primary",
             variant === "warning" &&
-              "border-semantic-warning-border/40 bg-semantic-warning-surface text-semantic-warning-primary",
+              "border-v2-semantic-warning-border/40 bg-v2-semantic-warning-surface text-v2-semantic-warning-primary",
             variant === "info" &&
-              "border-semantic-info-border/40 bg-semantic-info-surface text-semantic-info-primary"
+              "border-v2-semantic-info-border/40 bg-v2-semantic-info-surface text-v2-semantic-info-primary"
           )}
         >
           <IconV2 className="size-4" strokeWidth={2.25} aria-hidden />
@@ -202,7 +202,7 @@ function LiveToast({
         <Button variant="outline" onClick={() => changeOpen(true)}>
           {args.triggerLabel}
         </Button>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
           {args.open ? "Notification open" : "Notification closed"}
         </p>
       </div>
@@ -265,13 +265,13 @@ function StackHero({
     setResult("Notification queued: " + title);
   }
   return (
-    <section className="relative grid w-[640px] max-w-full gap-6 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-subtle p-5">
+    <section className="relative grid w-[640px] max-w-full gap-6 rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-subtle p-5">
       <div className="grid max-w-sm gap-4">
         <div className="grid gap-1">
-          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             Workspace notifications
           </p>
-          <p className="m-0 text-sm text-semantic-text-secondary">
+          <p className="m-0 text-sm text-v2-semantic-text-secondary">
             Updates from your team collect here. Expand the stack to review
             them.
           </p>
@@ -310,7 +310,7 @@ function StackHero({
             Dismiss all
           </Button>
         </div>
-        <div className="flex flex-wrap gap-4 text-xs text-semantic-text-secondary">
+        <div className="flex flex-wrap gap-4 text-xs text-v2-semantic-text-secondary">
           <label className="inline-flex items-center gap-2">
             <input
               type="checkbox"
@@ -331,7 +331,7 @@ function StackHero({
             Keep expanded
           </label>
         </div>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
           {result}
         </p>
       </div>
@@ -704,7 +704,7 @@ export const AllVariants: Story = {
       <div className="grid min-w-[1392px] grid-cols-3 items-start gap-6">
         {VARIANTS.map((variant) => (
           <div key={variant} className="flex flex-col gap-3">
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} />
@@ -727,12 +727,12 @@ export const States: Story = {
       <div className="grid min-w-[1224px] grid-cols-3 items-start gap-6">
         {["Visible", "Disabled action", "Dismissed"].map((state) => (
           <div key={state} className="flex flex-col gap-3">
-            <span className="text-xs font-normal text-semantic-text-muted">
+            <span className="text-xs font-normal text-v2-semantic-text-muted">
               {state}
             </span>
             {state === "Dismissed" ? (
-              <div className="flex min-h-[116px] w-[26rem] max-w-full items-center justify-center rounded-lg border border-dashed border-semantic-border-layout p-4">
-                <p className="m-0 text-xs text-semantic-text-muted">
+              <div className="flex min-h-[116px] w-[26rem] max-w-full items-center justify-center rounded-lg border border-dashed border-v2-semantic-border-layout p-4">
+                <p className="m-0 text-xs text-v2-semantic-text-muted">
                   Notification closed · content unmounted
                 </p>
               </div>
@@ -764,14 +764,14 @@ export const V1VsV2: Story = {
         {["v1 · ui/toast", "v2 · ui/v2/toast"].map((label) => (
           <span
             key={label}
-            className="text-xs font-normal text-semantic-text-muted"
+            className="text-xs font-normal text-v2-semantic-text-muted"
           >
             {label}
           </span>
         ))}
         {VARIANTS.map((variant) => (
           <React.Fragment key={variant}>
-            <span className="pt-5 text-xs font-normal text-semantic-text-muted">
+            <span className="pt-5 text-xs font-normal text-v2-semantic-text-muted">
               {variant}
             </span>
             <InlineToast args={{ ...args, variant }} version="v1" />
@@ -794,12 +794,12 @@ function WorkspaceForm({
   const [result, setResult] = React.useState("No changes saved yet.");
   React.useEffect(() => () => toast.dismiss(), []);
   return (
-    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
-        <p className="m-0 text-base font-medium text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-v2-semantic-text-primary">
           Workspace settings
         </p>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           Save a local edit and use the notification action to undo it.
         </p>
       </div>
@@ -834,7 +834,7 @@ function WorkspaceForm({
       >
         <label
           htmlFor={id}
-          className="text-sm font-medium text-semantic-text-secondary"
+          className="text-sm font-medium text-v2-semantic-text-secondary"
         >
           Workspace name
         </label>
@@ -857,10 +857,10 @@ function WorkspaceForm({
           </Button>
         </div>
       </form>
-      <p className="m-0 text-sm text-semantic-text-secondary">
+      <p className="m-0 text-sm text-v2-semantic-text-secondary">
         Saved name: {saved}
       </p>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {result}
       </p>
       <Toaster stack={args.stack} />

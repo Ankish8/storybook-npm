@@ -426,7 +426,7 @@ describe("CreatableMultiSelect v2 refresh", () => {
     const field = screen.getByRole("combobox").parentElement?.parentElement;
     expect(field).toHaveAttribute("data-state", "open");
     expect(field?.className).toContain(
-      "data-[state=open]:border-semantic-primary"
+      "data-[state=open]:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
   });
 
@@ -447,11 +447,11 @@ describe("CreatableMultiSelect v2 refresh", () => {
         "before:absolute",
         "before:-inset-px"
       );
-      // bg-semantic-bg-ui and bg-semantic-bg-hover are #F5F5F5, the chip fill: invisible.
+      // bg-v2-semantic-bg-ui and bg-v2-semantic-bg-hover are #F5F5F5, the chip fill: invisible.
       expect(remove).toHaveClass(
-        "[@media(hover:hover)]:hover:bg-semantic-bg-grey"
+        "[@media(hover:hover)]:hover:bg-v2-semantic-bg-grey"
       );
-      expect(remove.className).not.toContain("hover:bg-semantic-bg-hover");
+      expect(remove.className).not.toContain("hover:bg-v2-semantic-bg-hover");
       expect(remove.querySelector("svg")).toHaveClass("size-3.5");
     }
   );
@@ -568,16 +568,16 @@ describe("CreatableMultiSelect polish", () => {
     render(<CreatableMultiSelect options={TONES} value={["friendly"]} />);
     const closed = screen.getByRole("combobox");
     expect(closed).not.toHaveClass(
-      "[@media(hover:hover)]:hover:bg-semantic-bg-ui"
+      "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui"
     );
-    expect(closed).not.toHaveClass("active:bg-semantic-bg-ui");
+    expect(closed).not.toHaveClass("active:bg-v2-semantic-bg-ui");
 
     await user.click(closed);
     const open = screen
       .getAllByRole("combobox")[0]
       .closest("[data-state=open]");
-    expect(open).toHaveClass("data-[state=open]:bg-semantic-bg-primary");
-    expect(open).not.toHaveClass("data-[state=open]:bg-semantic-bg-ui");
+    expect(open).toHaveClass("data-[state=open]:bg-v2-semantic-bg-primary");
+    expect(open).not.toHaveClass("data-[state=open]:bg-v2-semantic-bg-ui");
   });
 
   it("fills chips white on a disabled (grey) field so they stay visible", () => {
@@ -586,8 +586,8 @@ describe("CreatableMultiSelect polish", () => {
     );
     const chip = screen.getByRole("button", { name: "Remove Friendly" })
       .parentElement as HTMLElement;
-    expect(chip).toHaveClass("bg-semantic-bg-primary");
-    expect(chip).not.toHaveClass("bg-semantic-bg-ui");
+    expect(chip).toHaveClass("bg-v2-semantic-bg-primary");
+    expect(chip).not.toHaveClass("bg-v2-semantic-bg-ui");
   });
 
   it("uses one 8px family of corners: suggestions, panel and Create row match the chips", async () => {
@@ -714,14 +714,14 @@ describe("CreatableMultiSelect polish", () => {
       expect(input).toHaveValue("abcd");
       expect(screen.getByText("4/5")).not.toHaveAttribute("data-at-limit");
       expect(screen.getByText("4/5")).not.toHaveClass(
-        "text-semantic-error-text"
+        "text-v2-semantic-error-text"
       );
 
       await user.type(input, "efgh");
       expect(input).toHaveValue("abcde");
       const counter = screen.getByText("5/5");
       expect(counter).toHaveAttribute("data-at-limit", "true");
-      expect(counter).toHaveClass("text-semantic-error-text");
+      expect(counter).toHaveClass("text-v2-semantic-error-text");
     });
 
     it("creates a value no longer than the limit", async () => {

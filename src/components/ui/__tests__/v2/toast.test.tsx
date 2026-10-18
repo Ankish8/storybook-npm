@@ -121,15 +121,15 @@ describe("Toast primitives and migration", () => {
       );
       const node = screen.getByTestId("toast");
       expect(node).toHaveClass(
-        "bg-semantic-bg-primary",
-        "border-semantic-border-layout",
-        "text-semantic-text-primary"
+        "bg-v2-semantic-bg-primary",
+        "border-v2-semantic-border-layout",
+        "text-v2-semantic-text-primary"
       );
       expect(node).toHaveAttribute("data-v2-toast-variant", variant);
       expect(node.className).not.toMatch(
-        /bg-semantic-(success|error|warning|info)-surface/
+        /bg-v2-semantic-(success|error|warning|info)-surface/
       );
-      expect(toastVariants({ variant })).toContain("bg-semantic-bg-primary");
+      expect(toastVariants({ variant })).toContain("bg-v2-semantic-bg-primary");
     }
   );
 
@@ -395,9 +395,9 @@ describe("Toaster and the existing store", () => {
       render(<Toaster />);
       act(() => toast[variant]({ title: variant }));
       const node = card(variant);
-      expect(node).toHaveClass("bg-semantic-bg-primary", variant);
+      expect(node).toHaveClass("bg-v2-semantic-bg-primary", variant);
       expect(node.querySelector("[data-v2-toast-indicator]")).toHaveClass(
-        `text-semantic-${variant}-primary`
+        `text-v2-semantic-${variant}-primary`
       );
       expect(
         node.querySelector("[data-v2-toast-indicator] svg")
@@ -410,7 +410,7 @@ describe("Toaster and the existing store", () => {
     notify({ title: "Removed", variant: "destructive" });
     expect(
       card("Removed").querySelector("[data-v2-toast-indicator]")
-    ).toHaveClass("text-semantic-error-primary");
+    ).toHaveClass("text-v2-semantic-error-primary");
   });
 
   it("keeps v1's 5000ms provider duration and 50px swipe defaults", () => {

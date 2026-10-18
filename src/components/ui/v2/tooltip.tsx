@@ -228,8 +228,8 @@ const TooltipContent = React.forwardRef<
           className={cn(
             "z-[9999] pointer-events-none data-[state=delayed-open]:pointer-events-auto data-[state=instant-open]:pointer-events-auto max-w-[15rem] whitespace-normal break-words rounded-md border border-solid px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-5 shadow-md origin-[var(--radix-tooltip-content-transform-origin)] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:[animation-duration:160ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)] data-[state=instant-open]:motion-safe:[animation-duration:120ms] data-[state=delayed-open]:motion-safe:zoom-in-[0.98] data-[state=delayed-open]:data-[side=bottom]:motion-safe:slide-in-from-top-[3px] data-[state=delayed-open]:data-[side=left]:motion-safe:slide-in-from-right-[3px] data-[state=delayed-open]:data-[side=right]:motion-safe:slide-in-from-left-[3px] data-[state=delayed-open]:data-[side=top]:motion-safe:slide-in-from-bottom-[3px] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=closed]:motion-safe:[animation-duration:100ms] motion-reduce:animate-none motion-reduce:transform-none",
             variant === "light"
-              ? "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary [--tooltip-arrow-fill:var(--semantic-bg-primary)]"
-              : "border-semantic-bg-secondary bg-semantic-bg-secondary text-semantic-text-inverted [--tooltip-arrow-fill:var(--semantic-bg-secondary)]",
+              ? "border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-v2-semantic-text-primary [--tooltip-arrow-fill:var(--v2-semantic-bg-primary,var(--semantic-bg-primary))]"
+              : "border-v2-semantic-bg-secondary bg-v2-semantic-bg-secondary text-v2-semantic-text-inverted [--tooltip-arrow-fill:var(--v2-semantic-bg-secondary,var(--semantic-bg-secondary))]",
             className
           )}
           onEscapeKeyDown={(event) => {
@@ -261,7 +261,7 @@ const TooltipArrow = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "fill-[var(--tooltip-arrow-fill,var(--semantic-bg-secondary))]",
+      "fill-[var(--tooltip-arrow-fill,var(--v2-semantic-bg-secondary,var(--semantic-bg-secondary)))]",
       className
     )}
   />

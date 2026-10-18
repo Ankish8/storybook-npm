@@ -56,13 +56,13 @@ function Example({
           htmlFor={id}
           className={
             version === "v1"
-              ? "text-sm font-medium text-semantic-text-secondary"
+              ? "text-sm font-medium text-v2-semantic-text-secondary"
               : "text-sm font-medium text-[var(--v2-text-primary,#484848)]"
           }
         >
           {label}
           {props.required && (
-            <span className="ml-0.5 text-semantic-error-primary">*</span>
+            <span className="ml-0.5 text-v2-semantic-error-primary">*</span>
           )}
         </label>
       )}
@@ -92,7 +92,7 @@ function Example({
           id={helperId}
           className={
             version === "v1"
-              ? "m-0 text-xs text-semantic-text-muted"
+              ? "m-0 text-xs text-v2-semantic-text-muted"
               : "m-0 text-xs text-[var(--v2-text-muted,#707070)]"
           }
         >
@@ -509,7 +509,7 @@ function PhoneForm({
   return (
     <form
       noValidate
-      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[480px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
       onSubmit={(e) => {
         e.preventDefault();
         const digits = String(args.value || "");
@@ -547,7 +547,7 @@ function PhoneForm({
           setSaved(null);
         }}
       />
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-semantic-border-layout pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-v2-semantic-border-layout pt-4">
         <span
           role="status"
           className="text-xs text-[var(--v2-text-muted,#707070)]"

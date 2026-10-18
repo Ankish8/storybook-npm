@@ -3,7 +3,7 @@ export default function Example() {
   return (
     <Scrollbar
       aria-label="Contact activity"
-      className="h-48 w-full max-w-sm rounded-lg border border-semantic-border-layout"
+      className="h-48 w-full max-w-sm rounded-lg border border-v2-semantic-border-layout"
     >
       <ol className="m-0 space-y-4 py-4 pl-9 pr-6">
         {[
@@ -16,7 +16,7 @@ export default function Example() {
           "Mira attached the invoice",
           "Owen sent a follow-up",
         ].map((item) => (
-          <li key={item} className="text-sm text-semantic-text-secondary">
+          <li key={item} className="text-sm text-v2-semantic-text-secondary">
             {item}
           </li>
         ))}

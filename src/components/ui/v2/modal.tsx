@@ -44,7 +44,7 @@ const ModalOverlay = React.forwardRef(
     <DialogPrimitive.Overlay
       ref={ref}
       className={cn(
-        "fixed inset-0 z-[9999] bg-black/[0.46] backdrop-blur-[7px] overscroll-contain data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=open]:motion-safe:fade-in-0",
+        "fixed inset-0 z-[9999] bg-[var(--v2-overlay-background,rgba(0,0,0,0.46))] backdrop-blur-[7px] overscroll-contain data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=open]:motion-safe:fade-in-0",
         className
       )}
       {...props}
@@ -59,7 +59,7 @@ ModalOverlay.displayName = DialogPrimitive.Overlay.displayName;
  * docs use this same string, so they cannot drift from the real modal.
  */
 const modalSurfaceClass =
-  "group/modal relative flex flex-col gap-4 overflow-x-hidden rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 text-sm leading-5 text-[var(--v2-text-secondary,#5E5E5E)] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]";
+  "group/modal relative flex flex-col gap-4 overflow-x-hidden rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-4 text-sm leading-5 text-[var(--v2-text-secondary,#5E5E5E)] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]";
 
 const modalContentVariants = cva(
   [
@@ -179,8 +179,8 @@ const ModalMedia = ({
     className={cn(
       "mb-2 inline-flex size-10 items-center justify-center rounded-md [&_svg]:size-6 [&_svg]:shrink-0 sm:group-data-[layout=beside]/modal:row-span-2",
       variant === "destructive"
-        ? "bg-semantic-error-surface text-semantic-error-primary"
-        : "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]",
+        ? "bg-v2-semantic-error-surface text-v2-semantic-error-primary"
+        : "bg-v2-semantic-bg-ui text-[var(--v2-text-primary,#484848)]",
       className
     )}
     {...props}
@@ -234,7 +234,7 @@ const ModalFooter = ({
   <div
     data-slot="modal-footer"
     className={cn(
-      "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 py-3 group-data-[layout=stack]/modal:grid group-data-[layout=stack]/modal:grid-cols-2 sm:flex-row sm:justify-end",
+      "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 py-3 group-data-[layout=stack]/modal:grid group-data-[layout=stack]/modal:grid-cols-2 sm:flex-row sm:justify-end",
       className
     )}
     {...props}

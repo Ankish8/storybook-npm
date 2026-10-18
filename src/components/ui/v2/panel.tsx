@@ -13,7 +13,7 @@ const useBrowserLayoutEffect =
  * Panel root variants
  */
 const panelVariants = cva(
-  "min-h-0 min-w-0 max-w-full shrink-0 border-l border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-secondary flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_8px_24px_color-mix(in_srgb,var(--semantic-text-primary)_8%,transparent)] transition-[width,opacity] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+  "min-h-0 min-w-0 max-w-full shrink-0 border-l border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-v2-semantic-text-secondary flex flex-col overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal shadow-[0_8px_24px_color-mix(in_srgb,var(--v2-shadow-color,var(--semantic-text-primary))_8%,transparent)] transition-[width,opacity] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
   {
     variants: {
       size: {
@@ -185,9 +185,9 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
           className="flex h-full min-h-0 min-w-0 w-full flex-col outline-none"
         >
           {header ?? (
-            <div className="flex shrink-0 items-center gap-4 border-b border-solid border-semantic-border-layout p-4 sm:p-6">
+            <div className="flex shrink-0 items-center gap-4 border-b border-solid border-v2-semantic-border-layout p-4 sm:p-6">
               {title && (
-                <span className="min-w-0 flex-1 break-words text-lg font-medium leading-[1.4] text-semantic-text-primary">
+                <span className="min-w-0 flex-1 break-words text-lg font-medium leading-[1.4] text-v2-semantic-text-primary">
                   {title}
                 </span>
               )}
@@ -200,7 +200,7 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
                     if (!event.defaultPrevented && available) onClose();
                   }}
                   aria-label="Close"
-                  className="ml-auto size-8 shrink-0 rounded-md border-semantic-border-layout bg-semantic-bg-subtle p-0 text-semantic-text-secondary shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-semantic-text-primary [@media(pointer:coarse)]:size-11"
+                  className="ml-auto size-8 shrink-0 rounded-md border-v2-semantic-border-layout bg-v2-semantic-bg-subtle p-0 text-v2-semantic-text-secondary shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-v2-semantic-text-primary [@media(pointer:coarse)]:size-11"
                 >
                   <X className="size-4" strokeWidth={1.75} aria-hidden="true" />
                 </Button>
@@ -215,7 +215,7 @@ const Panel = React.forwardRef<HTMLElement, PanelProps>(
 
           {/* Footer */}
           {footer && (
-            <div className="flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-solid border-semantic-border-layout px-4 py-4 sm:px-6">
+            <div className="flex min-w-0 shrink-0 flex-wrap gap-2 border-t border-solid border-v2-semantic-border-layout px-4 py-4 sm:px-6">
               {footer}
             </div>
           )}

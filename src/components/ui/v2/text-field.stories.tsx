@@ -607,7 +607,7 @@ function PasswordExample(args: TextFieldProps) {
             aria-pressed={visible}
             disabled={args.disabled || args.loading}
             onClick={() => setVisible((previous) => !previous)}
-            className="flex cursor-pointer items-center rounded-sm focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
+            className="flex cursor-pointer items-center rounded-sm focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-v2-semantic-primary disabled:cursor-not-allowed"
           >
             {visible ? <EyeOff /> : <Eye />}
           </button>
@@ -652,7 +652,7 @@ function WorkspaceForm(args: TextFieldProps) {
   const saved = savedValue !== null && savedValue === String(args.value ?? "");
   return (
     <form
-      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
       onSubmit={(event) => {
         event.preventDefault();
         if (String(args.value ?? "").trim().length < 3) {
@@ -688,7 +688,7 @@ function WorkspaceForm(args: TextFieldProps) {
           setValidation("");
         }}
       />
-      <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
+      <div className="flex items-center justify-between gap-4 border-t border-v2-semantic-border-layout pt-4">
         <span
           className="text-xs text-[var(--v2-text-muted,#707070)]"
           role="status"

@@ -6,7 +6,7 @@ export default function Validation() {
     <div className="w-full max-w-[360px] space-y-2">
       <label
         htmlFor="validation-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>
@@ -17,14 +17,14 @@ export default function Validation() {
       />
       <button
         type="button"
-        className="text-sm text-semantic-text-link"
+        className="text-sm text-v2-semantic-text-link"
         onClick={() => setInvalid(!invalid)}
       >
         Toggle validation message
       </button>
       <label
         htmlFor="invalid-phone"
-        className="block pt-3 text-sm font-medium text-semantic-text-primary"
+        className="block pt-3 text-sm font-medium text-v2-semantic-text-primary"
       >
         ARIA invalid state
       </label>

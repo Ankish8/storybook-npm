@@ -6,10 +6,10 @@ export default function Example() {
       <Spinner variant="default" aria-label="Default loading" />
       <Spinner variant="secondary" aria-label="Secondary loading" />
       <Spinner variant="muted" aria-label="Muted loading" />
-      <div className="rounded-lg bg-semantic-primary p-3">
+      <div className="rounded-lg bg-v2-semantic-primary p-3">
         <Spinner variant="inverted" aria-label="Inverted loading" />
       </div>
-      <div className="text-semantic-success-primary">
+      <div className="text-v2-semantic-success-primary">
         <Spinner variant="current" aria-label="Inherited loading" />
       </div>
     </div>

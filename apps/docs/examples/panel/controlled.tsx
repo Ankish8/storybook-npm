@@ -14,12 +14,12 @@ export default function Example() {
           onClose={() => setOpen(false)}
           title="Contact details"
         >
-          <p className="m-0 p-4 text-sm text-semantic-text-secondary">
+          <p className="m-0 p-4 text-sm text-v2-semantic-text-secondary">
             Aditi Kumar · Support inbox
           </p>
         </Panel>
       </div>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {open ? "Contact panel open" : "Contact panel closed"}
       </p>
     </div>

@@ -1,3 +1,5 @@
+import { ThemeProvider } from "@docs/components/theme-provider";
+import { themeBootstrap } from "@docs/lib/theme";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { LibraryShell } from "@docs/components/library-shell";
@@ -16,9 +18,17 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          id="docs-theme"
+          dangerouslySetInnerHTML={{ __html: themeBootstrap }}
+        />
+      </head>
       <body>
-        <LibraryShell>{children}</LibraryShell>
+        <ThemeProvider>
+          <LibraryShell>{children}</LibraryShell>
+        </ThemeProvider>
       </body>
     </html>
   );

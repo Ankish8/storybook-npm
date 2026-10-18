@@ -275,7 +275,7 @@ describe("DateTimePicker", () => {
     expect(trigger).toHaveClass("px-4");
     expect(trigger).toHaveClass("py-2");
     expect(trigger).toHaveClass("text-sm");
-    expect(trigger).toHaveClass("border-semantic-border-input");
+    expect(trigger).toHaveClass("border-v2-semantic-border-input");
     expect(trigger).toHaveClass("text-[var(--v2-text-placeholder,#707070)]");
   });
 
@@ -424,7 +424,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker state="error" />);
 
     expect(screen.getByLabelText("Date and time").parentElement).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -1016,7 +1016,7 @@ describe("DateTimePicker", () => {
     render(<DateTimePicker label="Event date" required />);
 
     const asterisk = screen.getByText("*");
-    expect(asterisk).toHaveClass("text-semantic-error-primary");
+    expect(asterisk).toHaveClass("text-v2-semantic-error-primary");
   });
 
   it("does not render a label when none is provided", () => {
@@ -1198,10 +1198,10 @@ describe("DateTimePicker", () => {
     const input = screen.getByLabelText("Date and time");
 
     expect(message).toHaveTextContent("Select a date");
-    expect(message).toHaveClass("text-semantic-error-text");
+    expect(message).toHaveClass("text-v2-semantic-error-text");
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAttribute("aria-describedby", message.id);
-    expect(input.parentElement).toHaveClass("border-semantic-error-primary");
+    expect(input.parentElement).toHaveClass("border-v2-semantic-error-primary");
   });
 
   it("prefers the error message over helper text", () => {
@@ -1276,10 +1276,10 @@ describe("DateTimePicker calendar and time list refresh", () => {
         "top-[calc(100%+4px)]"
       );
       // The selected day is filled by the disc layer (its number turns inverse) and shows no dot unless it is today.
-      expect(day(may(12))).toHaveClass("text-semantic-text-inverted");
+      expect(day(may(12))).toHaveClass("text-v2-semantic-text-inverted");
       expect(day(may(12)).querySelector("span span")).toBeNull();
       const disc = dialog().querySelector(
-        'span[aria-hidden="true"].bg-semantic-primary'
+        'span[aria-hidden="true"].bg-v2-semantic-primary'
       );
       expect(disc).toHaveStyle({ opacity: "1" });
     });
@@ -1290,7 +1290,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
       );
       const disc = () =>
         dialog().querySelector(
-          'span[aria-hidden="true"].bg-semantic-primary'
+          'span[aria-hidden="true"].bg-v2-semantic-primary'
         ) as HTMLElement;
       const before = disc().style.transform;
       expect(disc().className).toContain("[--arc-morph:linear(");
@@ -1323,7 +1323,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
 
       expect(ungated).toEqual([]);
       expect(day(may(20))).toHaveClass(
-        "[@media(hover:hover)]:hover:bg-semantic-bg-hover"
+        "[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover"
       );
     });
 
@@ -1336,7 +1336,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
           classTokens(button).filter((token) => token.startsWith("hover:"))
         ).toEqual([]);
         expect(button).toHaveClass(
-          "[@media(hover:hover)]:hover:bg-semantic-bg-hover"
+          "[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover"
         );
       }
     });
@@ -1347,7 +1347,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
         "focus-visible:outline",
         "focus-visible:[outline-width:2px]",
         "focus-visible:outline-offset-1",
-        "focus-visible:outline-semantic-primary",
+        "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
       ];
 
       expect(day(may(20))).toHaveClass(...ring, "focus-visible:z-10");
@@ -1514,7 +1514,7 @@ describe("DateTimePicker calendar and time list refresh", () => {
       expect(row).toHaveClass("h-9", "[scroll-snap-align:center]");
       // A neutral fill marks selection without outlined adjacent cells.
       expect(option("Start Time hours", "10")).toHaveClass(
-        "bg-semantic-bg-hover",
+        "bg-v2-semantic-bg-hover",
         "border-0",
         "font-medium"
       );

@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeControl } from "./theme-provider";
 import { docsPath } from "../lib/paths";
 import Link from "next/link";
 import { SelectionMarker } from "./selection-marker";
@@ -449,6 +450,7 @@ export function LibraryShell({ children }: { children: ReactNode }) {
             </nav>
           </div>
           <div className="arc-header-right">
+            <ThemeControl />
             <button
               type="button"
               ref={searchButtonRef}

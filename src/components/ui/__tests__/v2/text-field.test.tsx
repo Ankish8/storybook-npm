@@ -57,7 +57,7 @@ describe("TextField", () => {
   it("renders required indicator when required", () => {
     render(<TextField label="Email" required />);
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-semantic-error-text");
+    expect(screen.getByText("*")).toHaveClass("text-v2-semantic-error-text");
   });
 
   it("does not render required indicator when not required", () => {
@@ -75,7 +75,7 @@ describe("TextField", () => {
   it("applies error state styling when error is set", () => {
     render(<TextField error="Error" data-testid="input" />);
     expect(screen.getByTestId("input")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -83,14 +83,14 @@ describe("TextField", () => {
     render(
       <TextField
         error="Value can't be empty"
-        className="border-semantic-border-layout focus:border-semantic-border-layout focus:shadow-none"
+        className="border-v2-semantic-border-layout focus:border-v2-semantic-border-layout focus:shadow-none"
         data-testid="input"
       />
     );
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("border-semantic-error-primary");
+    expect(input).toHaveClass("border-v2-semantic-error-primary");
     expect(input.className).not.toContain(
-      "focus:border-semantic-error-primary"
+      "focus:border-v2-semantic-error-primary"
     );
     expect(input.className).not.toContain("rgba(240,68,56");
   });
@@ -98,7 +98,7 @@ describe("TextField", () => {
   it("applies empty state styling", () => {
     render(<TextField state="empty" data-testid="input" />);
     expect(screen.getByTestId("input")).toHaveClass(
-      "border-semantic-border-input"
+      "border-v2-semantic-border-input"
     );
   });
 
@@ -123,7 +123,7 @@ describe("TextField", () => {
     render(<TextField error="This field is required" />);
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     expect(screen.getByText("This field is required")).toHaveClass(
-      "text-semantic-error-text"
+      "text-v2-semantic-error-text"
     );
   });
 
@@ -188,7 +188,7 @@ describe("TextField", () => {
 
   it("shows character count in red when over limit", () => {
     render(<TextField showCount maxLength={3} defaultValue="hello" />);
-    expect(screen.getByText("5/3")).toHaveClass("text-semantic-error-text");
+    expect(screen.getByText("5/3")).toHaveClass("text-v2-semantic-error-text");
   });
 
   // Loading state tests
@@ -450,7 +450,7 @@ describe("TextField", () => {
     render(<TextField leftIcon={<span>L</span>} />);
     const inputContainer = screen.getByRole("textbox").parentElement;
     expect(inputContainer?.className).not.toContain(
-      "focus-within:border-semantic-primary"
+      "focus-within:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(inputContainer).toBeInTheDocument();
   });
@@ -460,7 +460,7 @@ describe("TextField", () => {
       <TextField leftIcon={<span>L</span>} error="Error" />
     );
     const inputContainer = container.querySelector(
-      ".border-semantic-error-primary"
+      ".border-v2-semantic-error-primary"
     );
     expect(inputContainer).toBeInTheDocument();
   });
@@ -470,7 +470,7 @@ describe("TextField", () => {
       <TextField leftIcon={<span>L</span>} state="empty" />
     );
     const inputContainer = container.querySelector(
-      ".border-semantic-border-input"
+      ".border-v2-semantic-border-input"
     );
     expect(inputContainer).toBeInTheDocument();
   });
@@ -554,9 +554,9 @@ describe("TextField", () => {
   it("retains the grey disabled surface for addon fields", () => {
     render(<TextField prefix="https://" disabled error="Error" />);
     expect(screen.getByRole("textbox").parentElement).toHaveClass(
-      "bg-semantic-bg-ui",
+      "bg-v2-semantic-bg-ui",
       "opacity-50",
-      "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-input",
+      "[@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-border-input",
       "shadow-none"
     );
   });
@@ -770,11 +770,11 @@ describe("TextField message reveal and clear button", () => {
       </>
     );
     expect(screen.getByRole("textbox", { name: "Plain" })).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
     expect(
       screen.getByRole("textbox", { name: "Composed" }).parentElement
-    ).toHaveClass("border-semantic-error-primary");
+    ).toHaveClass("border-v2-semantic-error-primary");
   });
 
   it("optionally returns keyboard focus after clear without changing the callback contract", async () => {

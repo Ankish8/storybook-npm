@@ -18,7 +18,7 @@ export default function Example() {
         Receive an inbox summary every Monday.
       </UiCardDescription>
       <UiCardFooter>
-        <span className="text-xs text-semantic-text-muted">Team report</span>
+        <span className="text-xs text-v2-semantic-text-muted">Team report</span>
         <Button
           size="sm"
           variant="outline"
@@ -27,7 +27,7 @@ export default function Example() {
           {subscribed ? "Unsubscribe" : "Subscribe"}
         </Button>
       </UiCardFooter>
-      <p role="status" className="m-0 mt-3 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 mt-3 text-xs text-v2-semantic-text-muted">
         {subscribed ? "Subscribed locally" : "No subscription"}
       </p>
     </UiCard>

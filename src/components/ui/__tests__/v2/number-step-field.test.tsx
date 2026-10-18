@@ -381,7 +381,7 @@ describe("NumberStepField hold to repeat and tiles", () => {
         "p-0"
       );
       expect(tile.className).toContain(
-        "enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-hover"
+        "enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-hover"
       );
       // The input already answers the arrow and page keys, so the steppers are not Tab stops.
       expect(tile).toHaveAttribute("tabindex", "-1");
@@ -391,7 +391,7 @@ describe("NumberStepField hold to repeat and tiles", () => {
       "h-full",
       "w-8",
       "flex-col",
-      "bg-semantic-bg-ui",
+      "bg-v2-semantic-bg-ui",
       "border-l"
     );
     expect(column).not.toHaveClass("px-0.5");
@@ -740,9 +740,9 @@ describe("NumberStepField keyboard", () => {
     const wheels = document.querySelector(
       "[data-number-digits]"
     ) as HTMLElement;
-    expect(wheels).toHaveClass("text-semantic-warning-text");
+    expect(wheels).toHaveClass("text-v2-semantic-warning-text");
     await waitFor(
-      () => expect(wheels).not.toHaveClass("text-semantic-warning-text"),
+      () => expect(wheels).not.toHaveClass("text-v2-semantic-warning-text"),
       { timeout: 1500 }
     );
   });
@@ -825,12 +825,12 @@ describe("NumberStepField semantics", () => {
     const input = screen.getByLabelText("Hours");
     expect(input).toHaveAttribute("aria-invalid", "true");
     const shell = input.parentElement!.parentElement!;
-    expect(shell).toHaveClass("border-semantic-error-primary");
+    expect(shell).toHaveClass("border-v2-semantic-error-primary");
     // The grey hover border must not replace the red one.
     expect(shell.className).not.toContain("group-hover");
     rerender(<Field />);
     expect(input).not.toHaveAttribute("aria-invalid");
-    expect(shell).toHaveClass("border-semantic-border-layout");
+    expect(shell).toHaveClass("border-v2-semantic-border-layout");
   });
 
   it("grows the field on a coarse pointer so each stepper tile is 24px", () => {

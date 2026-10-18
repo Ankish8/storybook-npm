@@ -31,7 +31,7 @@ export default function Example() {
           Dismiss all
         </Button>
       </div>
-      <label className="flex items-center gap-2 text-xs text-semantic-text-secondary">
+      <label className="flex items-center gap-2 text-xs text-v2-semantic-text-secondary">
         <input
           type="checkbox"
           checked={expanded}

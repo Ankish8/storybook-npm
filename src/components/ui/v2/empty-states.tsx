@@ -149,7 +149,7 @@ const EmptyStates = React.forwardRef<HTMLDivElement, EmptyStatesProps>(
         data-slot="empty-states"
         data-value={selected}
         className={cn(
-          "w-full min-w-0 max-w-2xl rounded-2xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-primary sm:p-6",
+          "w-full min-w-0 max-w-2xl rounded-2xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-v2-semantic-text-primary sm:p-6",
           className
         )}
         onFocusCapture={(event) => {
@@ -213,7 +213,7 @@ const EmptyStates = React.forwardRef<HTMLDivElement, EmptyStatesProps>(
                 key={view.value}
                 value={view.value}
                 data-slot="empty-states-panel"
-                className="mt-6 w-full min-w-0 focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-4 focus-visible:outline-semantic-primary"
+                className="mt-6 w-full min-w-0 focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-4 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
               >
                 <EmptyState
                   illustration={view.value}

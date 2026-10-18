@@ -71,7 +71,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
         role="group"
         aria-label={ariaLabel}
         className={cn(
-          "inline-flex max-w-full flex-col items-center bg-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          "inline-flex max-w-full flex-col items-center bg-v2-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)]",
           code.length === length && !error ? "gap-2.5" : "gap-4",
           className
         )}
@@ -106,10 +106,10 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
                 // Padding-free cells can shrink for six digits without clipping the glyph.
                 // Keep the font size stable; colour provides the subtle arrival transition.
                 // The explicit caret colour remains visible while an empty cell has transparent text.
-                "box-border h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-semantic-bg-primary px-0 py-2.5 text-center font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] caret-semantic-primary outline-none [transition-property:border-color,background-color,color] [transition-duration:160ms,160ms,180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] data-[filled=false]:text-transparent placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50",
+                "box-border h-[60px] w-[54px] min-w-0 rounded-lg border border-solid bg-v2-semantic-bg-primary px-0 py-2.5 text-center font-[family-name:var(--font-v2,Inter,sans-serif)] text-base font-normal leading-[18px] text-[var(--v2-text-secondary,#5E5E5E)] caret-[var(--v2-semantic-border-focus,var(--semantic-primary))] outline-none [transition-property:border-color,background-color,color] [transition-duration:160ms,160ms,180ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] data-[filled=false]:text-transparent placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:opacity-50",
                 error
-                  ? "border-semantic-error-primary focus:shadow-none"
-                  : "border-semantic-border-input enabled:hover:[&:not(:focus)]:border-semantic-primary focus:border-semantic-primary focus:shadow-none"
+                  ? "border-v2-semantic-error-primary focus:shadow-none"
+                  : "border-v2-semantic-border-input enabled:hover:[&:not(:focus)]:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus:shadow-none"
               )}
               onFocus={(event) => event.currentTarget.select()}
               onChange={(event) => {
@@ -149,7 +149,7 @@ const OtpInput = React.forwardRef<HTMLDivElement, OtpInputProps>(
             className={cn(
               "m-0 text-xs leading-[1.4] tracking-[-0.16px]",
               error
-                ? "text-semantic-error-text"
+                ? "text-v2-semantic-error-text"
                 : "text-[var(--v2-text-muted,#707070)]"
             )}
           >

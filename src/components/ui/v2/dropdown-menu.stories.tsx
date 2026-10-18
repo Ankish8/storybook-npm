@@ -493,7 +493,7 @@ function InlineMenu({
     "relative flex w-full min-w-0 items-center gap-2 border-0 bg-transparent text-left outline-none",
     version === "v2"
       ? "min-h-12 rounded-sm px-1.5 py-2.5 text-base font-normal"
-      : "rounded-sm px-2 py-2 text-sm text-semantic-text-secondary"
+      : "rounded-sm px-2 py-2 text-sm text-v2-semantic-text-secondary"
   );
   return (
     <div
@@ -501,8 +501,8 @@ function InlineMenu({
       data-version={version}
       className={cn(
         version === "v1"
-          ? "w-72 max-w-full border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-semantic-text-primary shadow-md"
-          : "w-72 max-w-full border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1 text-[var(--v2-text-secondary,#5E5E5E)] shadow-md",
+          ? "w-72 max-w-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-1 text-v2-semantic-text-primary shadow-md"
+          : "w-72 max-w-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-1 text-[var(--v2-text-secondary,#5E5E5E)] shadow-md",
         version === "v2"
           ? "rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)]"
           : "rounded-md"
@@ -511,26 +511,26 @@ function InlineMenu({
       <div
         className={
           version === "v1"
-            ? "px-2 py-1.5 text-sm font-semibold text-semantic-text-secondary"
+            ? "px-2 py-1.5 text-sm font-semibold text-v2-semantic-text-secondary"
             : "px-2 py-1.5 text-sm font-medium text-[var(--v2-text-primary,#484848)]"
         }
       >
         {args.groupLabel}
       </div>
-      <div className="-mx-1 my-1 h-px bg-semantic-border-layout" />
+      <div className="-mx-1 my-1 h-px bg-v2-semantic-border-layout" />
       <button
         className={cn(
           row,
-          args.destructive && "text-semantic-error-text",
+          args.destructive && "text-v2-semantic-error-text",
           state === "Focus" &&
             (version === "v2"
-              ? "bg-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
-              : "bg-semantic-bg-ui"),
+              ? "bg-v2-semantic-bg-ui text-[var(--v2-text-primary,#484848)]"
+              : "bg-v2-semantic-bg-ui"),
           // v2 destructive rows tint their highlight, like the real DropdownMenuItem `destructive`.
           args.destructive && version === "v2"
-            ? "hover:bg-semantic-error-surface"
-            : "hover:bg-semantic-bg-ui",
-          "disabled:text-semantic-disabled-primary"
+            ? "hover:bg-v2-semantic-error-surface"
+            : "hover:bg-v2-semantic-bg-ui",
+          "disabled:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]"
         )}
         disabled={state === "Disabled" || args.disabled}
         onClick={() => args.onSelect({ type: "select", label: args.itemLabel })}
@@ -544,7 +544,7 @@ function InlineMenu({
             <span
               className={
                 version === "v1"
-                  ? "text-xs text-semantic-text-muted"
+                  ? "text-xs text-v2-semantic-text-muted"
                   : "text-xs text-[var(--v2-text-muted,#707070)]"
               }
             >
@@ -556,7 +556,7 @@ function InlineMenu({
           <span
             className={
               version === "v1"
-                ? "shrink-0 text-xs text-semantic-text-muted"
+                ? "shrink-0 text-xs text-v2-semantic-text-muted"
                 : "shrink-0 text-xs text-[var(--v2-text-muted,#707070)]"
             }
           >
@@ -567,8 +567,8 @@ function InlineMenu({
           <span
             className={
               version === "v1"
-                ? "inline-flex h-5 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-semantic-text-muted"
-                : "inline-flex h-5 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]"
+                ? "inline-flex h-5 items-center rounded border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-1 text-xs text-v2-semantic-text-muted"
+                : "inline-flex h-5 items-center rounded border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]"
             }
           >
             ⌘E
@@ -581,7 +581,7 @@ function InlineMenu({
           version === "v2" &&
             checked &&
             "text-[var(--v2-text-primary,#484848)]",
-          "pl-8 hover:bg-semantic-bg-ui disabled:text-semantic-disabled-primary"
+          "pl-8 hover:bg-v2-semantic-bg-ui disabled:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]"
         )}
         disabled={args.disabled}
         aria-pressed={checked}
@@ -595,15 +595,15 @@ function InlineMenu({
             className={cn(
               "absolute left-2 h-4 w-4",
               version === "v2"
-                ? "text-semantic-border-accent"
-                : "text-semantic-text-primary"
+                ? "text-v2-semantic-border-accent"
+                : "text-v2-semantic-text-primary"
             )}
           />
         )}
         Desktop notifications
       </button>
       <button
-        className={cn(row, "hover:bg-semantic-bg-ui")}
+        className={cn(row, "hover:bg-v2-semantic-bg-ui")}
         onClick={() =>
           args.onSelect({ type: "select", label: "Share conversation" })
         }
@@ -611,13 +611,13 @@ function InlineMenu({
         Share conversation
         <ChevronRight className="ml-auto h-4 w-4" />
       </button>
-      <div className="-mx-1 my-1 h-px bg-semantic-border-layout" />
+      <div className="-mx-1 my-1 h-px bg-v2-semantic-border-layout" />
       <button
         className={cn(
           row,
           version === "v2"
-            ? "text-semantic-error-text hover:bg-semantic-error-surface"
-            : "text-semantic-error-text hover:bg-semantic-bg-ui"
+            ? "text-v2-semantic-error-text hover:bg-v2-semantic-error-surface"
+            : "text-v2-semantic-error-text hover:bg-v2-semantic-bg-ui"
         )}
         onClick={() => args.onSelect({ type: "select", label: "Archive" })}
       >
@@ -751,7 +751,7 @@ function WorkspaceActions({
 }) {
   const [result, setResult] = React.useState("No action selected.");
   return (
-    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <section className="flex w-[560px] max-w-full flex-col gap-5 rounded-xl border border-solid border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-1">
           <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">

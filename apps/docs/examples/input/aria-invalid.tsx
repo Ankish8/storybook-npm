@@ -11,7 +11,7 @@ export default function AriaInvalid() {
       />
       <p
         id="aria-invalid-message"
-        className="m-0 text-xs text-semantic-error-text"
+        className="m-0 text-xs text-v2-semantic-error-text"
       >
         Enter all 10 digits.
       </p>

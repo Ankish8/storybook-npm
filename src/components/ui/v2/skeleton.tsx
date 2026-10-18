@@ -18,12 +18,12 @@ const skeletonVariants = cva("", {
       pulse:
         "animate-pulse motion-reduce:animate-none [animation-delay:var(--v2-skeleton-delay,0ms)] [animation-duration:var(--v2-skeleton-duration,1.8s)] [animation-timing-function:var(--v2-skeleton-timing,cubic-bezier(0.65,0,0.35,1))] [animation-iteration-count:var(--v2-skeleton-iterations,11)] [animation-fill-mode:var(--v2-skeleton-fill,both)] [animation-play-state:var(--v2-skeleton-play-state,running)]",
       shimmer:
-        "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary)_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:var(--v2-skeleton-duration,1.6s)] motion-safe:after:[animation-timing-function:var(--v2-skeleton-timing,linear)] motion-safe:after:[animation-iteration-count:var(--v2-skeleton-iterations,12)] motion-safe:after:[animation-fill-mode:var(--v2-skeleton-fill,none)] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)] motion-safe:after:[animation-play-state:var(--v2-skeleton-play-state,running)]",
+        "relative overflow-hidden after:pointer-events-none after:absolute after:inset-y-0 after:left-full after:w-full after:bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--v2-skeleton-highlight,var(--v2-semantic-bg-primary,var(--semantic-bg-primary)))_50%,transparent),transparent)] motion-safe:after:animate-in motion-safe:after:[--tw-enter-translate-x:-200%] motion-safe:after:[animation-duration:var(--v2-skeleton-duration,1.6s)] motion-safe:after:[animation-timing-function:var(--v2-skeleton-timing,linear)] motion-safe:after:[animation-iteration-count:var(--v2-skeleton-iterations,12)] motion-safe:after:[animation-fill-mode:var(--v2-skeleton-fill,none)] motion-safe:after:[animation-delay:var(--v2-skeleton-delay,0ms)] motion-safe:after:[animation-play-state:var(--v2-skeleton-play-state,running)]",
       none: "",
     },
     variant: {
-      default: "bg-semantic-bg-grey",
-      subtle: "bg-semantic-bg-ui",
+      default: "bg-v2-semantic-bg-grey",
+      subtle: "bg-v2-semantic-bg-ui",
     },
     shape: {
       line: "h-4 w-full rounded",

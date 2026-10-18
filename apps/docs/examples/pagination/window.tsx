@@ -7,7 +7,7 @@ export default function Window() {
   return (
     <div className="w-full max-w-lg space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="m-0 text-sm tabular-nums text-semantic-text-muted">
+        <p className="m-0 text-sm tabular-nums text-v2-semantic-text-muted">
           Page {page} of 12
         </p>
         <div className="flex gap-2">

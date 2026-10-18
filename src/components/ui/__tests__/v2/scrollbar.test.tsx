@@ -189,7 +189,7 @@ describe("Scrollbar contract", () => {
       <Scrollbar variant="dark" showControls={false} />
     );
     const track = container.querySelector('[data-slot="scrollbar-track"]');
-    expect(track).toHaveClass("w-4", "border-l", "bg-semantic-bg-ui");
+    expect(track).toHaveClass("w-4", "border-l", "bg-v2-semantic-bg-ui");
     expect(
       screen.queryByRole("button", { hidden: true })
     ).not.toBeInTheDocument();

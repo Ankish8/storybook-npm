@@ -45,7 +45,7 @@ body {
 .preview-error {
   margin: 0;
   padding: 24px;
-  color: var(--semantic-error-text);
+  color: var(--v2-semantic-error-text, var(--semantic-error-text));
   font-size: 14px;
 }
 
@@ -66,4 +66,22 @@ html[data-live-comparison="true"] .preview-frame[data-layout="centered"] {
   display: flex;
   justify-content: safe center;
   align-items: center;
+}
+
+/* Only v2 is themed; legacy comparisons keep their frozen light appearance. */
+html.dark {
+  color-scheme: dark;
+  color: var(--v2-text-primary);
+}
+html.dark .preview-frame,
+html.dark .example-stage {
+  color: var(--v2-text-primary);
+}
+html[data-preview-version="v1"] {
+  color-scheme: light;
+}
+
+html[data-preview-version="v1"] body {
+  background: #fff;
+  color: #414651;
 }

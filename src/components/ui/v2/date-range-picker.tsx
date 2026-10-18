@@ -35,17 +35,17 @@ const YEAR_OPTIONS_SPAN = 10;
 // Outline rather than ring: it follows border-radius, takes no part in layout
 // and is not clipped by the neighbouring cell's background.
 const FOCUS_RING =
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-semantic-primary";
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]";
 // Hover fills only where a real hover exists. On touch a tap would otherwise
 // leave the fill stuck on the element until the next tap elsewhere.
-const HOVER_FILL = "[@media(hover:hover)]:hover:bg-semantic-bg-hover";
+const HOVER_FILL = "[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover";
 
 // 32px hit area (36px on touch-sized viewports) around the 16px chevron; the
 // old 24px button was below the minimum comfortable target.
 // Arc header controls: a fill on hover (160ms), a quick press (.92 over 120ms) and a spring release (580ms).
 const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.92] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,color] motion-reduce:enabled:active:scale-100 max-sm:size-9 ${HOVER_FILL}`;
 // Month and year share one pill so the two read as a pair.
-const CALENDAR_PILL = `inline-flex h-8 items-center gap-1 rounded-lg border border-solid border-semantic-border-layout px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors ${HOVER_FILL}`;
+const CALENDAR_PILL = `inline-flex h-8 items-center gap-1 rounded-lg border border-solid border-v2-semantic-border-layout px-3 text-sm font-medium text-[var(--v2-text-primary,#484848)] transition-colors ${HOVER_FILL}`;
 const CALENDAR_PILL_CHEVRON =
   "size-3.5 text-[var(--v2-text-muted,#707070)] transition-transform [transition-duration:580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none";
 
@@ -62,12 +62,12 @@ const BAND_START_AT_CIRCLE =
   "before:left-[calc(50%-1rem)] sm:before:left-[calc(50%-14px)]";
 const BAND_END_AT_CIRCLE =
   "before:right-[calc(50%-1rem)] sm:before:right-[calc(50%-14px)]";
-const BAND_RANGE = "before:bg-semantic-info-surface";
+const BAND_RANGE = "before:bg-v2-semantic-info-surface";
 // Lighter than the committed band and edged with dashes, so a not-yet-chosen
 // end reads as provisional. Below `sm` the rows touch, so the preview is
 // inset 1px there; otherwise two stacked rows would double their dashed edge.
 const BAND_PREVIEW =
-  "before:border-y before:border-dashed before:border-[color:var(--color-info-100)] before:bg-semantic-info-surface-subtle max-sm:before:inset-y-px";
+  "before:border-y before:border-dashed before:border-[color:var(--v2-semantic-info-border,var(--color-info-100))] before:bg-v2-semantic-info-surface-subtle max-sm:before:inset-y-px";
 
 // Month change motion. The grid only gets these classes after the user has
 // navigated, so mounting the popover (which resets the month) never animates.
@@ -120,14 +120,14 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-11 min-w-0 w-full items-center gap-2 rounded-lg border border-solid bg-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:shadow-none disabled:hover:border-semantic-border-layout",
+  "flex h-11 min-w-0 w-full items-center gap-2 rounded-lg border border-solid bg-v2-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:2px] dark:focus-visible:outline-offset-2 dark:focus-visible:outline-v2-semantic-border-focus transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
   {
     variants: {
       state: {
         default:
-          "border-semantic-border-input enabled:hover:border-[var(--color-primary-100,#C0C3CA)] focus:shadow-none",
+          "border-v2-semantic-border-input enabled:hover:border-[var(--v2-semantic-border-accent,var(--color-primary-100,#C0C3CA))] focus:shadow-none",
         error:
-          "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
+          "border-v2-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
       },
     },
     defaultVariants: {
@@ -1174,9 +1174,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.95] motion-safe:slide-in-from-top-2 origin-top-left motion-safe:[animation-duration:350ms] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [animation-timing-function:var(--arc-snappy)] motion-reduce:animate-[v2-fade-in_120ms_ease-out]",
             // Below `sm` the panel is a fixed compact width (the presets scroll inside it); it used to
             // stretch to the full length of the preset row.
-            "flex flex-col max-sm:w-[19rem] font-[family-name:var(--font-v2,Inter,sans-serif)] rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
-            "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
-            "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
+            "flex flex-col max-sm:w-[19rem] font-[family-name:var(--font-v2,Inter,sans-serif)] rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)] text-[var(--v2-text-secondary,#5E5E5E)] overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--v2-semantic-border-secondary,var(--semantic-border-secondary))_transparent]",
+            "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-v2-semantic-border-secondary"
           )}
           style={{
             ...floatingStyles,
@@ -1201,7 +1201,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             {presets.length > 0 && (
               <div
                 onKeyDown={handleRailKeyDown}
-                className="flex shrink-0 gap-0.5 border-solid border-semantic-border-layout p-2 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-[8.5rem] sm:flex-col sm:border-r"
+                className="flex shrink-0 gap-0.5 border-solid border-v2-semantic-border-layout p-2 max-sm:w-full max-sm:flex-row max-sm:overflow-x-auto max-sm:border-b sm:w-[8.5rem] sm:flex-col sm:border-r"
               >
                 {presets.map((preset, presetIndex) => {
                   const presetDisabled =
@@ -1216,10 +1216,10 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                       disabled={presetDisabled}
                       aria-current={presetSelected ? "true" : undefined}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-2.5 py-1.5 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
+                        "shrink-0 whitespace-nowrap rounded px-2.5 py-1.5 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-v2-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
                         FOCUS_RING,
                         presetSelected
-                          ? "bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                          ? "bg-v2-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
                           : cn(
                               "text-[var(--v2-text-secondary,#5E5E5E)]",
                               HOVER_FILL
@@ -1613,7 +1613,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                                           FOCUS_RING,
                                           "focus-visible:z-10",
                                           isSelectedEdge
-                                            ? "bg-semantic-primary text-semantic-text-inverted font-medium"
+                                            ? "bg-v2-semantic-primary text-v2-semantic-text-inverted font-medium"
                                             : cn(
                                                 isCurrentMonth
                                                   ? "text-[var(--v2-text-secondary,#5E5E5E)]"
@@ -1621,7 +1621,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                                                 // The provisional end is outlined, not filled:
                                                 // it only becomes a selected circle on click.
                                                 isPreviewEnd
-                                                  ? "ring-1 ring-inset ring-semantic-primary"
+                                                  ? "ring-1 ring-inset ring-[color:var(--v2-semantic-border-focus,var(--semantic-primary))]"
                                                   : HOVER_FILL
                                               ),
                                           isDisabled &&
@@ -1654,8 +1654,8 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                                             className={cn(
                                               "absolute bottom-0.5 left-1/2 size-1 -translate-x-1/2 rounded-full max-sm:bottom-[3px]",
                                               isSelectedEdge
-                                                ? "bg-semantic-text-inverted"
-                                                : "bg-semantic-primary"
+                                                ? "bg-v2-semantic-text-inverted"
+                                                : "bg-v2-semantic-primary"
                                             )}
                                           />
                                         )}
@@ -1673,7 +1673,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
               </div>
 
               {showSummary && (
-                <div className="mt-1.5 flex min-h-9 items-center justify-between gap-3 border-t border-solid border-semantic-border-layout px-1 pt-2">
+                <div className="mt-1.5 flex min-h-9 items-center justify-between gap-3 border-t border-solid border-v2-semantic-border-layout px-1 pt-2">
                   <div
                     role="status"
                     aria-live="polite"
@@ -1739,7 +1739,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           aria-invalid={props["aria-invalid"] ?? state === "error"}
           className={cn(
             dateRangePickerTriggerVariants({ state }),
-            open && state !== "error" && "border-semantic-primary shadow-none",
+            open &&
+              state !== "error" &&
+              "border-[var(--v2-semantic-border-focus,var(--semantic-primary))] shadow-none",
             !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
             showClear && "pr-11",
             triggerClassName
@@ -1774,7 +1776,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           <button
             type="button"
             aria-label={clearLabel}
-            className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-semantic-border-focus"
+            className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-v2-semantic-border-focus"
             onClick={handleClear}
           >
             <X className="size-4" />

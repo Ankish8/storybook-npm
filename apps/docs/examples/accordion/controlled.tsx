@@ -38,7 +38,7 @@ export default function Example() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {open.length} sections open
       </p>
     </div>

@@ -81,19 +81,19 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
+  "relative flex items-center rounded-lg dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:shadow-none",
+          "border border-solid border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))] focus-within:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:shadow-none",
+          "border border-solid border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))] focus-within:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary focus-within:shadow-none",
+          "border border-solid border-v2-semantic-error-primary focus-within:shadow-none",
       },
       disabled: {
-        true: "cursor-not-allowed bg-semantic-bg-ui shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-input",
+        true: "cursor-not-allowed bg-v2-semantic-bg-ui shadow-none [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-border-input",
         false: "",
       },
     },
@@ -108,16 +108,16 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.01em] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-50 disabled:shadow-none",
+  "w-full rounded-lg bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.01em] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:opacity-50 disabled:shadow-none",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))] focus:outline-none focus:shadow-none",
         empty:
-          "border border-solid border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))] focus:outline-none focus:shadow-none",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-v2-semantic-error-primary focus:outline-none focus:shadow-none",
       },
       size: {
         default: "h-11 px-3 py-0 text-sm leading-[1.4] file:text-sm",
@@ -364,7 +364,7 @@ const TextField = React.forwardRef(
                 derivedState === "error" &&
                   !disabled &&
                   !loading &&
-                  "border-semantic-error-primary focus:shadow-none"
+                  "border-v2-semantic-error-primary focus:shadow-none"
               ),
           type === "number" &&
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
@@ -488,7 +488,7 @@ const TextField = React.forwardRef(
           >
             {label}
             {required && (
-              <span className="text-semantic-error-text ml-0.5">*</span>
+              <span className="text-v2-semantic-error-text ml-0.5">*</span>
             )}
           </label>
         )}
@@ -507,7 +507,7 @@ const TextField = React.forwardRef(
               derivedState === "error" &&
                 !disabled &&
                 !loading &&
-                "border-semantic-error-primary focus-within:shadow-none"
+                "border-v2-semantic-error-primary focus-within:shadow-none"
             )}
           >
             {prefix && (
@@ -538,7 +538,7 @@ const TextField = React.forwardRef(
                 type="button"
                 onClick={handleClear}
                 className={cn(
-                  "relative grid size-6 flex-shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-semantic-primary cursor-pointer place-items-center rounded text-[var(--v2-text-muted,#707070)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,background-color,opacity,transform,filter,margin-left,visibility] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:color,background-color,opacity,visibility]",
+                  "relative grid size-6 flex-shrink-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] cursor-pointer place-items-center rounded text-[var(--v2-text-muted,#707070)] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,#484848)] [transition-property:color,background-color,opacity,transform,filter,margin-left,visibility] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-property:color,background-color,opacity,visibility]",
                   showClearButton
                     ? "visible ml-2 scale-100 opacity-100 blur-0 active:scale-[0.96] motion-reduce:active:scale-100"
                     : "pointer-events-none invisible -ml-6 scale-[0.8] opacity-0 blur-[2px] motion-reduce:scale-100 motion-reduce:blur-0"
@@ -575,7 +575,7 @@ const TextField = React.forwardRef(
               key={"error:" + error}
               id={errorId}
               aria-live="polite"
-              className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+              className="min-h-0 overflow-hidden break-words font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px] text-v2-semantic-error-text"
             >
               {error}
             </motion.span>
@@ -596,7 +596,7 @@ const TextField = React.forwardRef(
               className={cn(
                 "min-h-0 overflow-hidden font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs leading-[1.4] tracking-[-0.16px]",
                 charCount > maxLength
-                  ? "text-semantic-error-text"
+                  ? "text-v2-semantic-error-text"
                   : "text-[var(--v2-text-muted,#707070)]"
               )}
             >

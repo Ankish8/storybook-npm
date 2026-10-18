@@ -18,12 +18,12 @@ describe("Input (v2)", () => {
   it("applies default state classes", () => {
     render(<Input data-testid="input" />);
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("border-semantic-border-input");
+    expect(input).toHaveClass("border-v2-semantic-border-input");
   });
 
   it.each([
-    ["default", "border-semantic-border-input"],
-    ["error", "border-semantic-error-primary"],
+    ["default", "border-v2-semantic-border-input"],
+    ["error", "border-v2-semantic-error-primary"],
   ] as const)("renders %s state", (state, expectedClass) => {
     render(<Input state={state} data-testid="input" />);
     const input = screen.getByTestId("input");
@@ -34,15 +34,15 @@ describe("Input (v2)", () => {
     render(
       <Input
         state="error"
-        className="border-semantic-border-layout focus:border-semantic-border-layout focus:shadow-none"
+        className="border-v2-semantic-border-layout focus:border-v2-semantic-border-layout focus:shadow-none"
         data-testid="input"
       />
     );
     const input = screen.getByTestId("input");
-    expect(input).toHaveClass("border-semantic-error-primary");
+    expect(input).toHaveClass("border-v2-semantic-error-primary");
     // Focus adds no border change or glow of its own
     expect(input.className).not.toContain(
-      "focus:border-semantic-error-primary"
+      "focus:border-v2-semantic-error-primary"
     );
     expect(input.className).not.toContain("rgba(240,68,56");
   });
@@ -73,7 +73,7 @@ describe("Input (v2)", () => {
     render(<Input data-testid="input" />);
     const input = screen.getByTestId("input");
     expect(input).toHaveClass("disabled:cursor-not-allowed");
-    expect(input).toHaveClass("disabled:bg-semantic-bg-ui");
+    expect(input).toHaveClass("disabled:bg-v2-semantic-bg-ui");
   });
 
   it("applies custom className", () => {
@@ -250,7 +250,7 @@ describe("Input (v2)", () => {
     render(<Input data-testid="input" />);
     const input = screen.getByTestId("input");
     expect(input.className).toContain(
-      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary"
+      "[@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))]"
     );
     // The un-gated utility would leave the border dark after a tap on touch
     expect(input.className).not.toMatch(/(^|\s)enabled:hover:/);
@@ -260,11 +260,11 @@ describe("Input (v2)", () => {
     render(<Input aria-invalid="true" data-testid="input" />);
     const input = screen.getByTestId("input");
     expect(input).toHaveClass(
-      "aria-[invalid=true]:border-semantic-error-primary"
+      "aria-[invalid=true]:border-v2-semantic-error-primary"
     );
     // Hovering an invalid field must not swap the red for the neutral hover colour
     expect(input.className).toContain(
-      "[@media(hover:hover)_and_(pointer:fine)]:aria-[invalid=true]:enabled:hover:border-semantic-error-primary"
+      "[@media(hover:hover)_and_(pointer:fine)]:aria-[invalid=true]:enabled:hover:border-v2-semantic-error-primary"
     );
   });
 

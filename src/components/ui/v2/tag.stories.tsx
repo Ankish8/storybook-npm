@@ -341,12 +341,12 @@ function DismissibleTags(args: TagStoryArgs) {
   }, [tags]);
 
   return (
-    <div className="flex w-[440px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[440px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
-        <p className="m-0 text-base font-medium text-semantic-text-primary">
+        <p className="m-0 text-base font-medium text-v2-semantic-text-primary">
           Contact tags
         </p>
-        <p className="m-0 mt-1 text-sm text-semantic-text-muted">
+        <p className="m-0 mt-1 text-sm text-v2-semantic-text-muted">
           Labels used to route this contact to the right team.
         </p>
       </div>
@@ -386,27 +386,27 @@ function DismissibleTags(args: TagStoryArgs) {
             </TagSample>
           ))
         ) : (
-          <span className="text-sm text-semantic-text-muted">
+          <span className="text-sm text-v2-semantic-text-muted">
             No tags selected
           </span>
         )}
       </div>
       <div className="space-y-3">
-        <label className="flex items-center gap-2 text-sm text-semantic-text-secondary">
+        <label className="flex items-center gap-2 text-sm text-v2-semantic-text-secondary">
           <input
             type="checkbox"
             checked={keepVip}
             onChange={(event) => setKeepVip(event.target.checked)}
-            className="size-4 accent-semantic-primary"
+            className="size-4 accent-v2-semantic-primary"
           />
           Keep VIP
         </label>
-        <p className="m-0 text-xs text-semantic-text-muted">
+        <p className="m-0 text-xs text-v2-semantic-text-muted">
           Tab to ×, then press Enter, Space, Backspace or Delete. Keep VIP
           cancels its removal.
         </p>
         <p
-          className="m-0 min-h-5 text-xs text-semantic-text-secondary"
+          className="m-0 min-h-5 text-xs text-v2-semantic-text-secondary"
           role="status"
           aria-live="polite"
           aria-atomic="true"
@@ -414,7 +414,7 @@ function DismissibleTags(args: TagStoryArgs) {
           {announcement || tags.length + " tags attached"}
         </p>
       </div>
-      <div className="flex border-t border-semantic-border-layout pt-4">
+      <div className="flex border-t border-v2-semantic-border-layout pt-4">
         <Button
           ref={resetRef}
           variant="outline"
@@ -597,7 +597,7 @@ export const Usage: Story = {
     "Controls update the group palette and every tag's size. Icon and dismissal settings apply to the individual category tags."
   ),
   render: (args) => (
-    <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <div className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div>
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Conversation activity
@@ -612,7 +612,7 @@ export const Usage: Story = {
         tags={TAGS.slice(0, 3)}
         maxVisible={2}
       />
-      <div className="flex flex-wrap items-center gap-2 border-t border-semantic-border-layout pt-4">
+      <div className="flex flex-wrap items-center gap-2 border-t border-v2-semantic-border-layout pt-4">
         <TagSample
           {...args}
           variant="accent"

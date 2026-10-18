@@ -148,7 +148,7 @@ function RecoveryDemo({ states, onAction, ...props }: EmptyStatesProps) {
         }}
       />
       <p
-        className="m-0 text-center text-xs leading-5 text-semantic-text-muted"
+        className="m-0 text-center text-xs leading-5 text-v2-semantic-text-muted"
         role="status"
         aria-live="polite"
         aria-atomic="true"
@@ -184,11 +184,11 @@ EmptyStates is a new v2 block. Existing EmptyState remains available for a singl
 
 | Token | CSS variable | Preview |
 | --- | --- | --- |
-| Surface | \`--semantic-bg-primary\` | <span style="display:inline-block;width:24px;height:16px;border:1px solid var(--semantic-border-layout);background:var(--semantic-bg-primary)"></span> |
-| Tab rail | \`--semantic-bg-ui\` | <span style="display:inline-block;width:24px;height:16px;background:var(--semantic-bg-ui)"></span> |
-| Border | \`--semantic-border-layout\` | <span style="display:inline-block;width:24px;height:16px;background:var(--semantic-border-layout)"></span> |
-| Primary action and focus | \`--semantic-primary\` | <span style="display:inline-block;width:24px;height:16px;background:var(--semantic-primary)"></span> |
-| Text | \`--semantic-text-primary\` | <span style="display:inline-block;width:24px;height:16px;background:var(--semantic-text-primary)"></span> |
+| Surface | \`--semantic-bg-primary\` | <span style="display:inline-block;width:24px;height:16px;border:1px solid var(--v2-semantic-border-layout,var(--semantic-border-layout));background:var(--v2-semantic-bg-primary,var(--semantic-bg-primary))"></span> |
+| Tab rail | \`--semantic-bg-ui\` | <span style="display:inline-block;width:24px;height:16px;background:var(--v2-semantic-bg-ui,var(--semantic-bg-ui))"></span> |
+| Border | \`--semantic-border-layout\` | <span style="display:inline-block;width:24px;height:16px;background:var(--v2-semantic-border-layout,var(--semantic-border-layout))"></span> |
+| Primary action and focus | \`--semantic-primary\` | <span style="display:inline-block;width:24px;height:16px;background:var(--v2-semantic-primary,var(--semantic-primary))"></span> |
+| Text | \`--semantic-text-primary\` | <span style="display:inline-block;width:24px;height:16px;background:var(--v2-semantic-text-primary,var(--semantic-text-primary))"></span> |
 
 Arrow keys, Home and End use the existing Tabs keyboard behavior. Tab moves into the selected panel and its actions. Selection keeps focus on the chosen tab; an app-driven selection change restores a hidden panel's focus to the new tab. Motion respects the operating system's reduced-motion setting.
 

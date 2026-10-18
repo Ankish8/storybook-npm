@@ -9,7 +9,7 @@ export default function Example() {
       <div
         aria-busy={loading}
         aria-label="Assigned contact"
-        className="flex min-h-24 items-center gap-4 rounded-xl border border-semantic-border-layout bg-semantic-bg-primary p-4"
+        className="flex min-h-24 items-center gap-4 rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-4"
       >
         {loading ? (
           <>
@@ -23,10 +23,10 @@ export default function Example() {
           <>
             <Avatar name="Emma Collins" />
             <div>
-              <p className="m-0 text-sm font-medium text-semantic-text-primary">
+              <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
                 Emma Collins
               </p>
-              <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+              <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
                 Support specialist
               </p>
             </div>

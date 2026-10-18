@@ -271,17 +271,17 @@ function useTabIndicator(
 }
 
 const underlineListClasses = cn(
-  "relative inline-flex items-center border-b border-solid border-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0",
-  "after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-semantic-primary after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
+  "relative inline-flex items-center border-b border-solid border-v2-semantic-border-layout w-full data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:border-b-0",
+  "after:pointer-events-none after:absolute after:left-0 after:bottom-[-1px] after:h-[2px] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:bg-[var(--v2-indicator,var(--semantic-primary))] after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
   "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent",
-  "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-semantic-border-accent"
+  "data-[orientation=vertical]:after:top-0 data-[orientation=vertical]:after:bottom-auto data-[orientation=vertical]:after:w-1 data-[orientation=vertical]:after:h-[var(--v2-tab-height,0px)] data-[orientation=vertical]:after:translate-x-0 data-[orientation=vertical]:after:translate-y-[var(--v2-tab-y,0px)] data-[orientation=vertical]:after:bg-v2-semantic-border-accent"
 );
 
 // The cursor is the same measured ::after the underline uses, but it covers the whole selected tab, so it needs both
 // axes. `isolate` + `-z-10` park it behind the labels without wrapping them in a new element.
 const pillListClasses = cn(
-  "relative isolate inline-flex w-fit max-w-full items-center gap-1 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
-  "after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-semantic-border-layout after:bg-semantic-bg-primary after:shadow-xs after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
+  "relative isolate inline-flex w-fit max-w-full items-center gap-1 rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-ui p-1 data-[orientation=vertical]:flex-col data-[orientation=vertical]:items-stretch data-[orientation=vertical]:self-start",
+  "after:pointer-events-none after:absolute after:left-0 after:top-0 after:-z-10 after:h-[var(--v2-tab-height,0px)] after:w-[var(--v2-tab-width,0px)] after:translate-x-[var(--v2-tab-x,0px)] after:translate-y-[var(--v2-tab-y,0px)] after:rounded-md after:border after:border-solid after:border-[color:var(--v2-selection-accent,var(--semantic-border-layout))] after:bg-v2-semantic-bg-primary after:shadow-[var(--v2-shadow-xs,var(--shadow-xs))] after:content-[''] after:opacity-0 data-[motion-indicator=true]:after:opacity-100",
   // Before the first measurement (server render, hidden Docs sample) the selected tab paints its own pill, so
   // selection is never invisible; once the cursor is live these are cleared so nothing is drawn twice.
   "[&[data-motion-indicator=true]>[role=tab][data-state=active]]:border-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:bg-transparent [&[data-motion-indicator=true]>[role=tab][data-state=active]]:shadow-none"
@@ -326,18 +326,18 @@ TabsList.displayName = TabsPrimitive.List.displayName;
 // Hover is gated so a tap on a touch screen does not leave the label stuck in its hover colour.
 const underlineTriggerClasses = cn(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out motion-reduce:transition-none",
-  "text-[var(--v2-text-muted,var(--semantic-text-muted))] border-transparent [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
-  "data-[state=active]:text-[var(--v2-text-primary,var(--semantic-text-primary))] data-[state=active]:border-semantic-primary",
-  "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:text-semantic-disabled-primary",
-  "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-semantic-bg-ui"
+  "text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] border-transparent [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
+  "data-[state=active]:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] data-[state=active]:border-[color:var(--v2-indicator,var(--semantic-primary))]",
+  "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]",
+  "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-v2-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-v2-semantic-bg-ui"
 );
 
 // The 1px transparent border keeps the tab the same size whether or not it paints its own (fallback) pill.
 const pillTriggerClasses = cn(
   "inline-flex h-9 min-w-[88px] items-center justify-center gap-2 whitespace-nowrap rounded-md border border-solid border-transparent px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.01em] cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-  "text-[var(--v2-text-muted,var(--semantic-text-muted))] [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--semantic-text-primary))] active:text-[var(--v2-text-primary,var(--semantic-text-primary))]",
-  "data-[state=active]:border-semantic-border-layout data-[state=active]:bg-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,var(--semantic-text-primary))] data-[state=active]:shadow-xs",
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] active:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
+  "data-[state=active]:border-[color:var(--v2-selection-accent,var(--semantic-border-layout))] data-[state=active]:bg-v2-semantic-bg-primary data-[state=active]:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] data-[state=active]:shadow-[var(--v2-shadow-xs,var(--shadow-xs))]",
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   "data-[orientation=vertical]:justify-start"
 );
 
@@ -376,7 +376,7 @@ const TabsContent = React.forwardRef(
     <TabsPrimitive.Content
       ref={ref}
       className={cn(
-        "mt-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] text-[var(--v2-text-secondary,var(--semantic-text-secondary))] focus-visible:outline-none",
+        "mt-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] focus-visible:outline-none",
         // Fades in while sliding 8px from the side of the newly selected tab (--v2-tab-dir is set by <Tabs>).
         "data-[state=active]:motion-safe:animate-in data-[state=active]:motion-safe:fade-in-0 data-[state=active]:motion-safe:[--tw-enter-translate-x:calc(var(--v2-tab-dir,1)*8px)] data-[state=active]:motion-safe:[animation-duration:240ms] data-[state=active]:motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
         "data-[orientation=vertical]:data-[state=active]:motion-safe:[--tw-enter-translate-x:0px] data-[orientation=vertical]:data-[state=active]:motion-safe:[--tw-enter-translate-y:calc(var(--v2-tab-dir,1)*8px)] motion-reduce:transition-none",
@@ -394,7 +394,7 @@ const TabsCount = ({
 }: React.HTMLAttributes<HTMLSpanElement>) => (
   <span
     className={cn(
-      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-semantic-border-layout bg-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+      "inline-flex size-[18px] items-center justify-center rounded-full border-[0.4px] border-solid border-v2-semantic-border-layout bg-v2-semantic-disabled-secondary font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-normal leading-none text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
       className
     )}
     {...props}

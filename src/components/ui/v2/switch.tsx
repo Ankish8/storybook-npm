@@ -12,7 +12,7 @@ const switchVariants = cva(
   // so the track colour fades rather than jumping; the unchecked surface fades in 160ms. before: = an invisible ring that
   // reaches 4px beyond the box, so the pointer target is 50 x 32 (default) without moving layout. The track does not scale
   // on press; the thumb stretches instead (see the thumb).
-  "peer group/switch relative isolate inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl p-[3px] before:absolute before:-inset-1 before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] after:bg-semantic-primary after:opacity-0 after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:after:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:cursor-not-allowed data-[state=checked]:after:opacity-100 data-[state=checked]:disabled:after:bg-semantic-disabled-primary data-[state=unchecked]:bg-semantic-primary-surface enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=unchecked]:bg-semantic-border-layout enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=checked]:after:bg-semantic-primary-hover aria-[readonly=true]:cursor-default aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-inset aria-[invalid=true]:ring-semantic-error-primary aria-[invalid=true]:after:bg-semantic-error-primary aria-[invalid=true]:focus-visible:outline-semantic-error-primary",
+  "peer group/switch relative isolate inline-flex shrink-0 box-border cursor-pointer items-center rounded-xl p-[3px] before:absolute before:-inset-1 before:content-[''] after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:content-[''] after:bg-v2-semantic-primary after:opacity-0 after:[transition:opacity_240ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] [transition-property:color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:after:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed data-[state=checked]:after:opacity-100 data-[state=checked]:disabled:after:bg-v2-semantic-disabled-primary data-[state=unchecked]:bg-v2-semantic-primary-surface enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=unchecked]:bg-v2-semantic-border-layout enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:data-[state=checked]:after:bg-v2-semantic-primary-hover aria-[readonly=true]:cursor-default aria-[invalid=true]:ring-1 aria-[invalid=true]:ring-inset aria-[invalid=true]:ring-v2-semantic-error-primary aria-[invalid=true]:after:bg-v2-semantic-error-primary aria-[invalid=true]:focus-visible:outline-v2-semantic-error-primary",
   {
     variants: {
       size: {
@@ -35,7 +35,7 @@ const switchVariants = cva(
  * its far edge anchored, with the snappy spring (350ms) for the width; reduced motion skips the stretch.
  */
 const switchThumbVariants = cva(
-  "pointer-events-none relative z-[1] block shrink-0 rounded-full bg-semantic-bg-primary shadow-[0_0_0_0.5px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.14),0_2px_6px_rgba(0,0,0,0.06)] ring-0 [--arc-glide:linear(0,.075,.2163,.3756,.5147,.6358,.7282,.8024,.856,.8973,.9273,.9481,.9636,.9742,.9821,.9874,.9913,.9939,.9958,.9971,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_490ms_var(--arc-glide),width_350ms_var(--arc-snappy),background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-semantic-primary-surface data-[disabled]:data-[state=unchecked]:bg-semantic-bg-ui",
+  "pointer-events-none relative z-[1] block shrink-0 rounded-full bg-[var(--v2-switch-thumb,var(--semantic-bg-primary))] group-aria-[invalid=true]/switch:data-[state=checked]:bg-[var(--v2-on-status,var(--semantic-bg-primary))] shadow-[0_0_0_0.5px_rgba(0,0,0,0.07),0_1px_2px_rgba(0,0,0,0.14),0_2px_6px_rgba(0,0,0,0.06)] ring-0 [--arc-glide:linear(0,.075,.2163,.3756,.5147,.6358,.7282,.8024,.856,.8973,.9273,.9481,.9636,.9742,.9821,.9874,.9913,.9939,.9958,.9971,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_490ms_var(--arc-glide),width_350ms_var(--arc-snappy),background-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none data-[state=unchecked]:translate-x-0 data-[disabled]:data-[state=checked]:bg-[var(--v2-switch-thumb-disabled,var(--v2-semantic-primary-surface,var(--semantic-primary-surface)))] data-[disabled]:data-[state=unchecked]:bg-[var(--v2-switch-thumb-disabled,var(--v2-semantic-bg-ui,var(--semantic-bg-ui)))]",
   {
     variants: {
       size: {
@@ -170,7 +170,7 @@ const Switch = React.forwardRef(
               className={cn(
                 labelSizeVariants({ size }),
                 labelRowVariants({ size }),
-                "flex items-center font-normal text-semantic-text-primary",
+                "flex items-center font-normal text-v2-semantic-text-primary",
                 disabled
                   ? "cursor-not-allowed"
                   : readOnly
@@ -183,7 +183,7 @@ const Switch = React.forwardRef(
           )}
           <p
             id={descriptionId}
-            className="m-0 mt-1 text-xs leading-4 text-semantic-text-muted"
+            className="m-0 mt-1 text-xs leading-4 text-v2-semantic-text-muted"
           >
             {description}
           </p>
@@ -211,7 +211,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-normal text-semantic-text-primary",
+                "font-normal text-v2-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >
@@ -223,7 +223,7 @@ const Switch = React.forwardRef(
             <span
               className={cn(
                 labelSizeVariants({ size }),
-                "font-normal text-semantic-text-primary",
+                "font-normal text-v2-semantic-text-primary",
                 disabled && "opacity-50"
               )}
             >

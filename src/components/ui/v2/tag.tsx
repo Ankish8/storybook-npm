@@ -22,22 +22,22 @@ const tagVariants = cva(
     variants: {
       variant: {
         default:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-secondary",
+          "border-v2-semantic-border-layout bg-v2-semantic-bg-ui text-v2-semantic-text-secondary",
         primary:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-secondary",
+          "border-v2-semantic-border-layout bg-v2-semantic-bg-ui text-v2-semantic-text-secondary",
         accent:
-          "border-semantic-border-accent bg-semantic-brand-surface text-semantic-text-secondary",
+          "border-v2-semantic-border-accent bg-v2-semantic-brand-surface text-v2-semantic-text-secondary",
         secondary:
-          "border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-secondary",
+          "border-v2-semantic-border-layout bg-v2-semantic-bg-ui text-v2-semantic-text-secondary",
         success:
-          "border-semantic-success-border bg-semantic-success-surface text-semantic-success-text",
+          "border-v2-semantic-success-border bg-v2-semantic-success-surface text-v2-semantic-success-text",
         warning:
-          "border-semantic-warning-border bg-semantic-warning-surface text-semantic-warning-text",
+          "border-v2-semantic-warning-border bg-v2-semantic-warning-surface text-v2-semantic-warning-text",
         error:
-          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-text",
+          "border-v2-semantic-error-border bg-v2-semantic-error-surface text-v2-semantic-error-text",
         destructive:
-          "border-semantic-error-border bg-semantic-error-surface text-semantic-error-text",
-        info: "border-semantic-info-border bg-semantic-info-surface text-semantic-info-text",
+          "border-v2-semantic-error-border bg-v2-semantic-error-surface text-v2-semantic-error-text",
+        info: "border-v2-semantic-info-border bg-v2-semantic-info-surface text-v2-semantic-info-text",
       },
       size: {
         // Preserve the single-line sizes; wrapped labels can grow vertically.
@@ -142,8 +142,8 @@ const Tag = React.forwardRef(
               // Keep the 24px target and 22px plate. Separate pseudo-elements
               // let the keyboard ring stay opaque while the hover plate fades.
               "relative isolate -ml-1 -mr-px -my-px inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-transparent border-none p-0 cursor-pointer focus-visible:outline-none",
-              "before:pointer-events-none before:absolute before:inset-px before:-z-10 before:rounded-full before:bg-semantic-bg-inverted before:opacity-0 before:transition-opacity before:duration-150 before:content-[''] enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:before:opacity-[0.08] focus-visible:before:opacity-[0.08] motion-reduce:before:transition-none motion-reduce:before:duration-0",
-              "after:pointer-events-none after:absolute after:inset-px after:rounded-full after:content-[''] focus-visible:after:outline focus-visible:after:[outline-width:2px] focus-visible:after:outline-offset-1 focus-visible:after:outline-semantic-primary",
+              "before:pointer-events-none before:absolute before:inset-px before:-z-10 before:rounded-full before:bg-v2-semantic-bg-inverted before:opacity-0 before:transition-opacity before:duration-150 before:content-[''] enabled:[@media(hover:hover)_and_(pointer:fine)]:hover:before:opacity-[0.08] focus-visible:before:opacity-[0.08] motion-reduce:before:transition-none motion-reduce:before:duration-0",
+              "after:pointer-events-none after:absolute after:inset-px after:rounded-full after:content-[''] focus-visible:after:outline focus-visible:after:[outline-width:2px] focus-visible:after:outline-offset-1 focus-visible:after:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
               removePressClassName,
               removeDisabled && "cursor-not-allowed opacity-50 active:scale-100"
             )}

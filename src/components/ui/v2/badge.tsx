@@ -21,25 +21,25 @@ const badgeVariants = cva(
     variants: {
       variant: {
         active:
-          "bg-semantic-success-surface border-semantic-success-border text-semantic-success-text",
+          "bg-v2-semantic-success-surface border-v2-semantic-success-border text-v2-semantic-success-text",
         information:
-          "bg-semantic-info-surface border-semantic-info-border text-semantic-info-text",
+          "bg-v2-semantic-info-surface border-v2-semantic-info-border text-v2-semantic-info-text",
         warning:
-          "bg-semantic-warning-surface border-semantic-warning-border text-semantic-warning-text",
+          "bg-v2-semantic-warning-surface border-v2-semantic-warning-border text-v2-semantic-warning-text",
         failed:
-          "bg-semantic-error-surface border-semantic-error-border text-semantic-error-text",
+          "bg-v2-semantic-error-surface border-v2-semantic-error-border text-v2-semantic-error-text",
         disabled:
-          "border-0 bg-semantic-bg-ui text-[var(--v2-text-muted,var(--semantic-text-muted))]",
+          "border-0 bg-v2-semantic-bg-ui text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]",
         default:
-          "bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+          "bg-v2-semantic-bg-ui border-v2-semantic-border-layout text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
         primary:
-          "bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+          "bg-v2-semantic-bg-ui border-v2-semantic-border-layout text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
         secondary:
-          "bg-semantic-brand-surface border-semantic-border-accent text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+          "bg-v2-semantic-brand-surface border-v2-semantic-border-accent text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
         outline:
-          "border-semantic-border-layout bg-transparent text-[var(--v2-text-secondary,var(--semantic-text-secondary))]",
+          "border-v2-semantic-border-layout bg-transparent text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]",
         destructive:
-          "bg-semantic-error-surface border-semantic-error-border text-semantic-error-text",
+          "bg-v2-semantic-error-surface border-v2-semantic-error-border text-v2-semantic-error-text",
       },
       size: {
         default: "h-[26px] px-[10px]",

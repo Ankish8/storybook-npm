@@ -21,7 +21,7 @@ export default function Persistent() {
           Draft title
           <input
             defaultValue="My project"
-            className="rounded-md border border-semantic-border-input bg-semantic-bg-primary px-3 py-2 text-semantic-text-primary"
+            className="rounded-md border border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 py-2 text-v2-semantic-text-primary"
           />
         </label>
       </TabsContent>

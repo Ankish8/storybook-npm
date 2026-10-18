@@ -65,23 +65,23 @@ const YEAR_RANGE_AFTER = 10;
 // Outline rather than ring: it follows border-radius, takes no part in layout
 // and is not clipped by the neighbouring cell's background.
 const FOCUS_RING =
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-semantic-primary";
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-1 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]";
 // List rows sit inside scrolling columns that clip at their edge, so their ring
 // is drawn inside the row instead of outside it.
 const FOCUS_RING_INSET =
-  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[-2px] focus-visible:outline-semantic-primary";
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]";
 // Hover fills only where a real hover exists. On touch a tap would otherwise
 // leave the fill stuck on the element until the next tap elsewhere.
-const HOVER_FILL = "[@media(hover:hover)]:hover:bg-semantic-bg-hover";
+const HOVER_FILL = "[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover";
 const HOVER_BORDER =
-  "[@media(hover:hover)]:hover:border-[var(--color-primary-100,#C0C3CA)]";
+  "[@media(hover:hover)]:hover:border-[var(--v2-semantic-border-accent,var(--color-primary-100,#C0C3CA))]";
 
 // Same geometry as the DateRangePicker's calendar header so the two pickers
 // read as one family: 32px nav hit areas (36px on touch-sized viewports) and
 // 32px pills with a chevron that turns while the list is open.
 // Arc header controls: a fill on hover (160ms), a quick press (.96 over 120ms) and a spring release (580ms).
 const CALENDAR_NAV_BUTTON = `inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-[var(--v2-text-secondary,#5E5E5E)] [transition-property:background-color,color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.96] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,color] motion-reduce:enabled:active:scale-100 max-sm:size-9 ${HOVER_FILL}`;
-const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-0 w-full rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-2 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors ${HOVER_FILL}`;
+const CALENDAR_DROPDOWN_TRIGGER_CLASS = `h-8 min-w-0 w-full rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-2 text-sm font-medium text-[var(--v2-text-primary,#484848)] outline-none transition-colors ${HOVER_FILL}`;
 
 // Arc popup surfaces grow in on the snappy spring (visualDuration .26, bounce .12; sampled, settling in 350ms): the calendar
 // from 95% and 8px above, menus from 97% and 6px above. Positioned panels use transform: false, so the keyframes own transform.
@@ -145,7 +145,7 @@ const dateTimePickerVariants = cva(
 );
 
 const dateTimePickerTriggerVariants = cva(
-  "flex w-full items-center justify-between rounded-lg border border-solid bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[border-color,box-shadow,background-color] duration-150",
+  "flex w-full items-center justify-between rounded-lg border border-solid bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus transition-[border-color,box-shadow,background-color] duration-150",
   {
     variants: {
       size: {
@@ -155,9 +155,9 @@ const dateTimePickerTriggerVariants = cva(
       },
       state: {
         default:
-          "border-semantic-border-input hover:border-[var(--color-primary-100,#C0C3CA)] focus-within:shadow-none",
+          "border-v2-semantic-border-input hover:border-[var(--v2-semantic-border-accent,var(--color-primary-100,#C0C3CA))] focus-within:shadow-none",
         error:
-          "border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
+          "border-v2-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)]  ",
       },
     },
     defaultVariants: {
@@ -1430,7 +1430,7 @@ function CalendarDropdown({
             className={cn(
               MENU_MOTION,
               POPUP_SHADOW,
-              "flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+              "flex flex-col gap-0.5 overflow-y-auto rounded-md border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] p-1 [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-v2-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
             )}
             style={{
               ...floatingStyles,
@@ -1452,7 +1452,7 @@ function CalendarDropdown({
                   "flex w-full shrink-0 items-center rounded-md border border-solid px-2 py-1.5 text-left text-sm disabled:cursor-not-allowed disabled:opacity-40",
                   FOCUS_RING_INSET,
                   option.value === value
-                    ? "border-semantic-info-border bg-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                    ? "border-v2-semantic-info-border bg-v2-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
                     : cn(
                         "border-transparent text-[var(--v2-text-secondary,#5E5E5E)]",
                         HOVER_FILL
@@ -1552,15 +1552,15 @@ function TimeColumn({
   };
 
   return (
-    <div className="flex min-w-0 flex-col border-r border-solid border-semantic-border-layout last:border-r-0">
-      <div className="border-b border-solid border-semantic-border-layout px-1 py-2 text-center text-[11px] font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
+    <div className="flex min-w-0 flex-col border-r border-solid border-v2-semantic-border-layout last:border-r-0">
+      <div className="border-b border-solid border-v2-semantic-border-layout px-1 py-2 text-center text-[11px] font-medium uppercase tracking-wide text-[var(--v2-text-muted,#707070)]">
         {header}
       </div>
       <div
         ref={listRef}
         role="listbox"
         aria-label={ariaLabel}
-        className="relative flex flex-col overflow-y-auto px-1 py-0 [scroll-snap-type:y_proximity] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
+        className="relative flex flex-col overflow-y-auto px-1 py-0 [scroll-snap-type:y_proximity] [scrollbar-width:thin] [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-v2-semantic-border-secondary [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar]:w-1.5"
         style={{ maxHeight: `${TIME_COLUMN_MAX_HEIGHT}px` }}
         onKeyDown={handleKeyDown}
       >
@@ -1575,7 +1575,7 @@ function TimeColumn({
               "flex h-9 shrink-0 items-center justify-center rounded-md border-0 bg-transparent px-1 text-sm [font-variant-numeric:tabular-nums] [scroll-snap-align:center] [transition:background-color_80ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
               FOCUS_RING_INSET,
               option.selected
-                ? "bg-semantic-bg-hover font-medium text-[var(--v2-text-primary,#484848)]"
+                ? "bg-v2-semantic-bg-hover font-medium text-[var(--v2-text-primary,#484848)]"
                 : cn("text-[var(--v2-text-secondary,#5E5E5E)]", HOVER_FILL)
             )}
             onClick={() => onSelect(option.key)}
@@ -1711,7 +1711,7 @@ function TimeField({
           role="group"
           aria-labelledby={`${id}-label`}
           className={cn(
-            "grid min-w-0 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary",
+            "grid min-w-0 overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary",
             showSeconds ? "grid-cols-4" : "grid-cols-3"
           )}
         >
@@ -1726,11 +1726,11 @@ function TimeField({
           aria-haspopup="listbox"
           aria-expanded={open}
           className={cn(
-            "flex h-11 w-full items-center gap-[9px] rounded border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition:border-color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),box-shadow_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            "flex h-11 w-full items-center gap-[9px] rounded border border-solid border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 text-left text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none [transition:border-color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),box-shadow_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
             HOVER_BORDER,
             FOCUS_RING,
             open &&
-              "border-semantic-primary shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
+              "border-[var(--v2-semantic-border-focus,var(--semantic-primary))] shadow-[0_0_0_1px_rgba(43,188,202,0.15)]"
           )}
           onClick={() => onOpenChange(!open)}
         >
@@ -1766,7 +1766,7 @@ function TimeField({
             className={cn(
               MENU_MOTION,
               POPUP_SHADOW,
-              "grid overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
+              "grid overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)]",
               showSeconds ? "grid-cols-4" : "grid-cols-3"
             )}
             style={{
@@ -2529,9 +2529,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           className={cn(
             POPOVER_MOTION,
             POPUP_SHADOW,
-            "rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
-            "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--semantic-border-secondary)_transparent]",
-            "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-semantic-border-secondary"
+            "rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-[var(--v2-text-secondary,#5E5E5E)] flex flex-col min-h-0 overflow-y-auto overflow-x-hidden overscroll-contain pointer-events-auto",
+            "[scrollbar-gutter:stable] [scrollbar-width:thin] [scrollbar-color:var(--v2-semantic-border-secondary,var(--semantic-border-secondary))_transparent]",
+            "[&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-v2-semantic-border-secondary"
           )}
           style={{
             ...floatingStyles,
@@ -2672,7 +2672,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   {/* Arc's selected disc: one layer per month, one cell in size, placed by week and weekday under the day buttons, so a new pick glides to its day on the morph spring (visualDuration .42, bounce .16, 506ms) and the selection entering or leaving the grid grows or fades it. */}
                   <span
                     aria-hidden="true"
-                    className="pointer-events-none absolute left-0 top-0 aspect-square w-[calc((100%-12px)/7)] rounded-full bg-semantic-primary will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_506ms_var(--arc-morph),opacity_160ms_cubic-bezier(0.22,1,0.36,1),scale_350ms_var(--arc-snappy)] motion-reduce:[transition:none]"
+                    className="pointer-events-none absolute left-0 top-0 aspect-square w-[calc((100%-12px)/7)] rounded-full bg-v2-semantic-primary will-change-transform [--arc-morph:linear(0,.0308,.1027,.1959,.2972,.3979,.4971,.5827,.6582,.7233,.7785,.8246,.8625,.8933,.9182,.9379,.9534,.9655,.9753,.9823,.9876,.9915,.9944,.9965,1)] [--arc-snappy:linear(0,.0506,.1667,.2966,.4251,.5482,.6476,.7298,.7994,.8508,.8924,.922,.9442,.9613,.973,.9815,.9877,.9918,.9947,.9967,1)] [transition:transform_506ms_var(--arc-morph),opacity_160ms_cubic-bezier(0.22,1,0.36,1),scale_350ms_var(--arc-snappy)] motion-reduce:[transition:none]"
                     style={{
                       transform: `translate(calc(${selectedCell % 7} * (100% + 2px)), calc(${Math.floor(selectedCell / 7)} * (100% + 2px)))`,
                       opacity: selectedCell >= 0 ? 1 : 0,
@@ -2720,7 +2720,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                                   FOCUS_RING,
                                   "focus-visible:z-10",
                                   isSelected
-                                    ? "text-semantic-text-inverted font-medium"
+                                    ? "text-v2-semantic-text-inverted font-medium"
                                     : cn(
                                         isCurrentMonth
                                           ? "text-[var(--v2-text-secondary,#5E5E5E)]"
@@ -2800,9 +2800,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           {showTimeFields && (
             <div
               className={cn(
-                "space-y-2.5 bg-semantic-bg-primary p-3",
+                "space-y-2.5 bg-v2-semantic-bg-primary p-3",
                 showCalendar &&
-                  "border-t border-solid border-semantic-border-layout"
+                  "border-t border-solid border-v2-semantic-border-layout"
               )}
             >
               <TimeField
@@ -2886,7 +2886,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="text-v2-semantic-error-primary ml-0.5">*</span>
             )}
           </label>
         )}
@@ -2896,10 +2896,10 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             dateTimePickerTriggerVariants({ size, state: resolvedState }),
             open &&
               resolvedState !== "error" &&
-              "border-semantic-primary shadow-none",
+              "border-[var(--v2-semantic-border-focus,var(--semantic-primary))] shadow-none",
             !displayValue && "text-[var(--v2-text-placeholder,#707070)]",
             disabled &&
-              "cursor-not-allowed bg-semantic-bg-ui border-semantic-border-layout text-[var(--v2-text-muted,#707070)] shadow-none hover:border-semantic-border-layout focus-within:shadow-none"
+              "cursor-not-allowed bg-v2-semantic-bg-ui border-v2-semantic-border-layout text-[var(--v2-text-muted,#707070)] shadow-none hover:border-v2-semantic-border-layout focus-within:shadow-none"
           )}
         >
           <input
@@ -2955,7 +2955,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <button
                 type="button"
                 aria-label="Clear date"
-                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
                 onClick={clearValue}
               >
                 <X className="size-4" aria-hidden="true" />
@@ -2965,7 +2965,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
             ref={calendarButtonRef}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {
@@ -3012,7 +3012,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <span
                 id={errorId}
                 role="alert"
-                className="text-xs text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
+                className="text-xs text-v2-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-1 motion-safe:[animation-duration:160ms] [animation-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:animate-[v2-fade-in_120ms_ease-out]"
               >
                 {error}
               </span>

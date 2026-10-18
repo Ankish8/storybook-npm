@@ -75,14 +75,14 @@ const countNonWhitespaceChars = (value: string): number =>
  * Textarea variants for different visual states
  */
 const textareaVariants = cva(
-  "w-full max-w-full rounded-lg bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.16px] outline-none transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:opacity-60 disabled:shadow-none",
+  "w-full max-w-full rounded-lg bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.16px] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:opacity-60 disabled:shadow-none",
   {
     variants: {
       state: {
         default:
-          "border border-solid border-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-semantic-primary focus:shadow-none aria-[invalid=true]:border-semantic-error-primary aria-[invalid=true]:hover:border-semantic-error-primary",
+          "border border-solid border-v2-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--semantic-primary))] focus:shadow-none aria-[invalid=true]:border-v2-semantic-error-primary aria-[invalid=true]:hover:border-v2-semantic-error-primary",
         error:
-          "border border-solid border-semantic-error-primary focus:outline-none focus:shadow-none",
+          "border border-solid border-v2-semantic-error-primary focus:outline-none focus:shadow-none",
       },
       size: {
         default: "min-h-[110px] px-3 py-3 text-sm leading-[1.4]",
@@ -450,7 +450,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="text-v2-semantic-error-primary ml-0.5">*</span>
             )}
           </label>
         )}
@@ -465,7 +465,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             className,
             derivedState === "error" &&
               !disabled &&
-              "border-semantic-error-primary focus:shadow-none",
+              "border-v2-semantic-error-primary focus:shadow-none",
             resizeClasses[resize]
           )}
           disabled={disabled}
@@ -547,13 +547,13 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 className="flex min-h-0 min-w-0 items-center gap-1.5 overflow-hidden"
               >
                 <CircleAlert
-                  className="size-3.5 shrink-0 text-semantic-error-text"
+                  className="size-3.5 shrink-0 text-v2-semantic-error-text"
                   aria-hidden
                 />
                 <motion.span
                   {...copyMotion}
                   key={error}
-                  className="text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+                  className="text-xs leading-[1.4] tracking-[-0.16px] text-v2-semantic-error-text"
                 >
                   {error}
                 </motion.span>
@@ -564,7 +564,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 key={"error:" + error}
                 id={errorId}
                 aria-live="polite"
-                className="min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+                className="min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-v2-semantic-error-text"
               >
                 {error}
               </motion.span>
@@ -588,7 +588,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               className={cn(
                 "min-h-0 overflow-hidden text-xs tabular-nums leading-[1.4] tracking-[-0.16px] transition-colors [transition-duration:160ms] motion-reduce:transition-none",
                 charCount > maxLength
-                  ? "text-semantic-error-text"
+                  ? "text-v2-semantic-error-text"
                   : "text-[var(--v2-text-muted,#707070)]"
               )}
             >

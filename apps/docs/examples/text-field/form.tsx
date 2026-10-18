@@ -23,7 +23,7 @@ export default function Form() {
       <Button type="submit" size="sm">
         Save workspace
       </Button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {saved === null
           ? "Changes stay in this example."
           : `Saved locally: ${saved}`}

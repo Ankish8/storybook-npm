@@ -49,14 +49,14 @@ export default function Form() {
           state={invalid ? "error" : "default"}
         />
         {invalid && (
-          <p id={messageId} className="m-0 text-xs text-semantic-error-text">
+          <p id={messageId} className="m-0 text-xs text-v2-semantic-error-text">
             Choose at least one tone.
           </p>
         )}
       </div>
       <Button type="submit">Save tones</Button>
       {saved && (
-        <p role="status" className="m-0 text-sm text-semantic-success-text">
+        <p role="status" className="m-0 text-sm text-v2-semantic-success-text">
           {saved}
         </p>
       )}

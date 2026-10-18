@@ -5,7 +5,7 @@ export default function Example() {
     <div className="w-full max-w-[360px] space-y-2">
       <label
         htmlFor="paste-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>
@@ -16,7 +16,7 @@ export default function Example() {
         countrySelector
         phoneMaxNumber={10}
       />
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-v2-semantic-text-muted">
         Copy and paste: 98765 43210
       </p>
     </div>

@@ -38,7 +38,7 @@ let highlighter: Promise<Highlighter> | undefined;
 function getHighlighter() {
   // The JavaScript regex engine keeps this free of WebAssembly, so it runs the same in dev, build and start.
   highlighter ??= createHighlighter({
-    themes: ["github-light"],
+    themes: ["github-light", "github-dark"],
     langs: ["tsx"],
     engine: createJavaScriptRegexEngine(),
   });
@@ -47,7 +47,7 @@ function getHighlighter() {
 async function highlight(code: string) {
   return (await getHighlighter()).codeToHtml(code, {
     lang: "tsx",
-    theme: "github-light",
+    themes: { light: "github-light", dark: "github-dark" },
   });
 }
 

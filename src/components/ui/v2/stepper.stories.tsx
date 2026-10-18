@@ -230,7 +230,7 @@ function Onboarding(args: StepperProps) {
           args.onStepChange?.(n);
         }}
       />
-      <div className="rounded-lg border border-solid border-semantic-border-layout p-4">
+      <div className="rounded-lg border border-solid border-v2-semantic-border-layout p-4">
         <h4 className="m-0 text-sm font-medium">
           {args.steps[index]?.title || "Review"}
         </h4>
@@ -302,13 +302,13 @@ function ProgressionHero({
   return (
     <section className="w-[520px] max-w-full space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <span className="text-sm font-medium text-semantic-text-primary">
+        <span className="text-sm font-medium text-v2-semantic-text-primary">
           Workspace setup
         </span>
         <div
           role="group"
           aria-label="Stepper orientation"
-          className="inline-flex gap-1 rounded-lg border border-solid border-semantic-border-layout p-1"
+          className="inline-flex gap-1 rounded-lg border border-solid border-v2-semantic-border-layout p-1"
         >
           {(["horizontal", "vertical"] as const).map((orientation) => (
             <Button
@@ -326,18 +326,18 @@ function ProgressionHero({
         </div>
       </div>
       <Stepper {...args} navigation="completed" currentStep={index} />
-      <div className="rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 py-3">
-        <p className="m-0 text-sm font-medium text-semantic-text-primary">
+      <div className="rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 py-3">
+        <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
           {done ? "You're ready to go" : args.steps[index]?.title}
         </p>
-        <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+        <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
           {done
             ? "All setup steps are complete. Restart to replay the transitions."
             : args.steps[index]?.description}
         </p>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
           {done
             ? "All steps complete"
             : `Step ${index + 1} of ${args.steps.length}`}

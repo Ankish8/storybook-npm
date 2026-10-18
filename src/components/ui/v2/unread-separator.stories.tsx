@@ -90,7 +90,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-3 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -144,7 +144,7 @@ export const Usage: Story = {
     const [, update] = useArgs<Args>();
     return (
       <section
-        className="max-w-full rounded-lg border border-semantic-border-layout p-4"
+        className="max-w-full rounded-lg border border-v2-semantic-border-layout p-4"
         style={{ width: args.width }}
       >
         <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
@@ -169,13 +169,13 @@ export const Usage: Story = {
             Mark as read
           </Button>
         </div>
-        <div className="mt-4 rounded-lg bg-semantic-bg-ui p-3">
+        <div className="mt-4 rounded-lg bg-v2-semantic-bg-ui p-3">
           <p className="m-0 text-sm">Earlier messages</p>
         </div>
         {args.count > 0 ? (
           <>
             <UnreadSeparator {...separatorProps(args)} />
-            <div className="rounded-lg bg-semantic-primary-surface p-3">
+            <div className="rounded-lg bg-v2-semantic-primary-surface p-3">
               <p className="m-0 text-sm">
                 There are {args.count} new messages in this example.
               </p>

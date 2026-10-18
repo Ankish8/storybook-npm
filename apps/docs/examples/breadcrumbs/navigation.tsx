@@ -21,7 +21,7 @@ export default function Navigation() {
           setDepth(index + 1);
         }}
       />
-      <p className="m-0 text-sm text-semantic-text-muted" role="status">
+      <p className="m-0 text-sm text-v2-semantic-text-muted" role="status">
         Current page: {path[depth - 1].label}
       </p>
       <Button

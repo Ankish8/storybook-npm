@@ -323,7 +323,7 @@ export const AnimatedWindow: Story = {
     return (
       <div className="mx-auto flex w-full max-w-lg flex-col gap-4 py-4">
         <div className="flex items-center justify-between gap-3 text-sm">
-          <p className="m-0 tabular-nums text-semantic-text-muted">
+          <p className="m-0 tabular-nums text-v2-semantic-text-muted">
             Page {page} of {total}
           </p>
           <div className="flex gap-2">
@@ -391,7 +391,7 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
       <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         {title}
       </h3>
@@ -503,7 +503,7 @@ function Contacts({
   }, [args.currentPage, current, update]);
   const visible = filtered.slice((current - 1) * pageSize, current * pageSize);
   return (
-    <section className="max-w-[950px] rounded-lg border border-semantic-border-layout p-5">
+    <section className="max-w-[950px] rounded-lg border border-v2-semantic-border-layout p-5">
       <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
         Contacts
       </h3>
@@ -526,7 +526,7 @@ function Contacts({
         {visible.map((name) => (
           <li
             key={name}
-            className="border-b border-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
+            className="border-b border-v2-semantic-border-layout py-3 text-sm text-[var(--v2-text-primary,#484848)]"
           >
             {name}
           </li>

@@ -56,7 +56,7 @@ function SampleSparkline({
       aria-label={label}
       focusable="false"
       viewBox="0 0 240 40"
-      className="h-10 w-full text-semantic-primary"
+      className="h-10 w-full text-v2-semantic-primary"
     >
       <polyline
         points={coordinates}
@@ -100,10 +100,10 @@ function MetricCardHero({ args }: { args: MetricCardProps }) {
     <div className="flex w-full max-w-4xl flex-col gap-5 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+          <p className="m-0 text-sm font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
             Call performance
           </p>
-          <p className="m-0 text-xs leading-5 text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <p className="m-0 text-xs leading-5 text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             Local sample data · select a period or update the sample.
           </p>
         </div>
@@ -111,7 +111,7 @@ function MetricCardHero({ args }: { args: MetricCardProps }) {
           <div
             role="group"
             aria-label="Sample period"
-            className="flex rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-1"
+            className="flex rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-1"
           >
             {periods.map((item, index) => (
               <button
@@ -119,9 +119,9 @@ function MetricCardHero({ args }: { args: MetricCardProps }) {
                 key={item.label}
                 aria-pressed={periodIndex === index}
                 className={cn(
-                  "rounded-md border-0 bg-transparent px-2.5 py-1.5 text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus",
+                  "rounded-md border-0 bg-transparent px-2.5 py-1.5 text-xs font-medium text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-v2-semantic-border-focus",
                   periodIndex === index &&
-                    "bg-semantic-bg-ui text-[var(--v2-text-primary,var(--semantic-text-primary))]"
+                    "bg-v2-semantic-bg-ui text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]"
                 )}
                 onClick={() => setPeriodIndex(index)}
               >
@@ -134,7 +134,7 @@ function MetricCardHero({ args }: { args: MetricCardProps }) {
             onClick={() =>
               setSampleIndex((current) => (current + 1) % sampleOffsets.length)
             }
-            className="inline-flex items-center gap-1.5 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 py-2 text-xs font-medium text-[var(--v2-text-secondary,var(--semantic-text-secondary))] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-3 py-2 text-xs font-medium text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-v2-semantic-border-focus"
           >
             <RefreshCw aria-hidden="true" className="size-3.5" />
             Update sample
@@ -195,7 +195,7 @@ function MetricCardHero({ args }: { args: MetricCardProps }) {
           A lower count is better
         </MetricCard>
       </div>
-      <p className="m-0 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+      <p className="m-0 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
         Sample {sampleIndex + 1} of {sampleOffsets.length} · values update
         locally. Connect your own data in a product screen.
       </p>
@@ -214,13 +214,13 @@ function BreakdownExample(args: MetricCardProps) {
           aria-expanded={expanded}
           aria-controls={detailsId}
           onClick={() => setExpanded((current) => !current)}
-          className="rounded border-0 bg-transparent p-0 text-sm font-medium text-semantic-text-link underline-offset-4 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-semantic-border-focus"
+          className="rounded border-0 bg-transparent p-0 text-sm font-medium text-v2-semantic-text-link underline-offset-4 outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-v2-semantic-border-focus"
         >
           {expanded ? "Hide breakdown" : "View breakdown"}
         </button>
       </MetricCard>
       <div id={detailsId} hidden={!expanded}>
-        <p className="m-0 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]">
+        <p className="m-0 text-sm text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]">
           Sample breakdown: 892 answered by agents, 320 handled by call flows,
           74 missed.
         </p>
@@ -260,11 +260,11 @@ import { MetricCard } from "@/components/ui/v2/metric-card";
 
 | Purpose | CSS variable | Preview |
 | --- | --- | --- |
-| Surface | --semantic-bg-primary | <span style="display:inline-block;width:18px;height:18px;background:var(--semantic-bg-primary);border:1px solid var(--semantic-border-layout)"></span> |
-| Subtle surface | --semantic-bg-ui | <span style="display:inline-block;width:18px;height:18px;background:var(--semantic-bg-ui)"></span> |
-| Border | --semantic-border-layout | <span style="display:inline-block;width:18px;height:18px;background:var(--semantic-border-layout)"></span> |
-| Positive trend | --semantic-success-surface / --semantic-success-text | <span style="display:inline-block;width:18px;height:18px;background:var(--semantic-success-surface);border:1px solid var(--semantic-success-text)"></span> |
-| Negative trend | --semantic-error-surface / --semantic-error-text | <span style="display:inline-block;width:18px;height:18px;background:var(--semantic-error-surface);border:1px solid var(--semantic-error-text)"></span> |
+| Surface | --semantic-bg-primary | <span style="display:inline-block;width:18px;height:18px;background:var(--v2-semantic-bg-primary,var(--semantic-bg-primary));border:1px solid var(--v2-semantic-border-layout,var(--semantic-border-layout))"></span> |
+| Subtle surface | --semantic-bg-ui | <span style="display:inline-block;width:18px;height:18px;background:var(--v2-semantic-bg-ui,var(--semantic-bg-ui))"></span> |
+| Border | --semantic-border-layout | <span style="display:inline-block;width:18px;height:18px;background:var(--v2-semantic-border-layout,var(--semantic-border-layout))"></span> |
+| Positive trend | --semantic-success-surface / --semantic-success-text | <span style="display:inline-block;width:18px;height:18px;background:var(--v2-semantic-success-surface,var(--semantic-success-surface));border:1px solid var(--v2-semantic-success-text,var(--semantic-success-text))"></span> |
+| Negative trend | --semantic-error-surface / --semantic-error-text | <span style="display:inline-block;width:18px;height:18px;background:var(--v2-semantic-error-surface,var(--semantic-error-surface));border:1px solid var(--v2-semantic-error-text,var(--semantic-error-text))"></span> |
 
 The card stays still on hover. Changed values settle for 180ms and stop immediately when reduced motion is enabled. Set animateValue={false} to keep updates still. Values are not announced automatically; opt into aria-live="polite" when the update is useful to announce. A directional change also contains screen reader text, so color is supplementary. Trend tone is neutral unless you choose positive or negative; a decrease can be a positive result.
 

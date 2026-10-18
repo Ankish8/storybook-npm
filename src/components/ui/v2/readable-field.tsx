@@ -160,9 +160,9 @@ export const ReadableField = React.forwardRef(
                   {headerAction.label}
                 </button>
                 {headerAction.disabledTooltip && (
-                  <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-semantic-primary px-2 py-1 text-xs text-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
+                  <span className="pointer-events-none absolute bottom-full right-0 mb-2 whitespace-nowrap rounded bg-v2-semantic-primary px-2 py-1 text-xs text-v2-semantic-text-inverted opacity-0 transition-opacity group-hover/regen-action:opacity-100 z-10">
                     {headerAction.disabledTooltip}
-                    <span className="absolute top-full right-2 border-4 border-solid border-transparent border-t-semantic-primary" />
+                    <span className="absolute top-full right-2 border-4 border-solid border-transparent border-t-v2-semantic-primary" />
                   </span>
                 )}
               </span>
@@ -170,7 +170,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={headerAction.onClick}
-                className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded transition-colors duration-150"
+                className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary rounded transition-colors duration-150"
               >
                 {headerAction.label}
               </button>
@@ -180,7 +180,7 @@ export const ReadableField = React.forwardRef(
         {/* Input Container */}
         <div
           className={cn(
-            "flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3",
+            "flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-3",
             inputClassName
           )}
         >
@@ -202,7 +202,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={toggleVisibility}
-                className="transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary rounded"
+                className="transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary rounded"
                 aria-label={isVisible ? "Hide value" : "Show value"}
               >
                 {isVisible ? (
@@ -219,11 +219,11 @@ export const ReadableField = React.forwardRef(
               type="button"
               onClick={handleCopy}
               className={cn(
-                "relative size-[18px] rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-text-primary",
+                "relative size-[18px] rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary",
                 copied
-                  ? "text-semantic-success-primary"
+                  ? "text-v2-semantic-success-primary"
                   : failed
-                    ? "text-semantic-error-primary"
+                    ? "text-v2-semantic-error-primary"
                     : "text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)]"
               )}
               aria-label={

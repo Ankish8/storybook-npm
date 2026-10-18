@@ -22,7 +22,7 @@ const chevronSpringClassName = cn(
  * both empty and selected values.
  */
 const selectTriggerVariants = cva(
-  "flex h-11 w-full items-center justify-between gap-3 rounded-lg bg-semantic-bg-primary px-3 py-2 text-left text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:border-semantic-border-layout disabled:opacity-50 disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-11 w-full items-center justify-between gap-3 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 text-left text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
@@ -32,9 +32,9 @@ const selectTriggerVariants = cva(
           // the extra `hover` selector outranks the grey hover border (specificity
           // 0,4,0 vs 0,3,0) so the trigger does not flicker back under the cursor.
           // Arc also tints the field on hover, press and while open (its muted surface).
-          "border border-solid border-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--color-primary-100,#C0C3CA)] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui enabled:active:bg-semantic-bg-ui focus:shadow-none aria-expanded:border-semantic-primary aria-expanded:bg-semantic-bg-ui aria-expanded:shadow-none [@media(hover:hover)_and_(pointer:fine)]:enabled:aria-expanded:hover:border-semantic-primary",
+          "border border-solid border-v2-semantic-border-input focus:outline-none [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:border-[var(--v2-semantic-border-primary,var(--color-primary-100,#C0C3CA))] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-v2-semantic-bg-ui enabled:active:bg-v2-semantic-bg-ui focus:shadow-none aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] aria-expanded:bg-v2-semantic-bg-ui aria-expanded:shadow-none [@media(hover:hover)_and_(pointer:fine)]:enabled:aria-expanded:hover:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
         error:
-          "border border-solid border-semantic-error-primary shadow-[0_0_4px_0_rgba(240,68,56,0.4)] focus:outline-none ",
+          "border border-solid border-v2-semantic-error-primary shadow-[var(--v2-shadow-error,0_0_4px_0_rgba(240,68,56,0.4))] focus:outline-none ",
       },
     },
     defaultVariants: {
@@ -520,7 +520,7 @@ const SelectContent = React.forwardRef(
         <SelectPrimitive.Content
           ref={ref}
           className={cn(
-            "relative z-[9999] max-h-[min(320px,var(--radix-select-content-available-height))] w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-semantic-bg-primary border border-solid border-semantic-border-layout p-1.5 shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]",
+            "relative z-[9999] max-h-[min(320px,var(--radix-select-content-available-height))] w-[var(--radix-select-trigger-width)] max-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-lg font-[family-name:var(--font-v2,Inter,sans-serif)] bg-v2-semantic-bg-primary border border-solid border-v2-semantic-border-layout p-1.5 shadow-[var(--v2-shadow-popover,0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045))]",
             // Arc: 240ms enter on its ease-enter curve (rises 6px, scales from .97), 120ms exit on its standard curve (half the travel, .98).
             "origin-[var(--radix-select-content-transform-origin)] data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:[animation-duration:120ms] [animation-timing-function:cubic-bezier(0.16,1,0.3,1)] data-[state=closed]:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_120ms_ease-in]",
             "data-[state=open]:motion-safe:animate-in data-[state=closed]:motion-safe:animate-out",
@@ -607,7 +607,7 @@ const SelectItem = React.forwardRef(
           // so the focus-visible pseudo-class is also true for a mouse hover (verified in Chrome) and cannot tell them apart.
           "relative flex min-h-9 w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-[11px] pr-[34px] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
           // Selection is told by the check and colour only; Arc never changes the weight, so labels do not reflow.
-          "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui focus:bg-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
+          "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}
@@ -618,7 +618,7 @@ const SelectItem = React.forwardRef(
             // Arc: the check pops in after 40ms, from .6 scale through a 2px blur, 240ms on its enter curve.
             className="flex transition-[opacity,transform,filter] [transition-delay:40ms] [transition-duration:240ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[transition-duration:120ms] motion-reduce:[transition-delay:0ms] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0"
           >
-            <Check className="size-4 text-semantic-primary [stroke-width:1.75]" />
+            <Check className="size-4 text-[var(--v2-selection-accent,var(--semantic-primary))] [stroke-width:1.75]" />
           </SelectPrimitive.ItemIndicator>
         </span>
         <span
@@ -648,7 +648,7 @@ const SelectSeparator = React.forwardRef(
   ) => (
     <SelectPrimitive.Separator
       ref={ref}
-      className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
+      className={cn("-mx-1 my-1 h-px bg-v2-semantic-border-layout", className)}
       {...props}
     />
   )
@@ -1087,7 +1087,7 @@ const SelectField = React.forwardRef(
           >
             {label}
             {required && (
-              <span className="text-semantic-error-primary ml-0.5">*</span>
+              <span className="text-v2-semantic-error-primary ml-0.5">*</span>
             )}
           </label>
         )}
@@ -1130,8 +1130,8 @@ const SelectField = React.forwardRef(
           >
             {/* Search input */}
             {searchable && (
-              <div className="border-b border-solid border-semantic-border-layout p-2">
-                <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-semantic-border-input bg-semantic-bg-primary px-3 focus-within:border-semantic-primary">
+              <div className="border-b border-solid border-v2-semantic-border-layout p-2">
+                <div className="flex h-11 items-center gap-2 rounded-lg border border-solid border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 focus-within:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]">
                   <Search
                     aria-hidden="true"
                     className="size-4 shrink-0 text-[var(--v2-text-muted,#707070)]"
@@ -1179,7 +1179,7 @@ const SelectField = React.forwardRef(
                       className={cn(
                         "mt-2 first:mt-0",
                         separateGroups &&
-                          "border-t border-solid border-semantic-border-layout pt-1"
+                          "border-t border-solid border-v2-semantic-border-layout pt-1"
                       )}
                     >
                       {hasVisible && <SelectLabel>{groupName}</SelectLabel>}
@@ -1249,7 +1249,7 @@ const SelectField = React.forwardRef(
             {error ? (
               <span
                 id={errorId}
-                className="text-xs leading-[1.4] text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
+                className="text-xs leading-[1.4] text-v2-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-0.5 [animation-duration:150ms] ease-out motion-reduce:animate-[v2-fade-in_150ms_ease-out]"
               >
                 {error}
               </span>

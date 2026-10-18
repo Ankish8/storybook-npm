@@ -44,7 +44,7 @@ describe("DateDivider", () => {
     expect(leftLine.tagName).toBe("DIV");
     expect(leftLine).toHaveClass("flex-1");
     expect(leftLine).toHaveClass("h-px");
-    expect(leftLine).toHaveClass("bg-semantic-border-layout");
+    expect(leftLine).toHaveClass("bg-v2-semantic-border-layout");
 
     // Second child - text span
     const textSpan = children[1] as HTMLElement;
@@ -58,7 +58,7 @@ describe("DateDivider", () => {
     expect(rightLine.tagName).toBe("DIV");
     expect(rightLine).toHaveClass("flex-1");
     expect(rightLine).toHaveClass("h-px");
-    expect(rightLine).toHaveClass("bg-semantic-border-layout");
+    expect(rightLine).toHaveClass("bg-v2-semantic-border-layout");
   });
 
   it("renders with complex children", () => {

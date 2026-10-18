@@ -20,7 +20,7 @@ export default function Example() {
           Reset
         </Button>
       </div>
-      <label className="flex items-center gap-2 text-xs text-semantic-text-secondary">
+      <label className="flex items-center gap-2 text-xs text-v2-semantic-text-secondary">
         <input
           type="checkbox"
           checked={motion}
@@ -28,7 +28,7 @@ export default function Example() {
         />
         Animate value changes
       </label>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {value} conversations resolved
       </p>
     </div>

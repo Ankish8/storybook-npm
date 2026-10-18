@@ -140,17 +140,17 @@ function ContactCheckDemo({
         : "Ready to check 24 sample contacts.";
 
   return (
-    <section className="w-[440px] max-w-full space-y-5 rounded-xl border border-semantic-border-layout bg-semantic-bg-primary p-5">
+    <section className="w-[440px] max-w-full space-y-5 rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5">
       <div className="space-y-1.5">
-        <h3 className="m-0 text-base font-semibold text-semantic-text-primary">
+        <h3 className="m-0 text-base font-semibold text-v2-semantic-text-primary">
           Check contact format
         </h3>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-sm text-v2-semantic-text-muted">
           Local demo · checks names and email format in this browser.
         </p>
       </div>
       <div className="space-y-3">
-        <div className="flex flex-wrap justify-between gap-2 text-sm text-semantic-text-secondary">
+        <div className="flex flex-wrap justify-between gap-2 text-sm text-v2-semantic-text-secondary">
           <span className="tabular-nums">
             {checked} of {total} checked
           </span>
@@ -202,11 +202,11 @@ function ContactCheckDemo({
         <p
           id={statusId}
           role="status"
-          className="m-0 text-sm text-semantic-text-secondary"
+          className="m-0 text-sm text-v2-semantic-text-secondary"
         >
           {status}
         </p>
-        <p className="m-0 min-h-4 text-xs text-semantic-text-muted">
+        <p className="m-0 min-h-4 text-xs text-v2-semantic-text-muted">
           {checked > 0
             ? `Last checked: ${sampleContacts[checked - 1].name}.`
             : "24 sample records · no upload or server request."}

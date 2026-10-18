@@ -4,7 +4,7 @@ export default function Example() {
     <Scrollbar
       showControls={false}
       aria-label="Activity without arrow controls"
-      className="h-48 w-full max-w-sm rounded-lg border border-semantic-border-layout"
+      className="h-48 w-full max-w-sm rounded-lg border border-v2-semantic-border-layout"
     >
       <ol className="m-0 space-y-4 py-4 pl-9 pr-6">
         {[

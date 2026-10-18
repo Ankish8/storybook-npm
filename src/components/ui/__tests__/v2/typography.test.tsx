@@ -180,10 +180,10 @@ describe("Typography", () => {
       ["secondary", "text-[var(--v2-text-secondary,#5E5E5E)]"],
       ["muted", "text-[var(--v2-text-muted,#707070)]"],
       ["placeholder", "text-[var(--v2-text-placeholder,#707070)]"],
-      ["link", "text-semantic-text-link"],
-      ["inverted", "text-semantic-text-inverted"],
-      ["error", "text-semantic-error-primary"],
-      ["success", "text-semantic-success-primary"],
+      ["link", "text-v2-semantic-text-link"],
+      ["inverted", "text-v2-semantic-text-inverted"],
+      ["error", "text-v2-semantic-error-primary"],
+      ["success", "text-v2-semantic-success-primary"],
     ];
 
     it.each(colorTestCases)(
@@ -534,7 +534,7 @@ describe("Typography", () => {
       expect(element).toHaveClass("font-medium");
 
       // Color
-      expect(element).toHaveClass("text-semantic-error-primary");
+      expect(element).toHaveClass("text-v2-semantic-error-primary");
 
       // Align
       expect(element).toHaveClass("text-center");

@@ -97,8 +97,8 @@ describe("OtpInput feedback", () => {
     expect(slot).toHaveClass(
       "data-[filled=false]:text-transparent",
       "text-base",
-      "caret-semantic-primary",
-      "focus:border-semantic-primary"
+      "caret-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
+      "focus:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(slot.className).toContain(
       "[transition-property:border-color,background-color,color]"
@@ -128,7 +128,7 @@ describe("OtpInput feedback", () => {
       "motion-safe:animate-[v2-otp-shake_300ms_ease-in-out]"
     );
     expect(screen.getByLabelText("Digit 1 of 4")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 

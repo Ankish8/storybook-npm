@@ -281,13 +281,9 @@ describe("Registry", () => {
       expect(content).toContain(
         "tw-border tw-border-solid tw-border-[var(--semantic-border-layout"
       );
-      expect(content).toContain(
-        "[@media(min-height:36rem)]:tw-min-h-full"
-      );
+      expect(content).toContain("[@media(min-height:36rem)]:tw-min-h-full");
       expect(content).toContain("[@media(min-height:36rem)]:tw-flex-1");
-      expect(content).toContain(
-        "[@media(min-height:36rem)]:tw-justify-center"
-      );
+      expect(content).toContain("[@media(min-height:36rem)]:tw-justify-center");
       expect(content).not.toContain("tw-[@media(min-height:36rem)]");
     });
 
@@ -1067,8 +1063,10 @@ describe("v1 prefixed vs v2 unprefixed", () => {
     it.each(["tw-", "", "app-"])(
       "ships identical output whatever the project prefix is (%j)",
       async (prefix) => {
-        const expected = (await getRegistry("tw-"))["v2-button"].files[0].content;
-        const actual = (await getRegistry(prefix))["v2-button"].files[0].content;
+        const expected = (await getRegistry("tw-"))["v2-button"].files[0]
+          .content;
+        const actual = (await getRegistry(prefix))["v2-button"].files[0]
+          .content;
 
         expect(actual).toBe(expected);
       }
@@ -1078,7 +1076,7 @@ describe("v1 prefixed vs v2 unprefixed", () => {
       const content = (await getRegistry("tw-"))["v2-button"].files[0].content;
 
       expect(content).not.toMatch(/(^|[\s"'`:])-?tw-/);
-      expect(content).toContain("bg-semantic-primary");
+      expect(content).toContain("bg-v2-semantic-primary");
       expect(content).not.toContain("bg-[var(--semantic-primary,#343E55)]");
     });
 

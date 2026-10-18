@@ -299,7 +299,7 @@ describe("DeleteConfirmationModal is the v1 name for Modal with requireText", ()
     const media = screen
       .getByRole("dialog")
       .querySelector("[data-slot=modal-media]");
-    expect(media).toHaveClass("bg-semantic-error-surface");
+    expect(media).toHaveClass("bg-v2-semantic-error-surface");
     expect(media?.querySelector("svg")).toHaveClass("lucide-trash-2");
   });
 

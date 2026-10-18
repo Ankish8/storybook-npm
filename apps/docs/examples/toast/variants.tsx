@@ -25,22 +25,22 @@ export default function Example() {
             {variant === "success" ? (
               <Check
                 aria-hidden="true"
-                className="mt-0.5 size-5 shrink-0 text-semantic-success-primary"
+                className="mt-0.5 size-5 shrink-0 text-v2-semantic-success-primary"
               />
             ) : variant === "error" || variant === "destructive" ? (
               <CircleAlert
                 aria-hidden="true"
-                className="mt-0.5 size-5 shrink-0 text-semantic-error-primary"
+                className="mt-0.5 size-5 shrink-0 text-v2-semantic-error-primary"
               />
             ) : variant === "warning" ? (
               <TriangleAlert
                 aria-hidden="true"
-                className="mt-0.5 size-5 shrink-0 text-semantic-warning-primary"
+                className="mt-0.5 size-5 shrink-0 text-v2-semantic-warning-primary"
               />
             ) : (
               <Info
                 aria-hidden="true"
-                className="mt-0.5 size-5 shrink-0 text-semantic-text-muted"
+                className="mt-0.5 size-5 shrink-0 text-v2-semantic-text-muted"
               />
             )}
             <div className="min-w-0">

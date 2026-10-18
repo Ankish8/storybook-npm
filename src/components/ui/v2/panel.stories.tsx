@@ -68,13 +68,13 @@ function Demo({
     change({ open: false });
   };
   return (
-    <section className="relative flex h-[520px] min-w-0 overflow-hidden rounded-xl border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-secondary">
+    <section className="relative flex h-[520px] min-w-0 overflow-hidden rounded-xl border border-v2-semantic-border-layout bg-v2-semantic-bg-ui text-v2-semantic-text-secondary">
       <div className="min-w-0 flex-1 overflow-y-auto">
         <div className="p-4 sm:p-6">
-          <p className="m-0 text-sm font-medium text-semantic-text-primary">
+          <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
             Contacts
           </p>
-          <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
             Keep conversations and contact details together.
           </p>
           <Action
@@ -104,20 +104,20 @@ function Demo({
             ].map((contact, index) => (
               <div
                 key={index}
-                className="flex min-w-0 items-start gap-3 rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-3"
+                className="flex min-w-0 items-start gap-3 rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-3"
               >
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-semantic-bg-ui text-semantic-text-muted">
+                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-v2-semantic-bg-ui text-v2-semantic-text-muted">
                   <UserRound className="size-4" aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="m-0 break-words text-sm font-medium text-semantic-text-primary">
+                  <p className="m-0 break-words text-sm font-medium text-v2-semantic-text-primary">
                     {contact.name}
                   </p>
-                  <p className="m-0 mt-1 break-words text-xs text-semantic-text-muted">
+                  <p className="m-0 mt-1 break-words text-xs text-v2-semantic-text-muted">
                     {contact.detail}
                   </p>
                   {contact.selected && (
-                    <span className="mt-2 inline-flex items-center gap-1 text-xs text-semantic-success-text">
+                    <span className="mt-2 inline-flex items-center gap-1 text-xs text-v2-semantic-success-text">
                       <Check className="size-3" aria-hidden="true" />
                       Selected contact
                     </span>
@@ -140,12 +140,12 @@ function Demo({
         }
         header={
           args.customHeader ? (
-            <div className="flex h-14 shrink-0 items-center gap-3 border-b border-semantic-border-layout px-4">
+            <div className="flex h-14 shrink-0 items-center gap-3 border-b border-v2-semantic-border-layout px-4">
               <div className="min-w-0 flex-1">
-                <p className="m-0 truncate text-base font-medium text-semantic-text-primary">
+                <p className="m-0 truncate text-base font-medium text-v2-semantic-text-primary">
                   {args.title}
                 </p>
-                <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+                <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
                   Editable contact
                 </p>
               </div>
@@ -171,7 +171,7 @@ function Demo({
                 role="status"
                 className={
                   saved
-                    ? "m-0 w-full text-xs text-semantic-success-text"
+                    ? "m-0 w-full text-xs text-v2-semantic-success-text"
                     : "m-0 sr-only"
                 }
               >
@@ -212,14 +212,14 @@ function Demo({
           }}
         >
           <div className="flex items-center gap-3">
-            <span className="grid size-11 shrink-0 place-items-center rounded-full border border-semantic-border-layout bg-semantic-bg-ui text-semantic-text-secondary">
+            <span className="grid size-11 shrink-0 place-items-center rounded-full border border-v2-semantic-border-layout bg-v2-semantic-bg-ui text-v2-semantic-text-secondary">
               <UserRound className="size-5" aria-hidden="true" />
             </span>
             <div className="min-w-0">
-              <p className="m-0 break-words text-sm font-medium text-semantic-text-primary">
+              <p className="m-0 break-words text-sm font-medium text-v2-semantic-text-primary">
                 {state.name || "New contact"}
               </p>
-              <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+              <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
                 Sales prospect · Assigned to you
               </p>
             </div>
@@ -227,8 +227,8 @@ function Demo({
           <h4
             className={
               version === "v1"
-                ? "m-0 text-xs font-semibold uppercase tracking-wide text-semantic-text-secondary"
-                : "m-0 text-xs font-medium uppercase tracking-wide text-semantic-text-primary"
+                ? "m-0 text-xs font-semibold uppercase tracking-wide text-v2-semantic-text-secondary"
+                : "m-0 text-xs font-medium uppercase tracking-wide text-v2-semantic-text-primary"
             }
           >
             Basic information
@@ -267,26 +267,26 @@ function Demo({
               onChange={(e) => change({ email: e.target.value })}
             />
           </div>
-          <div className="space-y-3 border-t border-semantic-border-layout pt-4 text-sm">
-            <p className="m-0 flex items-center gap-2 text-semantic-text-muted">
+          <div className="space-y-3 border-t border-v2-semantic-border-layout pt-4 text-sm">
+            <p className="m-0 flex items-center gap-2 text-v2-semantic-text-muted">
               <Phone className="size-4 shrink-0" aria-hidden="true" />
               +91 98765 43210
             </p>
-            <p className="m-0 flex items-start gap-2 break-all text-semantic-text-muted">
+            <p className="m-0 flex items-start gap-2 break-all text-v2-semantic-text-muted">
               <Mail className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
               {state.email || "No email added"}
             </p>
           </div>
-          <div className="rounded-lg border border-semantic-border-layout bg-semantic-bg-subtle p-3">
-            <p className="m-0 flex items-center gap-2 text-xs font-medium text-semantic-text-primary">
+          <div className="rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-subtle p-3">
+            <p className="m-0 flex items-center gap-2 text-xs font-medium text-v2-semantic-text-primary">
               <MessageSquare className="size-4" aria-hidden="true" />
               Latest conversation
             </p>
-            <p className="m-0 mt-2 text-sm leading-relaxed text-semantic-text-secondary">
+            <p className="m-0 mt-2 text-sm leading-relaxed text-v2-semantic-text-secondary">
               Asked about call routing for a team of 12. Send the product demo
               and follow up on Friday.
             </p>
-            <p className="m-0 mt-2 text-xs text-semantic-text-muted">
+            <p className="m-0 mt-2 text-xs text-v2-semantic-text-muted">
               Today, 10:42 AM
             </p>
           </div>
@@ -319,12 +319,12 @@ function Demo({
             ].map((activity) => (
               <div
                 key={activity.title}
-                className="border-t border-semantic-border-layout pt-3"
+                className="border-t border-v2-semantic-border-layout pt-3"
               >
-                <p className="m-0 text-sm font-medium text-semantic-text-primary">
+                <p className="m-0 text-sm font-medium text-v2-semantic-text-primary">
                   {activity.title}
                 </p>
-                <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+                <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
                   {activity.detail}
                 </p>
               </div>
@@ -374,11 +374,11 @@ const panelDocs = [
   "",
   "| Purpose | CSS variable | Preview |",
   "| --- | --- | --- |",
-  "| Surface | --semantic-bg-primary | <span style='display:inline-block;width:24px;height:16px;background:var(--semantic-bg-primary);border:1px solid var(--semantic-border-layout)'></span> |",
-  "| Title | --semantic-text-primary | <span style='display:inline-block;width:24px;height:16px;background:var(--semantic-text-primary)'></span> |",
-  "| Body and close icon | --semantic-text-secondary | <span style='display:inline-block;width:24px;height:16px;background:var(--semantic-text-secondary)'></span> |",
-  "| Close surface | --semantic-bg-subtle | <span style='display:inline-block;width:24px;height:16px;background:var(--semantic-bg-subtle);border:1px solid var(--semantic-border-layout)'></span> |",
-  "| Layout edge | --semantic-border-layout | <span style='display:inline-block;width:24px;height:16px;background:var(--semantic-border-layout)'></span> |",
+  "| Surface | --semantic-bg-primary | <span style='display:inline-block;width:24px;height:16px;background:var(--v2-semantic-bg-primary,var(--semantic-bg-primary));border:1px solid var(--v2-semantic-border-layout,var(--semantic-border-layout))'></span> |",
+  "| Title | --semantic-text-primary | <span style='display:inline-block;width:24px;height:16px;background:var(--v2-semantic-text-primary,var(--semantic-text-primary))'></span> |",
+  "| Body and close icon | --semantic-text-secondary | <span style='display:inline-block;width:24px;height:16px;background:var(--v2-semantic-text-secondary,var(--semantic-text-secondary))'></span> |",
+  "| Close surface | --semantic-bg-subtle | <span style='display:inline-block;width:24px;height:16px;background:var(--v2-semantic-bg-subtle,var(--semantic-bg-subtle));border:1px solid var(--v2-semantic-border-layout,var(--semantic-border-layout))'></span> |",
+  "| Layout edge | --semantic-border-layout | <span style='display:inline-block;width:24px;height:16px;background:var(--v2-semantic-border-layout,var(--semantic-border-layout))'></span> |",
   "",
   "## Usage",
   "",
@@ -474,8 +474,8 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-medium text-semantic-text-primary">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
+      <h3 className="m-0 mb-4 text-base font-medium text-v2-semantic-text-primary">
         {title}
       </h3>
       {children}

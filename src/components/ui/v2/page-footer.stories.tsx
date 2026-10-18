@@ -179,7 +179,7 @@ function Editor(args: Args) {
   const [saved, setSaved] = useState(draft);
   const [status, setStatus] = useState("");
   return (
-    <section className="w-[720px] max-w-full overflow-hidden rounded-lg border border-solid border-semantic-border-layout">
+    <section className="w-[720px] max-w-full overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout">
       <div className="space-y-4 p-5">
         <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Notification settings

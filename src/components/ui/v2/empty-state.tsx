@@ -140,11 +140,11 @@ function Illustration({
         cy="168"
         rx="107"
         ry="10"
-        className="fill-semantic-bg-ui"
+        className="fill-v2-semantic-bg-ui"
       />
       <path
         d="M52 81h8m-4-4v8M260 51h6m-3-3v6"
-        className="stroke-semantic-border-layout"
+        className="stroke-v2-semantic-border-layout"
       />
 
       {kind === "no-results" && (
@@ -156,7 +156,7 @@ function Illustration({
             height="111"
             rx="12"
             transform="rotate(-9 79 39)"
-            className="fill-semantic-bg-ui stroke-semantic-border-layout"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-border-layout"
           />
           <rect
             x="109"
@@ -165,7 +165,7 @@ function Illustration({
             height="124"
             rx="12"
             transform="rotate(7 109 28)"
-            className="fill-semantic-bg-primary stroke-semantic-border-layout"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-border-layout"
           />
           <rect
             x="88"
@@ -173,11 +173,11 @@ function Illustration({
             width="116"
             height="112"
             rx="13"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <path
             d="M106 69h56m-56 14h72m-72 14h42"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
           <rect
             x="104"
@@ -185,28 +185,31 @@ function Illustration({
             width="51"
             height="20"
             rx="6"
-            className="fill-semantic-primary-surface"
+            className="fill-v2-semantic-primary-surface"
           />
-          <path d="M114 127h30" className="stroke-semantic-text-muted" />
+          <path d="M114 127h30" className="stroke-v2-semantic-text-muted" />
           <circle
             cx="204"
             cy="114"
             r="28"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <circle
             cx="204"
             cy="114"
             r="20"
-            className="fill-semantic-bg-ui stroke-semantic-border-layout"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-border-layout"
           />
           <motion.path
             d="m224 135 20 22"
             strokeWidth="6"
-            className="stroke-semantic-primary"
+            className="stroke-[var(--v2-indicator,var(--semantic-primary))]"
             {...trace}
           />
-          <path d="M225 38h12m-6-6v12" className="stroke-semantic-text-muted" />
+          <path
+            d="M225 38h12m-6-6v12"
+            className="stroke-v2-semantic-text-muted"
+          />
         </>
       )}
 
@@ -219,7 +222,7 @@ function Illustration({
             height="99"
             rx="13"
             transform="rotate(-7 84 60)"
-            className="fill-semantic-bg-ui stroke-semantic-border-layout"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-border-layout"
           />
           <rect
             x="99"
@@ -227,11 +230,11 @@ function Illustration({
             width="107"
             height="98"
             rx="13"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <path
             d="M116 87h55m-55 13h69m-69 13h39"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
           <rect
             x="115"
@@ -239,31 +242,31 @@ function Illustration({
             width="43"
             height="13"
             rx="5"
-            className="fill-semantic-primary-surface"
+            className="fill-v2-semantic-primary-surface"
           />
           <path
             d="M183 77h51a18 18 0 0 0 1-36 24 24 0 0 0-46-3 20 20 0 0 0-6 39Z"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <path
             d="M212 87v14m0 35v13h-19"
             strokeDasharray="3 6"
-            className="stroke-semantic-text-muted"
+            className="stroke-v2-semantic-text-muted"
           />
           <circle
             cx="212"
             cy="118"
             r="12"
-            className="fill-semantic-primary-surface stroke-semantic-border-layout"
+            className="fill-v2-semantic-primary-surface stroke-v2-semantic-border-layout"
           />
           <motion.path
             d="m208 122 8-8"
-            className="stroke-semantic-text-secondary"
+            className="stroke-v2-semantic-text-secondary"
             {...trace}
           />
           <path
             d="M69 43h13m-7-6v12M248 139h7"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
         </>
       )}
@@ -277,7 +280,7 @@ function Illustration({
             height="78"
             rx="10"
             transform="rotate(-7 107 38)"
-            className="fill-semantic-bg-ui stroke-semantic-border-layout"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-border-layout"
           />
           <rect
             x="113"
@@ -285,35 +288,35 @@ function Illustration({
             width="94"
             height="78"
             rx="10"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <path
             d="m117 49 43 29 43-29M130 95h46"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
           <path
             d="m101 102-17 40v15a7 7 0 0 0 7 7h138a7 7 0 0 0 7-7v-15l-17-40Z"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <path
             d="M85 142h44l9 11h43l9-11h45"
-            className="fill-semantic-bg-ui stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-text-secondary"
           />
           <circle
             cx="219"
             cy="71"
             r="24"
-            className="fill-semantic-success-surface stroke-semantic-success-primary"
+            className="fill-v2-semantic-success-surface stroke-v2-semantic-success-primary"
           />
           <motion.path
             d="m209 71 7 7 13-15"
             strokeWidth="2"
-            className="stroke-semantic-success-primary"
+            className="stroke-v2-semantic-success-primary"
             {...trace}
           />
           <path
             d="M75 88h9m-5-5v10M249 42l5-5m-1 17h7"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
         </>
       )}
@@ -326,50 +329,55 @@ function Illustration({
             width="144"
             height="128"
             rx="14"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
-          <path d="M89 57h142" className="stroke-semantic-border-layout" />
-          <circle cx="102" cy="44" r="2" className="fill-semantic-text-muted" />
+          <path d="M89 57h142" className="stroke-v2-semantic-border-layout" />
+          <circle
+            cx="102"
+            cy="44"
+            r="2"
+            className="fill-v2-semantic-text-muted"
+          />
           <circle
             cx="111"
             cy="44"
             r="2"
-            className="fill-semantic-border-layout"
+            className="fill-v2-semantic-border-layout"
           />
           <circle
             cx="120"
             cy="44"
             r="2"
-            className="fill-semantic-border-layout"
+            className="fill-v2-semantic-border-layout"
           />
           <path
             d="M143 78h27l13 13v43h-40Z"
             strokeDasharray="4 4"
-            className="fill-semantic-bg-ui stroke-semantic-text-muted"
+            className="fill-v2-semantic-bg-ui stroke-v2-semantic-text-muted"
           />
           <path
             d="M170 78v13h13m-29 17h18m-18 9h10"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
           <path
             d="M74 142c-17-24-5-49 17-44m141 30c27-2 32-27 20-41"
             strokeDasharray="3 6"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
           <circle
             cx="226"
             cy="136"
             r="24"
-            className="fill-semantic-bg-primary stroke-semantic-text-secondary"
+            className="fill-v2-semantic-bg-primary stroke-v2-semantic-text-secondary"
           />
           <motion.path
             d="m218 128 16 16m0-16-16 16"
-            className="stroke-semantic-text-secondary"
+            className="stroke-v2-semantic-text-secondary"
             {...trace}
           />
           <path
             d="M69 61h8m-4-4v8M250 64h8m-4-4v8"
-            className="stroke-semantic-border-layout"
+            className="stroke-v2-semantic-border-layout"
           />
         </>
       )}
@@ -436,8 +444,8 @@ const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
             transition={{ duration: 0.48, ease: [...EASE_ENTER] }}
             className={
               small
-                ? "bg-semantic-bg-ui border border-solid border-semantic-border-layout rounded-[60px] size-12 relative grid place-items-center text-[var(--v2-text-secondary,#5E5E5E)] [&>span>svg]:size-6"
-                : "bg-semantic-bg-ui border border-solid border-semantic-border-layout rounded-[60px] size-[90px] relative grid place-items-center text-[var(--v2-text-secondary,#5E5E5E)]"
+                ? "bg-v2-semantic-bg-ui border border-solid border-v2-semantic-border-layout rounded-[60px] size-12 relative grid place-items-center text-[var(--v2-text-secondary,#5E5E5E)] [&>span>svg]:size-6"
+                : "bg-v2-semantic-bg-ui border border-solid border-v2-semantic-border-layout rounded-[60px] size-[90px] relative grid place-items-center text-[var(--v2-text-secondary,#5E5E5E)]"
             }
           >
             <AnimatePresence mode="popLayout" initial={false}>

@@ -7,7 +7,7 @@ export default function Example() {
           key={variant}
           variant={variant}
           aria-label={`${variant} activity list`}
-          className="h-40 rounded-lg border border-semantic-border-layout"
+          className="h-40 rounded-lg border border-v2-semantic-border-layout"
         >
           <ol className="m-0 space-y-4 py-4 pl-9 pr-6">
             {[

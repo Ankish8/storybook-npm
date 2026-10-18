@@ -20,7 +20,7 @@ export default function Basic() {
         navigation="completed"
       />
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p role="status" className="m-0 text-xs text-semantic-text-muted">
+        <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
           {done
             ? "All steps complete"
             : `Step ${currentStep + 1} of ${steps.length}: ${steps[currentStep].title}`}

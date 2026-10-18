@@ -5,7 +5,7 @@ export default function Example() {
       <Panel
         title="Contact activity"
         footer={
-          <span className="text-xs text-semantic-text-muted">
+          <span className="text-xs text-v2-semantic-text-muted">
             8 recent events
           </span>
         }
@@ -21,7 +21,7 @@ export default function Example() {
             "Mira attached the invoice",
             "Owen sent a follow-up",
           ].map((item) => (
-            <li key={item} className="text-sm text-semantic-text-secondary">
+            <li key={item} className="text-sm text-v2-semantic-text-secondary">
               {item}
             </li>
           ))}

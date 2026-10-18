@@ -73,12 +73,12 @@ function replyQuoteClassName(
   isInteractive: boolean
 ) {
   return cn(
-    "w-full min-w-0 font-[family-name:var(--font-v2,Inter,sans-serif)] bg-[var(--semantic-bg-ui,#F5F5F5)] border-l-[3px] border-solid border-[var(--semantic-border-accent,#27ABB8)] rounded-sm px-4 py-1.5 mb-2 h-[56px] overflow-hidden text-left",
+    "w-full min-w-0 font-[family-name:var(--font-v2,Inter,sans-serif)] bg-[var(--v2-semantic-bg-ui,var(--semantic-bg-ui,#F5F5F5))] border-l-[3px] border-solid border-[var(--v2-semantic-border-accent,var(--semantic-border-accent,#27ABB8))] rounded-sm px-4 py-1.5 mb-2 h-[56px] overflow-hidden text-left",
     hasThumbnail
       ? "flex flex-row items-center gap-2"
       : "flex flex-col justify-start gap-0",
     isInteractive &&
-      "cursor-pointer transition-[background-color,transform] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-semantic-bg-grey active:bg-semantic-bg-grey active:scale-[0.985] motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-[var(--semantic-border-focus,#2BBCCA)] focus-visible:ring-offset-1 focus-visible:outline-none border-t-0 border-r-0 border-b-0",
+      "cursor-pointer transition-[background-color,transform] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] [@media(hover:hover)]:hover:bg-v2-semantic-bg-grey active:bg-v2-semantic-bg-grey active:scale-[0.985] motion-reduce:active:scale-100 focus-visible:ring-2 focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-border-focus,#2BBCCA))] focus-visible:ring-offset-1 focus-visible:ring-offset-v2-semantic-bg-primary focus-visible:outline-none border-t-0 border-r-0 border-b-0",
     className
   );
 }

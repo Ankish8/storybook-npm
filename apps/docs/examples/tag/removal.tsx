@@ -55,7 +55,7 @@ export default function Example() {
           </Tag>
         ))}
       </div>
-      <label className="flex items-center gap-2 text-xs text-semantic-text-secondary">
+      <label className="flex items-center gap-2 text-xs text-v2-semantic-text-secondary">
         <input
           type="checkbox"
           checked={keepSupport}
@@ -74,7 +74,7 @@ export default function Example() {
       >
         Reset filters
       </Button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {filters.length} filters active. {notice}
       </p>
     </div>

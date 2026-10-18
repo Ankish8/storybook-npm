@@ -189,8 +189,8 @@ describe("Tooltip", () => {
       expect(tooltip).toHaveClass(
         "data-[state=instant-open]:pointer-events-auto"
       );
-      expect(tooltip).toHaveClass("bg-semantic-bg-secondary");
-      expect(tooltip).toHaveClass("text-semantic-text-inverted");
+      expect(tooltip).toHaveClass("bg-v2-semantic-bg-secondary");
+      expect(tooltip).toHaveClass("text-v2-semantic-text-inverted");
       expect(tooltip).toHaveClass("text-xs");
       expect(tooltip).toHaveClass("leading-5");
       expect(tooltip).toHaveClass("rounded-md");
@@ -314,7 +314,7 @@ describe("Tooltip", () => {
       await waitFor(() => {
         const arrow = screen.getByTestId("arrow");
         expect(arrow).toHaveClass(
-          "fill-[var(--tooltip-arrow-fill,var(--semantic-bg-secondary))]"
+          "fill-[var(--tooltip-arrow-fill,var(--v2-semantic-bg-secondary,var(--semantic-bg-secondary)))]"
         );
       });
     });
@@ -784,7 +784,7 @@ describe("Tooltip compatibility and dismissal", () => {
         <TooltipTrigger>Help</TooltipTrigger>
         <TooltipContent
           variant="light"
-          className="bg-semantic-primary max-w-xs"
+          className="bg-v2-semantic-primary max-w-xs"
           data-testid="light"
         >
           Help
@@ -798,12 +798,12 @@ describe("Tooltip compatibility and dismissal", () => {
     );
     expect(screen.getByTestId("light")).not.toHaveAttribute("variant");
     expect(screen.getByTestId("light")).toHaveClass(
-      "bg-semantic-primary",
+      "bg-v2-semantic-primary",
       "max-w-xs",
-      "text-semantic-text-primary"
+      "text-v2-semantic-text-primary"
     );
     expect(screen.getByTestId("light")).not.toHaveClass(
-      "bg-semantic-bg-primary",
+      "bg-v2-semantic-bg-primary",
       "max-w-[15rem]"
     );
     expect(screen.getByTestId("arrow")).toHaveAttribute("aria-hidden", "true");
@@ -954,5 +954,40 @@ describe("Tooltip touch and native event behavior", () => {
     await user.click(screen.getByRole("button", { name: "Outside" }));
     expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Outside" })).toHaveFocus();
+  });
+});
+
+describe("Tooltip v2 theme inheritance", () => {
+  it("keeps an open body portal mounted while the document theme changes", () => {
+    const onOpenChange = vi.fn();
+    const { container } = renderTooltip(
+      <Tooltip open onOpenChange={onOpenChange}>
+        <TooltipTrigger>Theme help</TooltipTrigger>
+        <TooltipContent>
+          Shared theme tokens
+          <TooltipArrow />
+        </TooltipContent>
+      </Tooltip>
+    );
+    const content = getTooltipContent();
+    expect(content).toHaveClass(
+      "bg-v2-semantic-bg-secondary",
+      "text-v2-semantic-text-inverted"
+    );
+    expect(container.contains(content)).toBe(false);
+    expect(document.body.contains(content)).toBe(true);
+
+    const previousDark = document.documentElement.classList.contains("dark");
+    try {
+      document.documentElement.classList.toggle("dark", !previousDark);
+      expect(getTooltipContent()).toBe(content);
+      expect(content).toHaveAttribute("data-state", "instant-open");
+      expect(onOpenChange).not.toHaveBeenCalled();
+      expect(content?.querySelector("svg")).toHaveClass(
+        "fill-[var(--tooltip-arrow-fill,var(--v2-semantic-bg-secondary,var(--semantic-bg-secondary)))]"
+      );
+    } finally {
+      document.documentElement.classList.toggle("dark", previousDark);
+    }
   });
 });

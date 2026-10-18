@@ -12,7 +12,7 @@ export default function Navigation() {
         currentStep={currentStep}
         onStepChange={setCurrentStep}
       />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         Step {currentStep + 1}: {steps[currentStep].title}
       </p>
     </div>

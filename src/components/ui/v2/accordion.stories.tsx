@@ -88,8 +88,8 @@ function Example({
             <p
               className={
                 version === "v1"
-                  ? "m-0 text-sm text-semantic-text-secondary"
-                  : "m-0 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+                  ? "m-0 text-sm text-v2-semantic-text-secondary"
+                  : "m-0 text-sm text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]"
               }
             >
               {index === 0 ? args.content : section.content}
@@ -254,8 +254,8 @@ function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+    <section className="min-w-0 rounded-lg border border-v2-semantic-border-layout p-4">
+      <h3 className="m-0 mb-4 text-base font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
         {title}
       </h3>
       {children}
@@ -367,21 +367,21 @@ function ContactExample({
   const [notify, setNotify] = React.useState(true);
   const [saved, setSaved] = React.useState(false);
   const labelClass =
-    "mb-2 block text-xs font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]";
+    "mb-2 block text-xs font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]";
   const selectClass =
-    "min-h-10 w-full min-w-0 rounded-md border border-semantic-border-input bg-semantic-bg-primary px-3 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-semantic-primary";
+    "min-h-10 w-full min-w-0 rounded-md border border-v2-semantic-border-input bg-v2-semantic-bg-primary px-3 text-sm text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]";
 
   return (
     <section
       aria-label="Contact profile"
-      className="w-full max-w-[680px] rounded-lg border border-semantic-border-layout bg-semantic-bg-primary p-5 sm:p-6"
+      className="w-full max-w-[680px] rounded-lg border border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 sm:p-6"
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--semantic-text-primary))]">
+          <h3 className="m-0 text-base font-medium text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]">
             Contact profile
           </h3>
-          <p className="m-0 mt-1 text-xs leading-relaxed text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+          <p className="m-0 mt-1 text-xs leading-relaxed text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
             Keep contact details, custom fields and routing in one place.
           </p>
         </div>
@@ -510,13 +510,13 @@ function ContactExample({
                 </div>
                 <label
                   htmlFor={id + "-notify"}
-                  className="flex items-center gap-2 text-sm text-[var(--v2-text-secondary,var(--semantic-text-secondary))]"
+                  className="flex items-center gap-2 text-sm text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))]"
                 >
                   <input
                     id={id + "-notify"}
                     type="checkbox"
                     checked={notify}
-                    className="size-4 shrink-0 accent-semantic-primary"
+                    className="size-4 shrink-0 accent-v2-semantic-primary"
                     onChange={(event) => {
                       setNotify(event.target.checked);
                       setSaved(false);
@@ -532,7 +532,7 @@ function ContactExample({
           <p
             role="status"
             aria-live="polite"
-            className="m-0 text-xs text-semantic-success-text"
+            className="m-0 text-xs text-v2-semantic-success-text"
           >
             {saved ? "Saved locally: " + name : ""}
           </p>
@@ -604,7 +604,7 @@ export const KeyboardNavigation: Story = {
   ),
   render: (args) => (
     <div className="max-w-[640px]">
-      <p className="m-0 mb-4 text-xs text-[var(--v2-text-muted,var(--semantic-text-muted))]">
+      <p className="m-0 mb-4 text-xs text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))]">
         Tab to a section, use Arrow Up/Down or Home/End to move, then Enter or
         Space to expand.
       </p>

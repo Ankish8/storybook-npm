@@ -8,7 +8,7 @@ export default function ExternalPicker() {
     <div className="w-full max-w-[360px] space-y-2">
       <label
         htmlFor="external-phone"
-        className="text-sm font-medium text-semantic-text-primary"
+        className="text-sm font-medium text-v2-semantic-text-primary"
       >
         Mobile number
       </label>
@@ -29,7 +29,7 @@ export default function ExternalPicker() {
             <button
               key={next.iso}
               type="button"
-              className="rounded-md border border-semantic-border-layout px-3 py-2 text-sm"
+              className="rounded-md border border-v2-semantic-border-layout px-3 py-2 text-sm"
               onClick={() => {
                 setCountry(next);
                 setOpen(false);

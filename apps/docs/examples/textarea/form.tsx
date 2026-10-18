@@ -20,7 +20,7 @@ export default function Form() {
         defaultValue="Customer requested a callback."
       />
       <Button type="submit">Save notes</Button>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {saved ? `Saved: ${saved}` : "Nothing saved yet."}
       </p>
     </form>

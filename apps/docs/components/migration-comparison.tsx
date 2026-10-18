@@ -72,6 +72,10 @@ function ComparisonFrame({
     url.searchParams.set("version", version === "v1" ? "v1" : "v2");
     url.searchParams.set("comparison", mode);
     url.searchParams.set("parentOrigin", origin);
+    url.searchParams.set(
+      "theme",
+      document.documentElement.dataset.theme || "light"
+    );
     return { href: url.href, origin: url.origin };
   }, [active, component, initialStory, mode, version, origin]);
 
@@ -289,7 +293,7 @@ function LiveComparison({ slug, title }: { slug: string; title: string }) {
         </button>
       </div>
       <p className="migration-caption">
-        {`One unchanged ${counterpart.adapted ? "legacy story with the documented API adapter" : "v1 story"}, the same starting content and props. Interact with each version independently.`}
+        {`One unchanged ${counterpart.adapted ? "legacy story with the documented API adapter" : "v1 story"}, the same starting content and props. Interact with each version independently. V1 retains its original light appearance; v2 follows the selected theme.`}
       </p>
       <div className="migration-pair">
         <ComparisonFrame

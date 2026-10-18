@@ -30,7 +30,7 @@ export default function ErrorState() {
         state={invalid ? "error" : "default"}
       />
       {invalid && (
-        <p id={messageId} className="m-0 text-xs text-semantic-error-text">
+        <p id={messageId} className="m-0 text-xs text-v2-semantic-error-text">
           Choose at least one tone.
         </p>
       )}

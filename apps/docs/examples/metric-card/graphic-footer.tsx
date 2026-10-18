@@ -14,7 +14,7 @@ export default function Example() {
           role="img"
           aria-label="Resolved conversations increased over the week"
           viewBox="0 0 240 48"
-          className="h-12 w-full fill-none stroke-semantic-success-primary"
+          className="h-12 w-full fill-none stroke-v2-semantic-success-primary"
           strokeWidth="2"
         >
           <path d="M2 42 L38 36 L76 38 L114 23 L152 28 L190 12 L238 5" />
@@ -25,7 +25,7 @@ export default function Example() {
         {details ? "Hide details" : "View details"}
       </Button>
       {details && (
-        <p className="m-0 mt-3 text-sm text-semantic-text-secondary">
+        <p className="m-0 mt-3 text-sm text-v2-semantic-text-secondary">
           The support team resolved 120 more conversations this week.
         </p>
       )}

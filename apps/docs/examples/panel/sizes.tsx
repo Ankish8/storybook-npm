@@ -5,7 +5,7 @@ export default function Example() {
       {(["sm", "default", "lg"] as const).map((size) => (
         <div key={size} className="flex h-40 min-w-0">
           <Panel size={size} title={`${size} panel`}>
-            <p className="m-0 p-4 text-sm text-semantic-text-secondary">
+            <p className="m-0 p-4 text-sm text-v2-semantic-text-secondary">
               Contextual details stay in this panel.
             </p>
           </Panel>

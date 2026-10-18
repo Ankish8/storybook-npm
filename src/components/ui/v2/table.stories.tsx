@@ -184,7 +184,7 @@ function TableExample({
                   className={
                     version === "v1"
                       ? "font-medium"
-                      : "font-medium text-semantic-text-primary"
+                      : "font-medium text-v2-semantic-text-primary"
                   }
                 >
                   {row.name}
@@ -251,7 +251,7 @@ function TableExample({
                           Duplicate
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-semantic-error-text focus:text-semantic-error-text"
+                          className="text-v2-semantic-error-text focus:text-v2-semantic-error-text"
                           onSelect={() => {
                             args.onRowAction(row.id, "remove");
                             updateRows(
@@ -275,7 +275,10 @@ function TableExample({
         </UI.TableBody>
       </UI.Table>
       {notice && (
-        <p className="m-0 mt-3 text-xs text-semantic-text-muted" role="status">
+        <p
+          className="m-0 mt-3 text-xs text-v2-semantic-text-muted"
+          role="status"
+        >
           {notice}
         </p>
       )}
@@ -522,11 +525,11 @@ function ExampleCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-w-0 max-w-full rounded-lg border border-semantic-border-layout p-4">
-      <h3 className="m-0 text-base font-medium text-semantic-text-primary">
+    <section className="min-w-0 max-w-full rounded-lg border border-v2-semantic-border-layout p-4">
+      <h3 className="m-0 text-base font-medium text-v2-semantic-text-primary">
         {title}
       </h3>
-      <p className="m-0 mt-1 mb-4 text-xs text-semantic-text-muted">
+      <p className="m-0 mt-1 mb-4 text-xs text-v2-semantic-text-muted">
         {description}
       </p>
       {children}
@@ -752,13 +755,13 @@ function CampaignManagement({
         : "indeterminate";
   const columns = 4 + Number(args.showToggle) + Number(args.showActions);
   return (
-    <div className="max-w-full rounded-lg border border-semantic-border-layout p-5">
+    <div className="max-w-full rounded-lg border border-v2-semantic-border-layout p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="m-0 text-base font-medium text-semantic-text-primary">
+          <h3 className="m-0 text-base font-medium text-v2-semantic-text-primary">
             Campaigns
           </h3>
-          <p className="m-0 mt-1 text-xs text-semantic-text-muted">
+          <p className="m-0 mt-1 text-xs text-v2-semantic-text-muted">
             Select campaigns, sort their names and update their enabled state.
           </p>
         </div>
@@ -793,7 +796,7 @@ function CampaignManagement({
             onChange={(event) => updateArgs({ query: event.target.value })}
           />
         </div>
-        <p className="m-0 text-xs text-semantic-text-muted" role="status">
+        <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
           {visibleSelected} of {data.length} visible campaigns selected
         </p>
       </div>
@@ -841,7 +844,7 @@ function CampaignManagement({
               <button
                 type="button"
                 disabled={args.disabled}
-                className="rounded text-left font-medium uppercase focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
+                className="rounded text-left font-medium uppercase focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed"
                 aria-label="Sort campaigns by name"
                 onClick={() =>
                   setDirection((previous) =>
@@ -938,7 +941,7 @@ function CampaignManagement({
           )}
         </V2.TableBody>
       </V2.Table>
-      <p className="m-0 mt-4 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 mt-4 text-xs text-v2-semantic-text-muted" role="status">
         {message ||
           "This example uses local data; actions affect only this preview."}
       </p>
@@ -1031,10 +1034,10 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
     <section className="min-w-0 max-w-full space-y-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="m-0 text-base font-medium text-semantic-text-primary">
+          <h3 className="m-0 text-base font-medium text-v2-semantic-text-primary">
             Campaign performance
           </h3>
-          <p className="m-0 mt-1 text-sm text-semantic-text-muted">
+          <p className="m-0 mt-1 text-sm text-v2-semantic-text-muted">
             Compare contacts, sort campaigns and select the rows you need.
           </p>
         </div>
@@ -1175,10 +1178,10 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
                   </V2.TableCell>
                   <V2.TableCell
                     className={cn(
-                      "font-medium text-semantic-text-primary",
+                      "font-medium text-v2-semantic-text-primary",
                       sort?.key === "name" &&
                         !rowSelected &&
-                        "bg-semantic-primary-surface/40"
+                        "bg-v2-semantic-primary-surface/40"
                     )}
                   >
                     {row.name}
@@ -1196,7 +1199,7 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
                       "tabular-nums",
                       sort?.key === "contacts" &&
                         !rowSelected &&
-                        "bg-semantic-primary-surface/40"
+                        "bg-v2-semantic-primary-surface/40"
                     )}
                   >
                     {row.contacts.toLocaleString("en-US")}
@@ -1241,14 +1244,14 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
         </V2.TableBody>
       </V2.Table>
       <p
-        className="m-0 text-xs text-semantic-text-muted"
+        className="m-0 text-xs text-v2-semantic-text-muted"
         role="status"
         aria-live="polite"
       >
         {visibleRows.length} campaigns · {sortDescription} {selectedCount}{" "}
         selected.{notice && " " + notice}
       </p>
-      <p className="m-0 text-xs text-semantic-text-muted">
+      <p className="m-0 text-xs text-v2-semantic-text-muted">
         Enter or Space sorts; a third activation restores the original order.
         Arrow keys move between sort headers. On a narrow screen, scroll the
         table horizontally.

@@ -499,7 +499,7 @@ function PhoneCountrySelector({
         aria-expanded={open && !disabled}
         aria-controls={open && !disabled ? `${id}-list` : undefined}
         className={cn(
-          "my-[3px] ml-[3px] flex h-[calc(100%-6px)] shrink-0 items-center gap-1.5 overflow-hidden rounded-md border-0 bg-transparent pl-[9px] pr-3 text-left font-normal outline-none cursor-pointer transition-colors [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui active:enabled:bg-semantic-bg-ui focus-visible:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-semantic-primary disabled:cursor-not-allowed motion-reduce:transition-none"
+          "my-[3px] ml-[3px] flex h-[calc(100%-6px)] shrink-0 items-center gap-1.5 overflow-hidden rounded-md border-0 bg-transparent pl-[9px] pr-3 text-left font-normal outline-none cursor-pointer transition-colors [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-v2-semantic-bg-ui active:enabled:bg-v2-semantic-bg-ui focus-visible:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed motion-reduce:transition-none"
         )}
         onClick={(event) => {
           onCountryClick?.();
@@ -545,7 +545,7 @@ function PhoneCountrySelector({
                   className="!w-5 !h-[15px] object-cover shrink-0"
                 />
               )}
-              <span className="text-sm font-medium tabular-nums tracking-[-0.01em] text-semantic-text-primary">
+              <span className="text-sm font-medium tabular-nums tracking-[-0.01em] text-v2-semantic-text-primary">
                 {countryCode}
               </span>
             </motion.span>
@@ -555,7 +555,7 @@ function PhoneCountrySelector({
           <ChevronDown
             aria-hidden="true"
             className={cn(
-              "ml-0.5 size-4 text-semantic-text-muted transition-transform motion-reduce:transition-none",
+              "ml-0.5 size-4 text-v2-semantic-text-muted transition-transform motion-reduce:transition-none",
               open && "rotate-180"
             )}
           />
@@ -577,7 +577,7 @@ function PhoneCountrySelector({
                   ease: [0.16, 1, 0.3, 1],
                 }}
                 className={cn(
-                  "pointer-events-auto z-[10050] flex flex-col overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal text-semantic-text-primary shadow-[0_12px_32px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04)] [width:var(--phone-picker-width,20rem)] [max-height:var(--phone-picker-height,340px)]"
+                  "pointer-events-auto z-[10050] flex flex-col overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-normal text-v2-semantic-text-primary shadow-[0_12px_32px_rgba(0,0,0,0.12),0_2px_6px_rgba(0,0,0,0.04)] [width:var(--phone-picker-width,20rem)] [max-height:var(--phone-picker-height,340px)]"
                 )}
                 style={{
                   ...floatingStyles,
@@ -586,10 +586,10 @@ function PhoneCountrySelector({
                   transformOrigin: "top left",
                 }}
               >
-                <div className="flex h-11 shrink-0 items-center gap-2 border-b border-semantic-border-layout px-3">
+                <div className="flex h-11 shrink-0 items-center gap-2 border-b border-v2-semantic-border-layout px-3">
                   <Search
                     aria-hidden="true"
-                    className="size-4 shrink-0 text-semantic-text-muted"
+                    className="size-4 shrink-0 text-v2-semantic-text-muted"
                   />
                   <input
                     ref={search}
@@ -616,13 +616,13 @@ function PhoneCountrySelector({
                       );
                     }}
                     onKeyDown={handleSearchKey}
-                    className="h-full min-w-0 flex-1 border-0 bg-transparent text-sm text-semantic-text-primary outline-none placeholder:text-semantic-text-muted"
+                    className="h-full min-w-0 flex-1 border-0 bg-transparent text-sm text-v2-semantic-text-primary outline-none placeholder:text-v2-semantic-text-muted"
                   />
                   <button
                     type="button"
                     aria-label="Close country picker"
                     onClick={() => close("trigger")}
-                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-semantic-text-muted hover:bg-semantic-bg-hover focus-visible:outline focus-visible:outline-semantic-primary"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-v2-semantic-text-muted hover:bg-v2-semantic-bg-hover focus-visible:outline focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
                   >
                     <ChevronDown
                       aria-hidden="true"
@@ -654,7 +654,7 @@ function PhoneCountrySelector({
                         data-phone-country-highlight=""
                         initial={false}
                         style={{ y: highlightY, height: highlightHeight }}
-                        className="pointer-events-none absolute inset-x-0 top-0 rounded-md bg-semantic-bg-hover"
+                        className="pointer-events-none absolute inset-x-0 top-0 rounded-md bg-v2-semantic-bg-hover"
                       />
                     )}
                     {results.map((country, index) => (
@@ -668,7 +668,7 @@ function PhoneCountrySelector({
                               !preferredCountries.includes(country.iso))) && (
                             <p
                               aria-hidden="true"
-                              className="m-0 px-2.5 pb-1 pt-2 text-xs text-semantic-text-muted"
+                              className="m-0 px-2.5 pb-1 pt-2 text-xs text-v2-semantic-text-muted"
                             >
                               {preferredCountries.includes(country.iso)
                                 ? "Suggested"
@@ -704,7 +704,7 @@ function PhoneCountrySelector({
                           }}
                           onMouseDown={(event) => event.preventDefault()}
                           onClick={() => pick(country)}
-                          className="relative flex min-h-9 cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-sm aria-selected:bg-semantic-bg-subtle aria-selected:font-medium aria-selected:text-semantic-primary aria-selected:ring-1 aria-selected:ring-inset aria-selected:ring-semantic-primary"
+                          className="relative flex min-h-9 cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-sm aria-selected:bg-v2-semantic-bg-subtle aria-selected:font-medium aria-selected:text-[var(--v2-selection-accent,var(--semantic-primary))] aria-selected:ring-1 aria-selected:ring-inset aria-selected:ring-[var(--v2-selection-accent,var(--semantic-primary))]"
                         >
                           <ReactCountryFlag
                             svg
@@ -715,13 +715,13 @@ function PhoneCountrySelector({
                           <span className="relative min-w-0 flex-1 truncate">
                             {country.name}
                           </span>
-                          <span className="relative shrink-0 text-xs tabular-nums text-semantic-text-muted">
+                          <span className="relative shrink-0 text-xs tabular-nums text-v2-semantic-text-muted">
                             {country.dialCode}
                           </span>
                           <Check
                             aria-hidden="true"
                             className={cn(
-                              "relative size-4 shrink-0 text-semantic-primary [stroke-width:2]",
+                              "relative size-4 shrink-0 text-[var(--v2-selection-accent,var(--semantic-primary))] [stroke-width:2]",
                               country.iso !== countryIso && "invisible"
                             )}
                           />
@@ -730,7 +730,7 @@ function PhoneCountrySelector({
                     ))}
                   </div>
                   {results.length === 0 && (
-                    <p className="m-0 px-2.5 py-4 text-sm text-semantic-text-muted">
+                    <p className="m-0 px-2.5 py-4 text-sm text-v2-semantic-text-muted">
                       No countries found.
                     </p>
                   )}
@@ -798,16 +798,16 @@ function FieldFeedback({
 }
 
 const phoneInputContainerVariants = cva(
-  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-11 border-solid rounded-lg bg-semantic-bg-primary transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
+  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-11 border-solid rounded-lg bg-v2-semantic-bg-primary dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
         default:
-          "border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:outline-none focus-within:shadow-none",
+          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
         empty:
-          "border-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-primary focus-within:outline-none focus-within:shadow-none",
+          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
         error:
-          "border-semantic-error-primary focus-within:outline-none focus-within:shadow-none",
+          "border-v2-semantic-error-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
       },
     },
     defaultVariants: {
@@ -1061,11 +1061,11 @@ const PhoneInput = React.forwardRef(
             state: derivedState,
           }),
           disabled &&
-            "bg-semantic-bg-ui opacity-50 shadow-none focus-within:shadow-none cursor-not-allowed",
+            "bg-v2-semantic-bg-ui opacity-50 shadow-none focus-within:shadow-none cursor-not-allowed",
           disabled &&
             (derivedState === "error"
-              ? "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-error-primary"
-              : "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-input"),
+              ? "[@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-error-primary"
+              : "[@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-border-input"),
           wrapperClassName
         )}
       >
@@ -1099,7 +1099,7 @@ const PhoneInput = React.forwardRef(
               "flex h-full items-center gap-1.5 pl-3 pr-3 shrink-0",
               // Arc's trigger sits 3px inside the shell and fills on hover (same quiet fill as a keyboard-focused row).
               onCountryClick &&
-                "my-[3px] ml-[3px] h-[calc(100%-6px)] rounded-[10px] border-0 bg-transparent pl-[9px] text-left font-normal outline-none cursor-pointer transition-[background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-semantic-bg-ui active:enabled:bg-semantic-bg-ui focus-visible:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-semantic-primary disabled:cursor-not-allowed"
+                "my-[3px] ml-[3px] h-[calc(100%-6px)] rounded-[10px] border-0 bg-transparent pl-[9px] text-left font-normal outline-none cursor-pointer transition-[background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)_and_(pointer:fine)]:enabled:hover:bg-v2-semantic-bg-ui active:enabled:bg-v2-semantic-bg-ui focus-visible:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:-outline-offset-4 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed"
             )}
             onClick={onCountryClick}
             data-testid="phone-input-country"
@@ -1121,7 +1121,7 @@ const PhoneInput = React.forwardRef(
             )}
           </CountryArea>
         )}
-        <div className="w-px h-[22px] bg-semantic-border-layout shrink-0" />
+        <div className="w-px h-[22px] bg-v2-semantic-border-layout shrink-0" />
         <input
           type="tel"
           id={inputId}
@@ -1169,7 +1169,7 @@ const PhoneInput = React.forwardRef(
               key={validation}
               id={validationId}
               aria-live="polite"
-              className="m-0 min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-semantic-error-text"
+              className="m-0 min-h-0 overflow-hidden break-words text-xs leading-[1.4] tracking-[-0.16px] text-v2-semantic-error-text"
             >
               {validation}
             </motion.p>

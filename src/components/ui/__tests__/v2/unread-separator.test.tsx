@@ -50,6 +50,11 @@ describe("UnreadSeparator label", () => {
   it("is a rounded pill with vertical padding, not a flat grey rectangle", () => {
     render(<UnreadSeparator count={3} />);
     const label = screen.getByText("3 unread messages");
-    expect(label).toHaveClass("rounded-md", "px-2.5", "py-1", "bg-semantic-bg-ui");
+    expect(label).toHaveClass(
+      "rounded-md",
+      "px-2.5",
+      "py-1",
+      "bg-v2-semantic-bg-ui"
+    );
   });
 });

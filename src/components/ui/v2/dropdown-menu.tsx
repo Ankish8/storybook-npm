@@ -18,7 +18,7 @@ const DropdownMenuTrigger = React.forwardRef(
     <DropdownMenuPrimitive.Trigger
       ref={ref}
       className={cn(
-        "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-semantic-primary focus-visible:outline-offset-[3px]",
+        "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-[3px]",
         className
       )}
       {...props}
@@ -91,7 +91,7 @@ const DropdownMenuSubTrigger = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "flex cursor-pointer select-none items-center gap-2 rounded-sm px-2.5 py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=open]:bg-semantic-bg-ui data-[state=open]:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary [&>svg]:shrink-0",
+        "flex cursor-pointer select-none items-center gap-2 rounded-sm px-2.5 py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:1px] dark:focus-visible:-outline-offset-1 dark:focus-visible:outline-v2-semantic-border-focus focus:bg-v2-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=open]:bg-v2-semantic-bg-ui data-[state=open]:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))] [&>svg]:shrink-0",
         inset && "pl-8",
         className
       )}
@@ -117,7 +117,7 @@ DropdownMenuSubTrigger.displayName =
  * keeps only a 120ms fade.
  */
 const menuSurface = cn(
-  "relative z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[min(12rem,var(--radix-dropdown-menu-content-available-width))] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-[5px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal tracking-[-0.16px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
+  "relative z-[9999] max-h-[min(20rem,var(--radix-dropdown-menu-content-available-height))] max-w-[min(20rem,var(--radix-dropdown-menu-content-available-width))] min-w-[min(12rem,var(--radix-dropdown-menu-content-available-width))] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-[5px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal tracking-[-0.16px] text-[var(--v2-text-secondary,#5E5E5E)] shadow-[0_20px_48px_rgba(0,0,0,0.105),0_3px_10px_rgba(0,0,0,0.045)]"
 );
 const menuMotion = cn(
   "origin-[var(--radix-dropdown-menu-content-transform-origin)] data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:[animation-name:enter,v2-fade-in] data-[state=open]:motion-safe:[animation-duration:580ms,160ms] data-[state=open]:motion-safe:[animation-timing-function:linear(0,0.0258,0.09,0.1763,0.2732,0.3724,0.4683,0.5573,0.6376,0.7082,0.7689,0.8202,0.8628,0.8976,0.9256,0.9476,0.9648,0.9778,0.9875,0.9945,0.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1),cubic-bezier(0.16,1,0.3,1)] data-[state=open]:motion-safe:[animation-fill-mode:both] data-[state=open]:motion-safe:zoom-in-[0.97] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:[animation-duration:130ms] data-[state=closed]:motion-safe:[animation-timing-function:cubic-bezier(0.22,1,0.36,1)] data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.985] data-[side=bottom]:motion-safe:slide-in-from-top-[5px] data-[side=top]:motion-safe:slide-in-from-bottom-[5px] data-[side=left]:motion-safe:slide-in-from-right-[5px] data-[side=right]:motion-safe:slide-in-from-left-[5px] data-[side=bottom]:motion-safe:slide-out-to-top-[2.5px] data-[side=top]:motion-safe:slide-out-to-bottom-[2.5px] data-[side=left]:motion-safe:slide-out-to-right-[2.5px] data-[side=right]:motion-safe:slide-out-to-left-[2.5px] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in]"
@@ -129,7 +129,7 @@ const menuItemMotion = cn(
 const menuHighlightOwner = cn(
   "[&_[role^=menuitem]:focus]:bg-transparent",
   // Inline submenus have their own focus surface, outside this highlight.
-  "[&_[role=menu]_[role^=menuitem]:focus]:bg-semantic-bg-ui [&_[role=menu]_[data-destructive]:focus]:bg-semantic-error-surface"
+  "[&_[role=menu]_[role^=menuitem]:focus]:bg-v2-semantic-bg-ui [&_[role=menu]_[data-destructive]:focus]:bg-v2-semantic-error-surface"
 );
 
 type MenuHighlight = {
@@ -282,7 +282,7 @@ const DropdownMenuContent = React.forwardRef(
                   : { duration: 0 },
               opacity: { duration: reduced ? 0 : 0.08 },
             }}
-            className="pointer-events-none absolute left-0 top-0 rounded-sm bg-semantic-bg-ui opacity-0 data-[tone=danger]:bg-semantic-error-surface"
+            className="pointer-events-none absolute left-0 top-0 rounded-sm bg-v2-semantic-bg-ui opacity-0 data-[tone=danger]:bg-v2-semantic-error-surface"
           />
           {children}
         </DropdownMenuPrimitive.Content>
@@ -327,10 +327,10 @@ const DropdownMenuItem = React.forwardRef(
         // 4px radius = menu 8px minus its 4px padding, so row and menu corners stay concentric.
         // No keyboard-only ring: Radix focuses the highlighted row on pointer move too, so
         // the focus-visible pseudo-class is also true under a mouse hover (verified in Chrome).
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2.5 rounded-sm px-[11px] py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary [&>svg]:shrink-0",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2.5 rounded-sm px-[11px] py-2 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:1px] dark:focus-visible:-outline-offset-1 dark:focus-visible:outline-v2-semantic-border-focus focus:bg-v2-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[disabled]:pointer-events-none data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))] [&>svg]:shrink-0",
         // Tint is an explicit token (`/alpha` on a var() colour compiles to nothing in Tailwind 3.4).
         destructive &&
-          "text-semantic-error-text focus:bg-semantic-error-surface focus:text-semantic-error-text",
+          "text-v2-semantic-error-text focus:bg-v2-semantic-error-surface focus:text-v2-semantic-error-text",
         inset && "pl-8",
         className
       )}
@@ -386,7 +386,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm py-2 pl-8 pr-2.5 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-semantic-disabled-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm py-2 pl-8 pr-2.5 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:1px] dark:focus-visible:-outline-offset-1 dark:focus-visible:outline-v2-semantic-border-focus focus:bg-v2-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))] data-[disabled]:pointer-events-none data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]",
         className
       )}
       checked={checked}
@@ -394,7 +394,7 @@ const DropdownMenuCheckboxItem = React.forwardRef(
     >
       {renderDropdownMenuContent(children, asChild, (label) => (
         <>
-          <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-border-accent">
+          <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-v2-semantic-border-accent">
             <DropdownMenuPrimitive.ItemIndicator>
               <Check className="h-4 w-4 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
             </DropdownMenuPrimitive.ItemIndicator>
@@ -447,14 +447,14 @@ const DropdownMenuRadioItem = React.forwardRef(
       ref={ref}
       asChild={asChild}
       className={cn(
-        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm py-2 pl-8 pr-2.5 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus:bg-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-semantic-disabled-primary data-[disabled]:pointer-events-none data-[disabled]:text-semantic-disabled-primary",
+        "relative flex min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm py-2 pl-8 pr-2.5 min-h-9 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-5 font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:1px] dark:focus-visible:-outline-offset-1 dark:focus-visible:outline-v2-semantic-border-focus focus:bg-v2-semantic-bg-ui focus:text-[var(--v2-text-primary,#484848)] data-[state=checked]:text-[var(--v2-text-primary,#484848)] data-[state=checked]:data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))] data-[disabled]:pointer-events-none data-[disabled]:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]",
         className
       )}
       {...props}
     >
       {renderDropdownMenuContent(children, asChild, (label) => (
         <>
-          <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-semantic-border-accent">
+          <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center text-v2-semantic-border-accent">
             <DropdownMenuPrimitive.ItemIndicator>
               <Check className="h-4 w-4 motion-safe:animate-in motion-safe:fade-in-0 motion-safe:zoom-in-[0.85] motion-safe:[animation-duration:180ms] [animation-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))]" />
             </DropdownMenuPrimitive.ItemIndicator>
@@ -517,7 +517,7 @@ const DropdownMenuSeparator = React.forwardRef(
   ) => (
     <DropdownMenuPrimitive.Separator
       ref={ref}
-      className={cn("-mx-1 my-1 h-px bg-semantic-border-layout", className)}
+      className={cn("-mx-1 my-1 h-px bg-v2-semantic-border-layout", className)}
       {...props}
     />
   )
@@ -531,7 +531,7 @@ const DropdownMenuShortcut = ({
   return (
     <span
       className={cn(
-        "ml-auto inline-flex h-5 shrink-0 items-center rounded border border-solid border-semantic-border-layout bg-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]",
+        "ml-auto inline-flex h-5 shrink-0 items-center rounded border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-1 text-xs text-[var(--v2-text-muted,#707070)]",
         className
       )}
       {...props}

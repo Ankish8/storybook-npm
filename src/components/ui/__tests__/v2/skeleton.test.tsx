@@ -16,7 +16,7 @@ describe("Skeleton", () => {
 
   it("applies default variant classes", () => {
     const { container } = render(<Skeleton />);
-    expect(container.firstChild).toHaveClass("bg-semantic-bg-grey");
+    expect(container.firstChild).toHaveClass("bg-v2-semantic-bg-grey");
   });
 
   it("applies default shape classes", () => {
@@ -32,8 +32,8 @@ describe("Skeleton", () => {
   });
 
   it.each([
-    ["default", "bg-semantic-bg-grey"],
-    ["subtle", "bg-semantic-bg-ui"],
+    ["default", "bg-v2-semantic-bg-grey"],
+    ["subtle", "bg-v2-semantic-bg-ui"],
   ] as const)(
     "renders %s variant with correct classes",
     (variant, expectedClass) => {
@@ -201,7 +201,7 @@ describe("Skeleton", () => {
       const { container } = render(
         <Skeleton variant="subtle" shape="circle" width={40} height={40} />
       );
-      expect(container.firstChild).toHaveClass("bg-semantic-bg-ui");
+      expect(container.firstChild).toHaveClass("bg-v2-semantic-bg-ui");
       expect(container.firstChild).toHaveClass("rounded-full");
       expect(container.firstChild).toHaveStyle({
         width: "40px",
@@ -256,11 +256,11 @@ describe("Skeleton animation", () => {
       "motion-safe:after:[animation-iteration-count:var(--v2-skeleton-iterations,12)]"
     );
     expect(el.className).toContain(
-      "linear-gradient(90deg,transparent,color-mix(in_srgb,var(--semantic-bg-primary)_50%,transparent),transparent)"
+      "linear-gradient(90deg,transparent,color-mix(in_srgb,var(--v2-skeleton-highlight,var(--v2-semantic-bg-primary,var(--semantic-bg-primary)))_50%,transparent),transparent)"
     );
     // the band rests off-canvas, so reduced motion shows the plain fill
     expect(el).toHaveClass("after:left-full", "after:w-full");
-    expect(el).toHaveClass("bg-semantic-bg-grey");
+    expect(el).toHaveClass("bg-v2-semantic-bg-grey");
   });
 
   it("renders a static fill for animation=none", () => {
@@ -268,7 +268,7 @@ describe("Skeleton animation", () => {
     const el = container.firstChild as HTMLElement;
     expect(el).not.toHaveClass("animate-pulse");
     expect(el.className).not.toContain("animate-in");
-    expect(el).toHaveClass("bg-semantic-bg-grey");
+    expect(el).toHaveClass("bg-v2-semantic-bg-grey");
   });
 
   it("keeps the placeholder hidden from assistive technology in every mode", () => {

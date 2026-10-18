@@ -96,7 +96,7 @@ describe("BouncingLoader", () => {
         className="custom-loader"
         size={10}
         spacing={4}
-        color="var(--semantic-text-muted)"
+        color="var(--v2-semantic-text-muted,var(--semantic-text-muted))"
       />
     );
     const root = container.firstElementChild as HTMLElement;
@@ -106,7 +106,7 @@ describe("BouncingLoader", () => {
       "4px"
     );
     expect(root.style.getPropertyValue("--bouncing-loader-color")).toBe(
-      "var(--semantic-text-muted)"
+      "var(--v2-semantic-text-muted,var(--semantic-text-muted))"
     );
   });
 

@@ -162,7 +162,7 @@ function Thumb({ name, preview }: { name: string; preview?: string }) {
     );
   }
   return (
-    <span className="block size-10 overflow-hidden rounded-[10px] bg-semantic-bg-ui shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
+    <span className="block size-10 overflow-hidden rounded-[10px] bg-v2-semantic-bg-ui shadow-[inset_0_0_0_1px_rgba(0,0,0,0.06)]">
       <img
         src={preview}
         alt=""
@@ -275,13 +275,13 @@ function FileRow({
           ref={rowRef}
           data-status={status}
           className={cn(
-            "mt-2 grid min-h-[58px] min-w-0 items-center gap-x-3 rounded-lg border border-solid bg-semantic-bg-primary py-2 pr-2 [transition:border-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-[22px] motion-safe:zoom-in-[0.94] motion-safe:[animation-duration:420ms] motion-safe:[animation-timing-function:var(--arc-smooth)]",
+            "mt-2 grid min-h-[58px] min-w-0 items-center gap-x-3 rounded-lg border border-solid bg-v2-semantic-bg-primary py-2 pr-2 [transition:border-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-top-[22px] motion-safe:zoom-in-[0.94] motion-safe:[animation-duration:420ms] motion-safe:[animation-timing-function:var(--arc-smooth)]",
             tiny
               ? "grid-cols-[minmax(0,1fr)_auto] pl-3.5"
               : "grid-cols-[40px_minmax(0,1fr)_auto] pl-[9px]",
             failed
-              ? "border-[color-mix(in_oklab,var(--semantic-error-primary)_26%,var(--semantic-border-layout))]"
-              : "border-semantic-border-layout"
+              ? "border-[color-mix(in_oklab,var(--v2-semantic-error-primary,var(--semantic-error-primary))_26%,var(--v2-semantic-border-layout,var(--semantic-border-layout)))]"
+              : "border-v2-semantic-border-layout"
           )}
         >
           {!tiny && <Thumb name={row.name} preview={row.preview} />}
@@ -305,7 +305,7 @@ function FileRow({
                       "inline-flex min-w-0 items-center gap-[5px] motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-[0.3em] motion-safe:[animation-duration:240ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]",
                       shownPhase === "uploaded" &&
                         "text-[var(--v2-text-secondary,#5E5E5E)]",
-                      shownPhase === "failed" && "text-semantic-error-text"
+                      shownPhase === "failed" && "text-v2-semantic-error-text"
                     )}
                   >
                     {shownPhase === "uploading" ? (
@@ -347,11 +347,11 @@ function FileRow({
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(target)}
-                  className="mb-0.5 mt-[7px] block h-1 overflow-hidden rounded-full bg-semantic-border-layout"
+                  className="mb-0.5 mt-[7px] block h-1 overflow-hidden rounded-full bg-v2-semantic-border-layout"
                 >
                   {/* The fill slides in from the left instead of scaling, so its rounded end keeps its shape. */}
                   <span
-                    className="block size-full rounded-[inherit] bg-semantic-primary [transition:transform_420ms_var(--arc-smooth)] motion-reduce:[transition:none]"
+                    className="block size-full rounded-[inherit] bg-[var(--v2-indicator,var(--semantic-primary))] [transition:transform_420ms_var(--arc-smooth)] motion-reduce:[transition:none]"
                     style={{ transform: `translateX(${target - 100}%)` }}
                   />
                 </span>
@@ -380,7 +380,7 @@ function FileRow({
                     title="Retry"
                     onClick={onRetry}
                     className={cn(
-                      "flex h-[30px] items-center gap-[5px] whitespace-nowrap rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary text-xs font-medium text-[var(--v2-text-primary,#484848)] [transition-property:background-color,border-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.97] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,border-color] motion-reduce:enabled:active:scale-100 [@media(hover:hover)]:enabled:hover:border-[var(--color-primary-100)] [@media(hover:hover)]:enabled:hover:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary",
+                      "flex h-[30px] items-center gap-[5px] whitespace-nowrap rounded-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-xs font-medium text-[var(--v2-text-primary,#484848)] [transition-property:background-color,border-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] enabled:active:scale-[0.97] enabled:active:[transition-duration:160ms,160ms,120ms] motion-reduce:[transition-property:background-color,border-color] motion-reduce:enabled:active:scale-100 [@media(hover:hover)]:enabled:hover:border-[var(--v2-semantic-border-input,var(--color-primary-100))] [@media(hover:hover)]:enabled:hover:bg-v2-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                       narrow ? "w-[30px] justify-center px-0" : "pl-2.5 pr-3"
                     )}
                   >
@@ -413,7 +413,7 @@ function FileRow({
  * target; the arrow on the front sheet lifts. Arc's spring (bounce .15, 580ms) is sampled as --arc-spring on the target.
  */
 const sheetBase =
-  "absolute inset-0 box-border grid place-items-end justify-items-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary pb-[5px] text-[var(--v2-text-muted,#707070)] shadow-[0_1px_2px_rgba(0,0,0,0.05),0_3px_8px_rgba(0,0,0,0.04)] [transform-origin:50%_100%] [transform:translate(var(--x),var(--y))_rotate(var(--r))] [transition:transform_580ms_var(--arc-spring),color_240ms_cubic-bezier(0.22,1,0.36,1),border-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] before:absolute before:left-[7px] before:top-2 before:h-0.5 before:w-4 before:rounded-sm before:bg-current before:opacity-30 before:content-[''] after:absolute after:left-[7px] after:top-[13px] after:h-0.5 after:w-[11px] after:rounded-sm after:bg-current after:opacity-30 after:content-[''] [button[data-drag=over]_&]:text-[var(--v2-text-secondary,#5E5E5E)] [button[data-drag=over]_&]:border-[var(--color-primary-100)]";
+  "absolute inset-0 box-border grid place-items-end justify-items-center rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary pb-[5px] text-[var(--v2-text-muted,#707070)] shadow-[var(--v2-shadow-sm,0_1px_2px_rgba(0,0,0,0.05),0_3px_8px_rgba(0,0,0,0.04))] [transform-origin:50%_100%] [transform:translate(var(--x),var(--y))_rotate(var(--r))] [transition:transform_580ms_var(--arc-spring),color_240ms_cubic-bezier(0.22,1,0.36,1),border-color_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] before:absolute before:left-[7px] before:top-2 before:h-0.5 before:w-4 before:rounded-sm before:bg-current before:opacity-30 before:content-[''] after:absolute after:left-[7px] after:top-[13px] after:h-0.5 after:w-[11px] after:rounded-sm after:bg-current after:opacity-30 after:content-[''] [button[data-drag=over]_&]:text-[var(--v2-text-secondary,#5E5E5E)] [button[data-drag=over]_&]:border-[var(--v2-semantic-border-input,var(--color-primary-100))]";
 const hoverFan =
   "[@media(hover:hover)]:[button:enabled:not([data-drag]):hover_&]:";
 const sheetBack = `${sheetBase} [--r:-10deg] [--x:-9px] [--y:2px] ${hoverFan}[--r:-15deg] ${hoverFan}[--x:-13px] [button[data-drag=over]_&]:[--r:-22deg] [button[data-drag=over]_&]:[--x:-20px] [button[data-drag=over]_&]:[--y:-2px]`;
@@ -709,8 +709,8 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
       mass: 0.8,
     });
     const accentVar = dragReject
-      ? "var(--semantic-error-primary)"
-      : "var(--semantic-border-accent)";
+      ? "var(--v2-semantic-error-primary,var(--semantic-error-primary))"
+      : "var(--v2-semantic-border-accent,var(--semantic-border-accent))";
     const edgeLight = useMotionTemplate`radial-gradient(180px circle at ${glowX}% ${glowY}%, ${accentVar}, transparent 70%)`;
     const washLight = useMotionTemplate`radial-gradient(260px circle at ${glowX}% ${glowY}%, color-mix(in oklab, ${accentVar} 8%, transparent), transparent 70%)`;
     const track = (event: React.DragEvent) => {
@@ -891,12 +891,12 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           className={cn(
             // Arc target: 26px above / 34px below / 20px sides; the edge is the SVG stroke below, not a CSS border. Hover and press
             // lift the surface (press never scales); a file over it tints it, closes the dashes and lights the edge toward the pointer.
-            "group/dz relative flex w-full flex-col items-stretch justify-center rounded-xl bg-semantic-bg-primary px-5 pb-[34px] pt-[26px] text-center [--arc-spring:linear(0,.0258,.09,.1763,.2732,.3724,.4683,.5573,.6376,.7082,.7689,.8202,.8628,.8976,.9256,.9476,.9648,.9778,.9875,.9945,.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [&>*]:pointer-events-none [transition:background-color_240ms_cubic-bezier(0.22,1,0.36,1),padding_580ms_var(--arc-spring)] motion-reduce:[transition:none] enabled:[@media(hover:hover)]:hover:bg-semantic-bg-hover enabled:active:bg-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary disabled:cursor-not-allowed disabled:bg-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)] data-[compact]:pb-3 data-[compact]:pt-3",
+            "group/dz relative flex w-full flex-col items-stretch justify-center rounded-xl bg-v2-semantic-bg-primary px-5 pb-[34px] pt-[26px] text-center [--arc-spring:linear(0,.0258,.09,.1763,.2732,.3724,.4683,.5573,.6376,.7082,.7689,.8202,.8628,.8976,.9256,.9476,.9648,.9778,.9875,.9945,.9994,1.0026,1.0047,1.0058,1.0062,1.0062,1.0059,1.0055,1.0049,1.0043,1.0036,1.0031,1.0025,1.002,1.0016,1.0013,1)] [&>*]:pointer-events-none [transition:background-color_240ms_cubic-bezier(0.22,1,0.36,1),padding_580ms_var(--arc-spring)] motion-reduce:[transition:none] enabled:[@media(hover:hover)]:hover:bg-v2-semantic-bg-hover enabled:active:bg-v2-semantic-bg-hover focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:text-[var(--v2-text-muted,#707070)] data-[compact]:pb-3 data-[compact]:pt-3",
             dragging &&
               !disabled &&
               (dragReject
-                ? "bg-semantic-error-surface"
-                : "bg-semantic-brand-surface")
+                ? "bg-v2-semantic-error-surface"
+                : "bg-v2-semantic-brand-surface")
           )}
         >
           <svg
@@ -909,7 +909,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
               height="100%"
               rx={11.5}
               pathLength={edgeUnits}
-              className="fill-none stroke-[var(--color-primary-100,#C0C3CA)] [stroke-dasharray:1_1] [stroke-dashoffset:0] [stroke-width:1] [transition:stroke_160ms_cubic-bezier(0.22,1,0.36,1),stroke-dasharray_240ms_cubic-bezier(0.22,1,0.36,1),stroke-dashoffset_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] [@media(hover:hover)]:[button:enabled:not([data-drag]):hover_&]:stroke-semantic-text-muted [button[data-invalid]_&]:stroke-semantic-error-primary [button[data-drag=over]_&]:stroke-semantic-border-accent [button[data-drag=reject]_&]:stroke-semantic-error-primary [button[data-drag]_&]:[stroke-dasharray:2_0] [button[data-drag]_&]:[stroke-dashoffset:0.25]"
+              className="fill-none stroke-[var(--v2-semantic-border-input,var(--color-primary-100,#C0C3CA))] [stroke-dasharray:1_1] [stroke-dashoffset:0] [stroke-width:1] [transition:stroke_160ms_cubic-bezier(0.22,1,0.36,1),stroke-dasharray_240ms_cubic-bezier(0.22,1,0.36,1),stroke-dashoffset_240ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition:none] [@media(hover:hover)]:[button:enabled:not([data-drag]):hover_&]:stroke-v2-semantic-text-muted [button[data-invalid]_&]:stroke-v2-semantic-error-primary [button[data-drag=over]_&]:stroke-v2-semantic-border-accent [button[data-drag=reject]_&]:stroke-v2-semantic-error-primary [button[data-drag]_&]:[stroke-dasharray:2_0] [button[data-drag]_&]:[stroke-dashoffset:0.25]"
             />
           </svg>
           {/* The wash and the edge light only show while a file is over the target, and follow the pointer. */}
@@ -955,7 +955,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           <span
             key={dragging && dropLabel ? "drop" : "click"}
             className={cn(
-              "block text-sm font-medium leading-[1.4] text-semantic-text-link",
+              "block text-sm font-medium leading-[1.4] text-v2-semantic-text-link",
               dragging &&
                 dropLabel &&
                 "motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-[0.3em] motion-safe:[animation-duration:240ms]"
@@ -986,7 +986,7 @@ const FileUpload = React.forwardRef<HTMLDivElement, FileUploadProps>(
           className={cn(
             "m-0",
             invalid
-              ? "flex items-start gap-1.5 pt-3 text-sm leading-[1.4] text-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-[0.35em] motion-safe:[animation-duration:240ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]"
+              ? "flex items-start gap-1.5 pt-3 text-sm leading-[1.4] text-v2-semantic-error-text motion-safe:animate-in motion-safe:fade-in-0 motion-safe:slide-in-from-bottom-[0.35em] motion-safe:[animation-duration:240ms] motion-safe:[animation-timing-function:cubic-bezier(0.16,1,0.3,1)]"
               : "mt-2 text-xs text-[var(--v2-text-muted,#707070)]"
           )}
         >

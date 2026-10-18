@@ -23,7 +23,7 @@ export default function Example() {
           "not-found": { actions: null },
         }}
       />
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {saved ? "Local sync resumed" : "Local sync paused"}
       </p>
     </div>

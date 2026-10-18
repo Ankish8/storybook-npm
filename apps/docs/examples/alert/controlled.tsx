@@ -14,7 +14,7 @@ export default function Example() {
           The workspace will pause for a few minutes.
         </AlertDescription>
       </Alert>
-      <p className="m-0 text-xs text-semantic-text-muted" role="status">
+      <p className="m-0 text-xs text-v2-semantic-text-muted" role="status">
         {open ? "Message visible" : "Message dismissed"}
       </p>
     </div>

@@ -260,7 +260,7 @@ export const AllVariants: Story = {
           {state === "error" && (
             <p
               id="input-error-help"
-              className="m-0 flex items-center gap-1.5 text-xs text-semantic-error-text"
+              className="m-0 flex items-center gap-1.5 text-xs text-v2-semantic-error-text"
             >
               <Info className="size-3.5" />
               Enter a valid email address.
@@ -459,7 +459,7 @@ function WorkspaceName(args: InputProps) {
         event.preventDefault();
         setSaved(true);
       }}
-      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
+      className="flex w-[420px] max-w-full flex-col gap-5 rounded-lg border border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]"
     >
       <div>
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
@@ -494,7 +494,7 @@ function WorkspaceName(args: InputProps) {
           Use a name your team can recognize.
         </p>
       </div>
-      <div className="flex items-center justify-between gap-4 border-t border-semantic-border-layout pt-4">
+      <div className="flex items-center justify-between gap-4 border-t border-v2-semantic-border-layout pt-4">
         <span
           className="text-xs text-[var(--v2-text-muted,#707070)]"
           role="status"

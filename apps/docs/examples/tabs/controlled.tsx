@@ -31,7 +31,7 @@ export default function Controlled() {
         >
           Open settings
         </Button>
-        <output className="text-xs text-semantic-text-muted">
+        <output className="text-xs text-v2-semantic-text-muted">
           Selected: {value}
         </output>
       </div>

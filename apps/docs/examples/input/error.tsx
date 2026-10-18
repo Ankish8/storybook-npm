@@ -26,7 +26,7 @@ export default function ErrorExample() {
         <p
           id="error-email-message"
           role="alert"
-          className="m-0 text-xs text-semantic-error-text"
+          className="m-0 text-xs text-v2-semantic-error-text"
         >
           Enter a valid email address.
         </p>

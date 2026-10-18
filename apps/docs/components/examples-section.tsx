@@ -125,6 +125,10 @@ function ExampleFrame({
       url.searchParams.set("component", slug);
       url.searchParams.set("example", example.id);
       url.searchParams.set("parentOrigin", window.location.origin);
+      url.searchParams.set(
+        "theme",
+        document.documentElement.dataset.theme || "light"
+      );
       if (example.minHeight)
         url.searchParams.set("minHeight", String(example.minHeight));
       setOrigin(url.origin);

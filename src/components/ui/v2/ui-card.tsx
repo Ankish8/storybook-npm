@@ -77,20 +77,21 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
         aria-pressed={interactive ? selected : undefined}
         aria-disabled={interactive ? disabled : undefined}
         className={cn(
-          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-semantic-text-secondary shadow-none [transition-property:border-color,background-color] duration-150 ease-out motion-reduce:transition-none",
+          "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-v2-semantic-text-secondary shadow-none [transition-property:border-color,background-color] duration-150 ease-out motion-reduce:transition-none",
           interactive &&
             !disabled &&
-            "cursor-pointer focus-visible:border-semantic-border-focus focus-visible:[outline-style:solid] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-semantic-border-focus",
+            "cursor-pointer focus-visible:border-v2-semantic-border-focus focus-visible:[outline-style:solid] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-v2-semantic-border-focus",
           interactive &&
             !disabled &&
             !selected &&
-            "[@media(hover:hover)_and_(pointer:fine)]:hover:border-semantic-border-secondary",
+            "[@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-border-secondary",
           (variant === "icon" || variant === "action") && "w-[200px]",
           variant === "action" &&
-            "border-dashed border-semantic-info-border shadow-none",
-          selected && "border-semantic-border-accent bg-semantic-brand-surface",
+            "border-dashed border-v2-semantic-info-border shadow-none",
+          selected &&
+            "border-v2-semantic-border-accent bg-v2-semantic-brand-surface",
           disabled &&
-            "cursor-not-allowed bg-semantic-bg-ui text-semantic-text-muted [&_h3]:text-semantic-text-muted [&_p]:text-semantic-text-muted",
+            "cursor-not-allowed bg-v2-semantic-bg-ui text-v2-semantic-text-muted [&_h3]:text-v2-semantic-text-muted [&_p]:text-v2-semantic-text-muted",
           className
         )}
         onClick={
@@ -143,7 +144,7 @@ const UiCardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "m-0 text-lg font-medium leading-[1.3] tracking-[-0.01em] text-semantic-text-primary",
+      "m-0 text-lg font-medium leading-[1.3] tracking-[-0.01em] text-v2-semantic-text-primary",
       className
     )}
     {...props}
@@ -157,7 +158,7 @@ const UiCardDescription = React.forwardRef<
   <p
     ref={ref}
     className={cn(
-      "m-0 text-sm font-normal leading-[1.4] text-semantic-text-secondary",
+      "m-0 text-sm font-normal leading-[1.4] text-v2-semantic-text-secondary",
       className
     )}
     {...props}

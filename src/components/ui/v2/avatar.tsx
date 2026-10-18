@@ -52,11 +52,11 @@ const avatarVariants = cva(
   {
     variants: {
       variant: {
-        soft: "border border-solid border-semantic-border-layout bg-semantic-info-surface text-semantic-text-muted",
+        soft: "border border-solid border-v2-semantic-border-layout bg-v2-semantic-info-surface text-v2-semantic-text-muted",
         outline:
-          "border border-solid border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-muted",
+          "border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary text-v2-semantic-text-muted",
         filled:
-          "border border-solid border-semantic-primary bg-semantic-primary text-semantic-text-inverted",
+          "border border-solid border-v2-semantic-primary bg-v2-semantic-primary text-v2-semantic-text-inverted",
       },
       // Keep the v1 footprints when a consumer changes only the import path.
       size: {
@@ -83,10 +83,10 @@ const statusDotSizeMap = {
 } as const;
 
 const statusColorMap = {
-  online: "bg-semantic-success-primary",
-  offline: "bg-semantic-text-muted",
-  busy: "bg-semantic-error-primary",
-  away: "bg-semantic-warning-primary",
+  online: "bg-v2-semantic-success-primary",
+  offline: "bg-v2-semantic-text-muted",
+  busy: "bg-v2-semantic-error-primary",
+  away: "bg-v2-semantic-warning-primary",
 } as const;
 
 export interface AvatarProps
@@ -226,7 +226,7 @@ const Avatar = React.forwardRef(
                   : { duration: 0.18, ease: [0.16, 1, 0.3, 1] }
               }
               className={cn(
-                "absolute bottom-0 right-0 z-[2] rounded-full border-semantic-bg-primary shadow-[0_0_0_1px_color-mix(in_srgb,var(--semantic-border-layout)_70%,transparent)]",
+                "absolute bottom-0 right-0 z-[2] rounded-full border-v2-semantic-bg-primary shadow-[0_0_0_1px_color-mix(in_srgb,var(--v2-semantic-border-layout,var(--semantic-border-layout))_70%,transparent)]",
                 statusDotSizeMap[resolvedSize],
                 statusColorMap[status]
               )}
@@ -251,7 +251,7 @@ export interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
  * Overlapping stack of avatars (-6px) separated by a 2px surface ring and an outer hairline.
  * With `max`, the avatars past the limit become a "+N" tile of the same size.
  * The ring colour follows the surface: on a tinted background override it with
- * `className="[&>*]:ring-semantic-bg-ui"`.
+ * `className="[&>*]:ring-v2-semantic-bg-ui"`.
  *
  * @example
  * ```tsx
@@ -300,7 +300,7 @@ const AvatarGroup = React.forwardRef(
         ref={ref}
         role="group"
         className={cn(
-          "inline-flex items-center [&>*]:ring-2 [&>*]:ring-semantic-bg-primary [&>*]:shadow-[0_0_0_3px_var(--semantic-border-layout)]",
+          "inline-flex items-center [&>*]:ring-2 [&>*]:ring-v2-semantic-bg-primary [&>*]:shadow-[0_0_0_3px_var(--v2-semantic-border-layout,var(--semantic-border-layout))]",
           "[&>*:not(:first-child)]:-ms-1.5",
           className
         )}
@@ -331,7 +331,7 @@ const AvatarGroup = React.forwardRef(
                 "--count": count,
               } as React.CSSProperties
             }
-            className="bg-semantic-bg-ui text-semantic-text-secondary tabular-nums"
+            className="bg-v2-semantic-bg-ui text-v2-semantic-text-secondary tabular-nums"
           >
             +{hidden}
           </Avatar>

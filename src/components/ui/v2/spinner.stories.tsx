@@ -76,7 +76,7 @@ const meta: Meta<typeof Spinner> = {
     <div
       className={
         args.variant === "inverted"
-          ? "rounded-lg bg-semantic-primary p-4 text-semantic-text-inverted"
+          ? "rounded-lg bg-v2-semantic-primary p-4 text-v2-semantic-text-inverted"
           : "p-4"
       }
     >
@@ -110,7 +110,7 @@ export const AllVariants: Story = {
           key={variant}
           className={
             variant === "inverted"
-              ? "space-y-3 rounded-lg bg-semantic-primary p-4 text-semantic-text-inverted"
+              ? "space-y-3 rounded-lg bg-v2-semantic-primary p-4 text-v2-semantic-text-inverted"
               : "space-y-3 p-4"
           }
         >
@@ -143,15 +143,15 @@ function LoadingExample(args: SpinnerProps) {
   );
   const loading = state === "loading";
   return (
-    <section className="w-[420px] max-w-full space-y-4 text-semantic-text-primary">
+    <section className="w-[420px] max-w-full space-y-4 text-v2-semantic-text-primary">
       <div className="space-y-1">
         <h3 className="m-0 text-base font-semibold">Team inbox</h3>
-        <p className="m-0 text-sm text-semantic-text-muted">
+        <p className="m-0 text-sm text-v2-semantic-text-muted">
           Load a local sample, then complete the preview.
         </p>
       </div>
       <div
-        className="flex min-h-[168px] items-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-4"
+        className="flex min-h-[168px] items-center rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-4"
         aria-busy={loading}
       >
         {loading ? (
@@ -159,8 +159,8 @@ function LoadingExample(args: SpinnerProps) {
             <div
               className={
                 args.variant === "inverted"
-                  ? "inline-flex rounded-lg bg-semantic-primary p-3 text-semantic-text-inverted"
-                  : "inline-flex rounded-lg bg-semantic-bg-ui p-3"
+                  ? "inline-flex rounded-lg bg-v2-semantic-primary p-3 text-v2-semantic-text-inverted"
+                  : "inline-flex rounded-lg bg-v2-semantic-bg-ui p-3"
               }
             >
               <Spinner {...args} />
@@ -169,7 +169,7 @@ function LoadingExample(args: SpinnerProps) {
               <p className="m-0 text-sm font-medium">
                 Loading sample conversations…
               </p>
-              <p className="m-0 text-sm text-semantic-text-muted">
+              <p className="m-0 text-sm text-v2-semantic-text-muted">
                 Complete the preview to see the inbox.
               </p>
             </div>
@@ -183,14 +183,14 @@ function LoadingExample(args: SpinnerProps) {
             ].map(([name, message]) => (
               <li key={name} className="min-w-0 space-y-0.5">
                 <p className="m-0 text-sm font-medium">{name}</p>
-                <p className="m-0 text-sm text-semantic-text-muted">
+                <p className="m-0 text-sm text-v2-semantic-text-muted">
                   {message}
                 </p>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="m-0 text-sm text-semantic-text-secondary">
+          <p className="m-0 text-sm text-v2-semantic-text-secondary">
             Ready to load three sample conversations.
           </p>
         )}
@@ -235,7 +235,7 @@ export const Decorative: Story = {
   render: (args) => (
     <div
       role="status"
-      className="flex items-center gap-2 text-semantic-text-secondary"
+      className="flex items-center gap-2 text-v2-semantic-text-secondary"
     >
       <Spinner {...args} size="sm" variant="current" aria-hidden="true" />
       <span className="text-sm">Saving draft…</span>
@@ -271,7 +271,7 @@ export const V1VsV2: Story = {
       {["v1", "v2"].map((version) => (
         <section
           key={version}
-          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <h3 className="m-0 text-base font-medium">{version}</h3>
           {version === "v1" ? <V1 {...args} /> : <Spinner {...args} />}

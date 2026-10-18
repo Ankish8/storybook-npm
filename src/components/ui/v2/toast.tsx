@@ -28,7 +28,7 @@ const ToastViewport = React.forwardRef(
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full min-w-0 flex-col items-stretch gap-1 overflow-hidden p-4 pr-12 rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-semantic-text-primary shadow-[0_12px_32px_color-mix(in_srgb,var(--semantic-bg-inverted)_8%,transparent),0_2px_8px_color-mix(in_srgb,var(--semantic-bg-inverted)_4%,transparent)] transition-[transform,opacity] duration-200 [transition-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:transition-none data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:fade-in-0 data-[state=open]:motion-safe:zoom-in-[0.98] data-[state=open]:motion-safe:slide-in-from-top-2 data-[state=open]:sm:motion-safe:slide-in-from-bottom-2 data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=closed]:motion-safe:[animation-duration:160ms] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] data-[state=closed]:pointer-events-none data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:translate-y-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)] data-[swipe=move]:transition-none data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=end]:translate-y-[var(--radix-toast-swipe-end-y)] data-[swipe=end]:motion-safe:animate-out data-[swipe=end]:motion-safe:fade-out-0 data-[swipe=end]:data-[swipe-direction=right]:motion-safe:slide-out-to-right-full data-[swipe=end]:data-[swipe-direction=left]:motion-safe:slide-out-to-left-full data-[swipe=end]:data-[swipe-direction=up]:motion-safe:slide-out-to-top-full data-[swipe=end]:data-[swipe-direction=down]:motion-safe:slide-out-to-bottom-full data-[swipe=end]:motion-safe:[animation-duration:160ms] motion-reduce:data-[swipe=end]:animate-[v2-fade-out_100ms_ease-in]",
+  "group pointer-events-auto relative flex w-full min-w-0 flex-col items-stretch gap-1 overflow-hidden p-4 pr-12 rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-v2-semantic-text-primary shadow-[0_12px_32px_color-mix(in_srgb,var(--v2-shadow-color,var(--semantic-bg-inverted))_8%,transparent),0_2px_8px_color-mix(in_srgb,var(--v2-shadow-color,var(--semantic-bg-inverted))_4%,transparent)] transition-[transform,opacity] duration-200 [transition-timing-function:var(--v2-ease-out,cubic-bezier(0.16,1,0.3,1))] motion-reduce:transition-none data-[state=open]:motion-safe:animate-in data-[state=open]:motion-safe:fade-in-0 data-[state=open]:motion-safe:zoom-in-[0.98] data-[state=open]:motion-safe:slide-in-from-top-2 data-[state=open]:sm:motion-safe:slide-in-from-bottom-2 data-[state=open]:motion-safe:[animation-duration:240ms] data-[state=closed]:motion-safe:animate-out data-[state=closed]:motion-safe:fade-out-0 data-[state=closed]:motion-safe:zoom-out-[0.98] data-[state=closed]:motion-safe:[animation-duration:160ms] motion-reduce:data-[state=open]:animate-[v2-fade-in_120ms_ease-out] motion-reduce:data-[state=closed]:animate-[v2-fade-out_100ms_ease-in] data-[state=closed]:pointer-events-none data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:translate-y-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:translate-y-[var(--radix-toast-swipe-move-y)] data-[swipe=move]:transition-none data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=end]:translate-y-[var(--radix-toast-swipe-end-y)] data-[swipe=end]:motion-safe:animate-out data-[swipe=end]:motion-safe:fade-out-0 data-[swipe=end]:data-[swipe-direction=right]:motion-safe:slide-out-to-right-full data-[swipe=end]:data-[swipe-direction=left]:motion-safe:slide-out-to-left-full data-[swipe=end]:data-[swipe-direction=up]:motion-safe:slide-out-to-top-full data-[swipe=end]:data-[swipe-direction=down]:motion-safe:slide-out-to-bottom-full data-[swipe=end]:motion-safe:[animation-duration:160ms] motion-reduce:data-[swipe=end]:animate-[v2-fade-out_100ms_ease-in]",
   {
     variants: {
       variant: {
@@ -79,7 +79,7 @@ const ToastAction = React.forwardRef(
     <ToastPrimitives.Action
       ref={ref}
       className={cn(
-        "inline-flex h-8 [@media(pointer:coarse)]:min-h-11 shrink-0 items-center justify-center rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-semantic-text-secondary transition-[color,background-color,transform] duration-150 motion-reduce:transition-colors motion-safe:active:scale-[0.98] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-semantic-primary disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-8 [@media(pointer:coarse)]:min-h-11 shrink-0 items-center justify-center rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-v2-semantic-text-secondary transition-[color,background-color,transform] duration-150 motion-reduce:transition-colors motion-safe:active:scale-[0.98] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -99,7 +99,7 @@ const ToastClose = React.forwardRef(
     <ToastPrimitives.Close
       ref={ref}
       className={cn(
-        "absolute right-2 top-2 inline-flex size-8 [@media(pointer:coarse)]:size-11 shrink-0 items-center justify-center rounded-md p-0 text-semantic-text-muted transition-[color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:[transition-duration:160ms,160ms,120ms] motion-reduce:transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-semantic-text-primary motion-safe:active:scale-[0.96] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-semantic-primary",
+        "absolute right-2 top-2 inline-flex size-8 [@media(pointer:coarse)]:size-11 shrink-0 items-center justify-center rounded-md p-0 text-v2-semantic-text-muted transition-[color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:[transition-duration:160ms,160ms,120ms] motion-reduce:transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-v2-semantic-text-primary motion-safe:active:scale-[0.96] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
         className
       )}
       aria-label="Dismiss notification"
@@ -123,7 +123,7 @@ const ToastTitle = React.forwardRef(
     <ToastPrimitives.Title
       ref={ref}
       className={cn(
-        "m-0 min-w-0 break-words text-sm font-medium leading-5 text-semantic-text-primary",
+        "m-0 min-w-0 break-words text-sm font-medium leading-5 text-v2-semantic-text-primary",
         className
       )}
       {...props}
@@ -143,7 +143,7 @@ const ToastDescription = React.forwardRef(
     <ToastPrimitives.Description
       ref={ref}
       className={cn(
-        "m-0 min-w-0 break-words text-sm leading-5 text-semantic-text-secondary",
+        "m-0 min-w-0 break-words text-sm leading-5 text-v2-semantic-text-secondary",
         className
       )}
       {...props}
@@ -572,7 +572,7 @@ function ManagedToast({
         stack &&
           "absolute left-4 right-4 top-4 w-auto origin-top transition-[translate,scale,height,opacity] duration-300 [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] motion-reduce:transition-none data-[swipe=move]:transition-none sm:w-auto",
         inactive && "pointer-events-none",
-        stack && !expanded && order > 0 && "bg-semantic-bg-ui",
+        stack && !expanded && order > 0 && "bg-v2-semantic-bg-ui",
         className
       )}
       style={
@@ -600,13 +600,13 @@ function ManagedToast({
             className={cn(
               "grid size-[30px] shrink-0 place-items-center rounded-full border border-solid",
               variant === "success" &&
-                "border-semantic-success-border/40 bg-semantic-success-surface text-semantic-success-primary",
+                "border-v2-semantic-success-border/40 bg-v2-semantic-success-surface text-v2-semantic-success-primary",
               (variant === "error" || variant === "destructive") &&
-                "border-semantic-error-border/40 bg-semantic-error-surface text-semantic-error-primary",
+                "border-v2-semantic-error-border/40 bg-v2-semantic-error-surface text-v2-semantic-error-primary",
               variant === "warning" &&
-                "border-semantic-warning-border/40 bg-semantic-warning-surface text-semantic-warning-primary",
+                "border-v2-semantic-warning-border/40 bg-v2-semantic-warning-surface text-v2-semantic-warning-primary",
               variant === "info" &&
-                "border-semantic-info-border/40 bg-semantic-info-surface text-semantic-info-primary"
+                "border-v2-semantic-info-border/40 bg-v2-semantic-info-surface text-v2-semantic-info-primary"
             )}
             data-v2-toast-indicator={variant}
           >
@@ -865,7 +865,7 @@ function Toaster({
                     : "Expand notifications"
               }
               onClick={() => changeExpanded(!pinnedExpanded)}
-              className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-solid border-semantic-border-layout bg-semantic-bg-primary px-3 py-1 text-xs text-semantic-text-secondary shadow-sm transition-colors [@media(pointer:coarse)]:min-h-11 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-semantic-bg-ui focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-semantic-border-focus"
+              className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-3 py-1 text-xs text-v2-semantic-text-secondary shadow-sm transition-colors [@media(pointer:coarse)]:min-h-11 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-border-focus"
             >
               {count} notifications
               <ChevronDown

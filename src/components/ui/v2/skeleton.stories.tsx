@@ -40,14 +40,19 @@ const meta: Meta<typeof Skeleton> = {
               "Default",
               "--semantic-bg-grey",
               "#E9EAEB",
-              "var(--semantic-bg-grey)",
+              "var(--v2-semantic-bg-grey,var(--semantic-bg-grey))",
             ],
-            ["Subtle", "--semantic-bg-ui", "#F5F5F5", "var(--semantic-bg-ui)"],
+            [
+              "Subtle",
+              "--semantic-bg-ui",
+              "#F5F5F5",
+              "var(--v2-semantic-bg-ui,var(--semantic-bg-ui))",
+            ],
             [
               "Shimmer highlight",
               "--semantic-bg-primary",
               "#FFFFFF",
-              "color-mix(in srgb,var(--semantic-bg-primary) 50%,transparent)",
+              "color-mix(in srgb,var(--v2-semantic-bg-primary,var(--semantic-bg-primary)) 50%,transparent)",
             ],
           ],
           guidance:
@@ -135,7 +140,7 @@ export const Animations: Story = {
       {(["pulse", "shimmer", "none"] as const).map((animation) => (
         <section
           key={animation}
-          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <h3 className="m-0 text-sm font-medium capitalize">{animation}</h3>
           <div className="flex items-center gap-3">
@@ -217,19 +222,19 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
   const stagger = (delay: string) =>
     ({ ...args.style, "--v2-skeleton-delay": delay }) as CSSProperties;
   return (
-    <section className="w-[420px] max-w-full space-y-4 text-semantic-text-primary">
+    <section className="w-[420px] max-w-full space-y-4 text-v2-semantic-text-primary">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 id={headingId} className="m-0 text-base font-medium">
           Contact details
         </h3>
-        <span role="status" className="text-xs text-semantic-text-muted">
+        <span role="status" className="text-xs text-v2-semantic-text-muted">
           {loading ? "Loading contact" : "Contact loaded"}
         </span>
       </div>
       <article
         aria-labelledby={headingId}
         aria-busy={loading}
-        className="rounded-xl border border-solid border-semantic-border-layout bg-semantic-bg-primary p-5"
+        className="rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5"
       >
         <div
           key={loading ? replay : "content"}
@@ -246,7 +251,7 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
               ) : (
                 <span
                   aria-hidden="true"
-                  className="grid size-12 place-items-center rounded-full bg-semantic-primary-surface text-sm font-medium text-semantic-primary"
+                  className="grid size-12 place-items-center rounded-full bg-v2-semantic-primary-surface text-sm font-medium text-v2-semantic-primary"
                 >
                   PS
                 </span>
@@ -278,20 +283,20 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
                     height={12}
                   />
                 ) : (
-                  <p className="m-0 truncate text-xs leading-4 text-semantic-text-muted">
+                  <p className="m-0 truncate text-xs leading-4 text-v2-semantic-text-muted">
                     Customer success manager
                   </p>
                 )}
               </div>
             </div>
           </div>
-          <dl className="m-0 mt-5 grid gap-4 border-0 border-t border-solid border-semantic-border-layout pt-4">
+          <dl className="m-0 mt-5 grid gap-4 border-0 border-t border-solid border-v2-semantic-border-layout pt-4">
             {[
               ["Email", "priya.shah@example.com", "82%"],
               ["Team", "Customer success", "62%"],
             ].map(([label, value, width], index) => (
               <div key={label} className="min-w-0">
-                <dt className="text-xs font-normal leading-4 text-semantic-text-muted">
+                <dt className="text-xs font-normal leading-4 text-v2-semantic-text-muted">
                   {label}
                 </dt>
                 <dd className="m-0 mt-2 flex h-5 items-center text-sm leading-5">
@@ -324,7 +329,7 @@ function LoadingExample(args: Parameters<typeof Skeleton>[0]) {
           Replay loading
         </Button>
       </div>
-      <p className="m-0 text-xs leading-5 text-semantic-text-muted">
+      <p className="m-0 text-xs leading-5 text-v2-semantic-text-muted">
         Sample contact. Load contact reveals the details immediately.
       </p>
     </section>
@@ -344,7 +349,7 @@ export const V1VsV2: Story = {
       {["v1", "v2"].map((version) => (
         <section
           key={version}
-          className="min-w-0 space-y-3 rounded-lg border border-solid border-semantic-border-layout p-5"
+          className="min-w-0 space-y-3 rounded-lg border border-solid border-v2-semantic-border-layout p-5"
         >
           <h3 className="m-0 text-base font-medium">{version}</h3>
           <div className="max-w-full overflow-x-auto">

@@ -145,7 +145,7 @@ function InlineV1({
         data-version="v1"
         aria-label={String(args.title)}
         className={cn(
-          "flex w-96 max-w-full flex-col gap-4 overflow-hidden rounded-lg border border-solid border-semantic-border-layout bg-semantic-bg-primary p-6 text-semantic-text-primary",
+          "flex w-96 max-w-full flex-col gap-4 overflow-hidden rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-6 text-v2-semantic-text-primary",
           SHADOW
         )}
       >
@@ -157,7 +157,7 @@ function InlineV1({
         </HeaderV1>
         {typeToConfirm && (
           <div className="grid gap-2 py-4">
-            <label className="text-sm font-semibold text-semantic-text-secondary">
+            <label className="text-sm font-semibold text-v2-semantic-text-secondary">
               Enter "{typeToConfirm}" in uppercase to confirm
             </label>
             <InputV1
@@ -736,7 +736,7 @@ function NotificationExample({
   const [enabled, setEnabled] = React.useState(true);
   const [result, setResult] = React.useState("No changes made.");
   return (
-    <section className="flex w-[520px] max-w-full flex-col gap-5 rounded-xl border border-solid border-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
+    <section className="flex w-[520px] max-w-full flex-col gap-5 rounded-xl border border-solid border-v2-semantic-border-layout p-6 font-[family-name:var(--font-v2,Inter,sans-serif)]">
       <div className="flex flex-col gap-1">
         <p className="m-0 text-base font-medium text-[var(--v2-text-primary,#484848)]">
           Inbox notifications

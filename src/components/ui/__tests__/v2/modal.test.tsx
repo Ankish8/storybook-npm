@@ -75,7 +75,7 @@ describe("Modal", () => {
 
     const confirmButton = screen.getByRole("button", { name: /yes/i });
     // Button uses semantic color tokens
-    expect(confirmButton).toHaveClass("bg-semantic-primary");
+    expect(confirmButton).toHaveClass("bg-v2-semantic-primary");
   });
 
   it("renders destructive variant button when variant is destructive", () => {
@@ -404,7 +404,7 @@ describe("Modal layout", () => {
       "-mb-4",
       "px-4",
       "py-3",
-      "bg-semantic-bg-primary"
+      "bg-v2-semantic-bg-primary"
     );
   });
 
@@ -442,7 +442,11 @@ describe("Modal icon", () => {
     render(
       <Modal open title="Confirm" icon={<svg data-testid="custom-icon" />} />
     );
-    expect(media()).toHaveClass("size-10", "rounded-md", "bg-semantic-bg-ui");
+    expect(media()).toHaveClass(
+      "size-10",
+      "rounded-md",
+      "bg-v2-semantic-bg-ui"
+    );
     expect(media()).toContainElement(screen.getByTestId("custom-icon"));
   });
 
@@ -456,8 +460,8 @@ describe("Modal icon", () => {
       />
     );
     expect(media()).toHaveClass(
-      "bg-semantic-error-surface",
-      "text-semantic-error-primary"
+      "bg-v2-semantic-error-surface",
+      "text-v2-semantic-error-primary"
     );
   });
 

@@ -10,7 +10,7 @@ export default function Controlled() {
         checked={enabled}
         onCheckedChange={setEnabled}
       />
-      <p role="status" className="m-0 text-sm text-semantic-text-muted">
+      <p role="status" className="m-0 text-sm text-v2-semantic-text-muted">
         Auto-save is {enabled ? "on" : "off"}.
       </p>
     </div>

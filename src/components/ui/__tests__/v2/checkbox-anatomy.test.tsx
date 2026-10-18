@@ -37,7 +37,7 @@ describe("Checkbox error and invalid", () => {
   it("styles an invalid box with the error colour", () => {
     render(<Checkbox label="I agree" invalid />);
     expect(screen.getByRole("checkbox").className).toContain(
-      "enabled:aria-[invalid=true]:data-[state=unchecked]:border-semantic-error-primary"
+      "enabled:aria-[invalid=true]:data-[state=unchecked]:border-v2-semantic-error-primary"
     );
   });
 
@@ -151,9 +151,9 @@ describe("Checkbox card variant", () => {
       "rounded-lg",
       "border",
       "p-3",
-      "has-[[data-state=checked]:enabled:not([aria-invalid=true])]:border-semantic-primary",
-      "bg-semantic-bg-primary",
-      "has-[:disabled]:border-semantic-disabled-border",
+      "has-[[data-state=checked]:enabled:not([aria-invalid=true])]:border-v2-semantic-primary",
+      "bg-v2-semantic-bg-primary",
+      "has-[:disabled]:border-v2-semantic-disabled-border",
       "has-[:disabled]:cursor-not-allowed"
     );
   });

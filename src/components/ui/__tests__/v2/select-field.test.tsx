@@ -40,7 +40,7 @@ describe("SelectField", () => {
       <SelectField label="Test Label" options={defaultOptions} required />
     );
     expect(screen.getByText("*")).toBeInTheDocument();
-    expect(screen.getByText("*")).toHaveClass("text-semantic-error-primary");
+    expect(screen.getByText("*")).toHaveClass("text-v2-semantic-error-primary");
   });
 
   it("does not render required indicator when not required", () => {
@@ -78,7 +78,7 @@ describe("SelectField", () => {
     );
     expect(screen.getByText("This field is required")).toBeInTheDocument();
     expect(screen.getByText("This field is required")).toHaveClass(
-      "text-semantic-error-text"
+      "text-v2-semantic-error-text"
     );
   });
 
@@ -93,7 +93,7 @@ describe("SelectField", () => {
   it("applies error state styling when error is set", () => {
     render(<SelectField options={defaultOptions} error="Error" />);
     expect(screen.getByRole("combobox")).toHaveClass(
-      "border-semantic-error-primary"
+      "border-v2-semantic-error-primary"
     );
   });
 
@@ -630,7 +630,7 @@ describe("SelectField v2 refresh", () => {
     const trigger = screen.getByRole("combobox");
 
     expect(trigger.className).toContain(
-      "aria-expanded:border-semantic-primary"
+      "aria-expanded:border-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     await user.click(trigger);
     expect(trigger).toHaveAttribute("aria-expanded", "true");

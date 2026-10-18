@@ -20,7 +20,7 @@ export default function Example() {
       <UiCard disabled onClick={() => setSelected(false)}>
         <UiCardTitle>Archived inbox</UiCardTitle>
       </UiCard>
-      <p role="status" className="m-0 text-xs text-semantic-text-muted">
+      <p role="status" className="m-0 text-xs text-v2-semantic-text-muted">
         {selected ? "Support inbox selected" : "No inbox selected"}
       </p>
     </div>

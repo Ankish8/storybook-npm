@@ -5,6 +5,7 @@ export default {
   basePath: process.env.NEXT_PUBLIC_DOCS_BASE_PATH || "",
   outputFileTracingRoot: path.resolve(appDir, "../.."),
   outputFileTracingIncludes: {
+    "/*": ["../../src/styles/v2-theme.css"],
     "/api/source": ["../../src/components/ui/v2/*.tsx"],
   },
   devIndicators: false,
