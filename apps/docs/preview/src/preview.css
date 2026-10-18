@@ -85,3 +85,10 @@ html[data-preview-version="v1"] body {
   background: #fff;
   color: #414651;
 }
+
+/* Shared production chunks can append the legacy body background after this
+ * stylesheet. Keep v2's canvas transparent regardless of chunk load order. */
+html[data-preview-version="v2"] body {
+  background: transparent;
+  color: var(--v2-text-secondary, var(--semantic-text-primary));
+}
