@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PricingCard } from "../pricing-card";
@@ -265,7 +266,7 @@ describe("PricingCard", () => {
   });
 
   it("forwards ref", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(<PricingCard {...defaultProps} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

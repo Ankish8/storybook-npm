@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -7,26 +8,18 @@ describe("AutoPaySetup", () => {
   it("renders with default props", () => {
     render(<AutoPaySetup />);
     expect(screen.getByText("Auto-pay setup")).toBeInTheDocument();
-    expect(
-      screen.getByText("Hassle-free monthly billing")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Hassle-free monthly billing")).toBeInTheDocument();
     expect(screen.getByText("Enable Auto-Pay")).toBeInTheDocument();
   });
 
   it("renders custom title and subtitle", () => {
-    render(
-      <AutoPaySetup title="Custom Title" subtitle="Custom Subtitle" />
-    );
+    render(<AutoPaySetup title="Custom Title" subtitle="Custom Subtitle" />);
     expect(screen.getByText("Custom Title")).toBeInTheDocument();
     expect(screen.getByText("Custom Subtitle")).toBeInTheDocument();
   });
 
   it("renders icon when provided", () => {
-    render(
-      <AutoPaySetup
-        icon={<svg data-testid="test-icon" />}
-      />
-    );
+    render(<AutoPaySetup icon={<svg data-testid="test-icon" />} />);
     expect(screen.getByTestId("test-icon")).toBeInTheDocument();
   });
 
@@ -45,16 +38,12 @@ describe("AutoPaySetup", () => {
     render(<AutoPaySetup bodyText="" />);
     // The default body text should not appear when bodyText is empty
     expect(
-      screen.queryByText(
-        /Link your internet banking account/
-      )
+      screen.queryByText(/Link your internet banking account/)
     ).not.toBeInTheDocument();
   });
 
   it("renders note callout with label and text", () => {
-    render(
-      <AutoPaySetup noteLabel="Warning:" noteText="This is a warning" />
-    );
+    render(<AutoPaySetup noteLabel="Warning:" noteText="This is a warning" />);
     expect(screen.getByText("Warning:")).toBeInTheDocument();
     expect(screen.getByText("This is a warning")).toBeInTheDocument();
   });
@@ -66,7 +55,9 @@ describe("AutoPaySetup", () => {
 
   it("does not render note callout when noteText is empty", () => {
     const { container } = render(<AutoPaySetup noteText="" />);
-    const noteBox = container.querySelector(".rounded.bg-\\[var\\(--semantic-info-25");
+    const noteBox = container.querySelector(
+      ".rounded.bg-\\[var\\(--semantic-info-25"
+    );
     expect(noteBox).not.toBeInTheDocument();
   });
 
@@ -85,7 +76,9 @@ describe("AutoPaySetup", () => {
 
   it("disables button when disabled prop is true", () => {
     render(<AutoPaySetup disabled />);
-    expect(screen.getByText("Enable Auto-Pay").closest("button")).toBeDisabled();
+    expect(
+      screen.getByText("Enable Auto-Pay").closest("button")
+    ).toBeDisabled();
   });
 
   it("disables button when loading is true", () => {
@@ -122,9 +115,7 @@ describe("AutoPaySetup", () => {
   });
 
   it("renders outline CTA when ctaVariant is outline", () => {
-    render(
-      <AutoPaySetup ctaText="Edit subscription" ctaVariant="outline" />
-    );
+    render(<AutoPaySetup ctaText="Edit subscription" ctaVariant="outline" />);
     const ctaButton = screen.getByText("Edit subscription").closest("button");
     expect(ctaButton).toBeInTheDocument();
     expect(ctaButton?.className).not.toContain("bg-semantic-primary ");
@@ -136,7 +127,7 @@ describe("AutoPaySetup", () => {
   });
 
   it("forwards ref correctly", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(<AutoPaySetup ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

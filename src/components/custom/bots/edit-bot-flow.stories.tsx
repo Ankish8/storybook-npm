@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React from "react";
 import { EditBotFlow } from "./edit-bot-flow";
 import { IvrBotConfig } from "../ivr-bot/ivr-bot-config";
 import { Toaster, toast } from "../../ui/toast";
@@ -63,8 +62,8 @@ export const Default: Story = {
     onSearch: fn(),
     instructionText: (
       <p className="m-0 text-sm text-semantic-text-muted">
-        Click the <strong>⋮</strong> menu on any bot card and select <strong>Edit</strong> to open
-        its configuration page.
+        Click the <strong>⋮</strong> menu on any bot card and select{" "}
+        <strong>Edit</strong> to open its configuration page.
       </p>
     ),
   },

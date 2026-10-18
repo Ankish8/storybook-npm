@@ -223,6 +223,7 @@ export const V1VsV2: Story = {
             </h3>
             <Component
               {...args}
+              suffix={args.suffix ?? ""}
               onValueChange={(value) => {
                 args.onValueChange(value);
                 updateArgs({ value });

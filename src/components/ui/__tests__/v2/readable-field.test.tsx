@@ -468,6 +468,7 @@ describe("ReadableField header row alignment", () => {
         {...props}
         headerAction={{
           label: "Regenerate",
+          onClick: vi.fn(),
           disabled: true,
           disabledTooltip: "Not available on this plan",
         }}

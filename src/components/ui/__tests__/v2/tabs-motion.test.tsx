@@ -1,4 +1,3 @@
-import * as React from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -74,7 +73,7 @@ describe("Tabs indicator motion", () => {
   let resizeObservers: Array<{
     callback: ResizeObserverCallback;
     observed: Set<Element>;
-    disconnect: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof vi.fn<[], void>>;
   }>;
   let fontEvents: EventTarget;
   let originalFonts: PropertyDescriptor | undefined;
@@ -94,7 +93,7 @@ describe("Tabs indicator motion", () => {
     resizeObservers = [];
 
     vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
-      function () {
+      function (this: HTMLElement) {
         const key = this.getAttribute("aria-label") || this.textContent?.trim();
         return rect(
           boxes.get(key || "") || { left: 0, top: 0, width: 0, height: 0 }

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { BotBehaviorCard, type BotBehaviorData } from "./bot-behavior-card";
 
 const meta: Meta<typeof BotBehaviorCard> = {
@@ -203,12 +203,16 @@ export const WithBlurCallback: Story = {
           </p>
           {blurLog.length === 0 ? (
             <p className="m-0 text-xs text-semantic-text-muted">
-              No blur events yet. Type in the textarea, click a chip, then click outside the card.
+              No blur events yet. Type in the textarea, click a chip, then click
+              outside the card.
             </p>
           ) : (
             <ul className="m-0 p-0 list-none flex flex-col gap-1">
               {blurLog.map((entry, i) => (
-                <li key={i} className="text-xs text-semantic-text-primary font-mono">
+                <li
+                  key={i}
+                  className="text-xs text-semantic-text-primary font-mono"
+                >
                   {entry}
                 </li>
               ))}

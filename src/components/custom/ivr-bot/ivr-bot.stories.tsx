@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { defaultHowItBehavesTooltip } from "./bot-behavior-card";
 import {
   defaultAgentBusyPromptTooltip,
@@ -92,12 +92,24 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
     onPublish: { action: "publish" },
     onDownloadKnowledgeFile: { action: "downloadKnowledgeFile" },
     onDeleteKnowledgeFile: { action: "deleteKnowledgeFile" },
-    knowledgeDownloadDisabled: { control: "boolean", description: "Independently disables knowledge file download buttons" },
-    knowledgeDeleteDisabled: { control: "boolean", description: "Independently disables knowledge file delete buttons" },
+    knowledgeDownloadDisabled: {
+      control: "boolean",
+      description: "Independently disables knowledge file download buttons",
+    },
+    knowledgeDeleteDisabled: {
+      control: "boolean",
+      description: "Independently disables knowledge file delete buttons",
+    },
     onCreateFunction: { action: "createFunction" },
     onDeleteFunction: { action: "deleteFunction" },
-    functionEditDisabled: { control: "boolean", description: "Independently disables function edit buttons" },
-    functionDeleteDisabled: { control: "boolean", description: "Independently disables function delete buttons" },
+    functionEditDisabled: {
+      control: "boolean",
+      description: "Independently disables function edit buttons",
+    },
+    functionDeleteDisabled: {
+      control: "boolean",
+      description: "Independently disables function delete buttons",
+    },
     onSystemPromptBlur: { action: "systemPromptBlur" },
     onBack: { action: "back" },
     onPlayVoice: { action: "playVoice" },
@@ -105,22 +117,22 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
     howItBehavesTooltip: {
       control: "text",
       description:
-        "Tooltip for the How It Behaves section info icon. Use \"\" to hide the icon; omit (reset) for built-in default.",
+        'Tooltip for the How It Behaves section info icon. Use "" to hide the icon; omit (reset) for built-in default.',
     },
     agentBusyPromptTooltip: {
       control: "text",
       description:
-        "Tooltip for the Agent Busy Prompt label. Use \"\" to hide; omit for built-in default.",
+        'Tooltip for the Agent Busy Prompt label. Use "" to hide; omit for built-in default.',
     },
     noExtensionFoundPromptTooltip: {
       control: "text",
       description:
-        "Tooltip for the No Extension Found label. Use \"\" to hide; omit for built-in default.",
+        'Tooltip for the No Extension Found label. Use "" to hide; omit for built-in default.',
     },
     fallbackPromptsInfoTooltip: {
       control: "text",
       description:
-        "Tooltip for the Fallback Prompts accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
+        'Tooltip for the Fallback Prompts accordion title info icon. Use "" for non-interactive icon; omit for built-in default.',
     },
     botNameErrorMessageValidation: {
       control: "boolean",
@@ -159,7 +171,8 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
     },
     noExtensionFoundPromptValidation: {
       control: "text",
-      description: "Required validation message shown below No Extension Found.",
+      description:
+        "Required validation message shown below No Extension Found.",
     },
     agentBusyPromptErrorMessageValidation: {
       control: "boolean",
@@ -174,7 +187,7 @@ Omit a prop to use the built-in default copy. Pass \`""\` to hide a label fieldâ
     escalateToHumanInfoTooltip: {
       control: "text",
       description:
-        "Tooltip for the Escalate to Human accordion title info icon. Use \"\" for non-interactive icon; omit for built-in default.",
+        'Tooltip for the Escalate to Human accordion title info icon. Use "" for non-interactive icon; omit for built-in default.',
     },
     escalationPromptValidation: {
       control: "boolean",
@@ -233,7 +246,9 @@ export const Overview: Story = {
           args.noExtensionFoundPromptErrorMessageValidation
         }
         escalationPromptValidation={args.escalationPromptValidation}
-        escalationPromptValidationMessage={args.escalationPromptValidationMessage}
+        escalationPromptValidationMessage={
+          args.escalationPromptValidationMessage
+        }
         escalationDepartmentValidation={args.escalationDepartmentValidation}
         escalationDepartmentValidationMessage={
           args.escalationDepartmentValidationMessage
@@ -247,8 +262,16 @@ export const Overview: Story = {
           systemPrompt:
             "You are a helpful assistant. Always start by greeting the user politely: 'Hello! Welcome to CaratLane. How can I assist you today?'\n\nIf the caller mentions order tracking, ask for their order ID and look it up via the get_order_status function.",
           knowledgeBaseFiles: [
-            { id: "kb-1", name: "Lead validation bot", status: BOT_KNOWLEDGE_STATUS.PROCESSING },
-            { id: "kb-2", name: "FAQ_2025.pdf",         status: BOT_KNOWLEDGE_STATUS.READY      },
+            {
+              id: "kb-1",
+              name: "Lead validation bot",
+              status: BOT_KNOWLEDGE_STATUS.PROCESSING,
+            },
+            {
+              id: "kb-2",
+              name: "FAQ_2025.pdf",
+              status: BOT_KNOWLEDGE_STATUS.READY,
+            },
           ],
           functions: [
             {
@@ -289,7 +312,8 @@ export const FrustrationHandoverEnabled: Story = {
     botType: "Voicebot",
     initialData: {
       frustrationHandoverEnabled: true,
-      escalationPrompt: "Executives are busy at the moment, we will connect you soon.",
+      escalationPrompt:
+        "Executives are busy at the moment, we will connect you soon.",
       escalationDepartment: "support",
       silenceTimeout: 10,
       callEndThreshold: 2,
@@ -303,9 +327,21 @@ export const WithErrorFile: Story = {
   args: {
     initialData: {
       knowledgeBaseFiles: [
-        { id: "kb-1", name: "Lead validation bot", status: BOT_KNOWLEDGE_STATUS.PROCESSING },
-        { id: "kb-2", name: "Corrupted_data.pdf",  status: BOT_KNOWLEDGE_STATUS.FAILED     },
-        { id: "kb-3", name: "FAQ_2025.pdf",         status: BOT_KNOWLEDGE_STATUS.READY      },
+        {
+          id: "kb-1",
+          name: "Lead validation bot",
+          status: BOT_KNOWLEDGE_STATUS.PROCESSING,
+        },
+        {
+          id: "kb-2",
+          name: "Corrupted_data.pdf",
+          status: BOT_KNOWLEDGE_STATUS.FAILED,
+        },
+        {
+          id: "kb-3",
+          name: "FAQ_2025.pdf",
+          status: BOT_KNOWLEDGE_STATUS.READY,
+        },
       ],
     },
   },
@@ -379,7 +415,11 @@ export const CustomDropdownOptions: Story = {
           voice: "emma-us",
           language: "en-us",
           functions: [
-            { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true },
+            {
+              id: "fn-1",
+              name: "transfer_to_extension (extension_number)",
+              isBuiltIn: true,
+            },
             { id: "fn-2", name: "end_call()", isBuiltIn: true },
             { id: "fn-3", name: "lookup_account (account_id)" },
           ],

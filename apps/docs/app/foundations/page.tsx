@@ -54,10 +54,11 @@ export default function Foundations() {
           </p>
           <h2 id="dark-mode">Light and dark mode</h2>
           <p>
-            Use the Color theme control to choose Light, Dark or System. The
-            choice is saved for future visits, and System follows your operating
-            system. Examples and open v2 popups update without resetting their
-            state. V1 comparisons retain their original light appearance.
+            Use the sun and moon button to switch between light and dark. The
+            choice is saved for future visits. Your first visit, or an existing
+            System preference, follows your operating system. Examples and open
+            v2 popups update without resetting their state. V1 comparisons
+            retain their original light appearance.
           </p>
           <p>
             In your application, include the generated myOperator theme

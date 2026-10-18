@@ -1,7 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
-import { RefreshCw, CreditCard, Landmark, CreditCard as WalletIcon, Building2 } from "lucide-react";
+import { useState } from "react";
+import {
+  RefreshCw,
+  CreditCard,
+  Landmark,
+  CreditCard as WalletIcon,
+  Building2,
+} from "lucide-react";
 import { AutoPaySetup } from "./auto-pay-setup";
 import { WalletTopup } from "../wallet-topup/wallet-topup";
 import { BankDetails } from "../bank-details/bank-details";
@@ -58,7 +64,7 @@ const meta: Meta<typeof AutoPaySetup> = {
   tags: ["autodocs"],
   args: {
     onOpenChange: fn(),
-    onValueChange: fn(),
+    onCtaClick: fn(),
   },
   decorators: [
     (Story) => (
@@ -215,8 +221,15 @@ export const ExclusiveAccordion: Story = {
           open={openSection === "bank-details"}
           onOpenChange={(open) => setOpenSection(open ? "bank-details" : "")}
           items={[
-            { label: "Account holder's name", value: "MyOperator Test Account" },
-            { label: "Account Number", value: "MOCK1234567890", copyable: true },
+            {
+              label: "Account holder's name",
+              value: "MyOperator Test Account",
+            },
+            {
+              label: "Account Number",
+              value: "MOCK1234567890",
+              copyable: true,
+            },
             { label: "IFSC Code", value: "MOCK0001234", copyable: true },
             { label: "A/C type", value: "Current account" },
           ]}

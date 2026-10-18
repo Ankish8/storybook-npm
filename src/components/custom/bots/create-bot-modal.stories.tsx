@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
+import { useState } from "react";
 import { CreateBotModal } from "./create-bot-modal";
 import { Button } from "../../ui/button";
 import { createBotModalArgTypes } from "./docs/props";

@@ -2102,7 +2102,7 @@ describe("DateTimePicker issue-document regressions", () => {
     const trigger = screen.getByRole("button", { name: "Open time picker" });
     fireEvent.click(trigger);
     expect(
-      screen.queryByRole("button", { name: "Start Time", exact: true })
+      screen.queryByRole("button", { name: "Start Time" })
     ).not.toBeInTheDocument();
     const hours = screen.getByLabelText("Start Time hours");
     const minutes = screen.getByLabelText("Start Time minutes");
@@ -2145,7 +2145,7 @@ describe("DateTimePicker issue-document regressions", () => {
     expect(screen.getByLabelText("Start Time seconds")).toBeInTheDocument();
     expect(screen.getByLabelText("End Time seconds")).toBeInTheDocument();
     expect(
-      screen.queryByRole("button", { name: "End Time", exact: true })
+      screen.queryByRole("button", { name: "End Time" })
     ).not.toBeInTheDocument();
   });
 

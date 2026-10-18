@@ -31,7 +31,7 @@
   "scripts": {
     "dev": "vite",
     "playground": "vite serve playground --config playground/vite.config.ts",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && npm run build:lib",
     "build:lib": "vite build --config vite.lib.config.ts",
     "lint": "eslint .",
     "preview": "vite preview",

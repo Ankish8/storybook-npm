@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import { fn } from "storybook/test"
-import React, { useState } from "react"
-import { Plus } from "lucide-react"
-import { AddIntegration } from "./add-integration"
-import { SwitchAccountModal } from "../switch-account-modal"
-import type { AffectedIntegration } from "../switch-account-modal"
-import { Button } from "../../ui/button"
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
+import { useState } from "react";
+import { Plus } from "lucide-react";
+import { AddIntegration } from "./add-integration";
+import { SwitchAccountModal } from "../switch-account-modal";
+import type { AffectedIntegration } from "../switch-account-modal";
+import { Button } from "../../ui/button";
 import type {
   ComposioToolkit,
   ComposioConnectedAccount,
@@ -13,7 +13,7 @@ import type {
   AddIntegrationStep,
   ConnectionStatus,
   ConnectionErrorVariant,
-} from "./types"
+} from "./types";
 
 /* ------------------------------------------------------------------ */
 /* Official brand SVG logos via data URIs (Simple Icons, brand colors) */
@@ -21,7 +21,7 @@ import type {
 const svgUri = (path: string, fill: string) =>
   `data:image/svg+xml,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${fill}">${path}</svg>`
-  )}`
+  )}`;
 
 const logos = {
   googleSheets: svgUri(
@@ -52,7 +52,7 @@ const logos = {
     '<path d="M18.316 5.684H24v12.632h-5.684V5.684zM5.684 24h12.632v-5.684H5.684V24zM18.316 5.684V0H1.895A1.894 1.894 0 0 0 0 1.895v16.421h5.684V5.684h12.632zm-7.207 6.25v-.065c.272-.144.5-.349.687-.617s.279-.595.279-.982c0-.379-.099-.72-.3-1.025a2.05 2.05 0 0 0-.832-.714 2.703 2.703 0 0 0-1.197-.257c-.6 0-1.094.156-1.481.467-.386.311-.65.671-.793 1.078l1.085.452c.086-.249.224-.461.413-.633.189-.172.445-.257.767-.257.33 0 .602.088.816.264a.86.86 0 0 1 .322.703c0 .33-.12.589-.36.778-.24.19-.535.284-.886.284h-.567v1.085h.633c.407 0 .748.109 1.02.327.272.218.407.499.407.843 0 .336-.129.614-.387.832s-.565.327-.924.327c-.351 0-.651-.103-.897-.311-.248-.208-.422-.502-.521-.881l-1.096.452c.178.616.505 1.082.977 1.401.472.319.984.478 1.538.477a2.84 2.84 0 0 0 1.293-.291c.382-.193.684-.458.902-.794.218-.336.327-.72.327-1.149 0-.429-.115-.797-.344-1.105a2.067 2.067 0 0 0-.881-.689zm2.093-1.931l.602.913L15 10.045v5.744h1.187V8.446h-.827l-2.158 1.557zM22.105 0h-3.289v5.184H24V1.895A1.894 1.894 0 0 0 22.105 0zm-3.289 23.5l4.684-4.684h-4.684V23.5zM0 22.105C0 23.152.848 24 1.895 24h3.289v-5.184H0v3.289z"/>',
     "#4285F4"
   ),
-}
+};
 
 const sampleToolkits: ComposioToolkit[] = [
   {
@@ -104,7 +104,7 @@ const sampleToolkits: ComposioToolkit[] = [
     logo: logos.googleCalendar,
     description: "Manage calendar events and schedules",
   },
-]
+];
 
 const sampleAccounts: ComposioConnectedAccount[] = [
   {
@@ -120,7 +120,7 @@ const sampleAccounts: ComposioConnectedAccount[] = [
     createdBy: "Ankish Khatari",
     createdAt: "Jan 10, 2026",
   },
-]
+];
 
 /** Matches WABA Figma “Connect your Account” — Active, Expired, Initialized (spinner) */
 const sampleAccountsFigmaStates: ComposioConnectedAccount[] = [
@@ -145,7 +145,7 @@ const sampleAccountsFigmaStates: ComposioConnectedAccount[] = [
     createdAt: "Jan 10, 2026",
     accountStatus: "initialized",
   },
-]
+];
 
 // Accounts where none is marked active — first clicked acts as "Continue"
 const sampleAccountsNoActive: ComposioConnectedAccount[] = [
@@ -155,7 +155,7 @@ const sampleAccountsNoActive: ComposioConnectedAccount[] = [
     createdBy: "Ankish Khatari",
     createdAt: "Jan 12, 2026",
   },
-]
+];
 
 // Sample affected integrations for the Switch Account confirmation flow
 const sampleAffectedIntegrations: AffectedIntegration[] = [
@@ -163,7 +163,7 @@ const sampleAffectedIntegrations: AffectedIntegration[] = [
   { id: "int_2", name: "Google Sheets – Support Tickets" },
   { id: "int_3", name: "Google Sheets – Reporting Bot" },
   { id: "int_4", name: "Google Sheets – Lead Capture" },
-]
+];
 
 /* ================================================================== */
 /* Trigger button used in all stories                                  */
@@ -174,7 +174,7 @@ const IntegrationsTrigger = ({ onClick }: { onClick: () => void }) => (
     <Plus className="size-4" />
     Integrations
   </Button>
-)
+);
 
 const meta: Meta<typeof AddIntegration> = {
   title: "Custom/AI Bot/Composio/AddIntegration",
@@ -306,17 +306,17 @@ const [open, setOpen] = useState(false)
     onRetryLoadToolkits: fn(),
     onRetryConnection: fn(),
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 /* ================================================================== */
 /* Reusable modal wrapper for args-based stories                       */
 /* ================================================================== */
 
 const ModalStory = (props: AddIntegrationProps) => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -326,13 +326,13 @@ const ModalStory = (props: AddIntegrationProps) => {
         open={open}
         onOpenChange={setOpen}
         onClose={() => {
-          props.onClose?.()
-          setOpen(false)
+          props.onClose?.();
+          setOpen(false);
         }}
       />
     </>
-  )
-}
+  );
+};
 
 /* ================================================================== */
 /* Individual State Stories                                            */
@@ -340,11 +340,11 @@ const ModalStory = (props: AddIntegrationProps) => {
 
 // ---------- Default (Interactive Step 1) ----------
 const DefaultExample = () => {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   const [selectedToolkit, setSelectedToolkit] =
-    useState<ComposioToolkit | null>(null)
-  const [integrationName, setIntegrationName] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
+    useState<ComposioToolkit | null>(null);
+  const [integrationName, setIntegrationName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   return (
     <>
@@ -370,8 +370,8 @@ const DefaultExample = () => {
         onClose={() => setOpen(false)}
       />
     </>
-  )
-}
+  );
+};
 
 export const Default: Story = {
   render: () => <DefaultExample />,
@@ -383,7 +383,7 @@ export const Default: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 1: Pre-selected ----------
 export const SelectToolkitWithSelection: Story = {
@@ -403,7 +403,7 @@ export const SelectToolkitWithSelection: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Connect (empty) ----------
 export const ConnectAccountEmpty: Story = {
@@ -424,7 +424,7 @@ export const ConnectAccountEmpty: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Connect (existing accounts — Figma states) ----------
 export const ConnectAccountWithExisting: Story = {
@@ -446,7 +446,7 @@ export const ConnectAccountWithExisting: Story = {
       },
     },
   },
-}
+};
 
 /** Two-account legacy flow: one active, one inactive (Switch) */
 export const ConnectAccountWithExistingLegacy: Story = {
@@ -468,7 +468,7 @@ export const ConnectAccountWithExistingLegacy: Story = {
       },
     },
   },
-}
+};
 
 export const ConnectAccountHideNewAccountButton: Story = {
   render: (args) => <ModalStory {...args} />,
@@ -485,11 +485,12 @@ export const ConnectAccountHideNewAccountButton: Story = {
   parameters: {
     docs: {
       description: {
-        story: "`showConnectNewAccountButton={false}` hides the “Connect a New Account” footer.",
+        story:
+          "`showConnectNewAccountButton={false}` hides the “Connect a New Account” footer.",
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Connect (single account, no active) ----------
 export const ConnectAccountSingleNoActive: Story = {
@@ -507,11 +508,11 @@ export const ConnectAccountSingleNoActive: Story = {
     docs: {
       description: {
         story:
-          'Step 2 — a single existing account with no `isActive` flag. Because no other account is active, the sole account shows a **Continue** action (treated as the active one).',
+          "Step 2 — a single existing account with no `isActive` flag. Because no other account is active, the sole account shows a **Continue** action (treated as the active one).",
       },
     },
   },
-}
+};
 
 // ---------- Step 1: Loading Toolkits ----------
 export const ToolkitLoading: Story = {
@@ -530,7 +531,7 @@ export const ToolkitLoading: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 1: Toolkit Load Error ----------
 export const ToolkitLoadError: Story = {
@@ -549,7 +550,7 @@ export const ToolkitLoadError: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 1: Integration Name Error ----------
 export const IntegrationNameError: Story = {
@@ -571,7 +572,7 @@ export const IntegrationNameError: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Auth Loading ----------
 export const AuthLoading: Story = {
@@ -591,7 +592,7 @@ export const AuthLoading: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Auth Error — Platform ----------
 export const AuthErrorPlatform: Story = {
@@ -612,7 +613,7 @@ export const AuthErrorPlatform: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Auth Error — Redirect ----------
 export const AuthErrorRedirect: Story = {
@@ -633,7 +634,7 @@ export const AuthErrorRedirect: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 2: Auth Error — Inline ----------
 export const AuthErrorInline: Story = {
@@ -656,7 +657,7 @@ export const AuthErrorInline: Story = {
       },
     },
   },
-}
+};
 
 // ---------- Step 3: Success ----------
 export const Success: Story = {
@@ -675,7 +676,7 @@ export const Success: Story = {
       },
     },
   },
-}
+};
 
 /* ================================================================== */
 /* Scenario Flow Stories                                               */
@@ -683,46 +684,46 @@ export const Success: Story = {
 
 // ---------- Scenario 1: Happy Path — New Account ----------
 const Scenario1Example = () => {
-  const [open, setOpen] = useState(false)
-  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit")
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit");
   const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("idle")
+    useState<ConnectionStatus>("idle");
   const [selectedToolkit, setSelectedToolkit] =
-    useState<ComposioToolkit | null>(null)
-  const [integrationName, setIntegrationName] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
+    useState<ComposioToolkit | null>(null);
+  const [integrationName, setIntegrationName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleNext = () => {
-    setStep("connect-account")
-    setConnectionStatus("idle")
-  }
+    setStep("connect-account");
+    setConnectionStatus("idle");
+  };
 
   const handleConnectNewAccount = () => {
-    setConnectionStatus("connecting")
+    setConnectionStatus("connecting");
     setTimeout(() => {
-      setConnectionStatus("idle")
-      setStep("success")
-    }, 2000)
-  }
+      setConnectionStatus("idle");
+      setStep("success");
+    }, 2000);
+  };
 
   const handleBack = () => {
     if (step === "connect-account") {
-      setStep("select-toolkit")
-      setConnectionStatus("idle")
+      setStep("select-toolkit");
+      setConnectionStatus("idle");
     } else if (step === "success") {
-      setStep("connect-account")
-      setConnectionStatus("idle")
+      setStep("connect-account");
+      setConnectionStatus("idle");
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    setStep("select-toolkit")
-    setConnectionStatus("idle")
-    setSelectedToolkit(null)
-    setIntegrationName("")
-    setSearchQuery("")
-  }
+    setOpen(false);
+    setStep("select-toolkit");
+    setConnectionStatus("idle");
+    setSelectedToolkit(null);
+    setIntegrationName("");
+    setSearchQuery("");
+  };
 
   return (
     <>
@@ -747,8 +748,8 @@ const Scenario1Example = () => {
         onClose={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario1_HappyPath_NewAccount: Story = {
   render: () => <Scenario1Example />,
@@ -767,73 +768,73 @@ Flow: Select Toolkit → Connect Account (empty) → Auth Loading (2s) → Succe
       },
     },
   },
-}
+};
 
 // ---------- Scenario 2: Happy Path — Existing Account ----------
 const Scenario2Example = () => {
-  const [open, setOpen] = useState(false)
-  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit")
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit");
   const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("idle")
+    useState<ConnectionStatus>("idle");
   const [selectedToolkit, setSelectedToolkit] =
-    useState<ComposioToolkit | null>(null)
-  const [integrationName, setIntegrationName] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
+    useState<ComposioToolkit | null>(null);
+  const [integrationName, setIntegrationName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [accounts, setAccounts] =
-    useState<ComposioConnectedAccount[]>(sampleAccounts)
+    useState<ComposioConnectedAccount[]>(sampleAccounts);
   const [pendingSwitchAccount, setPendingSwitchAccount] =
-    useState<ComposioConnectedAccount | null>(null)
+    useState<ComposioConnectedAccount | null>(null);
 
   const handleNext = () => {
-    setStep("connect-account")
-    setConnectionStatus("idle")
-  }
+    setStep("connect-account");
+    setConnectionStatus("idle");
+  };
 
   const handleContinueAccount = () => {
-    setStep("success")
-  }
+    setStep("success");
+  };
 
   const handleSwitchAccount = (account: ComposioConnectedAccount) => {
-    setPendingSwitchAccount(account)
-  }
+    setPendingSwitchAccount(account);
+  };
 
   const handleConfirmSwitch = () => {
-    if (!pendingSwitchAccount) return
+    if (!pendingSwitchAccount) return;
     setAccounts((prev) =>
       prev.map((a) => ({ ...a, isActive: a.id === pendingSwitchAccount.id }))
-    )
-    setPendingSwitchAccount(null)
-  }
+    );
+    setPendingSwitchAccount(null);
+  };
 
   const handleConnectNewAccount = () => {
-    setConnectionStatus("connecting")
+    setConnectionStatus("connecting");
     setTimeout(() => {
-      setConnectionStatus("idle")
-      setStep("success")
-    }, 2000)
-  }
+      setConnectionStatus("idle");
+      setStep("success");
+    }, 2000);
+  };
 
   const handleBack = () => {
     if (step === "connect-account") {
-      setStep("select-toolkit")
-      setConnectionStatus("idle")
+      setStep("select-toolkit");
+      setConnectionStatus("idle");
     } else if (step === "success") {
-      setStep("connect-account")
-      setConnectionStatus("idle")
+      setStep("connect-account");
+      setConnectionStatus("idle");
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    setStep("select-toolkit")
-    setConnectionStatus("idle")
-    setSelectedToolkit(null)
-    setIntegrationName("")
-    setSearchQuery("")
-    setAccounts(sampleAccounts)
-    setPendingSwitchAccount(null)
-  }
+    setOpen(false);
+    setStep("select-toolkit");
+    setConnectionStatus("idle");
+    setSelectedToolkit(null);
+    setIntegrationName("");
+    setSearchQuery("");
+    setAccounts(sampleAccounts);
+    setPendingSwitchAccount(null);
+  };
 
   return (
     <>
@@ -862,7 +863,7 @@ const Scenario2Example = () => {
       <SwitchAccountModal
         open={pendingSwitchAccount !== null}
         onOpenChange={(next) => {
-          if (!next) setPendingSwitchAccount(null)
+          if (!next) setPendingSwitchAccount(null);
         }}
         accountId={pendingSwitchAccount?.id ?? ""}
         affectedIntegrations={sampleAffectedIntegrations}
@@ -870,8 +871,8 @@ const Scenario2Example = () => {
         onConfirm={handleConfirmSwitch}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario2_HappyPath_ExistingAccount: Story = {
   render: () => <Scenario2Example />,
@@ -891,90 +892,90 @@ Flow: Select Toolkit → Connect Account (accounts list with one active) → eit
       },
     },
   },
-}
+};
 
 // ---------- Scenario 3: Toolkit Load Failure ----------
 const Scenario3Example = () => {
-  const [open, setOpen] = useState(false)
-  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit")
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit");
   const [selectedToolkit, setSelectedToolkit] =
-    useState<ComposioToolkit | null>(null)
-  const [integrationName, setIntegrationName] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(false)
-  const [loadedToolkits, setLoadedToolkits] = useState<ComposioToolkit[]>([])
-  const [nameError, setNameError] = useState("")
+    useState<ComposioToolkit | null>(null);
+  const [integrationName, setIntegrationName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [loadedToolkits, setLoadedToolkits] = useState<ComposioToolkit[]>([]);
+  const [nameError, setNameError] = useState("");
   const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("idle")
+    useState<ConnectionStatus>("idle");
 
   const handleOpen = () => {
-    setOpen(true)
-    setIsLoading(true)
-    setIsError(false)
+    setOpen(true);
+    setIsLoading(true);
+    setIsError(false);
     // Simulate initial load failure
     setTimeout(() => {
-      setIsLoading(false)
-      setIsError(true)
-    }, 1500)
-  }
+      setIsLoading(false);
+      setIsError(true);
+    }, 1500);
+  };
 
   const handleRetry = () => {
-    setIsError(false)
-    setIsLoading(true)
+    setIsError(false);
+    setIsLoading(true);
     // Simulate successful retry
     setTimeout(() => {
-      setIsLoading(false)
-      setLoadedToolkits(sampleToolkits)
-    }, 1500)
-  }
+      setIsLoading(false);
+      setLoadedToolkits(sampleToolkits);
+    }, 1500);
+  };
 
   const handleNameChange = (name: string) => {
-    setIntegrationName(name)
+    setIntegrationName(name);
     // Simulate name validation — "Lead score" triggers error
     if (name.toLowerCase() === "lead score") {
       setNameError(
         '"Integration test 1" already exists. Please enter a unique name.'
-      )
+      );
     } else {
-      setNameError("")
+      setNameError("");
     }
-  }
+  };
 
   const handleNext = () => {
-    if (nameError) return
-    setStep("connect-account")
-    setConnectionStatus("idle")
-  }
+    if (nameError) return;
+    setStep("connect-account");
+    setConnectionStatus("idle");
+  };
 
   const handleConnectNewAccount = () => {
-    setConnectionStatus("connecting")
+    setConnectionStatus("connecting");
     setTimeout(() => {
-      setConnectionStatus("idle")
-      setStep("success")
-    }, 2000)
-  }
+      setConnectionStatus("idle");
+      setStep("success");
+    }, 2000);
+  };
 
   const handleBack = () => {
     if (step === "connect-account") {
-      setStep("select-toolkit")
-      setConnectionStatus("idle")
+      setStep("select-toolkit");
+      setConnectionStatus("idle");
     } else if (step === "success") {
-      setStep("connect-account")
-      setConnectionStatus("idle")
+      setStep("connect-account");
+      setConnectionStatus("idle");
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    setStep("select-toolkit")
-    setConnectionStatus("idle")
-    setSelectedToolkit(null)
-    setIntegrationName("")
-    setSearchQuery("")
-    setNameError("")
-    setLoadedToolkits([])
-  }
+    setOpen(false);
+    setStep("select-toolkit");
+    setConnectionStatus("idle");
+    setSelectedToolkit(null);
+    setIntegrationName("");
+    setSearchQuery("");
+    setNameError("");
+    setLoadedToolkits([]);
+  };
 
   return (
     <>
@@ -1002,8 +1003,8 @@ const Scenario3Example = () => {
         onClose={handleClose}
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario3_ToolkitLoadFailure: Story = {
   render: () => <Scenario3Example />,
@@ -1022,75 +1023,75 @@ Flow: Loading (1.5s) → Failed → Retry → Loading (1.5s) → Toolkits loaded
       },
     },
   },
-}
+};
 
 // ---------- Scenario 4: Auth Failure ----------
 const Scenario4Example = () => {
-  const [open, setOpen] = useState(false)
-  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit")
+  const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<AddIntegrationStep>("select-toolkit");
   const [connectionStatus, setConnectionStatus] =
-    useState<ConnectionStatus>("idle")
+    useState<ConnectionStatus>("idle");
   const [connectionErrorVariant, setConnectionErrorVariant] =
-    useState<ConnectionErrorVariant>("platform")
+    useState<ConnectionErrorVariant>("platform");
   const [selectedToolkit, setSelectedToolkit] =
-    useState<ComposioToolkit | null>(null)
-  const [integrationName, setIntegrationName] = useState("")
-  const [searchQuery, setSearchQuery] = useState("")
-  const [retryCount, setRetryCount] = useState(0)
+    useState<ComposioToolkit | null>(null);
+  const [integrationName, setIntegrationName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [retryCount, setRetryCount] = useState(0);
 
   const handleNext = () => {
-    setStep("connect-account")
-    setConnectionStatus("idle")
-  }
+    setStep("connect-account");
+    setConnectionStatus("idle");
+  };
 
   const handleConnectNewAccount = () => {
-    setConnectionStatus("connecting")
+    setConnectionStatus("connecting");
     // First attempt fails with platform error
     setTimeout(() => {
-      setConnectionStatus("error")
-      setConnectionErrorVariant("platform")
-    }, 2000)
-  }
+      setConnectionStatus("error");
+      setConnectionErrorVariant("platform");
+    }, 2000);
+  };
 
   const handleRetryConnection = () => {
-    setRetryCount((c) => c + 1)
-    setConnectionStatus("connecting")
+    setRetryCount((c) => c + 1);
+    setConnectionStatus("connecting");
 
     if (retryCount === 0) {
       // Second attempt fails with redirect error
       setTimeout(() => {
-        setConnectionStatus("error")
-        setConnectionErrorVariant("redirect")
-      }, 2000)
+        setConnectionStatus("error");
+        setConnectionErrorVariant("redirect");
+      }, 2000);
     } else {
       // Third attempt succeeds
       setTimeout(() => {
-        setConnectionStatus("idle")
-        setStep("success")
-      }, 2000)
+        setConnectionStatus("idle");
+        setStep("success");
+      }, 2000);
     }
-  }
+  };
 
   const handleBack = () => {
     if (step === "connect-account") {
-      setStep("select-toolkit")
-      setConnectionStatus("idle")
-      setRetryCount(0)
+      setStep("select-toolkit");
+      setConnectionStatus("idle");
+      setRetryCount(0);
     } else if (step === "success") {
-      setStep("connect-account")
-      setConnectionStatus("idle")
+      setStep("connect-account");
+      setConnectionStatus("idle");
     }
-  }
+  };
 
   const handleClose = () => {
-    setOpen(false)
-    setStep("select-toolkit")
-    setConnectionStatus("idle")
-    setSelectedToolkit(null)
-    setIntegrationName("")
-    setSearchQuery("")
-    setRetryCount(0)
-  }
+    setOpen(false);
+    setStep("select-toolkit");
+    setConnectionStatus("idle");
+    setSelectedToolkit(null);
+    setIntegrationName("");
+    setSearchQuery("");
+    setRetryCount(0);
+  };
 
   return (
     <>
@@ -1121,8 +1122,8 @@ const Scenario4Example = () => {
         }
       />
     </>
-  )
-}
+  );
+};
 
 export const Scenario4_AuthFailure: Story = {
   render: () => <Scenario4Example />,
@@ -1142,4 +1143,4 @@ Flow: Select Toolkit → Connect Account → Auth Loading (2s) → Platform Erro
       },
     },
   },
-}
+};

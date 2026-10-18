@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 import { fn } from "storybook/test";
 import { Panel } from "./panel";
 import { TextField } from "./text-field";
@@ -146,18 +145,8 @@ export const Overview: Story = {
           disabled
           size="sm"
         />
-        <TextField
-          label="Phone"
-          value="+91 98765 43210"
-          disabled
-          size="sm"
-        />
-        <TextField
-          label="Company"
-          value="MyOperator"
-          disabled
-          size="sm"
-        />
+        <TextField label="Phone" value="+91 98765 43210" disabled size="sm" />
+        <TextField label="Company" value="MyOperator" disabled size="sm" />
       </div>
     </Panel>
   ),
@@ -210,9 +199,7 @@ export const WithCustomHeader: Story = {
               <span className="text-sm font-semibold text-semantic-text-primary">
                 Aditi Kumar
               </span>
-              <span className="text-xs text-semantic-text-muted">
-                Online
-              </span>
+              <span className="text-xs text-semantic-text-muted">Online</span>
             </div>
           </div>
         </div>
@@ -235,7 +222,10 @@ export const WithCustomHeader: Story = {
 export const Sizes: Story = {
   decorators: [
     (Story) => (
-      <div style={{ height: 500 }} className="flex justify-end gap-4 bg-gray-50 p-4">
+      <div
+        style={{ height: 500 }}
+        className="flex justify-end gap-4 bg-gray-50 p-4"
+      >
         <Story />
       </div>
     ),
@@ -245,19 +235,34 @@ export const Sizes: Story = {
       <Panel open title="Small (sm)" size="sm" onClose={() => {}}>
         <div className="flex flex-col gap-4 p-4">
           <TextField label="Name" value="Aditi Kumar" disabled size="sm" />
-          <TextField label="Email" value="email@example.com" disabled size="sm" />
+          <TextField
+            label="Email"
+            value="email@example.com"
+            disabled
+            size="sm"
+          />
         </div>
       </Panel>
       <Panel open title="Default" size="default" onClose={() => {}}>
         <div className="flex flex-col gap-4 p-4">
           <TextField label="Name" value="Aditi Kumar" disabled size="sm" />
-          <TextField label="Email" value="email@example.com" disabled size="sm" />
+          <TextField
+            label="Email"
+            value="email@example.com"
+            disabled
+            size="sm"
+          />
         </div>
       </Panel>
       <Panel open title="Large (lg)" size="lg" onClose={() => {}}>
         <div className="flex flex-col gap-4 p-4">
           <TextField label="Name" value="Aditi Kumar" disabled size="sm" />
-          <TextField label="Email" value="email@example.com" disabled size="sm" />
+          <TextField
+            label="Email"
+            value="email@example.com"
+            disabled
+            size="sm"
+          />
         </div>
       </Panel>
     </>

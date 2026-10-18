@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { PricingToggle } from "../pricing-toggle";
@@ -28,10 +29,9 @@ describe("PricingToggle", () => {
         onTabChange={() => {}}
       />
     );
-    expect(screen.getByText("Team-Led Plans").closest("button")).toHaveAttribute(
-      "aria-selected",
-      "true"
-    );
+    expect(
+      screen.getByText("Team-Led Plans").closest("button")
+    ).toHaveAttribute("aria-selected", "true");
     expect(screen.getByText("Go-AI First").closest("button")).toHaveAttribute(
       "aria-selected",
       "false"
@@ -162,7 +162,7 @@ describe("PricingToggle", () => {
   });
 
   it("forwards ref to the root element", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(
       <PricingToggle
         ref={ref}

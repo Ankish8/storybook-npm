@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
+import { useState } from "react";
 import { TalkToUsModal } from "./talk-to-us-modal";
 import { Headphones, Shield, Hash, PhoneCall } from "lucide-react";
 import { PowerUpCard } from "../power-up-card";
@@ -234,9 +234,7 @@ export const PowerUpsSection: Story = {
           <div className="flex gap-6">
             <PowerUpCard
               className="flex-1"
-              icon={
-                <Shield className="size-6 text-semantic-text-secondary" />
-              }
+              icon={<Shield className="size-6 text-semantic-text-secondary" />}
               title="Truecaller business"
               price="Starts @ ₹30,000/month"
               description="Leverage the power of Truecaller Business to grow your reach and reputation."

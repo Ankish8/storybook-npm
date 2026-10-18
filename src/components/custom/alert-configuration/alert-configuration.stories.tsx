@@ -1,9 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 import { AlertConfiguration } from "./alert-configuration";
 import { AlertValuesModal } from "./alert-values-modal";
-import type { AlertValueOption } from "./alert-values-modal";
+import type {
+  AlertValueOption,
+  AlertValuesModalProps,
+} from "./alert-values-modal";
 
 const balanceOptions: AlertValueOption[] = [
   { value: -500, label: "- ₹ 500" },
@@ -23,7 +26,10 @@ const topupOptions: AlertValueOption[] = [
   { value: 5000, label: "₹ 5000" },
 ];
 
-const meta: Meta<typeof AlertConfiguration> = {
+type StoryArgs = ComponentProps<typeof AlertConfiguration> &
+  Pick<AlertValuesModalProps, "onSave" | "onOpenChange">;
+
+const meta: Meta<StoryArgs> = {
   title: "Custom/Webhook/AlertConfiguration",
   component: AlertConfiguration,
   parameters: {
@@ -146,7 +152,7 @@ import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-
 \`\`\`tsx
 import { useState } from "react"
 import { AlertConfiguration, AlertValuesModal } from "@/components/custom/alert-configuration"
-import type { AlertValueOption } from "@/components/custom/alert-configuration"
+import type { AlertValueOption, AlertValuesModalProps } from "@/components/custom/alert-configuration"
 
 const balanceOptions: AlertValueOption[] = [
   { value: -500, label: "- ₹ 500" },
@@ -221,14 +227,14 @@ function PaymentPage() {
 };
 
 export default meta;
-type Story = StoryObj<typeof AlertConfiguration>;
+type Story = StoryObj<StoryArgs>;
 
 /**
  * Default alert configuration with positive balance.
  * Click "Edit alert values" to open the modal.
  */
 export const Default: Story = {
-  render: () => {
+  render: (args) => {
     const [minimumBalance, setMinimumBalance] = useState(250.0);
     const [minimumTopup, setMinimumTopup] = useState(500.0);
     const [modalOpen, setModalOpen] = useState(false);
@@ -238,6 +244,7 @@ export const Default: Story = {
       minimumBalance: number;
       minimumTopup: number;
     }) => {
+      args.onSave?.(values);
       setLoading(true);
       setTimeout(() => {
         setMinimumBalance(values.minimumBalance);
@@ -252,11 +259,17 @@ export const Default: Story = {
         <AlertConfiguration
           minimumBalance={minimumBalance}
           minimumTopup={minimumTopup}
-          onEdit={() => setModalOpen(true)}
+          onEdit={() => {
+            args.onEdit?.();
+            setModalOpen(true);
+          }}
         />
         <AlertValuesModal
           open={modalOpen}
-          onOpenChange={setModalOpen}
+          onOpenChange={(open) => {
+            args.onOpenChange?.(open);
+            setModalOpen(open);
+          }}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
           balanceOptions={balanceOptions}
@@ -274,7 +287,7 @@ export const Default: Story = {
  * Click "Edit alert values" to open the modal.
  */
 export const NegativeBalance: Story = {
-  render: () => {
+  render: (args) => {
     const [minimumBalance, setMinimumBalance] = useState(-250.0);
     const [minimumTopup, setMinimumTopup] = useState(500.0);
     const [modalOpen, setModalOpen] = useState(false);
@@ -284,6 +297,7 @@ export const NegativeBalance: Story = {
       minimumBalance: number;
       minimumTopup: number;
     }) => {
+      args.onSave?.(values);
       setLoading(true);
       setTimeout(() => {
         setMinimumBalance(values.minimumBalance);
@@ -298,11 +312,17 @@ export const NegativeBalance: Story = {
         <AlertConfiguration
           minimumBalance={minimumBalance}
           minimumTopup={minimumTopup}
-          onEdit={() => setModalOpen(true)}
+          onEdit={() => {
+            args.onEdit?.();
+            setModalOpen(true);
+          }}
         />
         <AlertValuesModal
           open={modalOpen}
-          onOpenChange={setModalOpen}
+          onOpenChange={(open) => {
+            args.onOpenChange?.(open);
+            setModalOpen(open);
+          }}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
           balanceOptions={balanceOptions}
@@ -353,7 +373,7 @@ export const ZeroValues: Story = {
  * Click "Edit alert values" to open the modal and update values.
  */
 export const WithModal: Story = {
-  render: () => {
+  render: (args) => {
     const [minimumBalance, setMinimumBalance] = useState(250.0);
     const [minimumTopup, setMinimumTopup] = useState(500.0);
     const [modalOpen, setModalOpen] = useState(false);
@@ -363,6 +383,7 @@ export const WithModal: Story = {
       minimumBalance: number;
       minimumTopup: number;
     }) => {
+      args.onSave?.(values);
       setLoading(true);
       // Simulate API call
       setTimeout(() => {
@@ -378,11 +399,17 @@ export const WithModal: Story = {
         <AlertConfiguration
           minimumBalance={minimumBalance}
           minimumTopup={minimumTopup}
-          onEdit={() => setModalOpen(true)}
+          onEdit={() => {
+            args.onEdit?.();
+            setModalOpen(true);
+          }}
         />
         <AlertValuesModal
           open={modalOpen}
-          onOpenChange={setModalOpen}
+          onOpenChange={(open) => {
+            args.onOpenChange?.(open);
+            setModalOpen(open);
+          }}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
           balanceOptions={balanceOptions}
@@ -400,7 +427,7 @@ export const WithModal: Story = {
  * Click "Open Modal" button to test the modal.
  */
 export const ModalOnly: Story = {
-  render: () => {
+  render: (args) => {
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -408,6 +435,7 @@ export const ModalOnly: Story = {
       minimumBalance: number;
       minimumTopup: number;
     }) => {
+      args.onSave?.(values);
       setLoading(true);
       // Simulate API call
       setTimeout(() => {
@@ -426,7 +454,10 @@ export const ModalOnly: Story = {
         </button>
         <AlertValuesModal
           open={open}
-          onOpenChange={setOpen}
+          onOpenChange={(open) => {
+            args.onOpenChange?.(open);
+            setOpen(open);
+          }}
           initialMinimumBalance={250}
           initialMinimumTopup={500}
           balanceOptions={balanceOptions}
@@ -443,7 +474,7 @@ export const ModalOnly: Story = {
  * Full payment page context showing how the component fits in.
  */
 export const PaymentPageContext: Story = {
-  render: () => {
+  render: (args) => {
     const [minimumBalance, setMinimumBalance] = useState(-250.0);
     const [minimumTopup, setMinimumTopup] = useState(500.0);
     const [modalOpen, setModalOpen] = useState(false);
@@ -452,6 +483,7 @@ export const PaymentPageContext: Story = {
       minimumBalance: number;
       minimumTopup: number;
     }) => {
+      args.onSave?.(values);
       setMinimumBalance(values.minimumBalance);
       setMinimumTopup(values.minimumTopup);
       setModalOpen(false);
@@ -508,12 +540,18 @@ export const PaymentPageContext: Story = {
         <AlertConfiguration
           minimumBalance={minimumBalance}
           minimumTopup={minimumTopup}
-          onEdit={() => setModalOpen(true)}
+          onEdit={() => {
+            args.onEdit?.();
+            setModalOpen(true);
+          }}
         />
 
         <AlertValuesModal
           open={modalOpen}
-          onOpenChange={setModalOpen}
+          onOpenChange={(open) => {
+            args.onOpenChange?.(open);
+            setModalOpen(open);
+          }}
           initialMinimumBalance={minimumBalance}
           initialMinimumTopup={minimumTopup}
           balanceOptions={balanceOptions}

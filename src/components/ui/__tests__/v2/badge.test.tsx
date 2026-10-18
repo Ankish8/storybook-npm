@@ -34,30 +34,65 @@ vi.mock("motion/react", async (importOriginal) => {
 const matchMedia = window.matchMedia;
 let reducedMotion = false;
 const preferenceListeners = new Set<() => void>();
+type PreferenceListener =
+  | ((this: MediaQueryList, event: MediaQueryListEvent) => unknown)
+  | EventListenerOrEventListenerObject;
 
 beforeEach(() => {
   reducedMotion = false;
   preferenceListeners.clear();
   vi.spyOn(window, "matchMedia").mockImplementation((query) => {
     if (query !== "(prefers-reduced-motion: reduce)") return matchMedia(query);
-    return {
-      matches: reducedMotion,
+    const listenerNotifications = new Map<object, () => void>();
+    const subscribe = (listener: object, notify: () => void) => {
+      if (listenerNotifications.has(listener)) return;
+      listenerNotifications.set(listener, notify);
+      preferenceListeners.add(notify);
+    };
+    const unsubscribe = (listener: object) => {
+      const notify = listenerNotifications.get(listener);
+      if (notify) preferenceListeners.delete(notify);
+      listenerNotifications.delete(listener);
+    };
+    const changeEvent = () =>
+      Object.assign(new Event("change"), {
+        matches: reducedMotion,
+        media: query,
+      });
+    const mediaQuery: MediaQueryList = {
+      get matches() {
+        return reducedMotion;
+      },
       media: query,
       onchange: null,
-      addListener: (listener: () => void) => preferenceListeners.add(listener),
-      removeListener: (listener: () => void) =>
-        preferenceListeners.delete(listener),
-      addEventListener: (_type: string, listener: () => void) =>
-        preferenceListeners.add(listener),
-      removeEventListener: (_type: string, listener: () => void) =>
-        preferenceListeners.delete(listener),
+      addListener(listener) {
+        if (listener)
+          subscribe(listener, () => listener.call(mediaQuery, changeEvent()));
+      },
+      removeListener(listener) {
+        if (listener) unsubscribe(listener);
+      },
+      addEventListener(type: string, listener: PreferenceListener) {
+        if (type !== "change") return;
+        subscribe(listener, () => {
+          if (typeof listener === "function")
+            listener.call(mediaQuery, changeEvent());
+          else listener.handleEvent(changeEvent());
+        });
+      },
+      removeEventListener(type: string, listener: PreferenceListener) {
+        if (type === "change") unsubscribe(listener);
+      },
       dispatchEvent: () => false,
-    } as MediaQueryList;
+    };
+    return mediaQuery;
   });
   vi.mocked(animate).mockClear();
 });
 
-afterEach(() => vi.restoreAllMocks());
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("Badge (v2)", () => {
   it.each(variants)(

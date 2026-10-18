@@ -1,16 +1,16 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import { fn } from "storybook/test"
-import React, { useState } from "react"
-import { Button } from "../../ui/button"
-import { SwitchAccountModal } from "./switch-account-modal"
-import type { AffectedIntegration } from "./types"
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
+import React, { useState } from "react";
+import { Button } from "../../ui/button";
+import { SwitchAccountModal } from "./switch-account-modal";
+import type { AffectedIntegration } from "./types";
 
 const sampleIntegrations: AffectedIntegration[] = [
   { id: "int_1", name: "Google Sheets – Sales Data" },
   { id: "int_2", name: "Google Sheets – Support Tickets" },
   { id: "int_3", name: "Google Sheets – Reporting Bot" },
   { id: "int_4", name: "Google Sheets – Lead Capture" },
-]
+];
 
 const longIntegrationList: AffectedIntegration[] = [
   ...sampleIntegrations,
@@ -18,7 +18,7 @@ const longIntegrationList: AffectedIntegration[] = [
   { id: "int_6", name: "Google Sheets – Customer Feedback" },
   { id: "int_7", name: "Google Sheets – Inventory Tracker" },
   { id: "int_8", name: "Google Sheets – Order Processing" },
-]
+];
 
 const meta: Meta<typeof SwitchAccountModal> = {
   title: "Custom/AI Bot/Composio/SwitchAccountModal",
@@ -102,15 +102,15 @@ Pair this with \`AddIntegration\`. When the user clicks "Switch" on an inactive 
     onConfirm: fn(),
     onOpenChange: fn(),
   },
-}
+};
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 function ModalPreview(
   args: Partial<React.ComponentProps<typeof SwitchAccountModal>>
 ) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
   return (
     <div className="flex flex-col items-center gap-4 p-8">
       <Button variant="primary" onClick={() => setOpen(true)}>
@@ -123,65 +123,65 @@ function ModalPreview(
         open={open}
         onOpenChange={setOpen}
         onCancel={() => {
-          args.onCancel?.()
-          setOpen(false)
+          args.onCancel?.();
+          setOpen(false);
         }}
         onConfirm={() => {
-          args.onConfirm?.()
-          setOpen(false)
+          args.onConfirm?.();
+          setOpen(false);
         }}
       />
     </div>
-  )
+  );
 }
 
 export const Default: Story = {
   render: (args) => <ModalPreview {...args} />,
-}
+};
 
 export const WithManyIntegrations: Story = {
   args: {
     affectedIntegrations: longIntegrationList,
   },
   render: (args) => <ModalPreview {...args} />,
-}
+};
 
 export const NoAffectedIntegrations: Story = {
   args: {
     affectedIntegrations: [],
   },
   render: (args) => <ModalPreview {...args} />,
-}
+};
 
 export const Confirming: Story = {
   render: (args) => {
-    const [open, setOpen] = useState(false)
-    const [isConfirming, setIsConfirming] = useState(false)
+    const [open, setOpen] = useState(false);
+    const [isConfirming, setIsConfirming] = useState(false);
     return (
       <div className="flex flex-col items-center gap-4 p-8">
         <Button variant="primary" onClick={() => setOpen(true)}>
           Open Switch Account Modal
         </Button>
         <SwitchAccountModal
-          accountId="acc_z2sitok"
-          affectedIntegrations={sampleIntegrations}
           {...args}
+          accountId={args.accountId ?? "acc_z2sitok"}
+          affectedIntegrations={args.affectedIntegrations ?? sampleIntegrations}
           open={open}
           onOpenChange={setOpen}
           isConfirming={isConfirming}
           onCancel={() => setOpen(false)}
           onConfirm={() => {
-            setIsConfirming(true)
+            setIsConfirming(true);
             setTimeout(() => {
-              setIsConfirming(false)
-              setOpen(false)
-            }, 2000)
+              setIsConfirming(false);
+              setOpen(false);
+            }, 2000);
           }}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 export const CustomLabels: Story = {
   args: {
@@ -189,4 +189,4 @@ export const CustomLabels: Story = {
     confirmLabel: "Switch anyway",
   },
   render: (args) => <ModalPreview {...args} />,
-}
+};

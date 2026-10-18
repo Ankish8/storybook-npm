@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "../../ui/button";
 import { PlanDetailModal } from "./plan-detail-modal";
 import type { PlanFeature } from "./types";
@@ -62,7 +62,8 @@ import type { PlanDetailModalProps, PlanFeature } from "@/components/custom/plan
     },
     planPrice: {
       control: "text",
-      description: "Plan price label shown in the footer (e.g. ₹ 2,500.00/month)",
+      description:
+        "Plan price label shown in the footer (e.g. ₹ 2,500.00/month)",
     },
     onClose: {
       description: "Called when the close button is clicked",

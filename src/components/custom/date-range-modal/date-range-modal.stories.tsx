@@ -33,7 +33,7 @@ const [open, setOpen] = React.useState(false);
 <DateRangeModal
   open={open}
   onOpenChange={setOpen}
-  onConfirm={(start, end) => {
+  onConfirm={(_start, _end) => {
     console.log("Selected:", start, end);
     setOpen(false);
   }}
@@ -88,16 +88,22 @@ const [open, setOpen] = React.useState(false);
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function ModalDemo(props: Partial<React.ComponentProps<typeof DateRangeModal>>) {
+function ModalDemo(
+  props: Partial<React.ComponentProps<typeof DateRangeModal>>
+) {
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<{ start: Date; end: Date } | null>(null);
+  const [selected, setSelected] = React.useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
 
   return (
     <div className="flex flex-col items-center gap-4">
       <Button onClick={() => setOpen(true)}>Open Date Range Modal</Button>
       {selected && (
         <p className="text-sm text-semantic-text-muted">
-          Selected: {selected.start.toLocaleDateString()} → {selected.end.toLocaleDateString()}
+          Selected: {selected.start.toLocaleDateString()} →{" "}
+          {selected.end.toLocaleDateString()}
         </p>
       )}
       <DateRangeModal
@@ -135,7 +141,7 @@ export const WithDates: Story = {
         <DateRangeModal
           open={open}
           onOpenChange={setOpen}
-          onConfirm={(start, end) => {
+          onConfirm={(_start, _end) => {
             setOpen(false);
           }}
           onCancel={() => setOpen(false)}
@@ -150,7 +156,8 @@ export const Loading: Story = {
   parameters: {
     docs: {
       description: {
-        story: "The confirm button shows a loading state and is disabled during async operations. Click the button to open.",
+        story:
+          "The confirm button shows a loading state and is disabled during async operations. Click the button to open.",
       },
     },
   },
@@ -186,10 +193,7 @@ export const WithDefaultDates: Story = {
     thirtyDaysAgo.setDate(today.getDate() - 30);
 
     return (
-      <ModalDemo
-        defaultStartDate={thirtyDaysAgo}
-        defaultEndDate={today}
-      />
+      <ModalDemo defaultStartDate={thirtyDaysAgo} defaultEndDate={today} />
     );
   },
 };

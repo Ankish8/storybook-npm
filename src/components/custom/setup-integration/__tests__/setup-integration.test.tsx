@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { SetupIntegration } from "../setup-integration";
@@ -660,13 +659,9 @@ describe("ChatMessageBubble", () => {
     expect(
       container.querySelector("[data-slot='chat-message-typing']")
     ).toBeTruthy();
-    expect(
-      container.querySelector(".bg-semantic-bg-ui")
-    ).toBeTruthy();
+    expect(container.querySelector(".bg-semantic-bg-ui")).toBeTruthy();
     expect(container.querySelector(".bouncing-loader")).toBeTruthy();
-    expect(
-      container.querySelectorAll(".bouncing-loader__dot")
-    ).toHaveLength(3);
+    expect(container.querySelectorAll(".bouncing-loader__dot")).toHaveLength(3);
   });
 
   it("renders user loading state right-aligned with bouncing typing indicator", () => {

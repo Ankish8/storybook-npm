@@ -1,4 +1,3 @@
-import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
 import { EmptyState } from "../empty-state";
@@ -11,7 +10,10 @@ describe("EmptyState", () => {
 
   it("renders description when provided", () => {
     render(
-      <EmptyState title="No results" description="Try adjusting your filters." />
+      <EmptyState
+        title="No results"
+        description="Try adjusting your filters."
+      />
     );
     expect(screen.getByText("Try adjusting your filters.")).toBeInTheDocument();
   });
@@ -33,18 +35,13 @@ describe("EmptyState", () => {
 
   it("does not render icon container when icon is omitted", () => {
     const { container } = render(<EmptyState title="No results" />);
-    const iconWrapper = container.querySelector(
-      ".bg-semantic-info-surface"
-    );
+    const iconWrapper = container.querySelector(".bg-semantic-info-surface");
     expect(iconWrapper).not.toBeInTheDocument();
   });
 
   it("renders actions when provided", () => {
     render(
-      <EmptyState
-        title="No results"
-        actions={<button>Take action</button>}
-      />
+      <EmptyState title="No results" actions={<button>Take action</button>} />
     );
     expect(
       screen.getByRole("button", { name: "Take action" })
@@ -70,7 +67,9 @@ describe("EmptyState", () => {
 
   it("renders ReactNode as title", () => {
     render(
-      <EmptyState title={<strong data-testid="title-node">Bold Title</strong>} />
+      <EmptyState
+        title={<strong data-testid="title-node">Bold Title</strong>}
+      />
     );
     expect(screen.getByTestId("title-node")).toBeInTheDocument();
   });
@@ -89,6 +88,8 @@ describe("EmptyState", () => {
     render(
       <EmptyState title="No results" description="Long description text" />
     );
-    expect(screen.getByText("Long description text")).not.toHaveClass("max-w-xs");
+    expect(screen.getByText("Long description text")).not.toHaveClass(
+      "max-w-xs"
+    );
   });
 });

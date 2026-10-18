@@ -204,17 +204,20 @@ const PlaygroundComponent = ({
   title,
   description,
   duration,
+  showIcon,
 }: {
   variant: "default" | "success" | "error" | "warning" | "info";
   title: string;
   description: string;
   duration: number;
+  showIcon: boolean;
 }) => {
   const handleClick = () => {
     const toastOptions = {
       title,
       description: description || undefined,
       duration: duration || undefined,
+      ...(showIcon ? {} : { className: "[&>div>svg]:hidden" }),
     };
 
     switch (variant) {
@@ -255,7 +258,7 @@ const PlaygroundComponent = ({
   );
 };
 
-export const Playground: Story = {
+export const Playground: StoryObj<typeof PlaygroundComponent> = {
   render: (args) => <PlaygroundComponent {...args} />,
   args: {
     variant: "success",
@@ -420,7 +423,8 @@ export const CustomDuration: Story = {
         onClick={() =>
           toast.warning({
             title: "Extended toast (10s)",
-            description: "This stays for 10 seconds — useful for important messages.",
+            description:
+              "This stays for 10 seconds — useful for important messages.",
             duration: 10000,
           })
         }

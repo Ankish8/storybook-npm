@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, render, fireEvent, screen } from "@testing-library/react";
 import type { ComponentType } from "react";

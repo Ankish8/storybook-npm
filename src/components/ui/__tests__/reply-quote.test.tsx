@@ -12,14 +12,10 @@ describe("ReplyQuote", () => {
 
   it("applies custom className", () => {
     const { container } = render(
-      <ReplyQuote
-        sender="John"
-        message="Test"
-        className="custom-class"
-      />
+      <ReplyQuote sender="John" message="Test" className="custom-class" />
     );
     expect(container.firstChild).toHaveClass("custom-class");
-    expect(container.firstChild?.className).toMatch(
+    expect(container.firstElementChild?.className).toMatch(
       /tw-bg-\[var\(--semantic-bg-ui/
     );
   });
@@ -32,24 +28,14 @@ describe("ReplyQuote", () => {
 
   it("onClick handler fires", () => {
     const handleClick = vi.fn();
-    render(
-      <ReplyQuote
-        sender="John"
-        message="Test"
-        onClick={handleClick}
-      />
-    );
+    render(<ReplyQuote sender="John" message="Test" onClick={handleClick} />);
     fireEvent.click(screen.getByText("John"));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it("data-testid spreads correctly", () => {
     render(
-      <ReplyQuote
-        sender="John"
-        message="Test"
-        data-testid="reply-quote"
-      />
+      <ReplyQuote sender="John" message="Test" data-testid="reply-quote" />
     );
     expect(screen.getByTestId("reply-quote")).toBeInTheDocument();
   });
@@ -94,9 +80,7 @@ describe("ReplyQuote", () => {
   });
 
   it("all <p> elements have m-0 for Bootstrap compatibility", () => {
-    const { container } = render(
-      <ReplyQuote sender="John" message="Test" />
-    );
+    const { container } = render(<ReplyQuote sender="John" message="Test" />);
     assertNoBootstrapMarginBleed(container);
   });
 
@@ -111,16 +95,12 @@ describe("ReplyQuote", () => {
   });
 
   it("uses type=button for interactive quotes", () => {
-    render(
-      <ReplyQuote sender="John" message="Test" onClick={() => {}} />
-    );
+    render(<ReplyQuote sender="John" message="Test" onClick={() => {}} />);
     expect(screen.getByRole("button")).toHaveAttribute("type", "button");
   });
 
   it("does NOT have role=button when onClick is not provided", () => {
-    const { container } = render(
-      <ReplyQuote sender="John" message="Test" />
-    );
+    const { container } = render(<ReplyQuote sender="John" message="Test" />);
     expect(container.firstChild).not.toHaveAttribute("role");
   });
 
@@ -136,11 +116,7 @@ describe("ReplyQuote", () => {
 
   it("allows overriding aria-label", () => {
     const { container } = render(
-      <ReplyQuote
-        sender="John"
-        message="Test"
-        aria-label="Custom label"
-      />
+      <ReplyQuote sender="John" message="Test" aria-label="Custom label" />
     );
     expect(container.firstChild).toHaveAttribute("aria-label", "Custom label");
   });

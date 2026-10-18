@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -53,7 +52,9 @@ describe("CreateBotModal", () => {
 
   it("calls onSubmit with name and BOT_TYPE.CHAT when Chat bot is selected", () => {
     const handleSubmit = vi.fn();
-    render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />
+    );
     fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "Lead Bot" },
     });
@@ -66,7 +67,9 @@ describe("CreateBotModal", () => {
 
   it("calls onSubmit with BOT_TYPE.VOICE when Voice bot is selected", () => {
     const handleSubmit = vi.fn();
-    render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />
+    );
     fireEvent.click(screen.getByText("Voice Agent").closest("button")!);
     fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "Voice Agent" },
@@ -80,7 +83,9 @@ describe("CreateBotModal", () => {
 
   it("trims whitespace from bot name before submitting", () => {
     const handleSubmit = vi.fn();
-    render(<CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />);
+    render(
+      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} />
+    );
     fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "  My Bot  " },
     });
@@ -100,7 +105,9 @@ describe("CreateBotModal", () => {
 
   it("keeps form values after submitting while modal stays open", () => {
     const handleOpenChange = vi.fn();
-    render(<CreateBotModal open onOpenChange={handleOpenChange} onSubmit={vi.fn()} />);
+    render(
+      <CreateBotModal open onOpenChange={handleOpenChange} onSubmit={vi.fn()} />
+    );
     const input = screen.getByPlaceholderText("Enter Agent name");
     fireEvent.change(input, { target: { value: "Test Bot" } });
     fireEvent.click(screen.getByText("Create"));
@@ -124,9 +131,7 @@ describe("CreateBotModal", () => {
   });
 
   it("disables Create button when isLoading is true even with a name", () => {
-    render(
-      <CreateBotModal open onOpenChange={vi.fn()} isLoading />
-    );
+    render(<CreateBotModal open onOpenChange={vi.fn()} isLoading />);
     fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
     });
@@ -136,7 +141,12 @@ describe("CreateBotModal", () => {
   it("does not call onSubmit when isLoading is true", () => {
     const handleSubmit = vi.fn();
     render(
-      <CreateBotModal open onOpenChange={vi.fn()} onSubmit={handleSubmit} isLoading />
+      <CreateBotModal
+        open
+        onOpenChange={vi.fn()}
+        onSubmit={handleSubmit}
+        isLoading
+      />
     );
     fireEvent.change(screen.getByPlaceholderText("Enter Agent name"), {
       target: { value: "My Bot" },
@@ -146,17 +156,15 @@ describe("CreateBotModal", () => {
   });
 
   it("disables Chat bot option when chatbotDisabled is true", () => {
-    render(
-      <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
-    );
+    render(<CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />);
     expect(screen.getByText("Chat Agent").closest("button")).toBeDisabled();
-    expect(screen.getByText("Voice Agent").closest("button")).not.toBeDisabled();
+    expect(
+      screen.getByText("Voice Agent").closest("button")
+    ).not.toBeDisabled();
   });
 
   it("selects Voice bot when Chat bot is disabled", () => {
-    render(
-      <CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />
-    );
+    render(<CreateBotModal open onOpenChange={vi.fn()} chatbotDisabled />);
     expect(screen.getByText("Voice Agent").closest("button")).toHaveAttribute(
       "aria-pressed",
       "true"
@@ -220,5 +228,4 @@ describe("CreateBotModal", () => {
       { timeout: 1500 }
     );
   });
-
 });

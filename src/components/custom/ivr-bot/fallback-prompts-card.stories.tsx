@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   FallbackPromptsCard,
   defaultAgentBusyPrompt,
@@ -156,7 +156,9 @@ export const WithBlurCallbacks: Story = {
           data={data}
           onChange={(patch) => setData((prev) => ({ ...prev, ...patch }))}
           onAgentBusyPromptBlur={(v) => console.log("onAgentBusyPromptBlur", v)}
-          onNoExtensionFoundPromptBlur={(v) => console.log("onNoExtensionFoundPromptBlur", v)}
+          onNoExtensionFoundPromptBlur={(v) =>
+            console.log("onNoExtensionFoundPromptBlur", v)
+          }
           defaultOpen
         />
       </div>

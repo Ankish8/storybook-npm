@@ -1,15 +1,15 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import { fn } from "storybook/test"
-import React, { useState } from "react"
-import { Puzzle } from "lucide-react"
-import { BotIntegrations } from "./bot-integrations"
+import type { Meta, StoryObj } from "@storybook/react";
+import { fn } from "storybook/test";
+import { useState } from "react";
+import { Puzzle } from "lucide-react";
+import { BotIntegrations } from "./bot-integrations";
 import type {
   IntegrationItem,
   IntegrationItemWithRequiredDescription,
-} from "./types"
+} from "./types";
 
 /** Static row data — add \`onEdit\` / \`onDelete\` when passing to the component. */
-type IntegrationRowSeed = Omit<IntegrationItem, "onEdit" | "onDelete">
+type IntegrationRowSeed = Omit<IntegrationItem, "onEdit" | "onDelete">;
 
 /* ------------------------------------------------------------------ */
 /* Official brand SVG logos via data URIs (same as Composio stories)   */
@@ -17,7 +17,7 @@ type IntegrationRowSeed = Omit<IntegrationItem, "onEdit" | "onDelete">
 const svgUri = (path: string, fill: string) =>
   `data:image/svg+xml,${encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${fill}">${path}</svg>`
-  )}`
+  )}`;
 
 const logos = {
   googleSheets: svgUri(
@@ -32,11 +32,11 @@ const logos = {
     '<path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/>',
     "#4A154B"
   ),
-}
+};
 
 const IntegrationIcon = ({ src, alt }: { src: string; alt: string }) => (
   <img src={src} alt={alt} className="size-[30px] object-contain" />
-)
+);
 
 const meta: Meta<typeof BotIntegrations> = {
   title: "Custom/AI Bot/Bot Config/BotIntegrations",
@@ -96,10 +96,10 @@ import { BotIntegrations } from "@/components/custom/bot-integrations"
     },
   },
   tags: ["autodocs"],
-}
+};
 
-export default meta
-type Story = StoryObj<typeof BotIntegrations>
+export default meta;
+type Story = StoryObj<typeof BotIntegrations>;
 
 const SIMPLE_SEEDS: IntegrationRowSeed[] = [
   {
@@ -117,7 +117,7 @@ const SIMPLE_SEEDS: IntegrationRowSeed[] = [
     label: "HubSpot CRM",
     icon: <IntegrationIcon src={logos.hubspot} alt="HubSpot" />,
   },
-]
+];
 
 const RICH_SEEDS: IntegrationRowSeed[] = [
   {
@@ -139,7 +139,7 @@ const RICH_SEEDS: IntegrationRowSeed[] = [
     icon: <IntegrationIcon src={logos.slack} alt="Slack" />,
     description: "Send real-time alerts to the support channel.",
   },
-]
+];
 
 function attachRowHandlers(
   rows: IntegrationRowSeed[],
@@ -149,7 +149,7 @@ function attachRowHandlers(
     ...row,
     onEdit: fn(),
     onDelete: (id) => onRemove(id),
-  }))
+  }));
 }
 
 const REQUIRED_DESCRIPTION_ROWS: IntegrationItemWithRequiredDescription[] = [
@@ -169,14 +169,13 @@ const REQUIRED_DESCRIPTION_ROWS: IntegrationItemWithRequiredDescription[] = [
     onEdit: fn(),
     onDelete: fn(),
   },
-]
+];
 
 /** Default empty state with no integrations connected. */
 export const Default: Story = {
   args: {
     integrations: [],
-    infoTooltip:
-      "Connect external apps to extend your bot's capabilities",
+    infoTooltip: "Connect external apps to extend your bot's capabilities",
     onAdd: fn(),
   },
   render: (args) => (
@@ -184,15 +183,15 @@ export const Default: Story = {
       <BotIntegrations {...args} />
     </div>
   ),
-}
+};
 
 /** Shows integration rows with icons, label, optional description, and actions (matches [Figma — Integrations](https://www.figma.com/design/oAmONXSK6KvWaBMf8mmYvM/WABA-of-My-Operator---Phase-1?node-id=42771-56666)). */
 export const WithIntegrations: Story = {
   render: function Render() {
-    const [rows, setRows] = useState<IntegrationRowSeed[]>(RICH_SEEDS)
+    const [rows, setRows] = useState<IntegrationRowSeed[]>(RICH_SEEDS);
     const integrations = attachRowHandlers(rows, (id) =>
       setRows((prev) => prev.filter((row) => row.id !== id))
-    )
+    );
     return (
       <div className="w-full max-w-[750px]">
         <BotIntegrations
@@ -201,17 +200,17 @@ export const WithIntegrations: Story = {
           onAdd={fn()}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 /** Simple rows: icon + label only (no description). */
 export const SimpleIntegrations: Story = {
   render: function Render() {
-    const [rows, setRows] = useState<IntegrationRowSeed[]>(SIMPLE_SEEDS)
+    const [rows, setRows] = useState<IntegrationRowSeed[]>(SIMPLE_SEEDS);
     const integrations = attachRowHandlers(rows, (id) =>
       setRows((prev) => prev.filter((row) => row.id !== id))
-    )
+    );
     return (
       <div className="w-full max-w-[750px]">
         <BotIntegrations
@@ -220,9 +219,9 @@ export const SimpleIntegrations: Story = {
           onAdd={fn()}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 /** Every row must include \`description\` when \`descriptionRequirement="required"\`. */
 export const RequiredDescriptions: Story = {
@@ -236,15 +235,14 @@ export const RequiredDescriptions: Story = {
       />
     </div>
   ),
-}
+};
 
 /** Empty state with custom title, description, and icon. */
 export const CustomEmptyState: Story = {
   args: {
     integrations: [],
     emptyStateTitle: "No apps connected",
-    emptyStateDescription:
-      "Link your favourite tools to automate workflows.",
+    emptyStateDescription: "Link your favourite tools to automate workflows.",
     emptyStateIcon: <Puzzle className="size-6 text-semantic-text-muted" />,
     onAdd: fn(),
   },
@@ -253,7 +251,7 @@ export const CustomEmptyState: Story = {
       <BotIntegrations {...args} />
     </div>
   ),
-}
+};
 
 /** All interactions disabled. Add, edit, and delete controls are non-interactive. */
 export const Disabled: Story = {
@@ -271,4 +269,4 @@ export const Disabled: Story = {
       />
     </div>
   ),
-}
+};

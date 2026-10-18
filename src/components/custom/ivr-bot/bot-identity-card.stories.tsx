@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { BotIdentityCard, type BotIdentityData } from "./bot-identity-card";
 
 const meta: Meta<typeof BotIdentityCard> = {
@@ -154,11 +154,7 @@ export const Disabled: Story = {
     };
     return (
       <div className="max-w-[800px]">
-        <BotIdentityCard
-          data={data}
-          onChange={() => {}}
-          disabled
-        />
+        <BotIdentityCard data={data} onChange={() => {}} disabled />
       </div>
     );
   },

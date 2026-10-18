@@ -1,6 +1,10 @@
-import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { FileTextIcon, PhoneCallIcon, SearchIcon, InboxIcon } from "lucide-react";
+import {
+  FileTextIcon,
+  PhoneCallIcon,
+  SearchIcon,
+  InboxIcon,
+} from "lucide-react";
 import { EmptyState } from "./empty-state";
 import { Button } from "./button";
 

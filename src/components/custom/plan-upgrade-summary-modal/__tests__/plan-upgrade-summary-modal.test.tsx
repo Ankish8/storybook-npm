@@ -8,7 +8,9 @@ describe("PlanUpgradeSummaryModal", () => {
     props: Partial<React.ComponentProps<typeof PlanUpgradeSummaryModal>> = {}
   ) => {
     const onOpenChange = vi.fn();
-    render(<PlanUpgradeSummaryModal open onOpenChange={onOpenChange} {...props} />);
+    render(
+      <PlanUpgradeSummaryModal open onOpenChange={onOpenChange} {...props} />
+    );
     return { onOpenChange };
   };
 
@@ -19,14 +21,18 @@ describe("PlanUpgradeSummaryModal", () => {
       screen.getByText("Plan upgrade, SUV ₹ 15,000.00/month")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Your request will be processed from the current billing cycle.")
+      screen.getByText(
+        "Your request will be processed from the current billing cycle."
+      )
     ).toBeInTheDocument();
     expect(screen.getByText("Payable Amount")).toBeInTheDocument();
     expect(
       screen.getByText("A payment of ₹ 59,437.44 is required to upgrade.")
     ).toBeInTheDocument();
     expect(screen.getByText("Difference in rental")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Pay & Upgrade Plan" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Pay & Upgrade Plan" })
+    ).toBeInTheDocument();
   });
 
   it("renders downgrade defaults with the success summary state", () => {
@@ -86,16 +92,18 @@ describe("PlanUpgradeSummaryModal", () => {
     const onClose = vi.fn();
     const { onOpenChange } = setup({ onClose });
 
-    fireEvent.click(screen.getByRole("button", { name: "Close plan summary modal" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Close plan summary modal" })
+    );
 
     expect(onClose).toHaveBeenCalledOnce();
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
   it("applies custom className and additional props", () => {
-    setup({ className: "custom-modal-class", "data-testid": "summary-modal" });
+    setup({ className: "custom-modal-class", "aria-label": "summary-modal" });
 
-    const modal = screen.getByTestId("summary-modal");
+    const modal = screen.getByLabelText("summary-modal");
     expect(modal).toHaveClass("custom-modal-class");
     expect(modal).toHaveClass("bg-semantic-bg-primary");
   });
@@ -104,7 +112,9 @@ describe("PlanUpgradeSummaryModal", () => {
     const ref = React.createRef<HTMLDivElement>();
     const onOpenChange = vi.fn();
 
-    render(<PlanUpgradeSummaryModal ref={ref} open onOpenChange={onOpenChange} />);
+    render(
+      <PlanUpgradeSummaryModal ref={ref} open onOpenChange={onOpenChange} />
+    );
 
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

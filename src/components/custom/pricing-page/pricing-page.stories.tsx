@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React from "react";
 import { ChevronsDown, Hash, Phone, PhoneCall, Shield } from "lucide-react";
 import { Button } from "../../ui/button";
 import { PricingPage } from "./pricing-page";

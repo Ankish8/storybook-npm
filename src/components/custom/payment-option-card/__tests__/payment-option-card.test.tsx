@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -67,9 +68,7 @@ describe("PaymentOptionCard", () => {
   });
 
   it("renders custom CTA text", () => {
-    render(
-      <PaymentOptionCard options={mockOptions} ctaText="Pay Now" />
-    );
+    render(<PaymentOptionCard options={mockOptions} ctaText="Pay Now" />);
     expect(screen.getByText("Pay Now")).toBeInTheDocument();
   });
 
@@ -90,10 +89,7 @@ describe("PaymentOptionCard", () => {
     const user = userEvent.setup();
     const handleSelect = vi.fn();
     render(
-      <PaymentOptionCard
-        options={mockOptions}
-        onOptionSelect={handleSelect}
-      />
+      <PaymentOptionCard options={mockOptions} onOptionSelect={handleSelect} />
     );
     await user.click(screen.getByText("UPI"));
     expect(handleSelect).toHaveBeenCalledWith("upi");
@@ -101,9 +97,7 @@ describe("PaymentOptionCard", () => {
 
   it("updates selection in uncontrolled mode", async () => {
     const user = userEvent.setup();
-    const { container } = render(
-      <PaymentOptionCard options={mockOptions} />
-    );
+    const { container } = render(<PaymentOptionCard options={mockOptions} />);
     await user.click(screen.getByText("Debit Card"));
     const optionButtons = container.querySelectorAll("button[type='button']");
     // Second option should now have the selected border
@@ -114,10 +108,7 @@ describe("PaymentOptionCard", () => {
 
   it("respects controlled selectedOptionId", () => {
     const { container } = render(
-      <PaymentOptionCard
-        options={mockOptions}
-        selectedOptionId="upi"
-      />
+      <PaymentOptionCard options={mockOptions} selectedOptionId="upi" />
     );
     const optionButtons = container.querySelectorAll("button[type='button']");
     expect(optionButtons[2].className).toContain(
@@ -137,22 +128,16 @@ describe("PaymentOptionCard", () => {
 
   it("disables CTA button when disabled prop is true", () => {
     render(<PaymentOptionCard options={mockOptions} disabled />);
-    expect(
-      screen.getByText("Proceed to pay").closest("button")
-    ).toBeDisabled();
+    expect(screen.getByText("Proceed to pay").closest("button")).toBeDisabled();
   });
 
   it("disables CTA button when loading is true", () => {
     render(<PaymentOptionCard options={mockOptions} loading />);
-    expect(
-      screen.getByText("Proceed to pay").closest("button")
-    ).toBeDisabled();
+    expect(screen.getByText("Proceed to pay").closest("button")).toBeDisabled();
   });
 
   it("renders close button when onClose is provided", () => {
-    render(
-      <PaymentOptionCard options={mockOptions} onClose={() => {}} />
-    );
+    render(<PaymentOptionCard options={mockOptions} onClose={() => {}} />);
     expect(screen.getByLabelText("Close")).toBeInTheDocument();
   });
 
@@ -164,9 +149,7 @@ describe("PaymentOptionCard", () => {
   it("calls onClose when close button is clicked", async () => {
     const user = userEvent.setup();
     const handleClose = vi.fn();
-    render(
-      <PaymentOptionCard options={mockOptions} onClose={handleClose} />
-    );
+    render(<PaymentOptionCard options={mockOptions} onClose={handleClose} />);
     await user.click(screen.getByLabelText("Close"));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
@@ -179,7 +162,7 @@ describe("PaymentOptionCard", () => {
   });
 
   it("forwards ref correctly", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(<PaymentOptionCard options={mockOptions} ref={ref} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

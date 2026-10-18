@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PaymentSummary } from "../payment-summary";
@@ -6,7 +7,11 @@ import type { PaymentSummaryItem } from "../payment-summary";
 const sampleItems: PaymentSummaryItem[] = [
   { label: "Pending Rental", value: "₹0.00" },
   { label: "Current Usage Charges", value: "₹163.98" },
-  { label: "Prepaid Wallet Amount", value: "₹78,682.92", valueColor: "success" },
+  {
+    label: "Prepaid Wallet Amount",
+    value: "₹78,682.92",
+    valueColor: "success",
+  },
 ];
 
 const sampleSummaryItems: PaymentSummaryItem[] = [
@@ -67,9 +72,7 @@ describe("PaymentSummary", () => {
   });
 
   it("renders bold label with semibold weight and primary color", () => {
-    render(
-      <PaymentSummary items={[]} summaryItems={sampleSummaryItems} />
-    );
+    render(<PaymentSummary items={[]} summaryItems={sampleSummaryItems} />);
     const totalLabel = screen.getByText("Total amount due");
     expect(totalLabel).toHaveClass("font-semibold");
     expect(totalLabel).toHaveClass("text-semantic-text-primary");
@@ -82,9 +85,7 @@ describe("PaymentSummary", () => {
   });
 
   it("renders large value size with lg classes", () => {
-    render(
-      <PaymentSummary items={[]} summaryItems={sampleSummaryItems} />
-    );
+    render(<PaymentSummary items={[]} summaryItems={sampleSummaryItems} />);
     const totalValue = screen.getByText("-₹78,518.94");
     expect(totalValue).toHaveClass("text-lg");
     expect(totalValue).toHaveClass("font-semibold");
@@ -97,9 +98,7 @@ describe("PaymentSummary", () => {
   });
 
   it("renders info icon for items with tooltip", () => {
-    render(
-      <PaymentSummary items={[]} summaryItems={sampleSummaryItems} />
-    );
+    render(<PaymentSummary items={[]} summaryItems={sampleSummaryItems} />);
     expect(
       screen.getByLabelText("Info about Total amount due")
     ).toBeInTheDocument();
@@ -126,9 +125,7 @@ describe("PaymentSummary", () => {
   });
 
   it("does not render divider when summaryItems is absent", () => {
-    const { container } = render(
-      <PaymentSummary items={sampleItems} />
-    );
+    const { container } = render(<PaymentSummary items={sampleItems} />);
     const lineItemsSection = container.querySelector(
       ".border-b.border-semantic-border-layout"
     );
@@ -143,7 +140,7 @@ describe("PaymentSummary", () => {
   });
 
   it("forwards ref correctly", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(<PaymentSummary ref={ref} items={sampleItems} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

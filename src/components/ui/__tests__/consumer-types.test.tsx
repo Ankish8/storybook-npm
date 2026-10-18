@@ -17,7 +17,6 @@
 
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import * as React from "react";
 
 // Import all components as consumers would
 import {
@@ -111,7 +110,12 @@ describe("Consumer Type Compatibility", () => {
 
       rerender(<Tag variant="primary">Test</Tag>);
       rerender(<Tag variant="secondary">Test</Tag>);
-      rerender(<Tag variant="outline">Test</Tag>);
+      rerender(<Tag variant="accent">Test</Tag>);
+      rerender(<Tag variant="success">Test</Tag>);
+      rerender(<Tag variant="warning">Test</Tag>);
+      rerender(<Tag variant="error">Test</Tag>);
+      rerender(<Tag variant="destructive">Test</Tag>);
+      rerender(<Tag variant="info">Test</Tag>);
     });
 
     it("accepts size prop with all valid values", () => {
@@ -246,7 +250,7 @@ describe("Consumer Type Compatibility", () => {
   describe("Accordion", () => {
     it("accepts variant prop with all valid values", () => {
       const { rerender } = render(
-        <Accordion type="single" variant="default" collapsible>
+        <Accordion type="single" variant="default">
           <AccordionItem value="1">
             <AccordionTrigger>Trigger</AccordionTrigger>
             <AccordionContent>Content</AccordionContent>
@@ -256,7 +260,7 @@ describe("Consumer Type Compatibility", () => {
       expect(screen.getByText("Trigger")).toBeInTheDocument();
 
       rerender(
-        <Accordion type="single" variant="bordered" collapsible>
+        <Accordion type="single" variant="bordered">
           <AccordionItem value="1">
             <AccordionTrigger>Trigger</AccordionTrigger>
             <AccordionContent>Content</AccordionContent>

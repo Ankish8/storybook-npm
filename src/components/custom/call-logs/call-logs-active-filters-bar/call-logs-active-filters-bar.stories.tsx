@@ -248,10 +248,7 @@ function InteractiveDemo() {
 
 export const Interactive: Story = {
   args: {
-    chips: {
-      kjklj: "ldksjfkls",
-      jldskjf: "lksdjfls",
-    },
+    chips: SAMPLE_CHIPS,
   },
 
   render: () => (

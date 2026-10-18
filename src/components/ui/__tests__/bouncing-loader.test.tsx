@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-import * as React from "react";
 import { describe, expect, it } from "vitest";
 import { render } from "@testing-library/react";
 import { BouncingLoader } from "../bouncing-loader";
@@ -76,7 +75,9 @@ describe("BouncingLoader", () => {
   });
 
   it("lets consumers override the default aria-label", () => {
-    const { container } = render(<BouncingLoader aria-label="Sending message" />);
+    const { container } = render(
+      <BouncingLoader aria-label="Sending message" />
+    );
     const root = container.firstElementChild as HTMLElement;
 
     expect(root).toHaveAttribute("aria-label", "Sending message");

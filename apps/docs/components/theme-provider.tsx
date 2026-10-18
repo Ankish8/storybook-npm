@@ -7,6 +7,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { ThemeSwitch } from "./theme-switch";
 import {
   THEME_KEY,
   isThemeMode,
@@ -130,20 +131,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     </ThemeContext.Provider>
   );
 }
+export function useDocsTheme() {
+  return useContext(ThemeContext);
+}
 export function ThemeControl() {
-  const { mode } = useContext(ThemeContext);
-  return (
-    <label className="arc-theme-control">
-      <span className="sr-only">Color theme</span>
-      <select
-        aria-label="Color theme"
-        value={mode}
-        onChange={(event) => setMode(event.target.value as ThemeMode)}
-      >
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-        <option value="system">System</option>
-      </select>
-    </label>
-  );
+  const { resolved, setMode } = useDocsTheme();
+  return <ThemeSwitch theme={resolved} onThemeChange={setMode} />;
 }

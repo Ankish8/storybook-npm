@@ -39,7 +39,11 @@ import { FormModal } from "@/components/ui/form-modal";
 import type { DateRangeValue } from "@/components/ui/date-range-picker";
 import type { MultiSelectOption } from "@/components/ui/multi-select";
 
-import { CallLogs, AiSparkIcon, type CallLogsProps } from "@/components/custom/call-logs/call-logs";
+import {
+  CallLogs,
+  AiSparkIcon,
+  type CallLogsProps,
+} from "@/components/custom/call-logs/call-logs";
 import { LiveCallsBanner } from "@/components/custom/call-logs/live-calls-banner";
 import { BulkSelectionToolbar } from "@/components/custom/call-logs/bulk-selection-toolbar";
 import { RecordingPlaybackBar } from "@/components/custom/call-logs/recording-playback-bar";
@@ -65,7 +69,10 @@ import { CallJourneyJsonModal } from "@/components/custom/call-logs/call-journey
 import { CallLogsEditContactModal } from "@/components/custom/call-logs/call-logs-edit-contact-modal";
 import { CallLogsAddContactModal } from "@/components/custom/call-logs/call-logs-add-contact-modal";
 import { CallLogsBlockContactModal } from "@/components/custom/call-logs/call-logs-block-contact-modal";
-import { CallLogsViewTabs, type CallLogsViewTab } from "@/components/custom/call-logs/call-logs-view-tabs";
+import {
+  CallLogsViewTabs,
+  type CallLogsViewTab,
+} from "@/components/custom/call-logs/call-logs-view-tabs";
 import {
   CallLogsCustomizeTabsModal,
   type CallLogsCustomizeTabsView,
@@ -89,7 +96,11 @@ const ROWS: (CallLogsProps & { id: string })[] = [
     status: "connected",
     isLive: true,
     phoneNumber: "+91 98765 43210",
-    handledBy: { type: "agent", agentName: "Komal R.", department: "Customer support" },
+    handledBy: {
+      type: "agent",
+      agentName: "Komal R.",
+      department: "Customer support",
+    },
     time: "07:00 PM",
     duration: "2m 48s",
     isOngoing: true,
@@ -231,7 +242,9 @@ const DEPARTMENT_OPTIONS = [
   { value: "customer-success", label: "Customer Success" },
 ];
 
-function buildActiveFilterChips(value: CallLogsFilterValue): CallLogsActiveFilterChip[] {
+function buildActiveFilterChips(
+  value: CallLogsFilterValue
+): CallLogsActiveFilterChip[] {
   const chips: CallLogsActiveFilterChip[] = [];
   const pushOption = (
     id: string,
@@ -261,7 +274,10 @@ function buildActiveFilterChips(value: CallLogsFilterValue): CallLogsActiveFilte
 
     const visible = labels.slice(0, 2);
     const overflow = labels.length - visible.length;
-    const summary = overflow > 0 ? `${visible.join(", ")} +${overflow} more` : visible.join(", ");
+    const summary =
+      overflow > 0
+        ? `${visible.join(", ")} +${overflow} more`
+        : visible.join(", ");
 
     chips.push({
       id,
@@ -272,20 +288,47 @@ function buildActiveFilterChips(value: CallLogsFilterValue): CallLogsActiveFilte
     });
   };
 
-  pushGroupedOption("callStatus", "Call Status:", value.callStatus, CALL_STATUS_OPTIONS);
-  pushGroupedOption("callDirection", "Call:", value.callDirection, CALL_DIRECTION_OPTIONS);
+  pushGroupedOption(
+    "callStatus",
+    "Call Status:",
+    value.callStatus,
+    CALL_STATUS_OPTIONS
+  );
+  pushGroupedOption(
+    "callDirection",
+    "Call:",
+    value.callDirection,
+    CALL_DIRECTION_OPTIONS
+  );
   pushOption("source", "Source:", value.source, SOURCE_OPTIONS);
   pushOption("duration", "Duration:", value.duration, DURATION_OPTIONS);
   pushGroupedOption("line", "Line:", value.line, FILTER_PANEL_LINE_OPTIONS);
   pushGroupedOption("campaign", "Campaign:", value.campaign, CAMPAIGN_OPTIONS);
-  pushGroupedOption("aiHandling", "AI Handling:", value.aiHandling, AI_HANDLING_OPTIONS);
-  pushGroupedOption("transferStatus", "Transfer Status:", value.transferStatus, TRANSFER_STATUS_OPTIONS);
+  pushGroupedOption(
+    "aiHandling",
+    "AI Handling:",
+    value.aiHandling,
+    AI_HANDLING_OPTIONS
+  );
+  pushGroupedOption(
+    "transferStatus",
+    "Transfer Status:",
+    value.transferStatus,
+    TRANSFER_STATUS_OPTIONS
+  );
 
-  if (value.callMarkers.notes) chips.push({ id: "marker-notes", value: "Notes" });
-  if (value.callMarkers.starred) chips.push({ id: "marker-starred", value: "Starred" });
+  if (value.callMarkers.notes)
+    chips.push({ id: "marker-notes", value: "Notes" });
+  if (value.callMarkers.starred)
+    chips.push({ id: "marker-starred", value: "Starred" });
 
   pushGroupedOption("agent", "Agent:", value.agents, AGENT_OPTIONS);
-  pushGroupedOption("department", "Department:", value.departments, DEPARTMENT_OPTIONS);
+  pushGroupedOption(
+    "department",
+    "Department:",
+    value.departments,
+    DEPARTMENT_OPTIONS
+  );
   pushGroupedOption(
     "aiAgent",
     "AI Agent:",
@@ -293,12 +336,20 @@ function buildActiveFilterChips(value: CallLogsFilterValue): CallLogsActiveFilte
     AI_AGENT_OPTIONS,
     <AiSparkIcon className="size-3 shrink-0 text-semantic-text-link" />
   );
-  pushGroupedOption("transferredTo", "Transferred to:", value.transferredTo, TRANSFERRED_TO_OPTIONS);
+  pushGroupedOption(
+    "transferredTo",
+    "Transferred to:",
+    value.transferredTo,
+    TRANSFERRED_TO_OPTIONS
+  );
 
   return chips;
 }
 
-function removeActiveFilterChip(value: CallLogsFilterValue, id: string): CallLogsFilterValue {
+function removeActiveFilterChip(
+  value: CallLogsFilterValue,
+  id: string
+): CallLogsFilterValue {
   if (id === "source") return { ...value, source: "all" };
   if (id === "duration") return { ...value, duration: "all" };
   if (id === "marker-notes") {
@@ -382,7 +433,9 @@ function CallLogsCompletePage() {
   // derived `viewTabs`/`maxVisiblePresets` below) and which show only in the
   // "More" dropdown — pinning/unpinning in CallLogsCustomizeTabsModal changes
   // that directly, rather than a separate, disconnected state.
-  const [customizeViews, setCustomizeViews] = React.useState<CallLogsCustomizeTabsView[]>([
+  const [customizeViews, setCustomizeViews] = React.useState<
+    CallLogsCustomizeTabsView[]
+  >([
     { id: "all", label: "All", count: 23, pinned: true, isDefault: true },
     { id: "missed-by-agent", label: "Missed by Agent", count: 5, pinned: true },
     { id: "connected", label: "Connected", count: 12, pinned: true },
@@ -404,20 +457,31 @@ function CallLogsCompletePage() {
     removable: !view.isDefault,
     count: view.count,
   }));
-  const pinnedRemovableCount = customizeViews.filter((view) => view.pinned && !view.isDefault).length;
+  const pinnedRemovableCount = customizeViews.filter(
+    (view) => view.pinned && !view.isDefault
+  ).length;
   const [activeViewTabId, setActiveViewTabId] = React.useState("all");
-  const [presetToRemove, setPresetToRemove] = React.useState<CallLogsViewTab | null>(null);
-  const [showRemovePresetConfirm, setShowRemovePresetConfirm] = React.useState(false);
-  const [showCustomizeTabsModal, setShowCustomizeTabsModal] = React.useState(false);
+  const [presetToRemove, setPresetToRemove] =
+    React.useState<CallLogsViewTab | null>(null);
+  const [showRemovePresetConfirm, setShowRemovePresetConfirm] =
+    React.useState(false);
+  const [showCustomizeTabsModal, setShowCustomizeTabsModal] =
+    React.useState(false);
 
-  const [selectedRowIds, setSelectedRowIds] = React.useState<Set<string>>(new Set());
+  const [selectedRowIds, setSelectedRowIds] = React.useState<Set<string>>(
+    new Set()
+  );
   const [playingRowId, setPlayingRowId] = React.useState<string | null>(null);
   const [liveBannerExpanded, setLiveBannerExpanded] = React.useState(true);
-  const [favoriteRowIds, setFavoriteRowIds] = React.useState<Set<string>>(new Set());
+  const [favoriteRowIds, setFavoriteRowIds] = React.useState<Set<string>>(
+    new Set()
+  );
   // Overrides ROWS's static `callerName` once a contact is added/edited via
   // the detail panel, so the row/panel switch from "Add Contact" to "Edit
   // Contact" immediately — sanity-checking the full add-contact loop.
-  const [contactNamesByRow, setContactNamesByRow] = React.useState<Record<string, string>>({});
+  const [contactNamesByRow, setContactNamesByRow] = React.useState<
+    Record<string, string>
+  >({});
   const getCallerName = (row: { id: string; callerName?: string }) =>
     contactNamesByRow[row.id] ?? row.callerName;
 
@@ -427,24 +491,37 @@ function CallLogsCompletePage() {
     if (!searchQuery) return [];
     const seen = new Set<string>();
     return ROWS.filter((row) => {
-      if (!row.phoneNumber.includes(searchQuery) || seen.has(row.phoneNumber)) return false;
+      if (!row.phoneNumber.includes(searchQuery) || seen.has(row.phoneNumber))
+        return false;
       seen.add(row.phoneNumber);
       return true;
     }).map((row) => ({ value: row.id, label: row.phoneNumber }));
   }, [searchQuery]);
-  const [filterValue, setFilterValue] = React.useState<CallLogsFilterValue>(DEFAULT_FILTER_VALUE);
-  const [appliedFilterValue, setAppliedFilterValue] = React.useState<CallLogsFilterValue>(DEFAULT_FILTER_VALUE);
+  const [filterValue, setFilterValue] =
+    React.useState<CallLogsFilterValue>(DEFAULT_FILTER_VALUE);
+  const [appliedFilterValue, setAppliedFilterValue] =
+    React.useState<CallLogsFilterValue>(DEFAULT_FILTER_VALUE);
   const activeFilterChips = React.useMemo(
     () => buildActiveFilterChips(appliedFilterValue),
     [appliedFilterValue]
   );
   const [showSavePresetModal, setShowSavePresetModal] = React.useState(false);
   const presetIdCounter = React.useRef(0);
-  const [notesByRow, setNotesByRow] = React.useState<Record<string, { author: string; timestamp: string; text: string }[]>>({
-    "row-3": [{ author: "Priya Nair", timestamp: "Today, 05:08 PM", text: "Customer reported intermittent login failures since Monday." }],
+  const [notesByRow, setNotesByRow] = React.useState<
+    Record<string, { author: string; timestamp: string; text: string }[]>
+  >({
+    "row-3": [
+      {
+        author: "Priya Nair",
+        timestamp: "Today, 05:08 PM",
+        text: "Customer reported intermittent login failures since Monday.",
+      },
+    ],
   });
   const [noteDraft, setNoteDraft] = React.useState("");
-  const [detailTab, setDetailTab] = React.useState<"notes" | "call-log">("notes");
+  const [detailTab, setDetailTab] = React.useState<"notes" | "call-log">(
+    "notes"
+  );
 
   const [dateRange, setDateRange] = React.useState<DateRangeValue>({});
   const [selectedLines, setSelectedLines] = React.useState<string[]>([]);
@@ -456,9 +533,13 @@ function CallLogsCompletePage() {
   const [showJourneyJsonModal, setShowJourneyJsonModal] = React.useState(false);
   const [showEditContactModal, setShowEditContactModal] = React.useState(false);
   const [showAddContactModal, setShowAddContactModal] = React.useState(false);
-  const [showBlockContactModal, setShowBlockContactModal] = React.useState(false);
+  const [showBlockContactModal, setShowBlockContactModal] =
+    React.useState(false);
 
-  const activeDetailRow = drawer?.type === "detail" ? ROWS.find((r) => r.id === drawer.rowId) : undefined;
+  const activeDetailRow =
+    drawer?.type === "detail"
+      ? ROWS.find((r) => r.id === drawer.rowId)
+      : undefined;
 
   const toggleRow = (id: string, checked: boolean) => {
     setSelectedRowIds((prev) => {
@@ -526,7 +607,7 @@ function CallLogsCompletePage() {
             />
             <Button
               variant="outline"
-              size="control"
+              size="default"
               aria-label="More Filters"
               leftIcon={<FilterIcon className="text-semantic-text-muted" />}
               onClick={() => {
@@ -560,20 +641,22 @@ function CallLogsCompletePage() {
             onClose={() => setSelectedRowIds(new Set())}
           />
         )}
-        {playingRowId && drawer === null && (() => {
-          const playingRow = ROWS.find((r) => r.id === playingRowId);
-          return (
-            <RecordingPlaybackBar
-              phoneNumber={playingRow?.phoneNumber ?? ""}
-              callerName={playingRow?.callerName}
-              timestamp={playingRow?.time}
-              duration={playingRow?.duration}
-              isPlaying
-              onTogglePlay={() => setPlayingRowId(null)}
-              onClose={() => setPlayingRowId(null)}
-            />
-          );
-        })()}
+        {playingRowId &&
+          drawer === null &&
+          (() => {
+            const playingRow = ROWS.find((r) => r.id === playingRowId);
+            return (
+              <RecordingPlaybackBar
+                phoneNumber={playingRow?.phoneNumber ?? ""}
+                callerName={playingRow?.callerName}
+                timestamp={playingRow?.time}
+                duration={playingRow?.duration}
+                isPlaying
+                onTogglePlay={() => setPlayingRowId(null)}
+                onClose={() => setPlayingRowId(null)}
+              />
+            );
+          })()}
 
         {/* Below `sm`, the What/When columns hide (see CallLogs row) so the
             table reads as a single Who column — no horizontal scroll needed.
@@ -585,7 +668,9 @@ function CallLogsCompletePage() {
                 <Checkbox
                   checked={selectedRowIds.size === ROWS.length}
                   onCheckedChange={(checked) =>
-                    setSelectedRowIds(checked ? new Set(ROWS.map((r) => r.id)) : new Set())
+                    setSelectedRowIds(
+                      checked ? new Set(ROWS.map((r) => r.id)) : new Set()
+                    )
                   }
                   size="sm"
                   checkboxClassName="border data-[state=unchecked]:border-[var(--color-neutral-300)]"
@@ -605,7 +690,11 @@ function CallLogsCompletePage() {
             </div>
 
             {liveBannerExpanded && (
-              <LiveCallsBanner count={2} expanded={liveBannerExpanded} onToggle={() => setLiveBannerExpanded((v) => !v)} />
+              <LiveCallsBanner
+                count={2}
+                expanded={liveBannerExpanded}
+                onToggle={() => setLiveBannerExpanded((v) => !v)}
+              />
             )}
 
             {ROWS.map((row) => (
@@ -614,8 +703,14 @@ function CallLogsCompletePage() {
                 {...row}
                 callerName={getCallerName(row)}
                 checked={selectedRowIds.has(row.id)}
-                onCheckedChange={(checked) => toggleRow(row.id, checked === true)}
-                onClick={row.expandable ? () => setDrawer({ type: "detail", rowId: row.id }) : undefined}
+                onCheckedChange={(checked) =>
+                  toggleRow(row.id, checked === true)
+                }
+                onClick={
+                  row.expandable
+                    ? () => setDrawer({ type: "detail", rowId: row.id })
+                    : undefined
+                }
                 actions={
                   row.actions?.type === "live"
                     ? {
@@ -648,8 +743,14 @@ function CallLogsCompletePage() {
       {/* Right-side drawer: Filters / Call Detail / Call Journey */}
       {drawer && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/40" onClick={() => setDrawer(null)} />
-          <div className="fixed right-0 top-0 z-50 h-full w-full max-w-[606px] shadow-lg" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 z-40 bg-black/40"
+            onClick={() => setDrawer(null)}
+          />
+          <div
+            className="fixed right-0 top-0 z-50 h-full w-full max-w-[606px] shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
             {drawer.type === "filters" && (
               <CallLogsFilterPanel
                 resultCount={21}
@@ -681,7 +782,8 @@ function CallLogsCompletePage() {
                 onToggleFavorite={() =>
                   setFavoriteRowIds((prev) => {
                     const next = new Set(prev);
-                    if (next.has(activeDetailRow.id)) next.delete(activeDetailRow.id);
+                    if (next.has(activeDetailRow.id))
+                      next.delete(activeDetailRow.id);
                     else next.add(activeDetailRow.id);
                     return next;
                   })
@@ -711,9 +813,22 @@ function CallLogsCompletePage() {
                   setNoteDraft("");
                 }}
                 logEntries={[
-                  { title: "Call Received Entry", timestamp: "10:24:02", duration: "0s" },
-                  { title: "Entered Call IVR Flow", timestamp: "10:24:17", duration: "15s" },
-                  { title: "Voicebot Session Leg", timestamp: "10:24:32", duration: "102s", current: true },
+                  {
+                    title: "Call Received Entry",
+                    timestamp: "10:24:02",
+                    duration: "0s",
+                  },
+                  {
+                    title: "Entered Call IVR Flow",
+                    timestamp: "10:24:17",
+                    duration: "15s",
+                  },
+                  {
+                    title: "Voicebot Session Leg",
+                    timestamp: "10:24:32",
+                    duration: "102s",
+                    current: true,
+                  },
                   { title: "Call Ended", timestamp: "10:26:14" },
                 ]}
                 onViewDetailedLogs={() => setShowJourneyJsonModal(true)}
@@ -736,7 +851,9 @@ function CallLogsCompletePage() {
       <CallLogsEditContactModal
         open={showEditContactModal}
         onOpenChange={setShowEditContactModal}
-        defaultName={activeDetailRow ? getCallerName(activeDetailRow) : undefined}
+        defaultName={
+          activeDetailRow ? getCallerName(activeDetailRow) : undefined
+        }
         defaultPhoneNumber={activeDetailRow?.phoneNumber}
         onSave={() => setShowEditContactModal(false)}
       />
@@ -760,7 +877,9 @@ function CallLogsCompletePage() {
         open={showBlockContactModal}
         onOpenChange={setShowBlockContactModal}
         phoneNumber={activeDetailRow?.phoneNumber ?? ""}
-        defaultName={activeDetailRow ? getCallerName(activeDetailRow) : undefined}
+        defaultName={
+          activeDetailRow ? getCallerName(activeDetailRow) : undefined
+        }
         onBlock={() => setShowBlockContactModal(false)}
       />
 
@@ -784,8 +903,11 @@ function CallLogsCompletePage() {
         confirmButtonText="Yes, Remove"
         onConfirm={() => {
           if (presetToRemove) {
-            setCustomizeViews((prev) => prev.filter((v) => v.id !== presetToRemove.id));
-            if (activeViewTabId === presetToRemove.id) setActiveViewTabId("all");
+            setCustomizeViews((prev) =>
+              prev.filter((v) => v.id !== presetToRemove.id)
+            );
+            if (activeViewTabId === presetToRemove.id)
+              setActiveViewTabId("all");
           }
           setShowRemovePresetConfirm(false);
         }}

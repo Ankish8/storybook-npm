@@ -45,6 +45,11 @@ export default defineConfig({
   resolve: {
     alias: [
       { find: "@docs", replacement: path.join(here, "..") },
+      // Docs chrome and library stories must share Motion's React instance.
+      {
+        find: "motion",
+        replacement: path.dirname(requireRoot.resolve("motion/package.json")),
+      },
       {
         find: /^storybook\/preview-api$/,
         replacement: path.join(here, "src/preview-api.tsx"),

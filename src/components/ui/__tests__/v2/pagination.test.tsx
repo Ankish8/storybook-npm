@@ -49,7 +49,7 @@ describe("PaginationContent", () => {
   it("measures the present active page immediately while an old active page exits", async () => {
     const bounds = vi
       .spyOn(HTMLElement.prototype, "getBoundingClientRect")
-      .mockImplementation(function () {
+      .mockImplementation(function (this: HTMLElement) {
         const left =
           this.dataset.testid === "incoming"
             ? 100
@@ -630,11 +630,9 @@ it("blocks activation and tab focus for disabled previous and next links", () =>
 it("moves the page highlight inside its own list when selection changes", async () => {
   const geometry = vi
     .spyOn(HTMLElement.prototype, "getBoundingClientRect")
-    .mockImplementation(function () {
-      const element = this as HTMLElement;
+    .mockImplementation(function (this: HTMLElement) {
       const x =
-        element.dataset.slot === "pagination-link" &&
-        element.textContent === "2"
+        this.dataset.slot === "pagination-link" && this.textContent === "2"
           ? 140
           : 100;
       return {

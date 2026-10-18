@@ -11,11 +11,15 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
+  type DialogContentProps,
 } from "./dialog";
 import { Button } from "./button";
 import { Input } from "./input";
 
-const meta: Meta<typeof Dialog> = {
+type DialogStoryArgs = React.ComponentProps<typeof Dialog> &
+  Pick<DialogContentProps, "size" | "hideCloseButton">;
+
+const meta: Meta<DialogStoryArgs> = {
   title: "Components/Dialog",
   component: Dialog,
   subcomponents: {
@@ -119,15 +123,9 @@ type Story = StoryObj<typeof meta>;
  * Use the controls to adjust size and hideCloseButton.
  */
 export const Playground: Story = {
-  render: (args) => {
-    const size =
-      (args as { size?: "sm" | "default" | "lg" | "xl" | "full" }).size ||
-      "default";
-    const hideCloseButton =
-      (args as { hideCloseButton?: boolean }).hideCloseButton || false;
-
+  render: ({ size = "default", hideCloseButton = false, ...dialogArgs }) => {
     return (
-      <Dialog>
+      <Dialog {...dialogArgs}>
         <DialogTrigger asChild>
           <Button variant="outline">Open Dialog</Button>
         </DialogTrigger>
@@ -157,7 +155,7 @@ export const Playground: Story = {
   args: {
     size: "default",
     hideCloseButton: false,
-  } as unknown as typeof Dialog.arguments,
+  },
   argTypes: {
     size: {
       control: { type: "select" },

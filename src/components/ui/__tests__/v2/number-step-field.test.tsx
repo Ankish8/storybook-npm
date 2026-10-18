@@ -213,7 +213,9 @@ describe("NumberStepField hold to repeat and tiles", () => {
       />
     );
   }
-  afterEach(() => vi.useRealTimers());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("repeats while held: first after 400ms, then sooner and sooner down to 40ms", () => {
     vi.useFakeTimers();

@@ -1,3 +1,4 @@
+import { createRef } from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -74,9 +75,7 @@ describe("BankDetails", () => {
     expect(
       screen.queryByLabelText("Copy Account holder's name")
     ).not.toBeInTheDocument();
-    expect(
-      screen.queryByLabelText("Copy Bank Name")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("Copy Bank Name")).not.toBeInTheDocument();
   });
 
   it("copies value to clipboard when copy button is clicked", async () => {
@@ -112,13 +111,17 @@ describe("BankDetails", () => {
   });
 
   it("renders label with muted color", () => {
-    render(<BankDetails items={[{ label: "Test Label", value: "Test Value" }]} />);
+    render(
+      <BankDetails items={[{ label: "Test Label", value: "Test Value" }]} />
+    );
     const label = screen.getByText("Test Label");
     expect(label).toHaveClass("text-semantic-text-muted");
   });
 
   it("renders value with primary color", () => {
-    render(<BankDetails items={[{ label: "Test Label", value: "Test Value" }]} />);
+    render(
+      <BankDetails items={[{ label: "Test Label", value: "Test Value" }]} />
+    );
     const value = screen.getByText("Test Value");
     expect(value).toHaveClass("text-semantic-text-primary");
   });
@@ -131,7 +134,7 @@ describe("BankDetails", () => {
   });
 
   it("forwards ref correctly", () => {
-    const ref = { current: null } as React.RefObject<HTMLDivElement>;
+    const ref = createRef<HTMLDivElement>();
     render(<BankDetails ref={ref} items={sampleItems} />);
     expect(ref.current).toBeInstanceOf(HTMLDivElement);
   });

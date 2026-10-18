@@ -4,7 +4,9 @@ import { describe, expect, it, vi } from "vitest";
 import { PlanUpgradeModal } from "../plan-upgrade-modal";
 
 describe("PlanUpgradeModal", () => {
-  const setup = (props: Partial<React.ComponentProps<typeof PlanUpgradeModal>> = {}) => {
+  const setup = (
+    props: Partial<React.ComponentProps<typeof PlanUpgradeModal>> = {}
+  ) => {
     const onOpenChange = vi.fn();
     render(<PlanUpgradeModal open onOpenChange={onOpenChange} {...props} />);
     return { onOpenChange };
@@ -19,15 +21,21 @@ describe("PlanUpgradeModal", () => {
     expect(
       screen.getByText("Select how you want to apply your new plan.")
     ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Current billing cycle" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Upcoming billing cycle" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Current billing cycle" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Upcoming billing cycle" })
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Next" })).toBeInTheDocument();
   });
 
   it("selects first option by default and applies selected classes", () => {
     setup();
 
-    const selected = screen.getByRole("button", { name: "Current billing cycle" });
+    const selected = screen.getByRole("button", {
+      name: "Current billing cycle",
+    });
     expect(selected).toHaveClass("border-semantic-border-input-focus");
     expect(selected).toHaveAttribute("aria-pressed", "true");
   });
@@ -35,8 +43,12 @@ describe("PlanUpgradeModal", () => {
   it("supports uncontrolled option selection", () => {
     setup();
 
-    const current = screen.getByRole("button", { name: "Current billing cycle" });
-    const upcoming = screen.getByRole("button", { name: "Upcoming billing cycle" });
+    const current = screen.getByRole("button", {
+      name: "Current billing cycle",
+    });
+    const upcoming = screen.getByRole("button", {
+      name: "Upcoming billing cycle",
+    });
 
     fireEvent.click(upcoming);
 
@@ -57,7 +69,9 @@ describe("PlanUpgradeModal", () => {
     const onOptionChange = vi.fn();
     setup({ onOptionChange });
 
-    fireEvent.click(screen.getByRole("button", { name: "Upcoming billing cycle" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Upcoming billing cycle" })
+    );
 
     expect(onOptionChange).toHaveBeenCalledWith("upcoming-billing-cycle");
   });
@@ -75,16 +89,18 @@ describe("PlanUpgradeModal", () => {
     const onClose = vi.fn();
     const { onOpenChange } = setup({ onClose });
 
-    fireEvent.click(screen.getByRole("button", { name: "Close plan upgrade modal" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Close plan upgrade modal" })
+    );
 
     expect(onClose).toHaveBeenCalledOnce();
     expect(onOpenChange).toHaveBeenCalledWith(false);
   });
 
   it("applies custom className and additional props", () => {
-    setup({ className: "custom-modal-class", "data-testid": "upgrade-modal" });
+    setup({ className: "custom-modal-class", "aria-label": "upgrade-modal" });
 
-    const modal = screen.getByTestId("upgrade-modal");
+    const modal = screen.getByLabelText("upgrade-modal");
     expect(modal).toHaveClass("custom-modal-class");
   });
 

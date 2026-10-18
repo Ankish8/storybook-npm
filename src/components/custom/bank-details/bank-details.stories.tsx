@@ -149,7 +149,6 @@ const bankItems = [
   args: {
     onCopy: fn(),
     onOpenChange: fn(),
-    onValueChange: fn(),
   },
 };
 
@@ -187,7 +186,11 @@ export const CustomTitleSubtitle: Story = {
     subtitle: "International SWIFT transfer",
     items: [
       { label: "Beneficiary Name", value: "ACME Corp" },
-      { label: "Account Number", value: "GB29NWBK60161331926819", copyable: true },
+      {
+        label: "Account Number",
+        value: "GB29NWBK60161331926819",
+        copyable: true,
+      },
       { label: "SWIFT Code", value: "NWBKGB2L", copyable: true },
       { label: "Bank Name", value: "NATWEST BANK" },
       { label: "Branch", value: "London Main" },
@@ -236,9 +239,7 @@ export const CollapsedByDefault: Story = {
 export const MinimalItems: Story = {
   args: {
     icon: <Landmark className="size-5 text-semantic-primary" />,
-    items: [
-      { label: "UPI ID", value: "myoperator@axis", copyable: true },
-    ],
+    items: [{ label: "UPI ID", value: "myoperator@axis", copyable: true }],
   },
 };
 
@@ -270,7 +271,11 @@ export const ControlledOpen: Story = {
           onOpenChange={setIsOpen}
           items={[
             { label: "Account holder's name", value: "MyOperator" },
-            { label: "Account Number", value: "2223330026552601", copyable: true },
+            {
+              label: "Account Number",
+              value: "2223330026552601",
+              copyable: true,
+            },
             { label: "IFSC Code", value: "UTIB000RAZP", copyable: true },
             { label: "Bank Name", value: "AXIS BANK" },
           ]}

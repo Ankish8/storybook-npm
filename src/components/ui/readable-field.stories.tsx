@@ -1,8 +1,21 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import { ReadableField } from "./readable-field";
+import { ReadableField, type ReadableFieldProps } from "./readable-field";
 
-const meta: Meta<typeof ReadableField> = {
+type StoryArgs = ReadableFieldProps & { disabled?: boolean };
+
+const meta: Meta<StoryArgs> = {
+  render: ({ disabled, ...args }) => (
+    <ReadableField
+      {...args}
+      headerAction={
+        args.headerAction && {
+          ...args.headerAction,
+          disabled: disabled ?? args.headerAction.disabled,
+        }
+      }
+    />
+  ),
   title: "Components/ReadableField",
   component: ReadableField,
   parameters: {
@@ -160,11 +173,13 @@ import { ReadableField } from "@/components/ui/readable-field"
     },
     headerAction: {
       control: false,
-      description: "Header action (e.g., Regenerate link). Supports `disabled` and `disabledTooltip` for permission-based states.",
+      description:
+        "Header action (e.g., Regenerate link). Supports `disabled` and `disabledTooltip` for permission-based states.",
     },
     disabled: {
       control: false,
-      description: "When true on headerAction, button is shown but non-interactive",
+      description:
+        "When true on headerAction, button is shown but non-interactive",
     },
     onValueCopy: {
       description: "Callback when value is copied",

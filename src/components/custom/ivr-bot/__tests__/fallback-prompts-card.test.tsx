@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { FallbackPromptsCard } from "../fallback-prompts-card";
@@ -200,7 +199,9 @@ describe("FallbackPromptsCard", () => {
       />
     );
 
-    expect(screen.getByText("Agent busy prompt is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Agent busy prompt is required")
+    ).toBeInTheDocument();
     expect(
       screen.getByText("No extension found prompt is required")
     ).toBeInTheDocument();
@@ -218,7 +219,9 @@ describe("FallbackPromptsCard", () => {
     );
 
     expect(screen.getByText("Please add agent busy copy")).toBeInTheDocument();
-    expect(screen.getByText("Please add no extension copy")).toBeInTheDocument();
+    expect(
+      screen.getByText("Please add no extension copy")
+    ).toBeInTheDocument();
   });
 
   it("can disable required validation for each fallback prompt field", () => {
@@ -242,12 +245,7 @@ describe("FallbackPromptsCard", () => {
 
   it("disables textareas when disabled prop is true", () => {
     render(
-      <FallbackPromptsCard
-        data={{}}
-        onChange={() => {}}
-        disabled
-        defaultOpen
-      />
+      <FallbackPromptsCard data={{}} onChange={() => {}} disabled defaultOpen />
     );
     const textareas = screen.getAllByRole("textbox");
     textareas.forEach((ta) => expect(ta).toBeDisabled());

@@ -1,13 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
 import React from "react";
-import {
-  Globe,
-  CreditCard,
-  Wallet,
-  Smartphone,
-  Landmark,
-} from "lucide-react";
+import { Globe, CreditCard, Wallet, Smartphone, Landmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentOptionCard } from "./payment-option-card";
 import { PaymentOptionCardModal } from "./payment-option-card-modal";
@@ -209,7 +203,7 @@ const [open, setOpen] = useState(false);
   tags: ["autodocs"],
   args: {
     onClose: fn(),
-    onOpenChange: fn(),
+    onOptionSelect: fn(),
   },
   decorators: [
     (Story) => (
@@ -431,4 +425,3 @@ export const ModalAutoPaySetup: Story = {
     );
   },
 };
-

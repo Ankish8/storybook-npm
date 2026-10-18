@@ -62,7 +62,7 @@ const meta: Meta<typeof WalletTopup> = {
   tags: ["autodocs"],
   args: {
     onOpenChange: fn(),
-    onValueChange: fn(),
+    onAmountChange: fn(),
   },
   decorators: [
     (Story) => (
@@ -220,7 +220,7 @@ export const ControlledVoucherInput: Story = {
           defaultSelectedAmount={500}
           showVoucherInput={showVoucherInput}
           onShowVoucherInputChange={setShowVoucherInput}
-          onRedeem={(code) => {
+          onRedeem={(_code) => {
             setRedeemed(true);
             setShowVoucherInput(false);
           }}
@@ -261,8 +261,14 @@ export const WithMultipleTaxes: Story = {
     amounts: [500, 1000, 5000, 10000],
     defaultSelectedAmount: 500,
     taxes: [
-      { label: "CGST (9%)", calculator: (amount: number) => Math.round(amount * 0.09) },
-      { label: "IGST (9%)", calculator: (amount: number) => Math.round(amount * 0.09) },
+      {
+        label: "CGST (9%)",
+        calculator: (amount: number) => Math.round(amount * 0.09),
+      },
+      {
+        label: "IGST (9%)",
+        calculator: (amount: number) => Math.round(amount * 0.09),
+      },
     ],
   },
 };

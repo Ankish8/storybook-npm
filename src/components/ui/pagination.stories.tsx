@@ -220,9 +220,6 @@ when both \`totalItems\` and \`pageSize\` are given. Use \`align\` to override t
     },
   },
   tags: ["autodocs"],
-  args: {
-    onPageChange: fn(),
-  },
   argTypes: {
     className: {
       control: "text",
@@ -416,11 +413,17 @@ export const Usage: Story = {
   render: () => (
     <div className="flex flex-col gap-6 max-w-2xl">
       <div>
-        <h4 className="font-medium text-sm mb-3">PaginationLink — Active vs Inactive</h4>
+        <h4 className="font-medium text-sm mb-3">
+          PaginationLink — Active vs Inactive
+        </h4>
         <p className="text-sm text-gray-600 mb-3">
-          Use <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">isActive</code> to
-          indicate the current page. Active links use the <strong>outline</strong> button variant,
-          inactive links use <strong>ghost</strong>.
+          Use{" "}
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            isActive
+          </code>{" "}
+          to indicate the current page. Active links use the{" "}
+          <strong>outline</strong> button variant, inactive links use{" "}
+          <strong>ghost</strong>.
         </p>
         <Pagination>
           <PaginationContent>
@@ -439,9 +442,16 @@ export const Usage: Story = {
         </Pagination>
       </div>
       <div>
-        <h4 className="font-medium text-sm mb-3">PaginationPrevious / PaginationNext</h4>
+        <h4 className="font-medium text-sm mb-3">
+          PaginationPrevious / PaginationNext
+        </h4>
         <p className="text-sm text-gray-600 mb-3">
-          Navigation links with chevron icons. Labels are hidden on small screens (<code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">hidden sm:block</code>), showing only the icon on mobile.
+          Navigation links with chevron icons. Labels are hidden on small
+          screens (
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            hidden sm:block
+          </code>
+          ), showing only the icon on mobile.
         </p>
         <Pagination>
           <PaginationContent>
@@ -457,8 +467,11 @@ export const Usage: Story = {
       <div>
         <h4 className="font-medium text-sm mb-3">PaginationEllipsis</h4>
         <p className="text-sm text-gray-600 mb-3">
-          Use to indicate skipped page ranges. Renders a <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">MoreHorizontalIcon</code> with
-          sr-only "More pages" text for screen readers.
+          Use to indicate skipped page ranges. Renders a{" "}
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            MoreHorizontalIcon
+          </code>{" "}
+          with sr-only "More pages" text for screen readers.
         </p>
         <Pagination>
           <PaginationContent>
@@ -518,6 +531,7 @@ const [page, setPage] = React.useState(1);
     },
   },
   tags: ["autodocs"],
+  args: { currentPage: 5, totalPages: 20, siblingCount: 1, onPageChange: fn() },
   argTypes: {
     currentPage: { control: { type: "number", min: 1 } },
     totalPages: { control: { type: "number", min: 1 } },
@@ -525,21 +539,26 @@ const [page, setPage] = React.useState(1);
   },
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const _meta2 = meta2;
+type WidgetStory = StoryObj<typeof meta2>;
 
 function WidgetDemo(props: React.ComponentProps<typeof PaginationWidget>) {
   const [page, setPage] = React.useState(props.currentPage);
+  React.useEffect(() => setPage(props.currentPage), [props.currentPage]);
   return (
     <PaginationWidget
       {...props}
       currentPage={page}
-      onPageChange={setPage}
+      onPageChange={(page) => {
+        props.onPageChange(page);
+        setPage(page);
+      }}
     />
   );
 }
 
-export const Widget: Story = {
+export const Widget: WidgetStory = {
+  args: meta2.args,
+  argTypes: meta2.argTypes,
   name: "PaginationWidget — Interactive",
   parameters: {
     docs: {
@@ -549,10 +568,10 @@ export const Widget: Story = {
       },
     },
   },
-  render: (args) => <WidgetDemo {...args} currentPage={5} totalPages={20} siblingCount={1} />,
+  render: (args) => <WidgetDemo {...args} />,
 };
 
-export const WidgetFirstPage: Story = {
+export const WidgetFirstPage: WidgetStory = {
   name: "PaginationWidget — First Page (Prev disabled)",
   parameters: {
     docs: {
@@ -566,7 +585,7 @@ export const WidgetFirstPage: Story = {
   ),
 };
 
-export const WidgetLastPage: Story = {
+export const WidgetLastPage: WidgetStory = {
   name: "PaginationWidget — Last Page (Next disabled)",
   parameters: {
     docs: {
@@ -580,7 +599,7 @@ export const WidgetLastPage: Story = {
   ),
 };
 
-export const WidgetFewPages: Story = {
+export const WidgetFewPages: WidgetStory = {
   name: "PaginationWidget — Few Pages (No ellipsis)",
   render: () => (
     <WidgetDemo currentPage={3} totalPages={5} onPageChange={() => {}} />
@@ -605,22 +624,42 @@ export const Accessibility: Story = {
             <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
               Pagination
             </code>{" "}
-            renders a <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">&lt;nav&gt;</code> with{" "}
-            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">role="navigation"</code> and{" "}
-            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label="pagination"</code>
+            renders a{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              &lt;nav&gt;
+            </code>{" "}
+            with{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              role="navigation"
+            </code>{" "}
+            and{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              aria-label="pagination"
+            </code>
           </p>
           <p>
             <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
               PaginationLink
             </code>{" "}
-            uses <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-current="page"</code> when{" "}
-            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">isActive</code> is true
+            uses{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              aria-current="page"
+            </code>{" "}
+            when{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              isActive
+            </code>{" "}
+            is true
           </p>
           <p>
             <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
               PaginationEllipsis
             </code>{" "}
-            is <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-hidden</code> with sr-only "More pages" text
+            is{" "}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+              aria-hidden
+            </code>{" "}
+            with sr-only "More pages" text
           </p>
         </div>
       </div>
@@ -644,7 +683,8 @@ export const Accessibility: Story = {
       <div>
         <h4 className="font-medium text-sm mb-3">Focus indicators</h4>
         <p className="text-sm text-gray-600 mb-3">
-          All pagination links inherit Button focus styles. Tab to see the focus ring:
+          All pagination links inherit Button focus styles. Tab to see the focus
+          ring:
         </p>
         <Pagination>
           <PaginationContent>
@@ -671,16 +711,27 @@ export const Accessibility: Story = {
       <div>
         <h4 className="font-medium text-sm mb-3">ARIA labels on navigation</h4>
         <p className="text-sm text-gray-600 mb-3">
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">PaginationPrevious</code> has{" "}
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label="Go to previous page"</code> and{" "}
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">PaginationNext</code> has{" "}
-          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">aria-label="Go to next page"</code>.
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            PaginationPrevious
+          </code>{" "}
+          has{" "}
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            aria-label="Go to previous page"
+          </code>{" "}
+          and{" "}
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            PaginationNext
+          </code>{" "}
+          has{" "}
+          <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">
+            aria-label="Go to next page"
+          </code>
+          .
         </p>
       </div>
     </div>
   ),
 };
-
 
 export const WithItemCount: StoryObj<typeof Pagination> = {
   parameters: {
@@ -717,7 +768,9 @@ export const ItemCountAlignments: StoryObj<typeof Pagination> = {
     <div className="flex w-full max-w-[900px] flex-col gap-8">
       {(["end", "center", "start"] as const).map((align) => (
         <div key={align}>
-          <h4 className="font-medium text-sm mb-3">align=&quot;{align}&quot;</h4>
+          <h4 className="font-medium text-sm mb-3">
+            align=&quot;{align}&quot;
+          </h4>
           <PaginationWidget
             currentPage={2}
             totalPages={7}

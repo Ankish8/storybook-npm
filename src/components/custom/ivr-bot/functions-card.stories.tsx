@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
+import { useState } from "react";
 import { FunctionsCard } from "./functions-card";
 import type { FunctionItem } from "./types";
 
@@ -60,9 +60,23 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const SAMPLE_FUNCTIONS: FunctionItem[] = [
-  { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true, tooltip: "Transfers the call to a specific extension number" },
-  { id: "fn-2", name: "end_call()", isBuiltIn: true, tooltip: "Ends the current call gracefully" },
-  { id: "fn-3", name: "check_order_status(order_id)", tooltip: "Looks up order status by order ID" },
+  {
+    id: "fn-1",
+    name: "transfer_to_extension (extension_number)",
+    isBuiltIn: true,
+    tooltip: "Transfers the call to a specific extension number",
+  },
+  {
+    id: "fn-2",
+    name: "end_call()",
+    isBuiltIn: true,
+    tooltip: "Ends the current call gracefully",
+  },
+  {
+    id: "fn-3",
+    name: "check_order_status(order_id)",
+    tooltip: "Looks up order status by order ID",
+  },
 ];
 
 export const Overview: Story = {
@@ -91,7 +105,11 @@ export const Empty: Story = {
 export const BuiltInOnly: Story = {
   args: {
     functions: [
-      { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true },
+      {
+        id: "fn-1",
+        name: "transfer_to_extension (extension_number)",
+        isBuiltIn: true,
+      },
       { id: "fn-2", name: "end_call()", isBuiltIn: true },
     ],
   },
@@ -113,7 +131,9 @@ export const WithEditAndDelete: Story = {
           functions={fns}
           onAddFunction={fn()}
           onEditFunction={fn()}
-          onDeleteFunction={(id) => setFns((prev) => prev.filter((f) => f.id !== id))}
+          onDeleteFunction={(id) =>
+            setFns((prev) => prev.filter((f) => f.id !== id))
+          }
         />
       </div>
     );
@@ -163,7 +183,9 @@ export const DeleteOnlyPermission: Story = {
         <FunctionsCard
           functions={fns}
           // onEditFunction omitted → edit button hidden
-          onDeleteFunction={(id) => setFns((prev) => prev.filter((f) => f.id !== id))}
+          onDeleteFunction={(id) =>
+            setFns((prev) => prev.filter((f) => f.id !== id))
+          }
         />
       </div>
     );
@@ -191,9 +213,23 @@ export const BothDisabled: Story = {
 export const WithTooltips: Story = {
   args: {
     functions: [
-      { id: "fn-1", name: "transfer_to_extension (extension_number)", isBuiltIn: true, tooltip: "Transfers the call to a specific extension number" },
-      { id: "fn-2", name: "end_call()", isBuiltIn: true, tooltip: "Ends the current call gracefully" },
-      { id: "fn-3", name: "check_order_status(order_id)", tooltip: "Looks up order status by order ID" },
+      {
+        id: "fn-1",
+        name: "transfer_to_extension (extension_number)",
+        isBuiltIn: true,
+        tooltip: "Transfers the call to a specific extension number",
+      },
+      {
+        id: "fn-2",
+        name: "end_call()",
+        isBuiltIn: true,
+        tooltip: "Ends the current call gracefully",
+      },
+      {
+        id: "fn-3",
+        name: "check_order_status(order_id)",
+        tooltip: "Looks up order status by order ID",
+      },
       { id: "fn-4", name: "get_weather(city)" },
     ],
     infoTooltip: "Functions extend the bot's capabilities beyond conversation",

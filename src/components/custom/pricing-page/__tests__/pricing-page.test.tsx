@@ -67,18 +67,22 @@ describe("PricingPage", () => {
 
   it("renders header actions", () => {
     render(
-      <PricingPage
-        headerActions={<button>Number type: Virtual</button>}
-      />
+      <PricingPage headerActions={<button>Number type: Virtual</button>} />
     );
-    expect(screen.getAllByText("Number type: Virtual").length).toBeGreaterThanOrEqual(1);
+    expect(
+      screen.getAllByText("Number type: Virtual").length
+    ).toBeGreaterThanOrEqual(1);
   });
 
   it.skip("renders plan type tabs", () => {
     // Tabs are accepted as props but not yet rendered in the component JSX
     render(<PricingPage tabs={tabs} activeTab="team" />);
-    expect(screen.getByRole("tab", { name: "Team-Led Plans" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Go-AI First" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Team-Led Plans" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("tab", { name: "Go-AI First" })
+    ).toBeInTheDocument();
   });
 
   it("hides category toggle when showCategoryToggle is false", () => {
@@ -90,8 +94,12 @@ describe("PricingPage", () => {
         planCards={mockPlanCards}
       />
     );
-    expect(screen.queryByRole("tab", { name: "Team-Led Plans" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "Go-AI First" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: "Team-Led Plans" })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("tab", { name: "Go-AI First" })
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Compact")).toBeInTheDocument();
   });
 
@@ -155,20 +163,23 @@ describe("PricingPage", () => {
     ["warning", "bg-semantic-warning-surface"],
     ["info", "bg-semantic-info-surface"],
     ["failed", "bg-semantic-error-surface"],
-  ] as const)("planAlert status %s maps to Alert surface", (status, surfaceClass) => {
-    const { container } = render(
-      <PricingPage
-        planCards={mockPlanCards}
-        planAlert={{
-          status,
-          title: "Alert title",
-        }}
-      />
-    );
-    const alert = container.querySelector("[role='alert']");
-    expect(alert).toBeTruthy();
-    expect(alert).toHaveClass(surfaceClass);
-  });
+  ] as const)(
+    "planAlert status %s maps to Alert surface",
+    (status, surfaceClass) => {
+      const { container } = render(
+        <PricingPage
+          planCards={mockPlanCards}
+          planAlert={{
+            status,
+            title: "Alert title",
+          }}
+        />
+      );
+      const alert = container.querySelector("[role='alert']");
+      expect(alert).toBeTruthy();
+      expect(alert).toHaveClass(surfaceClass);
+    }
+  );
 
   it("planAlert variant overrides status for Alert appearance", () => {
     const { container } = render(
@@ -212,12 +223,12 @@ describe("PricingPage", () => {
           alertProps: {
             closable: true,
             onClose,
-            "data-testid": "plan-area-alert",
+            "aria-label": "plan-area-alert",
           },
         }}
       />
     );
-    const alert = screen.getByTestId("plan-area-alert");
+    const alert = screen.getByLabelText("plan-area-alert");
     expect(alert).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Close alert" }));
     expect(onClose).toHaveBeenCalled();
@@ -227,7 +238,7 @@ describe("PricingPage", () => {
     const onePlan: PricingCardProps[] = [mockPlanCards[0]!];
     const { container } = render(<PricingPage planCards={onePlan} />);
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid).toHaveClass("grid-cols-1");
@@ -241,7 +252,7 @@ describe("PricingPage", () => {
     const twoPlans: PricingCardProps[] = [mockPlanCards[0]!, mockPlanCards[1]!];
     const { container } = render(<PricingPage planCards={twoPlans} />);
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid).toHaveClass("min-[640px]:grid-cols-2");
@@ -279,7 +290,7 @@ describe("PricingPage", () => {
       <PricingPage planCards={mockPlanCards} planCardsLayout="oneColumn" />
     );
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "one-column");
@@ -307,13 +318,10 @@ describe("PricingPage", () => {
       },
     ];
     const { container } = render(
-      <PricingPage
-        planCards={fivePlans}
-        planCardsLayout="oneColumn"
-      />
+      <PricingPage planCards={fivePlans} planCardsLayout="oneColumn" />
     );
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "one-column");
     expect(
@@ -329,7 +337,7 @@ describe("PricingPage", () => {
       <PricingPage planCards={mockPlanCards} planCardsLayout="twoColumn" />
     );
     const grid = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     expect(grid).toBeTruthy();
     expect(grid).toHaveAttribute("data-pricing-plans-layout", "two-column");
@@ -356,7 +364,7 @@ describe("PricingPage", () => {
     ];
     const { container } = render(<PricingPage planCards={fivePlans} />);
     const row = container.querySelector(
-      "[data-testid=\"pricing-plan-cards-grid\"]"
+      '[data-testid="pricing-plan-cards-grid"]'
     ) as HTMLElement | null;
     const scrollRegion = row?.parentElement;
     expect(row).toBeTruthy();
@@ -380,12 +388,7 @@ describe("PricingPage", () => {
   });
 
   it("renders power-ups with custom title", () => {
-    render(
-      <PricingPage
-        powerUpCards={mockPowerUps}
-        powerUpsTitle="Add-ons"
-      />
-    );
+    render(<PricingPage powerUpCards={mockPowerUps} powerUpsTitle="Add-ons" />);
     expect(screen.getByText("Add-ons")).toBeInTheDocument();
   });
 
@@ -430,9 +433,7 @@ describe("PricingPage", () => {
 
   it("hides power-ups section when no cards", () => {
     render(<PricingPage powerUpCards={[]} />);
-    expect(
-      screen.queryByText("Power-ups and charges")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Power-ups and charges")).not.toBeInTheDocument();
   });
 
   it("hides let-us-drive section when no cards", () => {
@@ -450,9 +451,7 @@ describe("PricingPage", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(
-      <PricingPage className="my-custom-class" />
-    );
+    const { container } = render(<PricingPage className="my-custom-class" />);
     expect(container.firstChild).toHaveClass("my-custom-class");
   });
 
@@ -546,11 +545,7 @@ describe("PricingPage", () => {
         onCtaClick: vi.fn(),
       },
     ];
-    render(
-      <PricingPage
-        letUsDriveCards={driveCardsWithDetails}
-      />
-    );
+    render(<PricingPage letUsDriveCards={driveCardsWithDetails} />);
     // expand first card
     fireEvent.click(screen.getAllByText("Show details")[0]);
     expect(screen.getByText("Setup")).toBeInTheDocument();

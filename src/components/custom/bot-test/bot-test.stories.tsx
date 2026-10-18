@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import { useState } from "react";
 import { BotTest } from "./bot-test";
 import { Button } from "../../ui/button";
 
@@ -79,9 +79,7 @@ export const Default: Story = {
 export const WithPrefilledValues: Story = {
   render: function Render() {
     const [open, setOpen] = useState(false);
-    const [selectedNumber, setSelectedNumber] = useState(
-      "+91 9876543210"
-    );
+    const [selectedNumber, setSelectedNumber] = useState("+91 9876543210");
     const [phoneNumber, setPhoneNumber] = useState("9123456789");
 
     return (

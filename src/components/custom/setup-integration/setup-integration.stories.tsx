@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "storybook/test";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Info, Plus } from "lucide-react";
 import { SetupIntegration } from "./setup-integration";
 import { SetupIntegrationView } from "./setup-integration-view";
@@ -478,7 +478,7 @@ export const WaitingForAssistant: Story = {
     docs: {
       description: {
         story:
-          "Use `isLoading: true` (or `variant: \"loading\"`) on a message to show the bouncing three-dot loading indicator. For assistant, optional `statusLabel` shows above it. Disable input while waiting if needed.",
+          'Use `isLoading: true` (or `variant: "loading"`) on a message to show the bouncing three-dot loading indicator. For assistant, optional `statusLabel` shows above it. Disable input while waiting if needed.',
       },
     },
   },
@@ -1547,7 +1547,8 @@ const Scenario10Example = () => {
                 htmlFor="voicebot-function-name"
                 className="text-sm font-semibold text-semantic-text-primary"
               >
-                Functions Name <span className="text-semantic-error-primary">*</span>
+                Functions Name{" "}
+                <span className="text-semantic-error-primary">*</span>
               </label>
               <Input
                 id="voicebot-function-name"
@@ -1563,7 +1564,10 @@ const Scenario10Example = () => {
                 className="flex items-center gap-1 text-sm font-semibold text-semantic-text-primary"
               >
                 Agent Message (Optional)
-                <Info className="size-3.5 text-semantic-text-muted" aria-hidden />
+                <Info
+                  className="size-3.5 text-semantic-text-muted"
+                  aria-hidden
+                />
               </label>
               <Textarea
                 id="voicebot-agent-message"

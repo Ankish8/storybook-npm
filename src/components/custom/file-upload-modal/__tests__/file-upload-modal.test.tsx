@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -39,14 +38,22 @@ describe("FileUploadModal", () => {
 
   it("renders custom title", () => {
     render(
-      <FileUploadModal open={true} onOpenChange={vi.fn()} title="Upload Images" />
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        title="Upload Images"
+      />
     );
     expect(screen.getByText("Upload Images")).toBeInTheDocument();
   });
 
   it("shows sample download link when onSampleDownload is provided", () => {
     render(
-      <FileUploadModal open={true} onOpenChange={vi.fn()} onSampleDownload={vi.fn()} />
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onSampleDownload={vi.fn()}
+      />
     );
     expect(screen.getByText("Download Sample File")).toBeInTheDocument();
   });
@@ -60,7 +67,11 @@ describe("FileUploadModal", () => {
     const user = userEvent.setup();
     const onSampleDownload = vi.fn();
     render(
-      <FileUploadModal open={true} onOpenChange={vi.fn()} onSampleDownload={onSampleDownload} />
+      <FileUploadModal
+        open={true}
+        onOpenChange={vi.fn()}
+        onSampleDownload={onSampleDownload}
+      />
     );
     await user.click(screen.getByText("Download Sample File"));
     expect(onSampleDownload).toHaveBeenCalledTimes(1);
@@ -71,7 +82,11 @@ describe("FileUploadModal", () => {
     const onCancel = vi.fn();
     const onOpenChange = vi.fn();
     render(
-      <FileUploadModal open={true} onOpenChange={onOpenChange} onCancel={onCancel} />
+      <FileUploadModal
+        open={true}
+        onOpenChange={onOpenChange}
+        onCancel={onCancel}
+      />
     );
     await user.click(screen.getByText("Cancel"));
     expect(onCancel).toHaveBeenCalledTimes(1);
@@ -109,17 +124,15 @@ describe("FileUploadModal", () => {
 
   it("renders close button with aria-label", () => {
     render(<FileUploadModal open={true} onOpenChange={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Close dialog" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Close dialog" })
+    ).toBeInTheDocument();
   });
 
   it("shows error toast and does not upload disallowed file types", () => {
     const onUpload = vi.fn().mockResolvedValue(undefined);
     render(
-      <FileUploadModal
-        open={true}
-        onOpenChange={vi.fn()}
-        onUpload={onUpload}
-      />
+      <FileUploadModal open={true} onOpenChange={vi.fn()} onUpload={onUpload} />
     );
     const input = document.querySelector(
       "input[type=file]"
@@ -139,11 +152,7 @@ describe("FileUploadModal", () => {
   it("shows a single error toast when multiple disallowed file types are selected at once", () => {
     const onUpload = vi.fn().mockResolvedValue(undefined);
     render(
-      <FileUploadModal
-        open={true}
-        onOpenChange={vi.fn()}
-        onUpload={onUpload}
-      />
+      <FileUploadModal open={true} onOpenChange={vi.fn()} onUpload={onUpload} />
     );
     const input = document.querySelector(
       "input[type=file]"
@@ -166,11 +175,7 @@ describe("FileUploadModal", () => {
   it("shows one disallowed-type toast and still processes allowed files in the same batch", async () => {
     const onUpload = vi.fn().mockResolvedValue(undefined);
     render(
-      <FileUploadModal
-        open={true}
-        onOpenChange={vi.fn()}
-        onUpload={onUpload}
-      />
+      <FileUploadModal open={true} onOpenChange={vi.fn()} onUpload={onUpload} />
     );
     const input = document.querySelector(
       "input[type=file]"
@@ -188,7 +193,10 @@ describe("FileUploadModal", () => {
     });
     expect(onUpload).toHaveBeenCalledWith(
       valid,
-      expect.objectContaining({ onProgress: expect.any(Function), onError: expect.any(Function) })
+      expect.objectContaining({
+        onProgress: expect.any(Function),
+        onError: expect.any(Function),
+      })
     );
   });
 
@@ -225,7 +233,9 @@ describe("FileUploadModal", () => {
       />
     );
     expect(
-      screen.getByText("Max file size 50 MB · Up to 5 files (Supported: PDF only)")
+      screen.getByText(
+        "Max file size 50 MB · Up to 5 files (Supported: PDF only)"
+      )
     ).toBeInTheDocument();
   });
 
@@ -269,8 +279,10 @@ describe("FileUploadModal", () => {
     const input = document.querySelector(
       "input[type=file]"
     ) as HTMLInputElement;
-    const files = Array.from({ length: 6 }, (_, i) =>
-      new File(["x"], `batch-${i + 1}.pdf`, { type: "application/pdf" })
+    const files = Array.from(
+      { length: 6 },
+      (_, i) =>
+        new File(["x"], `batch-${i + 1}.pdf`, { type: "application/pdf" })
     );
     fireEvent.change(input, { target: { files } });
     expect(toastError).toHaveBeenCalledWith({
@@ -302,9 +314,9 @@ describe("FileUploadModal", () => {
       new File(["x"], name, { type: "application/pdf" });
     await user.upload(input, [pdf("one.pdf"), pdf("two.pdf")]);
     await waitFor(() =>
-      expect(screen.getAllByRole("button", { name: "Remove file" })).toHaveLength(
-        2
-      )
+      expect(
+        screen.getAllByRole("button", { name: "Remove file" })
+      ).toHaveLength(2)
     );
 
     toastDismiss.mockClear();
@@ -344,8 +356,7 @@ describe("FileUploadModal", () => {
     expect(toastError).toHaveBeenCalledTimes(1);
     expect(toastError).toHaveBeenCalledWith({
       title: "Too many files",
-      description:
-        "Max 3 files allowed. Remaining 1 file was not added.",
+      description: "Max 3 files allowed. Remaining 1 file was not added.",
     });
     await waitFor(() => expect(onUpload).toHaveBeenCalledTimes(3));
   });
