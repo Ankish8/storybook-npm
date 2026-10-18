@@ -2527,3 +2527,27 @@ html.dark textarea {
 html.dark .arc-brand-wordmark {
   filter: brightness(0) invert(1);
 }
+
+/* The new theme grows from the switch. The root snapshots include previews
+   and open overlays, so their surfaces do not flash ahead of the reveal. */
+html[data-theme-transition="reveal"]::view-transition-old(root),
+html[data-theme-transition="reveal"]::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-transition="reveal"]::view-transition-old(root) {
+  z-index: 1;
+}
+html[data-theme-transition="reveal"]::view-transition-new(root) {
+  z-index: 2;
+}
+html[data-theme-transition="reveal"]::view-transition-group(root) {
+  animation-duration: 500ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition="reveal"]::view-transition-group(root),
+  html[data-theme-transition="reveal"]::view-transition-old(root),
+  html[data-theme-transition="reveal"]::view-transition-new(root) {
+    animation: none;
+  }
+}

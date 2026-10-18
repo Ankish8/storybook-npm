@@ -28,8 +28,19 @@ export function installPreviewTheme(parentOrigin: string, legacy = false) {
       event.data?.type !== "set-theme"
     )
       return;
-    if (event.data.theme === "light" || event.data.theme === "dark")
-      apply(event.data.theme);
+    if (event.data.theme === "light" || event.data.theme === "dark") {
+      const { theme, transitionId } = event.data;
+      apply(theme);
+      if (typeof transitionId === "string") {
+        // Acknowledge the committed root styles before the new snapshot.
+        // Do not wait for a paint: view transitions pause rendering while
+        // their update callback runs.
+        window.parent.postMessage(
+          { channel: CHANNEL, type: "theme-applied", theme, transitionId },
+          parentOrigin
+        );
+      }
+    }
   });
   if (window.parent === window) {
     media.addEventListener("change", () => {

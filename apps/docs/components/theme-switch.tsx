@@ -37,7 +37,7 @@ export function ThemeSwitch({
   onThemeChange,
 }: {
   theme: ResolvedTheme;
-  onThemeChange: (theme: ResolvedTheme) => void;
+  onThemeChange: (theme: ResolvedTheme, trigger: HTMLButtonElement) => void;
 }) {
   const hydrated = useSyncExternalStore(
     subscribe,
@@ -62,7 +62,7 @@ export function ThemeSwitch({
       // Pointer activation keeps focus in an open preview popup. Keyboard
       // activation and Tab navigation retain native button behavior.
       onPointerDown={(event) => event.preventDefault()}
-      onClick={() => onThemeChange(next)}
+      onClick={(event) => onThemeChange(next, event.currentTarget)}
     >
       <span className="arc-theme-icon-wrap" aria-hidden="true">
         {hydrated ? (

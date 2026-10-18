@@ -169,3 +169,35 @@ test("an embedded preview follows its parent preference rather than independentl
   send("dark");
   expectTheme("dark");
 });
+
+test.each([false, true])(
+  "acknowledges applied styles before a paint without resetting content (legacy=%s)",
+  async (legacy) => {
+    vi.useFakeTimers();
+    const post = vi.spyOn(window.parent, "postMessage");
+    document.body.innerHTML = '<input value="Keep this draft">';
+    const input = document.querySelector("input")!;
+    installPreviewTheme(parentOrigin, legacy);
+    send("dark", {
+      data: {
+        channel: CHANNEL,
+        type: "set-theme",
+        theme: "dark",
+        transitionId: "theme-42",
+      },
+    });
+    expectTheme(legacy ? "light" : "dark");
+    expect(post).toHaveBeenCalledWith(
+      {
+        channel: CHANNEL,
+        type: "theme-applied",
+        theme: "dark",
+        transitionId: "theme-42",
+      },
+      parentOrigin
+    );
+    expect(document.querySelector("input")).toBe(input);
+    expect(input.value).toBe("Keep this draft");
+    vi.useRealTimers();
+  }
+);

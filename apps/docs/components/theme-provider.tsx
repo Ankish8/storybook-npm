@@ -7,7 +7,9 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { flushSync } from "react-dom";
 import { ThemeSwitch } from "./theme-switch";
+import { transitionTheme } from "../lib/theme-transition";
 import {
   THEME_KEY,
   isThemeMode,
@@ -136,5 +138,12 @@ export function useDocsTheme() {
 }
 export function ThemeControl() {
   const { resolved, setMode } = useDocsTheme();
-  return <ThemeSwitch theme={resolved} onThemeChange={setMode} />;
+  return (
+    <ThemeSwitch
+      theme={resolved}
+      onThemeChange={(next, trigger) =>
+        transitionTheme(next, trigger, () => flushSync(() => setMode(next)))
+      }
+    />
+  );
 }
