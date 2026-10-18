@@ -13,6 +13,7 @@ for (const [args, cwd] of [
     ],
     repo,
   ],
+  [[path.join(app, "scripts/check-preview-cascade.mjs")], repo],
   [
     [path.join(app, "node_modules/next/dist/bin/next"), "build", "--webpack"],
     app,

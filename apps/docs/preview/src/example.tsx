@@ -3,6 +3,8 @@ import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { CHANNEL, expectedParentOrigin } from "./model.mjs";
 import { createDialogPresentation } from "./dialog-presentation";
+// Both entries share the same CSS order in production chunks.
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../../../../src/index.css";
 import "../../../../src/storybook/typography.css";
 import "../../../../src/storybook/design-tokens.css";
