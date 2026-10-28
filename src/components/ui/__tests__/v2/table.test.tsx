@@ -51,6 +51,32 @@ describe("Table", () => {
     expect(screen.getByText("Active")).toBeInTheDocument();
   });
 
+  it("keeps aligned numeric headers sortable and their cells aligned", async () => {
+    const user = userEvent.setup();
+    const onSortChange = vi.fn();
+    render(
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead align="right" onSortChange={onSortChange}>
+              Contacts
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell align="right">2,180</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    );
+
+    expect(screen.getByRole("columnheader")).toHaveAttribute("align", "right");
+    expect(screen.getByRole("cell")).toHaveAttribute("align", "right");
+    await user.click(screen.getByRole("button", { name: "Contacts" }));
+    expect(onSortChange).toHaveBeenCalledWith("asc");
+  });
+
   it("renders with border by default", () => {
     render(
       <Table>

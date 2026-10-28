@@ -15,7 +15,7 @@ const chevronSpringClassName = cn(
 );
 
 const creatableSelectTriggerVariants = cva(
-  "flex h-11 w-full items-center justify-between gap-2 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
+  "flex h-11 w-full items-center justify-between gap-2 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 has-[input:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] has-[input:focus-visible]:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
   {
     variants: {
       state: {
@@ -479,15 +479,15 @@ const CreatableSelect = React.forwardRef(
                     }}
                     className={cn(
                       // 4px radius = panel 8px minus its 4px padding (concentric corners). Arc: 36px
-                      // rows with the check inline, an 80ms highlight, and no weight change on selection.
+                      // rows with the check inline, an 80ms highlight, and a quiet selection tint.
                       "relative flex min-h-9 w-full items-center justify-between gap-3 rounded-sm px-3 py-2 text-left text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none cursor-pointer select-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
                       "hover:bg-v2-semantic-bg-ui",
-                      opt.value === value &&
-                        "text-[var(--v2-text-primary,#484848)]",
                       highlightIndex === i && "bg-v2-semantic-bg-ui",
+                      opt.value === value &&
+                        "bg-v2-semantic-info-surface text-[var(--v2-text-primary,#484848)] hover:bg-v2-semantic-primary-surface",
                       highlightIndex === i &&
                         highlightByKeyboard &&
-                        "ring-1 ring-inset ring-v2-semantic-border-accent",
+                        "ring-1 ring-inset ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                       opt.disabled &&
                         "pointer-events-none opacity-50 cursor-not-allowed"
                     )}
@@ -520,7 +520,7 @@ const CreatableSelect = React.forwardRef(
                         "bg-v2-semantic-bg-ui",
                       highlightIndex === filtered.length &&
                         highlightByKeyboard &&
-                        "ring-1 ring-inset ring-v2-semantic-border-accent"
+                        "ring-1 ring-inset ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
                     )}
                   >
                     Create &ldquo;{search.trim()}&rdquo;

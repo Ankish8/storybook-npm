@@ -1090,7 +1090,7 @@ describe("MultiSelect v2 refresh", () => {
       "rounded-sm",
       "focus-visible:ring-1",
       "focus-visible:ring-inset",
-      "focus-visible:ring-v2-semantic-border-accent"
+      "focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
     );
     expect(option).toHaveClass("hover:bg-v2-semantic-bg-ui");
   });
@@ -1236,12 +1236,13 @@ describe("MultiSelect v2 refresh", () => {
 
     await user.click(trigger);
     const row = screen.getByRole("option", { name: "Option 1" });
-    // 38px rows, 11px padding, 80ms highlight, and no weight change when selected.
+    // 38px rows, 11px padding, and a distinct selection without changing weight.
     expect(row).toHaveClass(
       "min-h-[38px]",
       "px-[11px]",
       "[transition-duration:80ms]",
-      "hover:bg-v2-semantic-bg-ui"
+      "bg-v2-semantic-info-surface",
+      "hover:bg-v2-semantic-primary-surface"
     );
     expect(row.className).not.toContain("font-medium");
   });

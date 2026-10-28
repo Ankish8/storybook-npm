@@ -93,7 +93,7 @@ const meta: Meta<typeof Switch> = {
             [
               "Focus",
               "2px ring with 2px offset",
-              "1px outline with 3px offset",
+              "2px outline with 3px offset",
             ],
             ["Disabled", "Reduced opacity", "Solid track and thumb colors"],
             [

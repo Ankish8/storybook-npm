@@ -85,6 +85,13 @@ document.documentElement.style.colorScheme = "dark";`}</code>
             CLI, rerun init to receive the updated theme and Tailwind aliases,
             then rebuild your stylesheet.
           </p>
+          <h2>Interaction hierarchy</h2>
+          <p>
+            Give the primary action clear emphasis and keep supporting actions
+            quieter. Most controls use 8px corners; nested items keep their
+            edges aligned with the surrounding surface. Make selected, hover and
+            keyboard focus states distinguishable in both themes.
+          </p>
           <h2>Motion</h2>
           <p>
             Interactions should feel responsive and restrained. Press feedback

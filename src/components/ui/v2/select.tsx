@@ -22,7 +22,7 @@ const chevronSpringClassName = cn(
  * both empty and selected values.
  */
 const selectTriggerVariants = cva(
-  "flex h-11 w-full items-center justify-between gap-3 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 text-left text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-11 w-full items-center justify-between gap-3 rounded-lg bg-v2-semantic-bg-primary px-3 py-2 text-left text-sm font-normal leading-[1.4] tracking-[-0.01em] text-[color:var(--v2-select-value-color,var(--v2-text-secondary,#5E5E5E))] data-[placeholder]:[--v2-select-value-color:var(--v2-text-placeholder,#707070)] font-[family-name:var(--font-v2,Inter,sans-serif)] outline-none focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
@@ -606,8 +606,8 @@ const SelectItem = React.forwardRef(
           // No keyboard-only ring here on purpose: Radix focuses the highlighted row on pointer move too,
           // so the focus-visible pseudo-class is also true for a mouse hover (verified in Chrome) and cannot tell them apart.
           "relative flex min-h-9 w-full cursor-pointer select-none items-start rounded-sm font-[family-name:var(--font-v2,Inter,sans-serif)] py-2 pl-[11px] pr-[34px] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:120ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
-          // Selection is told by the check and colour only; Arc never changes the weight, so labels do not reflow.
-          "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
+          // Selection keeps its check and a quiet tint; labels do not change weight or reflow.
+          "[@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui data-[state=checked]:bg-v2-semantic-info-surface data-[state=checked]:focus:bg-v2-semantic-primary-surface data-[state=checked]:text-[var(--v2-text-primary,#484848)]",
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
           className
         )}

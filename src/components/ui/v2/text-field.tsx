@@ -81,7 +81,7 @@ function getCollapsedCursorPosition(value: string, cursorPosition: number) {
  * TextField container variants for when icons/prefix/suffix are present
  */
 const textFieldContainerVariants = cva(
-  "relative flex items-center rounded-lg dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
+  "relative flex items-center rounded-lg has-[input:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] has-[input:focus-visible]:outline-offset-2 bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
@@ -108,7 +108,7 @@ const textFieldContainerVariants = cva(
  * TextField input variants (standalone without container)
  */
 const textFieldInputVariants = cva(
-  "w-full rounded-lg bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.01em] outline-none dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:opacity-50 disabled:shadow-none",
+  "w-full rounded-lg bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-[var(--v2-text-secondary,#5E5E5E)] leading-[1.4] tracking-[-0.01em] outline-none focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] file:border-0 file:bg-transparent file:font-medium file:text-[var(--v2-text-primary,#484848)] placeholder:text-[var(--v2-text-placeholder,#707070)] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:opacity-50 disabled:shadow-none",
   {
     variants: {
       state: {

@@ -170,7 +170,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={headerAction.onClick}
-                className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary rounded transition-colors duration-150"
+                className="text-sm font-medium leading-[1.4] text-[var(--v2-text-muted,#707070)] tracking-[0.014px] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] rounded transition-colors duration-150"
               >
                 {headerAction.label}
               </button>
@@ -202,7 +202,7 @@ export const ReadableField = React.forwardRef(
               <button
                 type="button"
                 onClick={toggleVisibility}
-                className="transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary rounded"
+                className="transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 text-[var(--v2-text-muted,#707070)] hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] rounded"
                 aria-label={isVisible ? "Hide value" : "Show value"}
               >
                 {isVisible ? (
@@ -219,7 +219,7 @@ export const ReadableField = React.forwardRef(
               type="button"
               onClick={handleCopy}
               className={cn(
-                "relative size-[18px] rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-text-primary",
+                "relative size-[18px] rounded transition-[color,transform] [transition-duration:180ms] [transition-timing-function:var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:80ms] active:scale-[0.96] motion-reduce:active:scale-100 focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                 copied
                   ? "text-v2-semantic-success-primary"
                   : failed

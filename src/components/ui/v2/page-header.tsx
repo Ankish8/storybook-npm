@@ -103,7 +103,7 @@ const PageHeader = React.forwardRef(
           <button
             type="button"
             onClick={onBackClick}
-            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-v2-semantic-bg-ui transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] text-[var(--v2-text-primary,#484848)]"
+            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-v2-semantic-bg-ui focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] text-[var(--v2-text-primary,#484848)]"
             aria-label="Go back"
           >
             <ArrowLeft className="w-5 h-5" />

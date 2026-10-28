@@ -619,7 +619,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
           data-strain={strained ? "" : undefined}
           className={cn(
             // 44px, or 50px on a coarse pointer so each half-height stepper tile (shell minus 2px border, halved) is 24px.
-            "flex h-11 min-w-0 flex-1 items-center rounded-lg border border-solid overflow-hidden dark:has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:has-[:focus-visible]:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(pointer:coarse)]:h-[50px]",
+            "flex h-11 min-w-0 flex-1 items-center rounded-lg border border-solid overflow-hidden has-[:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] has-[:focus-visible]:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(pointer:coarse)]:h-[50px]",
             state === "error"
               ? "border-v2-semantic-error-primary"
               : "border-v2-semantic-border-layout",
@@ -651,7 +651,7 @@ const NumberStepField = React.forwardRef<HTMLDivElement, NumberStepFieldProps>(
               aria-valuetext={suffix ? `${value} ${suffix}` : undefined}
               hideNumberSpinners
               className={cn(
-                "rounded-none border-0 h-full min-w-0 w-full bg-v2-semantic-bg-primary px-3 py-2.5 leading-[normal] [font-variant-numeric:tabular-nums] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none disabled:opacity-100",
+                "rounded-none border-0 h-full min-w-0 w-full bg-v2-semantic-bg-primary px-3 py-2.5 leading-[normal] [font-variant-numeric:tabular-nums] focus-visible:[outline:none] focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:shadow-none shadow-none disabled:opacity-100",
                 // The wheels draw the number while nobody is typing; the caret stays so a click still lands.
                 !editing &&
                   "text-transparent caret-[var(--v2-text-secondary,#5E5E5E)]"

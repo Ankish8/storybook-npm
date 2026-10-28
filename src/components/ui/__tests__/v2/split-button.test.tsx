@@ -49,6 +49,19 @@ describe("SplitButton", () => {
     const group = screen.getByRole("group", { name: "Publish" });
     expect(group.className).not.toContain("focus-visible");
   });
+  it("keeps keyboard focus visible on each action", async () => {
+    const user = userEvent.setup();
+    render(<SplitButton label="Publish" actions={[{ label: "Save draft" }]} />);
+    const main = screen.getByRole("button", { name: "Publish" });
+    const menu = screen.getByRole("button", { name: "Publish more actions" });
+
+    await user.tab();
+    expect(main).toHaveFocus();
+    expect(main).toHaveClass("focus-visible:[outline-width:2px]");
+    await user.tab();
+    expect(menu).toHaveFocus();
+    expect(menu).toHaveClass("focus-visible:[outline-width:2px]");
+  });
   it("returns focus to the trigger after a keyboard pick", async () => {
     const select = vi.fn();
     render(

@@ -120,7 +120,7 @@ const MONTH_LONG_NAMES = [
 ];
 
 const dateRangePickerTriggerVariants = cva(
-  "flex h-11 min-w-0 w-full items-center gap-2 rounded-lg border border-solid bg-v2-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-visible:outline dark:focus-visible:[outline-width:2px] dark:focus-visible:outline-offset-2 dark:focus-visible:outline-v2-semantic-border-focus transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
+  "flex h-11 min-w-0 w-full items-center gap-2 rounded-lg border border-solid bg-v2-semantic-bg-primary px-4 py-2 font-[family-name:var(--font-v2,Inter,sans-serif)] text-left text-sm font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] transition-[border-color,box-shadow,background-color] duration-150 disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:shadow-none disabled:hover:border-v2-semantic-border-layout",
   {
     variants: {
       state: {
@@ -1216,10 +1216,10 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
                       disabled={presetDisabled}
                       aria-current={presetSelected ? "true" : undefined}
                       className={cn(
-                        "shrink-0 whitespace-nowrap rounded px-2.5 py-1.5 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-v2-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
+                        "shrink-0 whitespace-nowrap rounded-lg px-2.5 py-1.5 text-left text-sm [transition:color_160ms_cubic-bezier(0.22,1,0.36,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none max-sm:border max-sm:border-solid max-sm:border-v2-semantic-border-layout sm:flex sm:h-8 sm:w-full sm:items-center sm:py-0",
                         FOCUS_RING,
                         presetSelected
-                          ? "bg-v2-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)]"
+                          ? "bg-v2-semantic-info-surface font-medium text-[var(--v2-text-primary,#484848)] shadow-[inset_0_0_0_1px_var(--v2-semantic-info-border,var(--semantic-info-border))]"
                           : cn(
                               "text-[var(--v2-text-secondary,#5E5E5E)]",
                               HOVER_FILL
@@ -1764,7 +1764,9 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
             title={displayValue || placeholder}
             className={cn(
               "min-w-0 flex-1 truncate",
-              !displayValue && "font-normal",
+              displayValue
+                ? "font-medium text-[var(--v2-text-primary,#484848)]"
+                : "font-normal",
               triggerLabelClassName
             )}
           >
@@ -1776,7 +1778,7 @@ const DateRangePicker = React.forwardRef<HTMLDivElement, DateRangePickerProps>(
           <button
             type="button"
             aria-label={clearLabel}
-            className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-v2-semantic-border-focus"
+            className="absolute right-2 top-1/2 flex size-7 -translate-y-1/2 items-center justify-center rounded-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-colors hover:text-[var(--v2-text-primary,#484848)] focus-visible:ring-2 focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
             onClick={handleClear}
           >
             <X className="size-4" />

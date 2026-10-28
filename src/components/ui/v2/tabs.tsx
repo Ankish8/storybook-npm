@@ -328,7 +328,7 @@ const underlineTriggerClasses = cn(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap py-4 px-3 font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-5 tracking-[0.014px] border-b-2 border-solid -mb-px cursor-pointer transition-colors duration-150 ease-out motion-reduce:transition-none",
   "text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] border-transparent [@media(hover:hover)_and_(pointer:fine)]:hover:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
   "data-[state=active]:text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] data-[state=active]:border-[color:var(--v2-indicator,var(--semantic-primary))]",
-  "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[-3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]",
+  "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[-3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:text-[var(--v2-semantic-disabled-text,var(--semantic-disabled-primary))]",
   "data-[orientation=vertical]:mb-0 data-[orientation=vertical]:border-b-0 data-[orientation=vertical]:border-l-4 data-[orientation=vertical]:px-6 data-[orientation=vertical]:data-[state=active]:border-v2-semantic-border-accent data-[orientation=vertical]:data-[state=active]:bg-v2-semantic-bg-ui"
 );
 

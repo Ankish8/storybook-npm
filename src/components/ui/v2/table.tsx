@@ -9,7 +9,7 @@ import { Avatar } from "./avatar";
  * Table size variants for row height.
  */
 const tableVariants = cva(
-  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
+  "w-full caption-bottom font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm tabular-nums leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
   {
     variants: {
       size: {
@@ -456,6 +456,7 @@ const TableHead = React.forwardRef(
       sortLabel,
       infoTooltip,
       children,
+      align,
       scope,
       onClick,
       onKeyDown,
@@ -509,6 +510,7 @@ const TableHead = React.forwardRef(
     return (
       <th
         ref={ref}
+        align={align}
         scope={scope ?? (onSortChange ? "col" : undefined)}
         // Host attributes retain priority. Null by itself keeps v1's indicator-free header.
         aria-sort={
@@ -522,7 +524,9 @@ const TableHead = React.forwardRef(
                 : undefined)
         }
         className={cn(
-          "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-muted,var(--v2-semantic-text-muted,var(--semantic-text-muted)))] transition-colors duration-150 motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
+          "group/head h-11 px-4 text-left align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-secondary,var(--semantic-text-secondary)))] transition-colors duration-150 motion-reduce:transition-none focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
+          align === "right" && "text-right",
+          align === "center" && "text-center",
           sticky && "sticky left-0 bg-v2-semantic-primary-surface z-10",
           sortDirection &&
             "text-[var(--v2-text-primary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))]",
@@ -579,7 +583,13 @@ const TableHead = React.forwardRef(
         }}
         {...props}
       >
-        <div className="flex items-center gap-1.5">
+        <div
+          className={cn(
+            "flex items-center gap-1.5",
+            align === "right" && "justify-end",
+            align === "center" && "justify-center"
+          )}
+        >
           {onSortChange ? (
             <>
               <button
@@ -588,7 +598,7 @@ const TableHead = React.forwardRef(
                 disabled={sortDisabled}
                 aria-label={sortLabel}
                 aria-describedby={descriptionId}
-                className="m-0 relative -my-1 inline-flex min-h-7 min-w-0 items-center gap-1.5 rounded-sm bg-transparent p-0 text-left [font:inherit] text-inherit before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-border-focus disabled:cursor-not-allowed disabled:opacity-50"
+                className="m-0 relative -my-1 inline-flex min-h-7 min-w-0 items-center gap-1.5 rounded-sm bg-transparent p-0 text-left [font:inherit] text-inherit before:absolute before:-inset-y-2 before:inset-x-0 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {children}
                 {indicator}
@@ -634,13 +644,16 @@ export interface TableCellProps extends React.TdHTMLAttributes<HTMLTableCellElem
 
 const TableCell = React.forwardRef(
   (
-    { className, sticky, ...props }: TableCellProps,
+    { className, sticky, align, ...props }: TableCellProps,
     ref: React.Ref<HTMLTableCellElement>
   ) => (
     <td
       ref={ref}
+      align={align}
       className={cn(
-        "px-4 align-middle font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
+        "px-4 align-middle first:group-data-[state=selected]/table-row:shadow-[inset_2px_0_0_var(--v2-semantic-info-border,var(--semantic-info-border))] first:group-data-[highlighted=true]/table-row:shadow-[inset_2px_0_0_var(--v2-semantic-info-border,var(--semantic-info-border))] font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,var(--v2-semantic-text-primary,var(--semantic-text-primary)))] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:-outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&:has([role=checkbox])]:pr-0",
+        align === "right" && "text-right",
+        align === "center" && "text-center",
         sticky &&
           "sticky left-0 bg-v2-semantic-bg-primary z-10 [@media(hover:hover)]:group-hover/table-row:bg-v2-semantic-bg-ui group-data-[state=selected]/table-row:bg-v2-semantic-info-surface group-data-[highlighted=true]/table-row:bg-v2-semantic-info-surface",
         className

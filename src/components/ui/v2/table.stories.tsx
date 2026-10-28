@@ -1127,6 +1127,7 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
             <V2.TableHead scope="col">Owner</V2.TableHead>
             <V2.TableHead scope="col">Status</V2.TableHead>
             <V2.TableHead
+              align="right"
               sortDirection={getSortDirection("contacts")}
               onSortChange={(direction) => sortBy("contacts", direction)}
               sortDisabled={disabled}
@@ -1195,6 +1196,7 @@ function SortableTableExample({ args }: { args: ExampleArgs }) {
                     </Badge>
                   </V2.TableCell>
                   <V2.TableCell
+                    align="right"
                     className={cn(
                       "tabular-nums",
                       sort?.key === "contacts" &&

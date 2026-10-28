@@ -18,7 +18,7 @@ const DropdownMenuTrigger = React.forwardRef(
     <DropdownMenuPrimitive.Trigger
       ref={ref}
       className={cn(
-        "focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-[3px]",
+        "focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-[3px]",
         className
       )}
       {...props}

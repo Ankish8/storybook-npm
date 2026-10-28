@@ -300,7 +300,7 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                   onClick={() => onStepChange(index)}
                   className={cn(
                     headClass,
-                    "group w-full rounded-lg border-0 bg-transparent p-0 text-start focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-default"
+                    "group w-full rounded-lg border-0 bg-transparent p-0 text-start focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-default"
                   )}
                 >
                   {indicator}

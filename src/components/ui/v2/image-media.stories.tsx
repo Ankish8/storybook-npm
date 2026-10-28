@@ -199,7 +199,7 @@ export const Usage: Story = {
         <button
           type="button"
           aria-label="Enlarge attachment"
-          className="block max-w-sm overflow-hidden rounded-lg border border-v2-semantic-border-layout p-0 text-left focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
+          className="block max-w-sm overflow-hidden rounded-lg border border-v2-semantic-border-layout p-0 text-left focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
           onClick={() => update({ expanded: true })}
         >
           <ImageMedia

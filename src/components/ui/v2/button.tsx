@@ -21,13 +21,13 @@ import { cn } from "@/lib/utils";
  * Disabled and loading use the native disabled attribute, as in v1. Slotted
  * links also use aria-disabled and capture guards to prevent activation.
  *
- * Focus ring: the 1px width is an arbitrary property on purpose. Storybook runs
+ * Focus ring: the 2px width is an arbitrary property on purpose. Storybook runs
  * tailwind-merge 3, where a bare `outline` means width and is dropped next to
  * `outline-1`; consumers run tailwind-merge 2.x, where it means style and is
- * kept. `[outline-width:1px]` is immune to both, so the ring is identical.
+ * kept. `[outline-width:2px]` is immune to both, so the ring is identical.
  */
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-solid border-transparent font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.16px] cursor-pointer shadow-none [-webkit-tap-highlight-color:transparent] transition-[background-color,border-color,box-shadow,color,opacity,transform] [transition-duration:160ms,160ms,160ms,160ms,160ms,220ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:160ms,160ms,160ms,160ms,160ms,120ms] active:scale-[var(--v2-button-press,0.97)] motion-reduce:active:scale-100 motion-reduce:[transition-duration:120ms] data-[popup-anchor=true]:active:scale-100 aria-disabled:active:scale-100 aria-busy:cursor-progress disabled:cursor-not-allowed disabled:opacity-[0.52] [&[aria-disabled=true]:not([aria-busy=true])]:opacity-[0.52] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-solid border-transparent font-[family-name:var(--font-v2,Inter,sans-serif)] text-sm font-medium leading-[1.4] tracking-[-0.16px] cursor-pointer shadow-none [-webkit-tap-highlight-color:transparent] transition-[background-color,border-color,box-shadow,color,opacity,transform] [transition-duration:160ms,160ms,160ms,160ms,160ms,220ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),cubic-bezier(0.22,1,0.36,1),var(--v2-ease-spring,cubic-bezier(0.22,1,0.36,1))] active:[transition-duration:160ms,160ms,160ms,160ms,160ms,120ms] active:scale-[var(--v2-button-press,0.97)] motion-reduce:active:scale-100 motion-reduce:[transition-duration:120ms] data-[popup-anchor=true]:active:scale-100 aria-disabled:active:scale-100 aria-busy:cursor-progress disabled:cursor-not-allowed disabled:opacity-[0.52] [&[aria-disabled=true]:not([aria-busy=true])]:opacity-[0.52] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4",
   {
     variants: {
       variant: {
@@ -61,7 +61,7 @@ const buttonVariants = cva(
       {
         variant: ["default", "primary"],
         class:
-          "bg-v2-semantic-primary border-v2-semantic-primary text-v2-semantic-text-inverted [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not(:active):not([aria-disabled=true])]:opacity-[0.91] [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:shadow-[0_1px_2px_var(--v2-button-shadow,rgba(0,0,0,0.035))] [&:active:not([aria-disabled=true])]:opacity-[0.84]",
+          "bg-v2-semantic-primary border-v2-semantic-primary text-v2-semantic-text-inverted [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not(:active):not([aria-disabled=true])]:bg-v2-semantic-primary-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not(:active):not([aria-disabled=true])]:border-v2-semantic-primary-hover [@media(hover:hover)_and_(pointer:fine)]:[&:hover:not([aria-disabled=true])]:shadow-[0_1px_2px_var(--v2-button-shadow,rgba(0,0,0,0.035))] [&:active:not([aria-disabled=true])]:bg-v2-semantic-primary-highlighted [&:active:not([aria-disabled=true])]:border-v2-semantic-primary-highlighted",
       },
       { variant: "link", class: "active:scale-100" },
     ],

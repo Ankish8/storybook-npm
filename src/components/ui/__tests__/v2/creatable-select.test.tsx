@@ -274,7 +274,9 @@ describe("CreatableSelect v2 refresh", () => {
     // Arrow keys move the highlight and earn the ring.
     await user.keyboard("{ArrowDown}");
     expect(beta).toHaveClass("bg-v2-semantic-bg-ui", "ring-1", "ring-inset");
-    expect(beta).toHaveClass("ring-v2-semantic-border-accent");
+    expect(beta).toHaveClass(
+      "ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
+    );
 
     // The mouse taking over removes it again (a stationary pointer fires no new enter).
     await user.unhover(alpha);

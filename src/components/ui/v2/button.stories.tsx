@@ -112,10 +112,10 @@ v1 components ship with a \`tw-\` class prefix for Bootstrap hosts. **v2 does no
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Heights</td><td style="padding: 12px 16px;">sm 32 · default 36 · lg 40</td><td style="padding: 12px 16px;">sm 32 · default 40 · lg 44</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Radius</td><td style="padding: 12px 16px;">4px</td><td style="padding: 12px 16px;">8px</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Label</td><td style="padding: 12px 16px;">Source Sans / inherited, 14 semibold</td><td style="padding: 12px 16px;">Timeless Sans (Inter fallback) 14px / 1.4; 500 on every variant</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Flat primary fill; 91% opacity on hover, 84% while pressed</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Solid variants</td><td style="padding: 12px 16px;">Flat fill</td><td style="padding: 12px 16px;">Flat primary fill with distinct hover and pressed colors</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Secondary</td><td style="padding: 12px 16px;">Grey surface</td><td style="padding: 12px 16px;">Filled neutral surface, distinct from the white bordered Outline</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Ghost / Link</td><td style="padding: 12px 16px;">Muted text / blue link</td><td style="padding: 12px 16px;">Ghost: muted text with a subtle hover fill. Link: blue, underlined and borderless</td></tr>
-    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Focus ring</td><td style="padding: 12px 16px;">2px ring, 2px offset</td><td style="padding: 12px 16px;">1px outline, 3px offset</td></tr>
+    <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Focus ring</td><td style="padding: 12px 16px;">2px ring, 2px offset</td><td style="padding: 12px 16px;">2px outline, 3px offset</td></tr>
     <tr style="border-bottom: 1px solid #E9EAEB;"><td style="padding: 12px 16px;">Minimum width</td><td style="padding: 12px 16px;">64 / 80 / 96px</td><td style="padding: 12px 16px;">None (hugs content)</td></tr>
   </tbody>
 </table>
@@ -140,7 +140,7 @@ All six size names, icons, loadingText and asChild remain supported. Changing th
 
 ## Interactions
 
-Press feedback uses a quick compression, a gentle spring return and a subtle ripple from the activation point. Keyboard activation starts the ripple in the center. Reduced motion disables the ripple, including when the preference changes during activation. Wide actions compress less than compact ones. Primary hover and press use opacity instead of a gradient; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
+Press feedback uses a quick compression, a gentle spring return and a subtle ripple from the activation point. Keyboard activation starts the ripple in the center. Reduced motion disables the ripple, including when the preference changes during activation. Wide actions compress less than compact ones. Primary hover and press use distinct semantic colors; neutral actions gain a quiet surface tint. Labels rise through a short soft blur while their width springs to fit. Links and popup triggers stay stationary. Hover applies only to hover-capable fine pointers. The reference is [Arc Button](https://uiarc.dev/components/button).
 
 Loading keeps the original width and displays a centered spinner. Set \`loadingText\` to opt into an inline spinner with an explicit status label. Loading sets native \`disabled\`, \`aria-busy\` and \`aria-disabled\`, matching v1 and preventing repeat activation. Busy native buttons are skipped in the Tab order. Disabled actions use 52% opacity. Reduced motion removes scale, movement and blur; short fades remain. We retain a visible keyboard focus outline, unlike the reference.
 

@@ -77,13 +77,13 @@ describe("Button (v2)", () => {
     }
   );
 
-  it("uses the Figma focus ring (1px outline, 3px offset)", () => {
+  it("uses a visible focus ring (2px outline, 3px offset)", () => {
     render(<Button>Focus</Button>);
     const button = screen.getByRole("button");
     expect(button).toHaveClass("focus-visible:outline");
     // Arbitrary property so tailwind-merge 2.x (consumers) and 3.x (Storybook)
     // both keep the bare `outline` style class — see the note in button.tsx.
-    expect(button).toHaveClass("focus-visible:[outline-width:1px]");
+    expect(button).toHaveClass("focus-visible:[outline-width:2px]");
     expect(button).toHaveClass("focus-visible:outline-offset-[3px]");
     expect(button).toHaveClass(
       "focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"

@@ -79,7 +79,7 @@ const ToastAction = React.forwardRef(
     <ToastPrimitives.Action
       ref={ref}
       className={cn(
-        "inline-flex h-8 [@media(pointer:coarse)]:min-h-11 shrink-0 items-center justify-center rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-v2-semantic-text-secondary transition-[color,background-color,transform] duration-150 motion-reduce:transition-colors motion-safe:active:scale-[0.98] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-8 [@media(pointer:coarse)]:min-h-11 shrink-0 items-center justify-center rounded-lg border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-4 font-[family-name:var(--font-v2,Inter,sans-serif)] text-xs font-medium tracking-[0.06px] text-v2-semantic-text-secondary transition-[color,background-color,transform] duration-150 motion-reduce:transition-colors motion-safe:active:scale-[0.98] [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -99,7 +99,7 @@ const ToastClose = React.forwardRef(
     <ToastPrimitives.Close
       ref={ref}
       className={cn(
-        "absolute right-2 top-2 inline-flex size-8 [@media(pointer:coarse)]:size-11 shrink-0 items-center justify-center rounded-md p-0 text-v2-semantic-text-muted transition-[color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:[transition-duration:160ms,160ms,120ms] motion-reduce:transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-v2-semantic-text-primary motion-safe:active:scale-[0.96] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
+        "absolute right-2 top-2 inline-flex size-8 [@media(pointer:coarse)]:size-11 shrink-0 items-center justify-center rounded-md p-0 text-v2-semantic-text-muted transition-[color,background-color,transform] [transition-duration:160ms,160ms,580ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] active:[transition-duration:160ms,160ms,120ms] motion-reduce:transition-colors [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)_and_(pointer:fine)]:hover:text-v2-semantic-text-primary motion-safe:active:scale-[0.96] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
         className
       )}
       aria-label="Dismiss notification"
@@ -865,7 +865,7 @@ function Toaster({
                     : "Expand notifications"
               }
               onClick={() => changeExpanded(!pinnedExpanded)}
-              className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-3 py-1 text-xs text-v2-semantic-text-secondary shadow-sm transition-colors [@media(pointer:coarse)]:min-h-11 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-v2-semantic-border-focus"
+              className="inline-flex min-h-7 items-center gap-1.5 rounded-full border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary px-3 py-1 text-xs text-v2-semantic-text-secondary shadow-sm transition-colors [@media(pointer:coarse)]:min-h-11 [@media(hover:hover)_and_(pointer:fine)]:hover:bg-v2-semantic-bg-ui focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
             >
               {count} notifications
               <ChevronDown

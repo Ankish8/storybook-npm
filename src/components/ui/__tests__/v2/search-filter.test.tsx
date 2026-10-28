@@ -422,9 +422,9 @@ describe("SearchFilter v2 refresh", () => {
     const row = screen.getByRole("option", { name: "+91 11 4000 3001" });
     expect(row).toHaveClass(
       "rounded-sm",
-      "focus-visible:ring-1",
+      "focus-visible:ring-2",
       "focus-visible:ring-inset",
-      "focus-visible:ring-v2-semantic-border-accent",
+      "focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
       "hover:bg-v2-semantic-bg-ui"
     );
   });

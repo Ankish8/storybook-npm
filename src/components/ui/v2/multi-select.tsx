@@ -370,7 +370,7 @@ function OverflowCount({ value }: { value: number }) {
  * MultiSelect trigger variants matching TextField styling
  */
 const multiSelectTriggerVariants = cva(
-  "group/ms flex min-h-11 w-full items-center justify-between rounded-lg bg-v2-semantic-bg-primary py-[5px] pl-3 pr-[11px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] dark:focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus)] dark:focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none",
+  "group/ms flex min-h-11 w-full items-center justify-between rounded-lg bg-v2-semantic-bg-primary py-[5px] pl-3 pr-[11px] font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-sm leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 transition-[border-color,box-shadow,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] disabled:cursor-not-allowed disabled:bg-v2-semantic-bg-ui disabled:border-v2-semantic-border-layout disabled:opacity-50 disabled:shadow-none",
   {
     variants: {
       state: {
@@ -1587,7 +1587,7 @@ const MultiSelect = React.forwardRef(
                 // the edge (11px padding + 1px border + 16px chevron + 8px gap),
                 // 45px with the separator.
                 className={cn(
-                  "absolute top-1/2 inline-flex size-[22px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
+                  "absolute top-1/2 inline-flex size-[22px] -translate-y-1/2 cursor-pointer items-center justify-center rounded-sm border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] [transition:opacity_160ms_cubic-bezier(0.16,1,0.3,1),transform_260ms_cubic-bezier(0.16,1,0.3,1),filter_160ms_cubic-bezier(0.16,1,0.3,1),background-color_160ms_cubic-bezier(0.22,1,0.36,1),color_160ms_cubic-bezier(0.22,1,0.36,1)] [@starting-style]:scale-[0.6] [@starting-style]:opacity-0 [@starting-style]:blur-[2px] motion-reduce:[@starting-style]:scale-100 motion-reduce:[@starting-style]:blur-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                   showSeparatorBeforeChevron ? "right-[45px]" : "right-9",
                   !(disabled || loading) &&
                     "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] active:scale-[0.96] motion-reduce:active:scale-100"
@@ -1700,7 +1700,7 @@ const MultiSelect = React.forwardRef(
                           toggleSelectAll();
                         }
                       }}
-                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-v2-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-v2-semantic-bg-ui focus-visible:bg-v2-semantic-bg-ui focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent"
+                      className="flex w-full cursor-pointer select-none items-center gap-2 border-b border-solid border-v2-semantic-border-layout px-3 py-2 text-sm text-[var(--v2-text-secondary,#5E5E5E)] outline-none hover:bg-v2-semantic-bg-ui focus-visible:bg-v2-semantic-bg-ui focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]"
                     >
                       <Checkbox
                         checked={
@@ -1775,13 +1775,14 @@ const MultiSelect = React.forwardRef(
                           // Rows are real Tab stops, so the focus-visible pseudo-class separates a keyboard
                           // highlight (ring) from a mouse hover (fill only). 4px radius = panel
                           // 8px minus its 4px list padding. Arc: 38px rows whose highlight follows
-                          // quickly (80ms) and whose selection shows as the check, never as weight.
-                          "relative flex min-h-[38px] w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
+                          // quickly (80ms), with a quiet selection tint and no weight change.
+                          "relative flex min-h-[38px] w-full min-w-0 cursor-pointer select-none items-center rounded-sm text-left leading-[1.4] tracking-[-0.01em] text-[var(--v2-text-secondary,#5E5E5E)] outline-none transition-[background-color,color] [transition-duration:80ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                           optionVariant === "detailed"
                             ? "gap-2 px-2 py-2 text-sm"
                             : "gap-3 px-[11px] py-2 text-sm",
-                          isSelected && "text-[var(--v2-text-primary,#484848)]",
                           "hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui",
+                          isSelected &&
+                            "bg-v2-semantic-info-surface text-[var(--v2-text-primary,#484848)] hover:bg-v2-semantic-primary-surface focus:bg-v2-semantic-primary-surface",
                           isDisabled && "opacity-50 cursor-not-allowed",
                           option.isDeleted && "line-through opacity-70"
                         );

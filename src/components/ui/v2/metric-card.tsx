@@ -209,7 +209,7 @@ const MetricCard = React.forwardRef<HTMLDivElement, MetricCardProps>(
           <p
             data-slot="metric-card-value"
             className={cn(
-              "m-0 min-w-0 break-words text-3xl font-medium leading-tight tracking-[-0.03em] tabular-nums",
+              "m-0 min-w-0 break-words text-3xl font-medium leading-tight tracking-[-0.03em] tabular-nums text-v2-semantic-text-primary",
               size === "sm" && "text-2xl",
               size === "lg" && "text-4xl"
             )}

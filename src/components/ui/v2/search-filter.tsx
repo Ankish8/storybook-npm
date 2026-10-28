@@ -430,7 +430,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                   // 4px radius = panel 8px minus its 4px list padding. Rows are real Tab
                   // stops, so the focus-visible pseudo-class separates a keyboard highlight (ring)
                   // from a mouse hover (fill only).
-                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-v2-semantic-border-accent",
+                  "relative flex min-h-12 w-full min-w-0 cursor-pointer select-none items-center gap-2 rounded-sm border-0 bg-transparent px-1.5 py-2.5 pr-9 text-left text-base font-normal text-[var(--v2-text-secondary,#5E5E5E)] outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
                   !isSelected &&
                     "hover:bg-v2-semantic-bg-ui focus:bg-v2-semantic-bg-ui",
                   isSelected &&
@@ -533,7 +533,7 @@ const SearchFilter = React.forwardRef<HTMLDivElement, SearchFilterProps>(
                 key="clear"
                 type="button"
                 aria-label="Clear search"
-                className="absolute right-[13px] top-1/2 -mt-3 grid size-6 place-items-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-[background-color,color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-v2-semantic-text-secondary focus-visible:outline-offset-[3px]"
+                className="absolute right-[13px] top-1/2 -mt-3 grid size-6 place-items-center rounded border-0 bg-transparent p-0 text-[var(--v2-text-muted,#707070)] transition-[background-color,color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms] [@media(hover:hover)]:hover:bg-v2-semantic-bg-ui [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-[3px]"
                 onClick={handleClearSearch}
                 initial={
                   reducedMotion

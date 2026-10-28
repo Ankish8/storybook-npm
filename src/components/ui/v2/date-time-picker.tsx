@@ -145,7 +145,7 @@ const dateTimePickerVariants = cva(
 );
 
 const dateTimePickerTriggerVariants = cva(
-  "flex w-full items-center justify-between rounded-lg border border-solid bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus transition-[border-color,box-shadow,background-color] duration-150",
+  "flex w-full items-center justify-between rounded-lg border border-solid bg-v2-semantic-bg-primary font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal text-left text-[var(--v2-text-secondary,#5E5E5E)] outline-none has-[input:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] has-[input:focus-visible]:outline-offset-2 transition-[border-color,box-shadow,background-color] duration-150",
   {
     variants: {
       size: {
@@ -2955,7 +2955,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
               <button
                 type="button"
                 aria-label="Clear date"
-                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
+                className="inline-flex size-5 items-center justify-center rounded transition-colors duration-150 focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)]"
                 onClick={clearValue}
               >
                 <X className="size-4" aria-hidden="true" />
@@ -2965,7 +2965,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
             type="button"
             disabled={disabled || readOnly}
             aria-label={showCalendar ? "Open calendar" : "Open time picker"}
-            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
+            className="inline-flex shrink-0 items-center justify-center rounded transition-colors duration-150 focus-visible:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:outline-offset-2 text-[var(--v2-text-muted,#707070)] [@media(hover:hover)]:hover:bg-v2-semantic-bg-hover [@media(hover:hover)]:hover:text-[var(--v2-text-primary,#484848)] disabled:cursor-not-allowed"
             ref={calendarButtonRef}
             onKeyDown={(event) => {
               if (event.key === "Enter" || event.key === " ") {

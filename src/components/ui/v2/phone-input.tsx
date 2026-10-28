@@ -798,16 +798,16 @@ function FieldFeedback({
 }
 
 const phoneInputContainerVariants = cva(
-  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-11 border-solid rounded-lg bg-v2-semantic-bg-primary dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
+  "font-[family-name:var(--font-v2,Inter,sans-serif)] font-normal flex items-center border h-11 border-solid rounded-lg bg-v2-semantic-bg-primary has-[input:focus-visible]:[outline:2px_solid_var(--v2-semantic-border-focus,var(--semantic-primary))] has-[input:focus-visible]:outline-offset-2 transition-[border-color,background-color] [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:0.01ms]",
   {
     variants: {
       state: {
         default:
-          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
+          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none ",
         empty:
-          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
+          "border-v2-semantic-border-input [@media(hover:hover)_and_(pointer:fine)]:hover:border-v2-semantic-primary focus-within:outline-none focus-within:shadow-none ",
         error:
-          "border-v2-semantic-error-primary focus-within:outline-none focus-within:shadow-none dark:focus-within:outline dark:focus-within:[outline-width:2px] dark:focus-within:outline-offset-2 dark:focus-within:outline-v2-semantic-border-focus",
+          "border-v2-semantic-error-primary focus-within:outline-none focus-within:shadow-none ",
       },
     },
     defaultVariants: {

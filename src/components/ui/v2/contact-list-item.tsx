@@ -70,7 +70,7 @@ const ContactListItem = React.forwardRef(
           }
         }}
         className={cn(
-          "flex items-center gap-3 rounded-lg px-3 py-3 cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] font-[family-name:var(--font-v2,Inter,sans-serif)]",
+          "flex items-center gap-3 rounded-lg px-3 py-3 cursor-pointer transition-colors [transition-duration:160ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:[transition-duration:120ms] [-webkit-tap-highlight-color:transparent] focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] font-[family-name:var(--font-v2,Inter,sans-serif)]",
           isSelected
             ? "bg-v2-semantic-primary-surface"
             : "[@media(hover:hover)]:hover:bg-v2-semantic-bg-ui active:bg-v2-semantic-primary-surface",

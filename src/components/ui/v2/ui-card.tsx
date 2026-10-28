@@ -80,7 +80,7 @@ const UiCard = React.forwardRef<HTMLDivElement, UiCardProps>(
           "w-[300px] max-w-full min-w-0 rounded-xl border border-solid border-v2-semantic-border-layout bg-v2-semantic-bg-primary p-5 font-[family-name:var(--font-v2,Inter,sans-serif)] text-v2-semantic-text-secondary shadow-none [transition-property:border-color,background-color] duration-150 ease-out motion-reduce:transition-none",
           interactive &&
             !disabled &&
-            "cursor-pointer focus-visible:border-v2-semantic-border-focus focus-visible:[outline-style:solid] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-v2-semantic-border-focus",
+            "cursor-pointer focus-visible:border-[var(--v2-semantic-border-focus,var(--semantic-primary))] focus-visible:[outline-style:solid] focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))]",
           interactive &&
             !disabled &&
             !selected &&

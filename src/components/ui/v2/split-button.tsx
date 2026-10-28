@@ -89,9 +89,6 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
           ? "primary"
           : variant;
     const solid = resolvedVariant === "primary";
-    // No focus ring on the segments or the joined pair.
-    const segmentFocus =
-      "focus-visible:outline-none focus-visible:[outline-width:0px]";
     const iconSize =
       size === "sm" ? "icon-sm" : size === "lg" ? "icon-lg" : "icon";
     // Arc: the pair is one pill. The border lives on the wrapper, segments sit
@@ -138,7 +135,6 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
             hasActions &&
               "rounded-s-[7px] rounded-e-none border-0 active:scale-100",
             hasActions && segmentHeight,
-            hasActions && segmentFocus,
             className
           )}
         >
@@ -157,7 +153,6 @@ const SplitButton = React.forwardRef<HTMLButtonElement, SplitButtonProps>(
                   "shrink-0 rounded-s-none rounded-e-[7px] border-0 focus-visible:z-10 active:scale-100 before:pointer-events-none before:absolute before:inset-y-0 before:start-0 before:w-px before:content-['']",
                   triggerWidth,
                   segmentHeight,
-                  segmentFocus,
                   // Full-height divider: the pill's own tone mixed toward the page
                   // on primary, the lighter hairline on secondary.
                   solid

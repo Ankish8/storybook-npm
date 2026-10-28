@@ -607,7 +607,7 @@ function PasswordExample(args: TextFieldProps) {
             aria-pressed={visible}
             disabled={args.disabled || args.loading}
             onClick={() => setVisible((previous) => !previous)}
-            className="flex cursor-pointer items-center rounded-sm focus-visible:outline focus-visible:[outline-width:1px] focus-visible:outline-v2-semantic-primary disabled:cursor-not-allowed"
+            className="flex cursor-pointer items-center rounded-sm focus-visible:outline focus-visible:[outline-width:2px] focus-visible:outline-offset-2 focus-visible:outline-[var(--v2-semantic-border-focus,var(--semantic-primary))] disabled:cursor-not-allowed"
           >
             {visible ? <EyeOff /> : <Eye />}
           </button>

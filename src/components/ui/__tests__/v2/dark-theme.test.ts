@@ -171,7 +171,7 @@ describe("v2 theme installation and production CSS", () => {
       "var(--v2-on-status,var(--semantic-text-inverted))"
     );
     expect(declarationsFor("outline")).toContain(
-      "2px solid var(--v2-semantic-border-focus)"
+      "2px solid var(--v2-semantic-border-focus,var(--semantic-primary))"
     );
   });
 
