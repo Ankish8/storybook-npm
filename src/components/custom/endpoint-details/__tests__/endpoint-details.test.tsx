@@ -9,7 +9,7 @@ describe("EndpointDetails", () => {
     companyId: "12",
     authToken: "sk_live_abc123xyz",
     secretKey: "whsec_def456uvw",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
   };
 
   // Minimal props for whatsapp variant
@@ -50,7 +50,7 @@ describe("EndpointDetails", () => {
       render(<EndpointDetails {...callingProps} />);
 
       expect(
-        screen.getByText("tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO")
+        screen.getByText("tpk_example_0000000000000000000000000000")
       ).toBeInTheDocument();
     });
 

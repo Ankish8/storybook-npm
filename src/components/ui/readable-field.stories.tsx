@@ -235,7 +235,7 @@ export const SecretKey: Story = {
 export const ApiKey: Story = {
   args: {
     label: "x-api-key",
-    value: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    value: "tpk_example_0000000000000000000000000000",
   },
 };
 
@@ -317,7 +317,7 @@ export const EndpointDetailsLayout: Story = {
       />
       <ReadableField
         label="x-api-key"
-        value="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+        value="tpk_example_0000000000000000000000000000"
       />
     </div>
   ),
