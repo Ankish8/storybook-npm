@@ -120,7 +120,7 @@ function CallingApiSettings() {
       baseUrl="https://api.myoperator.co/v3/voice/gateway"
       authToken="sk_live_abc123xyz789"
       secretKey="whsec_def456uvw012"
-      apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+      apiKey="tpk_example_0000000000000000000000000000"
       onRegenerate={(field) => console.log(\`Regenerating \${field}\`)}
       onRevokeAccess={() => console.log("Revoking access")}
     />
@@ -236,7 +236,7 @@ export const Default: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
   },
 };
 
@@ -265,7 +265,7 @@ export const CallingWithoutBaseUrl: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
   },
 };
 
@@ -280,7 +280,7 @@ export const CallingWithoutRevoke: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
     showRevokeSection: false,
   },
 };
@@ -296,7 +296,7 @@ export const CustomTitle: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
   },
 };
 
@@ -310,7 +310,7 @@ export const CustomRevokeText: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
     revokeTitle: "Delete All API Keys",
     revokeDescription:
       "This action cannot be undone. All active integrations will stop working immediately.",
@@ -328,7 +328,7 @@ export const RegenerateDisabled: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
     canRegenerate: false,
     regenerateDisabledTooltip: "You don't have permission to regenerate credentials",
   },
@@ -344,7 +344,7 @@ export const RegenerateHidden: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
     showRegenerate: false,
   },
 };
@@ -362,7 +362,7 @@ export const VariantComparison: Story = {
         companyId="12"
         authToken="sk_live_51abc123xyz789def456ghi"
         secretKey="whsec_abc123xyz789def456ghi789jkl"
-        apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+        apiKey="tpk_example_0000000000000000000000000000"
       />
       <EndpointDetails
         variant="whatsapp"
@@ -386,7 +386,7 @@ export const Interactive: Story = {
     companyId: "12",
     authToken: "sk_live_51abc123xyz789def456ghi",
     secretKey: "whsec_abc123xyz789def456ghi789jkl",
-    apiKey: "tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO",
+    apiKey: "tpk_example_0000000000000000000000000000",
   },
   render: (args) => (
     <EndpointDetails

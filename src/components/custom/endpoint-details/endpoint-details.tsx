@@ -56,7 +56,7 @@ export interface EndpointDetailsProps
  *   companyId="12"
  *   authToken="sk_live_abc123"
  *   secretKey="whsec_xyz789"
- *   apiKey="tpb0syNDbO4k49ZbyiWeU5k8gFWQ7ODBJ7GYr3UO"
+ *   apiKey="tpk_example_0000000000000000000000000000"
  *   onRegenerate={(field) => console.log(`Regenerate ${field}`)}
  *   onRevokeAccess={() => console.log("Revoke access")}
  * />
