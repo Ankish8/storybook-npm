@@ -369,6 +369,15 @@ components:
     internalDependencies:
       - input
 
+  stepper:
+    description: "Horizontal multi-step progress indicator with completed, current and pending steps"
+    category: core
+    dependencies:
+      - "class-variance-authority"
+      - "clsx"
+      - "tailwind-merge@^2.6.0"
+      - "lucide-react"
+
   date-range-picker:
     description: "A date range picker with a trigger button, an anchored popover calendar with range selection, month/year dropdown jump, and a quick-presets column (Today, Yesterday, Last 7 days, Last 30 days, This month, Last month)"
     category: form

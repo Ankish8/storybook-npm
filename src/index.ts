@@ -86,6 +86,10 @@ export {
 } from "./components/ui/number-step-field";
 export type { NumberStepFieldProps } from "./components/ui/number-step-field";
 
+// Stepper
+export { Stepper, stepperIndicatorVariants, stepperLabelVariants } from "./components/ui/stepper";
+export type { StepperProps, StepperStep, StepperStatus } from "./components/ui/stepper";
+
 // DateTimePicker
 export {
   DateTimePicker,
