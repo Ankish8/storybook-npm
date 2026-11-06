@@ -4,6 +4,7 @@ import { Stepper } from "./stepper";
 import { Button } from "./button";
 
 const steps = [{ label: "Call Flow" }, { label: "Campaign Details" }];
+const threeSteps = [...steps, { label: "Call Flow" }];
 
 const meta: Meta<typeof Stepper> = {
   title: "Components/Stepper",
@@ -34,12 +35,13 @@ import { Stepper } from "@/components/ui/stepper"
 <table>
 <thead><tr><th>Token</th><th>CSS Variable</th><th>Usage</th><th>Preview</th></tr></thead>
 <tbody>
-<tr><td>bg-semantic-bg-primary</td><td>--semantic-bg-primary</td><td>Bar background</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-bg-primary)"></div></td></tr>
-<tr><td>border-semantic-border-layout</td><td>--semantic-border-layout</td><td>Bar bottom border, connector</td><td><div style="width:16px;height:16px;border-radius:4px;background:var(--semantic-border-layout)"></div></td></tr>
-<tr><td>bg-semantic-text-placeholder</td><td>--semantic-text-placeholder</td><td>Pending/current circle, label</td><td><div style="width:16px;height:16px;border-radius:4px;background:var(--semantic-text-placeholder)"></div></td></tr>
-<tr><td>text-semantic-text-primary</td><td>--semantic-text-primary</td><td>Completed label</td><td><div style="width:16px;height:16px;border-radius:4px;background:var(--semantic-text-primary)"></div></td></tr>
-<tr><td>bg-semantic-success-surface</td><td>--semantic-success-surface</td><td>Completed circle</td><td><div style="width:16px;height:16px;border-radius:4px;background:var(--semantic-success-surface)"></div></td></tr>
-<tr><td>text-semantic-success-primary</td><td>--semantic-success-primary</td><td>Check icon</td><td><div style="width:16px;height:16px;border-radius:4px;background:var(--semantic-success-primary)"></div></td></tr>
+<tr><td>bg-semantic-bg-primary</td><td>--semantic-bg-primary</td><td>Bar background, current circle fill</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-bg-primary)"></div></td></tr>
+<tr><td>border-semantic-border-layout</td><td>--semantic-border-layout</td><td>Bar bottom border, connector</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-border-layout)"></div></td></tr>
+<tr><td>border-semantic-border-primary</td><td>--semantic-border-primary</td><td>Current circle outline</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-border-primary)"></div></td></tr>
+<tr><td>text-semantic-text-secondary</td><td>--semantic-text-secondary</td><td>Current number/label, completed circle fill</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-text-secondary)"></div></td></tr>
+<tr><td>text-semantic-text-muted</td><td>--semantic-text-muted</td><td>Pending number and label, completed label</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-text-muted)"></div></td></tr>
+<tr><td>border-[var(--color-primary-100)]</td><td>--color-primary-100</td><td>Pending circle outline (no semantic token yet)</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--color-primary-100)"></div></td></tr>
+<tr><td>text-semantic-text-inverted</td><td>--semantic-text-inverted</td><td>Check icon</td><td><div style="width:16px;height:16px;border-radius:4px;border:1px solid #ddd;background:var(--semantic-text-inverted)"></div></td></tr>
 </tbody>
 </table>`,
       },
@@ -65,16 +67,13 @@ export const AllStates: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
       <Stepper steps={steps} currentStep={0} />
-      <Stepper steps={steps} currentStep={1} />
+      <Stepper steps={threeSteps} currentStep={2} />
     </div>
   ),
 };
 
 export const ThreeSteps: Story = {
-  args: {
-    steps: [...steps, { label: "Review" }],
-    currentStep: 2,
-  },
+  args: { steps: threeSteps, currentStep: 2 },
 };
 
 export const Interactive: Story = {

@@ -26,21 +26,27 @@ describe('Stepper', () => {
     expect(items[0]).toHaveAttribute('data-status', 'current')
     expect(items[1]).toHaveAttribute('data-status', 'pending')
     expect(items[1]).not.toHaveAttribute('aria-current')
-    expect(screen.getByText('1')).toHaveClass('bg-semantic-text-placeholder', 'size-5')
+    expect(screen.getByText('1')).toHaveClass('border-semantic-border-primary', 'text-semantic-text-secondary', 'size-5')
+    expect(screen.getByText('2')).toHaveClass('text-semantic-text-muted', 'bg-transparent')
   })
 
   it('renders completed step with check icon and primary label', () => {
     const { container } = render(<Stepper steps={steps} currentStep={1} />)
     expect(screen.queryByText('1')).not.toBeInTheDocument()
     expect(container.querySelector('svg')).toBeInTheDocument()
-    expect(screen.getByText('Call Flow')).toHaveClass('text-semantic-text-primary')
+    expect(screen.getByText('Call Flow')).toHaveClass('text-semantic-text-muted')
     expect(screen.getByText('(completed)')).toBeInTheDocument()
-    expect(screen.getByText('Campaign Details')).toHaveClass('text-semantic-text-placeholder')
+    expect(screen.getByText('Campaign Details')).toHaveClass('text-semantic-text-secondary')
+  })
+
+  it('pending label uses muted text', () => {
+    render(<Stepper steps={steps} currentStep={0} />)
+    expect(screen.getByText('Campaign Details')).toHaveClass('text-semantic-text-muted')
   })
 
   it('completed indicator variant classes', () => {
-    expect(stepperIndicatorVariants({ status: 'completed' })).toContain('bg-semantic-success-surface')
-    expect(stepperIndicatorVariants({ status: 'completed' })).toContain('size-6')
+    expect(stepperIndicatorVariants({ status: 'completed' })).toContain('bg-semantic-text-secondary')
+    expect(stepperIndicatorVariants({ status: 'completed' })).toContain('size-5')
   })
 
   it('renders one connector between steps', () => {

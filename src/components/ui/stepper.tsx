@@ -5,19 +5,22 @@ import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 /**
- * Circle indicator. Pending and current share the muted look (per Figma);
- * completed swaps to a larger success-tinted circle holding a check icon.
+ * Circle indicator (20px for every status, per Figma).
+ * - current: white fill, dark outline, dark number
+ * - pending: transparent, light outline (primary-100 #C0C3CA — no semantic token), muted number
+ * - completed: solid dark fill holding a white check
  */
 const stepperIndicatorVariants = cva(
-  "flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+  "flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full border-[0.8px] border-solid text-xs font-semibold",
   {
     variants: {
       status: {
         pending:
-          "size-5 bg-semantic-text-placeholder text-xs font-semibold text-semantic-text-inverted",
+          "border-[var(--color-primary-100)] bg-transparent text-semantic-text-muted",
         current:
-          "size-5 bg-semantic-text-placeholder text-xs font-semibold text-semantic-text-inverted",
-        completed: "size-6 bg-semantic-success-surface",
+          "border-semantic-border-primary bg-semantic-bg-primary text-semantic-text-secondary",
+        completed:
+          "border-semantic-text-secondary bg-semantic-text-secondary text-semantic-text-inverted",
       },
     },
     defaultVariants: {
@@ -29,9 +32,9 @@ const stepperIndicatorVariants = cva(
 const stepperLabelVariants = cva("m-0 whitespace-nowrap text-sm font-semibold leading-5", {
   variants: {
     status: {
-      pending: "text-semantic-text-placeholder",
-      current: "text-semantic-text-placeholder",
-      completed: "text-semantic-text-primary",
+      pending: "text-semantic-text-muted",
+      current: "text-semantic-text-secondary",
+      completed: "text-semantic-text-muted",
     },
   },
   defaultVariants: {
@@ -103,7 +106,8 @@ const Stepper = React.forwardRef<HTMLOListElement, StepperProps>(
                 {status === "completed" ? (
                   <Check
                     aria-hidden="true"
-                    className="size-4 text-semantic-success-primary"
+                    strokeWidth={3}
+                    className="size-2.5"
                   />
                 ) : (
                   index + 1
