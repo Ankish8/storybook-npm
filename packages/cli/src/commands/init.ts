@@ -15,7 +15,15 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
  * Do not edit directly - run 'npx myoperator-ui init' to update
  */
 
+/* Typeface: Source Sans Pro (400 Regular, 600 SemiBold) - the face the Figma designs use */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600&display=swap');
+
 :root {
+  /* =========================================================================
+     TYPOGRAPHY
+     ========================================================================= */
+  --font-family-base: 'Source Sans Pro', sans-serif;
+
   /* =========================================================================
      PRIMITIVE COLORS - CSS Custom Properties
      ========================================================================= */
@@ -256,6 +264,15 @@ export const MYOPERATOR_THEME_CSS = `/* myOperator UI Theme - Design System Vari
   --input: 217 33% 17.5%;
   --ring: 213 27% 84%;
 }
+
+/* Components must not inherit the host app's body font.
+ * Scoped to tw- elements only. Deliberately NOT inside @layer: unlayered rules
+ * (Tailwind preflight, Bootstrap reboot) set "button, input { font-family: inherit }"
+ * and would beat any layered rule. font-mono elements are excluded so code text
+ * keeps its monospace face. */
+[class*="tw-"]:not([class*="font-mono"]) {
+  font-family: var(--font-family-base);
+}
 `
 
 // ============================================================================
@@ -267,6 +284,7 @@ const CSS_VARIABLES_V4 = `@import "tailwindcss";
 @import "./lib/myoperator-ui-theme.css";
 
 @theme {
+  --font-sans: var(--font-family-base), ui-sans-serif, system-ui, sans-serif;
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(222.2 84% 4.9%);
   --color-card: hsl(0 0% 100%);
@@ -355,7 +373,7 @@ select[class*="tw-"],
 textarea[class*="tw-"],
 [class*="tw-"] textarea {
   background-color: transparent;
-  font-family: inherit;
+  font-family: var(--font-family-base);
   font-size: 100%;
   line-height: inherit;
   color: inherit;
@@ -386,6 +404,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-family-base)", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         // Legacy shadcn colors
         border: "hsl(var(--border))",
