@@ -1703,7 +1703,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
         onValueChange?.(nextValue);
       },
-      [isValueControlled, onValueChange]
+      [isValueControlled, onValueChange, setDraft]
     );
 
     const updatePopoverValue = React.useCallback(
@@ -1714,7 +1714,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         }
         updateValue(nextValue);
       },
-      [showActions, updateValue]
+      [showActions, updateValue, setDraft]
     );
 
     // Discard any uncommitted draft whenever the popover opens or closes.

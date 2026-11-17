@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * SelectTrigger variants matching TextField styling
  */
 const selectTriggerVariants = cva(
-  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-[var(--semantic-bg-primary,#FFFFFF)] px-4 py-2 text-left text-base text-[var(--semantic-text-primary,#181D27)] outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
+  "flex h-[42px] w-full items-center justify-between gap-2 rounded bg-[var(--semantic-bg-primary,#FFFFFF)] px-4 py-2 text-left text-base text-[var(--semantic-text-primary,#181D27)] outline-none transition-all disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-[var(--color-neutral-50)] data-[placeholder]:text-[var(--semantic-text-placeholder,#A2A6B1)] [&>span]:min-w-0 [&>span]:flex-1 [&>span]:truncate",
   {
     variants: {
       state: {
