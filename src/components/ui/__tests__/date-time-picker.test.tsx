@@ -1240,7 +1240,7 @@ describe("DateTimePicker", () => {
       expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
     });
 
-    it("Cancel restores the value from when the popover opened", () => {
+    it("Cancel discards the draft without changing the value", () => {
       const onValueChange = vi.fn();
       const onCancel = vi.fn();
       render(
@@ -1254,11 +1254,30 @@ describe("DateTimePicker", () => {
       fireEvent.click(screen.getByLabelText("Date and time"));
       fireEvent.click(screen.getByLabelText("May 20, 2026"));
       fireEvent.click(screen.getByText("Cancel"));
-      expect(onValueChange).toHaveBeenLastCalledWith(
-        expect.objectContaining({ date: mayTwelve })
-      );
+      expect(onValueChange).not.toHaveBeenCalled();
       expect(onCancel).toHaveBeenCalled();
       expect(screen.queryByRole("dialog", { hidden: true })).toBeNull();
+    });
+
+    it("commits the picked date only when OK is pressed", () => {
+      const onValueChange = vi.fn();
+      const onOk = vi.fn();
+      render(
+        <DateTimePicker
+          defaultValue={initial}
+          showActions
+          onValueChange={onValueChange}
+          onOk={onOk}
+        />
+      );
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      fireEvent.click(screen.getByLabelText("May 20, 2026"));
+      expect(onValueChange).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByText("OK"));
+      expect(onValueChange).toHaveBeenCalledTimes(1);
+      expect(onOk).toHaveBeenCalledWith(
+        expect.objectContaining({ date: new Date(2026, 4, 20) })
+      );
     });
   });
 });

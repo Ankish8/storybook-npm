@@ -1497,8 +1497,13 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
     const currentValue = normalizeValue(
       isValueControlled ? value : internalValue
     );
-    const resolvedStartTime = currentValue.startTime || UNSET_TIME;
-    const resolvedEndTime = currentValue.endTime || UNSET_TIME;
+    // With Cancel/OK actions, popover edits live in a draft and only reach the
+    // main input (and onValueChange) when OK is pressed.
+    const [draft, setDraft] = React.useState<DateTimePickerValue | null>(null);
+    const popoverValue =
+      showActions && draft ? normalizeValue(draft) : currentValue;
+    const resolvedStartTime = popoverValue.startTime || UNSET_TIME;
+    const resolvedEndTime = popoverValue.endTime || UNSET_TIME;
     const resolvedShowSeconds =
       showSeconds ??
       (timeHasVisibleSeconds(currentValue.startTime) ||
@@ -1691,6 +1696,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
 
     const updateValue = React.useCallback(
       (nextValue: DateTimePickerValue) => {
+        setDraft(null);
         if (!isValueControlled) {
           setInternalValue(nextValue);
         }
@@ -1700,24 +1706,33 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
       [isValueControlled, onValueChange]
     );
 
-    // Value at the moment the popover opened, so Cancel can restore it.
-    const openSnapshotRef = React.useRef<DateTimePickerValue | null>(null);
+    const updatePopoverValue = React.useCallback(
+      (nextValue: DateTimePickerValue) => {
+        if (showActions) {
+          setDraft(nextValue);
+          return;
+        }
+        updateValue(nextValue);
+      },
+      [showActions, updateValue]
+    );
+
+    // Discard any uncommitted draft whenever the popover opens or closes.
     React.useEffect(() => {
-      openSnapshotRef.current = open ? currentValue : null;
-      // Only re-snapshot when the popover opens, not on every value change.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+      setDraft(null);
     }, [open]);
 
     const handleCancel = () => {
-      const snapshot = openSnapshotRef.current;
-      if (snapshot) updateValue(snapshot);
+      setDraft(null);
       setOpen(false);
       onCancel?.();
     };
 
     const handleOk = () => {
+      const finalValue = popoverValue;
+      if (draft) updateValue(finalValue);
       setOpen(false);
-      onOk?.(currentValue);
+      onOk?.(finalValue);
     };
 
     const clearValue = (event: React.MouseEvent<HTMLElement>) => {
@@ -1752,9 +1767,9 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         const clampedMonth = clampMonth(nextMonth, effectiveMinDate, maxDate);
         setVisibleMonth(clampedMonth);
 
-        if (pickerVariant === "time-only" || !currentValue.date) return;
+        if (pickerVariant === "time-only" || !popoverValue.date) return;
 
-        const selectedDay = currentValue.date.getDate();
+        const selectedDay = popoverValue.date.getDate();
         const daysInTargetMonth = getDaysInMonth(
           clampedMonth.getFullYear(),
           clampedMonth.getMonth() + 1
@@ -1768,11 +1783,11 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
           );
 
           if (!isSelectableDay(fallbackDate, effectiveMinDate, maxDate)) {
-            updateValue({ ...currentValue, date: undefined });
+            updatePopoverValue({ ...popoverValue, date: undefined });
             return;
           }
 
-          updateValue({ ...currentValue, date: fallbackDate });
+          updatePopoverValue({ ...popoverValue, date: fallbackDate });
           return;
         }
 
@@ -1783,15 +1798,15 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
         );
 
         if (!isSelectableDay(nextSelectedDate, effectiveMinDate, maxDate)) {
-          updateValue({ ...currentValue, date: undefined });
+          updatePopoverValue({ ...popoverValue, date: undefined });
           return;
         }
 
-        if (!isSameDay(currentValue.date, nextSelectedDate)) {
-          updateValue({ ...currentValue, date: nextSelectedDate });
+        if (!isSameDay(popoverValue.date, nextSelectedDate)) {
+          updatePopoverValue({ ...popoverValue, date: nextSelectedDate });
         }
       },
-      [currentValue, effectiveMinDate, maxDate, pickerVariant, updateValue]
+      [popoverValue, effectiveMinDate, maxDate, pickerVariant, updatePopoverValue]
     );
 
     const handleTypedDateChange = (
@@ -2102,7 +2117,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                 {calendarDays.map((day) => {
                   const isCurrentMonth =
                     day.getMonth() === visibleMonth.getMonth();
-                  const isSelected = isSameDay(day, currentValue.date);
+                  const isSelected = isSameDay(day, popoverValue.date);
                   const isToday = isSameDay(day, new Date());
                   const isDisabled =
                     (effectiveMinDate && isBeforeDay(day, effectiveMinDate)) ||
@@ -2137,7 +2152,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                       onClick={() => {
                         if (isDisabled) return;
 
-                        updateValue({ ...currentValue, date: day });
+                        updatePopoverValue({ ...popoverValue, date: day });
                         if (closeOnSelect) {
                           setOpen(false);
                         }
@@ -2173,7 +2188,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                   setOpenTimeField(nextOpen ? "start" : null)
                 }
                 onChange={(startTime) =>
-                  updateValue({ ...currentValue, startTime })
+                  updatePopoverValue({ ...popoverValue, startTime })
                 }
               />
 
@@ -2192,7 +2207,7 @@ const DateTimePicker = React.forwardRef<HTMLDivElement, DateTimePickerProps>(
                     setOpenTimeField(nextOpen ? "end" : null)
                   }
                   onChange={(endTime) =>
-                    updateValue({ ...currentValue, endTime })
+                    updatePopoverValue({ ...popoverValue, endTime })
                   }
                 />
               )}
