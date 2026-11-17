@@ -453,6 +453,28 @@ const ClearableExample = () => {
   );
 };
 
+export const SearchInput: Story = {
+  name: "Search input",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Label-less search field with a leading search icon. Height is capped at 40px via `inputContainerClassName`.",
+      },
+    },
+  },
+  render: () => (
+    <div className="w-[320px]">
+      <TextField
+        aria-label="Search"
+        placeholder="Search..."
+        leftIcon={<Search />}
+        inputContainerClassName="h-10 max-h-10"
+      />
+    </div>
+  ),
+};
+
 export const Clearable: Story = {
   render: () => <ClearableExample />,
 };
