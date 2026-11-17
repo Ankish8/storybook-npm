@@ -1279,5 +1279,22 @@ describe("DateTimePicker", () => {
         expect.objectContaining({ date: new Date(2026, 4, 20) })
       );
     });
+
+    it("time-only with actions opens the time columns in one click", () => {
+      render(
+        <DateTimePicker defaultValue={initial} variant="time-only" showActions />
+      );
+      fireEvent.click(screen.getByLabelText("Time"));
+      expect(screen.getByLabelText("Start Time hours")).toBeInTheDocument();
+      expect(screen.getByLabelText("Start Time minutes")).toBeInTheDocument();
+      expect(screen.queryByText("Start Time")).toBeNull();
+      expect(screen.getByText("OK")).toBeInTheDocument();
+    });
+
+    it("date-time with actions does not auto-open the time columns", () => {
+      render(<DateTimePicker defaultValue={initial} showActions />);
+      fireEvent.click(screen.getByLabelText("Date and time"));
+      expect(screen.queryByLabelText("Start Time hours")).toBeNull();
+    });
   });
 });
