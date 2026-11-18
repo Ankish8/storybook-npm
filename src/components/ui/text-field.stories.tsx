@@ -459,7 +459,7 @@ export const SearchInput: Story = {
     docs: {
       description: {
         story:
-          "Label-less search field with a leading search icon. Height is capped at 40px via `inputContainerClassName`.",
+          "Label-less search field with a leading search icon. Height is capped at 40px via `inputContainerClassName`. The `clearable` prop shows an X button once the user types; clicking it empties the input.",
       },
     },
   },
@@ -469,6 +469,7 @@ export const SearchInput: Story = {
         aria-label="Search"
         placeholder="Search..."
         leftIcon={<Search />}
+        clearable
         inputContainerClassName="h-10 max-h-10"
       />
     </div>
