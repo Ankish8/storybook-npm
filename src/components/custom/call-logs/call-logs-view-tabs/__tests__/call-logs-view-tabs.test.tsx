@@ -375,4 +375,101 @@ describe("CallLogsViewTabs", () => {
     expect(screen.getByText("Manage views...")).toBeInTheDocument();
     expect(screen.queryByText("Customize tabs...")).not.toBeInTheDocument();
   });
+
+  /* ── reorderable dropdown ── */
+
+  const reorderTabs = [
+    { id: "all", label: "All" },
+    { id: "sys", label: "System", removable: true, isDefault: true },
+    { id: "a", label: "Alpha", removable: true },
+    { id: "b", label: "Beta", removable: true },
+  ];
+
+  async function openReorderable() {
+    const user = userEvent.setup();
+    const props = {
+      onTabChange: vi.fn(),
+      onRemoveTab: vi.fn(),
+      onReorderTabs: vi.fn(),
+      onAddNew: vi.fn(),
+    };
+    render(
+      <CallLogsViewTabs
+        tabs={reorderTabs}
+        activeTabId="all"
+        maxVisiblePresets={1}
+        {...props}
+      />
+    );
+    await user.click(screen.getByText("More (2)"));
+    return { user, ...props };
+  }
+
+  const orderOf = (mock: ReturnType<typeof vi.fn>) =>
+    mock.mock.calls[0][0].map((tab: { id: string }) => tab.id);
+
+  it("lists movable views, locking defaults and allowing custom ones to be removed", async () => {
+    await openReorderable();
+    expect(screen.getByRole("menuitem", { name: /System/ })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: /^All/ })).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: /cannot be removed/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Remove System view" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove Alpha view" })).toBeInTheDocument();
+    expect(screen.getByText(/The top/)).toHaveTextContent("The top 1 show as tabs.");
+  });
+
+  it("reorders by dragging the handle, without selecting a view", async () => {
+    const { onReorderTabs, onTabChange } = await openReorderable();
+    const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() };
+    const handle = screen.getByTestId("drag-handle-b");
+    fireEvent.click(handle);
+    fireEvent.dragStart(handle, { dataTransfer });
+    fireEvent.drop(screen.getByRole("menuitem", { name: /System/ }), { dataTransfer });
+    expect(orderOf(onReorderTabs)).toEqual(["all", "b", "sys", "a"]);
+    expect(onTabChange).not.toHaveBeenCalled();
+  });
+
+  it("shows a drop line on the side the dragged view will land", async () => {
+    await openReorderable();
+    const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() };
+    const handle = screen.getByTestId("drag-handle-a");
+    const above = screen.getByRole("menuitem", { name: /System/ });
+    const below = screen.getByRole("menuitem", { name: /Beta/ });
+    fireEvent.dragStart(handle, { dataTransfer });
+    fireEvent.dragOver(above, { dataTransfer });
+    expect(above).toHaveClass("border-t-semantic-primary");
+    fireEvent.dragOver(below, { dataTransfer });
+    expect(below).toHaveClass("border-b-semantic-primary");
+    expect(above).not.toHaveClass("border-t-semantic-primary");
+    fireEvent.dragEnd(handle);
+    expect(below).not.toHaveClass("border-b-semantic-primary");
+  });
+
+  it("makes only the handle draggable", async () => {
+    await openReorderable();
+    expect(screen.getByTestId("drag-handle-a")).toHaveAttribute("draggable", "true");
+    expect(screen.getByRole("menuitem", { name: /Alpha/ })).not.toHaveAttribute("draggable");
+  });
+
+  it("reorders with Alt+ArrowDown", async () => {
+    const { onReorderTabs } = await openReorderable();
+    fireEvent.keyDown(screen.getByRole("menuitem", { name: /Alpha/ }), {
+      key: "ArrowDown",
+      altKey: true,
+    });
+    expect(orderOf(onReorderTabs)).toEqual(["all", "sys", "b", "a"]);
+  });
+
+  it("calls onAddNew and closes the menu", async () => {
+    const { user, onAddNew } = await openReorderable();
+    await user.click(screen.getByRole("menuitem", { name: "Add new" }));
+    expect(onAddNew).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
+
+  it("closes the menu on Done", async () => {
+    const { user } = await openReorderable();
+    await user.click(screen.getByRole("menuitem", { name: "Done" }));
+    expect(screen.queryByRole("menu")).not.toBeInTheDocument();
+  });
 });

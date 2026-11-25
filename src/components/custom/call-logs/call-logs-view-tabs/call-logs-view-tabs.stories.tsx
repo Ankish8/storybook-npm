@@ -169,38 +169,64 @@ export const ActiveSavedView: Story = {
   ),
 };
 
+function ReorderableDemo(props: CallLogsViewTabsProps) {
+  const [tabs, setTabs] = React.useState(props.tabs);
+  return (
+    <CallLogsViewTabsDemo
+      {...props}
+      tabs={tabs}
+      onReorderTabs={(next) => {
+        setTabs(next);
+        props.onReorderTabs?.(next);
+      }}
+      onRemoveTab={(id) => {
+        setTabs((current) => current.filter((tab) => tab.id !== id));
+        props.onRemoveTab?.(id);
+      }}
+    />
+  );
+}
+
+const systemView = (id: string, label: string) => ({
+  id,
+  label,
+  removable: true,
+  isDefault: true,
+});
+
 export const OverflowDropdown: Story = {
   name: "Overflow (More dropdown)",
   parameters: {
     docs: {
       description: {
         story:
-          'With more saved presets than `maxVisiblePresets` (default 3), the extras collapse into a "More (N)" dropdown instead of growing the tab row indefinitely. Each overflow tab can optionally show a `count`, and a "Customize tabs..." footer link renders when `onCustomize` is provided.',
+          'With more saved presets than `maxVisiblePresets`, the extras collapse into a "More (N)" dropdown. With `onReorderTabs`, the dropdown lists every movable view with a drag handle (or Alt + Up/Down on a focused row). `isDefault` views show a lock; custom `removable` views can be deleted. `onAddNew` adds the "Add new" button.',
       },
     },
   },
   args: {
     tabs: [
       { id: "all", label: "All" },
-      { id: "preset-1", label: "Connected", removable: true },
-      { id: "preset-2", label: "Missed", removable: true },
-      { id: "preset-3", label: "AI Handled", removable: true },
-      { id: "preset-4", label: "Voicemail", removable: true },
-      { id: "preset-5", label: "Starred", removable: true, count: 2 },
-      { id: "preset-6", label: "With Notes", removable: true, count: 4 },
-      { id: "preset-7", label: "Transferred", removable: true, count: 13 },
-      { id: "preset-8", label: "Recorded", removable: true, count: 13 },
-      { id: "preset-9", label: "Abandoned", removable: true, count: 4 },
-      { id: "preset-10", label: "Blocked", removable: true, count: 2 },
-      { id: "preset-11", label: "Outgoing", removable: true, count: 3 },
+      systemView("missed", "Incoming Missed"),
+      systemView("connected", "Incoming Connected"),
+      systemView("ai", "AI Handled"),
+      { id: "outgoing", label: "Outgoing", removable: true },
+      { id: "all-missed", label: "All Missed", removable: true },
+      { id: "not-answered", label: "Outgoing Not Answered", removable: true },
+      { id: "incoming", label: "Incoming", removable: true },
+      { id: "transferred", label: "AI Transferred", removable: true },
+      { id: "notes", label: "With Notes", removable: true },
+      { id: "unknown", label: "Unknown Callers", removable: true },
     ],
     activeTabId: "all",
+    maxVisiblePresets: 3,
     onRemoveTab: fn(),
-    onCustomize: fn(),
+    onReorderTabs: fn(),
+    onAddNew: fn(),
   },
   render: (args) => (
     <RowContainer>
-      <CallLogsViewTabsDemo {...args} />
+      <ReorderableDemo {...args} />
     </RowContainer>
   ),
 };

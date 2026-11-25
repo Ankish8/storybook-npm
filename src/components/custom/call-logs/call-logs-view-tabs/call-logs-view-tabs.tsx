@@ -1,7 +1,8 @@
 import * as React from "react";
-import { ChevronDown, X } from "lucide-react";
+import { ChevronDown, GripVertical, Lock, Plus, X } from "lucide-react";
 
 import { cn } from "../../../../lib/utils";
+import { buttonVariants } from "../../../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,21 @@ function RemoveTabButton({
   );
 }
 
+/** Reorderable in the "More" dropdown; anything else (e.g. "All") is fixed. */
+const isMovable = (tab: CallLogsViewTab) => !!(tab.removable || tab.isDefault);
+const canRemove = (tab: CallLogsViewTab) => !!tab.removable && !tab.isDefault;
+
+/** Moves `fromId` to `toId`'s position among movable tabs; fixed tabs stay put. */
+function moveTab(tabs: CallLogsViewTab[], fromId: string, toId: string) {
+  const movable = tabs.filter(isMovable);
+  const from = movable.findIndex((tab) => tab.id === fromId);
+  const to = movable.findIndex((tab) => tab.id === toId);
+  if (from === -1 || to === -1 || from === to) return tabs;
+  movable.splice(to, 0, ...movable.splice(from, 1));
+  let next = 0;
+  return tabs.map((tab) => (isMovable(tab) ? movable[next++] : tab));
+}
+
 const TAB_BUTTON_CLASS =
   "group flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded px-3 text-sm font-semibold";
 const TAB_ACTIVE_CLASS =
@@ -77,7 +93,7 @@ function TabButton({
       )}
     >
       {tab.label}
-      {tab.removable && (
+      {canRemove(tab) && (
         <RemoveTabButton
           label={tab.label}
           onRemove={() => onRemoveTab?.(tab.id)}
@@ -128,6 +144,9 @@ const CallLogsViewTabs = React.forwardRef(
       maxVisiblePresets,
       onCustomize,
       customizeLabel = "Customize tabs...",
+      onReorderTabs,
+      onAddNew,
+      addNewLabel = "Add new",
       className,
       ...props
     }: CallLogsViewTabsProps,
@@ -206,7 +225,10 @@ const CallLogsViewTabs = React.forwardRef(
     const tabsSignature = React.useMemo(
       () =>
         tabs
-          .map((tab) => `${tab.id}:${tab.label}:${!!tab.removable}`)
+          .map(
+            (tab) =>
+              `${tab.id}:${tab.label}:${!!tab.removable}:${!!tab.isDefault}`
+          )
           .join("|"),
       [tabs]
     );
@@ -233,6 +255,19 @@ const CallLogsViewTabs = React.forwardRef(
       return () => observer.disconnect();
     }, [recompute]);
 
+    const [dragId, setDragId] = React.useState<string | null>(null);
+
+    const [overId, setOverId] = React.useState<string | null>(null);
+    const endDrag = () => {
+      setDragId(null);
+      setOverId(null);
+    };
+
+    const reorder = (fromId: string, toId: string) => {
+      const next = moveTab(tabs, fromId, toId);
+      if (next !== tabs) onReorderTabs?.(next);
+    };
+
     if (tabs.length === 0) {
       return (
         <div
@@ -246,6 +281,8 @@ const CallLogsViewTabs = React.forwardRef(
     const visibleTabs = tabs.slice(0, visibleCount);
     const overflowTabs = tabs.slice(visibleCount);
     const isOverflowActive = overflowTabs.some((tab) => tab.id === activeTabId);
+    const menuTabs = onReorderTabs ? tabs.filter(isMovable) : overflowTabs;
+    const hasActions = !!(onReorderTabs || onAddNew);
 
     return (
       <div
@@ -273,7 +310,7 @@ const CallLogsViewTabs = React.forwardRef(
                 className={TAB_BUTTON_CLASS}
               >
                 {tab.label}
-                {tab.removable && (
+                {canRemove(tab) && (
                   <span className="flex items-center rounded-full p-0.5">
                     <X className="size-3" aria-hidden="true" />
                   </span>
@@ -324,37 +361,162 @@ const CallLogsViewTabs = React.forwardRef(
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="start"
-                className="w-56 overflow-hidden p-0"
+                className={cn(
+                  "w-56 overflow-hidden p-0",
+                  onReorderTabs && "w-[360px]",
+                  hasActions &&
+                    "flex max-h-[min(25rem,var(--radix-dropdown-menu-content-available-height))] flex-col"
+                )}
               >
-                <div className="max-h-[340px] overflow-y-auto p-1">
-                  {overflowTabs.map((tab) => (
-                    <DropdownMenuItem
-                      key={tab.id}
-                      onSelect={() => onTabChange(tab.id)}
-                      className={cn(
-                        tab.id === activeTabId && "bg-semantic-bg-ui"
-                      )}
-                      suffix={
-                        tab.count !== undefined ||
-                        (tab.removable && onRemoveTab) ? (
-                          <span className="flex items-center gap-2">
-                            {tab.count !== undefined && (
-                              <span>{tab.count}</span>
-                            )}
-                            {tab.removable && onRemoveTab && (
-                              <RemoveTabButton
-                                label={tab.label}
-                                onRemove={() => onRemoveTab(tab.id)}
-                              />
-                            )}
+                {onReorderTabs && (
+                  <div className="shrink-0 border-b border-solid border-semantic-border-layout px-3 py-2.5 text-xs text-semantic-text-muted">
+                    Drag to reorder. The top{" "}
+                    {visibleTabs.filter(isMovable).length} show as tabs.
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    "max-h-[340px] overflow-y-auto p-1",
+                    hasActions && "min-h-0 flex-1"
+                  )}
+                >
+                  {menuTabs.map((tab, index) => {
+                    const removeShown = canRemove(tab) && !!onRemoveTab;
+                    // The drop line sits on the edge where the dragged row will land.
+                    const dragIndex = menuTabs.findIndex(
+                      (t) => t.id === dragId
+                    );
+                    const isDropTarget =
+                      dragIndex !== -1 &&
+                      overId === tab.id &&
+                      dragId !== tab.id;
+                    return (
+                      <DropdownMenuItem
+                        key={tab.id}
+                        onSelect={() => onTabChange(tab.id)}
+                        onKeyDown={(event) => {
+                          if (
+                            onReorderTabs &&
+                            event.altKey &&
+                            (event.key === "ArrowUp" ||
+                              event.key === "ArrowDown")
+                          ) {
+                            event.preventDefault();
+                            const step = event.key === "ArrowUp" ? -1 : 1;
+                            const target = menuTabs[index + step];
+                            if (!target) return;
+                            const item = event.currentTarget;
+                            reorder(tab.id, target.id);
+                            // Moving the DOM node can drop focus.
+                            requestAnimationFrame(() => item.focus());
+                          } else if (event.key === "Delete" && removeShown) {
+                            onRemoveTab?.(tab.id);
+                          }
+                        }}
+                        onDragOver={(event) => {
+                          if (!dragId) return;
+                          event.preventDefault();
+                          setOverId(tab.id);
+                        }}
+                        onDrop={(event) => {
+                          if (!dragId) return;
+                          event.preventDefault();
+                          reorder(dragId, tab.id);
+                          endDrag();
+                        }}
+                        className={cn(
+                          tab.id === activeTabId && "bg-semantic-bg-ui",
+                          onReorderTabs &&
+                            "border-x-0 border-y-2 border-solid border-transparent",
+                          isDropTarget &&
+                            (dragIndex < index
+                              ? "border-b-semantic-primary"
+                              : "border-t-semantic-primary"),
+                          dragId === tab.id && "opacity-40"
+                        )}
+                        suffix={
+                          tab.count !== undefined ||
+                          tab.isDefault ||
+                          removeShown ? (
+                            <span className="flex items-center gap-2">
+                              {tab.count !== undefined && (
+                                <span>{tab.count}</span>
+                              )}
+                              {tab.isDefault && (
+                                <span
+                                  role="img"
+                                  aria-label="Default view, cannot be removed"
+                                  className="flex p-0.5 opacity-50"
+                                >
+                                  <Lock
+                                    className="size-3.5"
+                                    aria-hidden="true"
+                                  />
+                                </span>
+                              )}
+                              {removeShown && (
+                                <RemoveTabButton
+                                  label={tab.label}
+                                  onRemove={() => onRemoveTab?.(tab.id)}
+                                />
+                              )}
+                            </span>
+                          ) : undefined
+                        }
+                      >
+                        {onReorderTabs && (
+                          // shortcut: native HTML drag and drop has patchy touch support; switch to pointer events if touch reordering is required.
+                          <span
+                            draggable
+                            data-testid={`drag-handle-${tab.id}`}
+                            aria-hidden="true"
+                            title="Drag to reorder"
+                            onClick={(event) => event.stopPropagation()}
+                            onDragStart={(event) => {
+                              event.dataTransfer.effectAllowed = "move";
+                              // Firefox won't start a drag without data.
+                              event.dataTransfer.setData("text/plain", tab.id);
+                              const row = event.currentTarget.parentElement;
+                              if (row) {
+                                event.dataTransfer.setDragImage?.(row, 16, 16);
+                              }
+                              setDragId(tab.id);
+                            }}
+                            onDragEnd={endDrag}
+                            className="flex size-7 shrink-0 cursor-grab items-center justify-center rounded text-semantic-text-muted hover:bg-semantic-bg-hover active:cursor-grabbing"
+                          >
+                            <GripVertical className="size-4" />
                           </span>
-                        ) : undefined
-                      }
-                    >
-                      {tab.label}
-                    </DropdownMenuItem>
-                  ))}
+                        )}
+                        {tab.label}
+                      </DropdownMenuItem>
+                    );
+                  })}
                 </div>
+                {hasActions && (
+                  <div className="flex shrink-0 items-center gap-2 border-t border-solid border-semantic-border-layout px-3 py-2.5">
+                    {onAddNew && (
+                      <DropdownMenuItem
+                        onSelect={onAddNew}
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "cursor-pointer"
+                        )}
+                      >
+                        <Plus className="size-4" aria-hidden="true" />
+                        {addNewLabel}
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      className={cn(
+                        buttonVariants(),
+                        "ml-auto cursor-pointer focus:bg-semantic-primary-hover focus:text-semantic-text-inverted"
+                      )}
+                    >
+                      Done
+                    </DropdownMenuItem>
+                  </div>
+                )}
                 {onCustomize && (
                   <button
                     type="button"

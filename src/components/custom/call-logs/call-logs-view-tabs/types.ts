@@ -9,6 +9,8 @@ export interface CallLogsViewTab {
   removable?: boolean;
   /** Count shown next to the label when this tab appears in the "More" overflow dropdown (e.g. matching call volume) */
   count?: number;
+  /** System-provided view: shows a lock instead of the remove control and can't be deleted (overrides `removable`) */
+  isDefault?: boolean;
 }
 
 export interface CallLogsViewTabsProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -33,4 +35,15 @@ export interface CallLogsViewTabsProps extends React.HTMLAttributes<HTMLDivEleme
   onCustomize?: () => void;
   /** Footer link text in the "More" dropdown, shown only when `onCustomize` is provided. Defaults to "Customize tabs..." */
   customizeLabel?: string;
+  /**
+   * Enables reordering in the "More" dropdown. The dropdown then lists every
+   * `removable` or `isDefault` view (inline ones included), each with a drag
+   * handle. Called with the complete `tabs` array in its new order; other
+   * views keep their positions.
+   */
+  onReorderTabs?: (tabs: CallLogsViewTab[]) => void;
+  /** Called by the "More" dropdown's "Add new" button. The button only renders when this is provided. */
+  onAddNew?: () => void;
+  /** Text of the add button. Defaults to "Add new" */
+  addNewLabel?: string;
 }

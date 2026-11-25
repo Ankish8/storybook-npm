@@ -1395,6 +1395,7 @@ components:
       - "lucide-react"
     internalDependencies:
       - dropdown-menu
+      - button
     isMultiFile: true
     directory: "call-logs/call-logs-view-tabs"
     files:
