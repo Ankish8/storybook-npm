@@ -502,8 +502,8 @@ const CallLogsViewTabs = React.forwardRef(
                         )}
                       >
                         {/* Elements, not strings: DropdownMenuItem would stretch a bare string. */}
-                        <span>{addNewLabel}</span>
                         <Plus className="size-3" aria-hidden="true" />
+                        <span>{addNewLabel}</span>
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem
