@@ -29,13 +29,6 @@ export interface CallLogsViewTabsProps extends React.HTMLAttributes<HTMLDivEleme
    */
   maxVisiblePresets?: number;
   /**
-   * Called when the "More" dropdown's footer link is clicked. The footer
-   * only renders when this is provided.
-   */
-  onCustomize?: () => void;
-  /** Footer link text in the "More" dropdown, shown only when `onCustomize` is provided. Defaults to "Customize tabs..." */
-  customizeLabel?: string;
-  /**
    * Enables reordering in the "More" dropdown. The dropdown then lists every
    * `removable` or `isDefault` view (inline ones included), each with a drag
    * handle. Called with the complete `tabs` array in its new order; other

@@ -67,7 +67,6 @@ import { CallLogsAddContactModal } from "@/components/custom/call-logs/call-logs
 import { CallLogsBlockContactModal } from "@/components/custom/call-logs/call-logs-block-contact-modal";
 import { CallLogsViewTabs, type CallLogsViewTab } from "@/components/custom/call-logs/call-logs-view-tabs";
 import {
-  CallLogsCustomizeTabsModal,
   type CallLogsCustomizeTabsView,
 } from "@/components/custom/call-logs/call-logs-customize-tabs-modal";
 import { CallLogsDateRangeFilter } from "@/components/custom/call-logs/call-logs-date-range-filter";
@@ -408,7 +407,6 @@ function CallLogsCompletePage() {
   const [activeViewTabId, setActiveViewTabId] = React.useState("all");
   const [presetToRemove, setPresetToRemove] = React.useState<CallLogsViewTab | null>(null);
   const [showRemovePresetConfirm, setShowRemovePresetConfirm] = React.useState(false);
-  const [showCustomizeTabsModal, setShowCustomizeTabsModal] = React.useState(false);
 
   const [selectedRowIds, setSelectedRowIds] = React.useState<Set<string>>(new Set());
   const [playingRowId, setPlayingRowId] = React.useState<string | null>(null);
@@ -501,7 +499,6 @@ function CallLogsCompletePage() {
               setPresetToRemove(tab);
               setShowRemovePresetConfirm(true);
             }}
-            onCustomize={() => setShowCustomizeTabsModal(true)}
           />
           <div className="flex flex-wrap items-center gap-[10px]">
             <CallLogsLineSelect
@@ -815,14 +812,6 @@ function CallLogsCompletePage() {
           setShowSavePresetModal(false);
           setDrawer(null);
         }}
-      />
-
-      <CallLogsCustomizeTabsModal
-        open={showCustomizeTabsModal}
-        onOpenChange={setShowCustomizeTabsModal}
-        views={customizeViews}
-        onViewsChange={setCustomizeViews}
-        onDone={() => setShowCustomizeTabsModal(false)}
       />
 
       <CallLogsAddNoteModal

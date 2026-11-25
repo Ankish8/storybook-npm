@@ -142,8 +142,6 @@ const CallLogsViewTabs = React.forwardRef(
       onTabChange,
       onRemoveTab,
       maxVisiblePresets,
-      onCustomize,
-      customizeLabel = "Customize tabs...",
       onReorderTabs,
       onAddNew,
       addNewLabel = "Add new",
@@ -516,15 +514,6 @@ const CallLogsViewTabs = React.forwardRef(
                       Done
                     </DropdownMenuItem>
                   </div>
-                )}
-                {onCustomize && (
-                  <button
-                    type="button"
-                    onClick={onCustomize}
-                    className="flex h-11 w-full shrink-0 items-center bg-semantic-primary-surface px-4 text-left text-sm font-semibold text-semantic-text-secondary"
-                  >
-                    {customizeLabel}
-                  </button>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>

@@ -120,8 +120,6 @@ import { CallLogsViewTabs } from "@/components/custom/call-logs/call-logs-view-t
     activeTabId: { control: "text" },
     onTabChange: { action: "tabChange" },
     onRemoveTab: { action: "removeTab" },
-    onCustomize: { action: "customize" },
-    customizeLabel: { control: "text" },
   },
   args: {
     onTabChange: fn(),

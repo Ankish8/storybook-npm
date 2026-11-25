@@ -331,51 +331,6 @@ describe("CallLogsViewTabs", () => {
     expect(screen.getByRole("menuitem", { name: /Voicemail/ })).toHaveTextContent("Voicemail");
   });
 
-  /* ── "Customize tabs..." footer ── */
-
-  it("does not render the Customize footer when onCustomize is not provided", async () => {
-    const user = userEvent.setup();
-    render(
-      <CallLogsViewTabs tabs={manyPresetTabs} activeTabId="all" onTabChange={vi.fn()} />
-    );
-    await user.click(screen.getByText("More (2)"));
-    expect(screen.queryByText("Customize tabs...")).not.toBeInTheDocument();
-  });
-
-  it("renders the Customize footer and calls onCustomize when clicked", async () => {
-    const user = userEvent.setup();
-    const onCustomize = vi.fn();
-    render(
-      <CallLogsViewTabs
-        tabs={manyPresetTabs}
-        activeTabId="all"
-        onTabChange={vi.fn()}
-        onCustomize={onCustomize}
-      />
-    );
-    await user.click(screen.getByText("More (2)"));
-    const footer = screen.getByText("Customize tabs...");
-    expect(footer).toBeInTheDocument();
-    await user.click(footer);
-    expect(onCustomize).toHaveBeenCalledTimes(1);
-  });
-
-  it("supports a custom customizeLabel", async () => {
-    const user = userEvent.setup();
-    render(
-      <CallLogsViewTabs
-        tabs={manyPresetTabs}
-        activeTabId="all"
-        onTabChange={vi.fn()}
-        onCustomize={vi.fn()}
-        customizeLabel="Manage views..."
-      />
-    );
-    await user.click(screen.getByText("More (2)"));
-    expect(screen.getByText("Manage views...")).toBeInTheDocument();
-    expect(screen.queryByText("Customize tabs...")).not.toBeInTheDocument();
-  });
-
   /* ── reorderable dropdown ── */
 
   const reorderTabs = [
