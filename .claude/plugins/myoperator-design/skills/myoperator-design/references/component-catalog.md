@@ -935,7 +935,7 @@ import { Mail } from "lucide-react"
 > A view-tab switcher for the Call Logs page showing built-in views alongside removable user-saved filter presets, collapsing extra presets into a 'More' dropdown
 
 **Install**: `npx myoperator-ui add call-logs-view-tabs`
-**Requires**: `dropdown-menu` (auto-installed)
+**Requires**: `dropdown-menu`, `button` (auto-installed)
 **Type**: Multi-file component
 
 ---
