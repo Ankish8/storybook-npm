@@ -23,7 +23,7 @@ function RemoveTabButton({
   onRemove: () => void;
   className?: string;
 }) {
-  return ( 
+  return (
     <span
       role="button"
       tabIndex={0}
@@ -497,21 +497,22 @@ const CallLogsViewTabs = React.forwardRef(
                       <DropdownMenuItem
                         onSelect={onAddNew}
                         className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "cursor-pointer"
+                          buttonVariants({ variant: "link" }),
+                          "cursor-pointer px-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus:bg-transparent focus:text-semantic-text-link focus:underline"
                         )}
                       >
-                        <Plus className="size-4" aria-hidden="true" />
-                        {addNewLabel}
+                        {/* Elements, not strings: DropdownMenuItem would stretch a bare string. */}
+                        <span>{addNewLabel}</span>
+                        <Plus className="size-3" aria-hidden="true" />
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem
                       className={cn(
                         buttonVariants(),
-                        "ml-auto cursor-pointer focus:bg-semantic-primary-hover focus:text-semantic-text-inverted"
+                        "ml-auto cursor-pointer focus-visible:ring-0 focus-visible:ring-offset-0 focus:bg-semantic-primary-hover focus:text-semantic-text-inverted"
                       )}
                     >
-                      Done
+                      <span>Done</span>
                     </DropdownMenuItem>
                   </div>
                 )}
