@@ -205,8 +205,8 @@ export const OverflowDropdown: Story = {
   args: {
     tabs: [
       { id: "all", label: "All" },
-      systemView("missed", "Incoming Missed"),
-      systemView("connected", "Incoming Connected"),
+      systemView("missed", "Missed"),
+      systemView("connected", "Connected"),
       systemView("ai", "AI Handled"),
       { id: "outgoing", label: "Outgoing", removable: true },
       { id: "all-missed", label: "All Missed", removable: true },
