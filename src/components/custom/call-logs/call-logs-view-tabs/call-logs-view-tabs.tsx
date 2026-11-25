@@ -23,7 +23,7 @@ function RemoveTabButton({
   onRemove: () => void;
   className?: string;
 }) {
-  return (
+  return ( 
     <span
       role="button"
       tabIndex={0}
