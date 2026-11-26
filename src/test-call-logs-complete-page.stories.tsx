@@ -523,7 +523,7 @@ function CallLogsCompletePage() {
             />
             <Button
               variant="outline"
-              size="control"
+              size="default"
               aria-label="More Filters"
               leftIcon={<FilterIcon className="text-semantic-text-muted" />}
               onClick={() => {
