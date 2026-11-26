@@ -384,6 +384,23 @@ describe("CallLogsViewTabs", () => {
     expect(onTabChange).not.toHaveBeenCalled();
   });
 
+  // jsdom rects are all zero, so a negative clientY is above the list.
+  it.each([
+    [-50, "b", ["all", "b", "sys", "a"]],
+    [50, "a", ["all", "sys", "b", "a"]],
+  ])("moves to the list end when dropped outside it (y=%s)", async (clientY, id, order) => {
+    const { onReorderTabs } = await openReorderable();
+    const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() };
+    fireEvent.dragStart(screen.getByTestId(`drag-handle-${id}`), { dataTransfer });
+    for (const type of ["dragover", "drop"]) {
+      fireEvent(
+        document.body,
+        new MouseEvent(type, { clientY, bubbles: true, cancelable: true })
+      );
+    }
+    expect(orderOf(onReorderTabs)).toEqual(order);
+  });
+
   it("shows a drop line on the side the dragged view will land", async () => {
     await openReorderable();
     const dataTransfer = { setData: vi.fn(), setDragImage: vi.fn() };

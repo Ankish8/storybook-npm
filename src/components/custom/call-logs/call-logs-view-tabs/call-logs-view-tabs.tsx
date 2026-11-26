@@ -12,6 +12,9 @@ import {
 import type { CallLogsViewTab, CallLogsViewTabsProps } from "./types";
 
 const TAB_GAP_PX = 8;
+// Drag auto-scroll: distance from a list edge that triggers it, and speed.
+const EDGE_PX = 48;
+const SCROLL_STEP_PX = 12;
 
 /** Shared remove (×) control — hidden until the parent tab/item is hovered or focused. */
 function RemoveTabButton({
@@ -256,6 +259,7 @@ const CallLogsViewTabs = React.forwardRef(
     const [dragId, setDragId] = React.useState<string | null>(null);
 
     const [overId, setOverId] = React.useState<string | null>(null);
+    const listRef = React.useRef<HTMLDivElement>(null);
     const endDrag = () => {
       setDragId(null);
       setOverId(null);
@@ -265,6 +269,47 @@ const CallLogsViewTabs = React.forwardRef(
       const next = moveTab(tabs, fromId, toId);
       if (next !== tabs) onReorderTabs?.(next);
     };
+
+    // Rows handle their own drops. Anywhere else above or below the list (header,
+    // footer, past the menu) means "move to the top/bottom".
+    React.useEffect(() => {
+      if (!dragId) return;
+      const onOutside = (event: DragEvent) => {
+        const list = listRef.current;
+        if (!list) return;
+        const { top, bottom } = list.getBoundingClientRect();
+        // Native auto-scroll is unreliable: without this the top visible row
+        // looks like the first one while earlier rows are still scrolled away.
+        if (event.type === "dragover") {
+          if (event.clientY < top + EDGE_PX) list.scrollTop -= SCROLL_STEP_PX;
+          else if (event.clientY > bottom - EDGE_PX)
+            list.scrollTop += SCROLL_STEP_PX;
+        }
+        if (event.defaultPrevented) return; // a row already handled it
+        // 4px = the list's p-1 padding, which has no row to drop on.
+        const above = event.clientY <= top + 4;
+        if (!above && event.clientY < bottom - 4) return;
+        const movable = tabs.filter(isMovable);
+        const target = movable[above ? 0 : movable.length - 1];
+        if (!target) return;
+        event.preventDefault();
+        if (event.type === "drop") {
+          const next = moveTab(tabs, dragId, target.id);
+          if (next !== tabs) onReorderTabs?.(next);
+          setDragId(null);
+          setOverId(null);
+        } else {
+          list.scrollTop = above ? 0 : list.scrollHeight;
+          setOverId(target.id);
+        }
+      };
+      document.addEventListener("dragover", onOutside);
+      document.addEventListener("drop", onOutside);
+      return () => {
+        document.removeEventListener("dragover", onOutside);
+        document.removeEventListener("drop", onOutside);
+      };
+    }, [dragId, tabs, onReorderTabs]);
 
     if (tabs.length === 0) {
       return (
@@ -373,6 +418,7 @@ const CallLogsViewTabs = React.forwardRef(
                   </div>
                 )}
                 <div
+                  ref={listRef}
                   className={cn(
                     "max-h-[340px] overflow-y-auto p-1",
                     hasActions && "min-h-0 flex-1"
