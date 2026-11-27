@@ -377,15 +377,7 @@ function Toaster() {
           >
             <div className="flex items-center gap-4">
               {Icon && (
-                <Icon
-                  className={cn(
-                    "size-6 shrink-0",
-                    variant === "success" && "text-semantic-success-primary",
-                    variant === "error" && "text-semantic-error-primary",
-                    variant === "warning" && "text-semantic-warning-primary",
-                    variant === "info" && "text-semantic-info-primary"
-                  )}
-                />
+                <Icon className="size-6 shrink-0" />
               )}
               <div className="flex flex-col gap-0.5">
                 {title && <ToastTitle>{title}</ToastTitle>}
