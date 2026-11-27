@@ -132,7 +132,7 @@ type Story = StoryObj<typeof meta>;
 
 // Interactive wrapper component for triggering toasts
 const ToastTriggers = () => (
-  <div className="tw-flex tw-flex-wrap tw-gap-3">
+  <div className="flex flex-wrap gap-3">
     <Button onClick={() => toast({ title: "Event has been created" })}>
       Default Toast
     </Button>
@@ -189,8 +189,8 @@ export const Default: Story = {
 
 export const AllVariants: Story = {
   render: () => (
-    <div className="tw-space-y-4">
-      <h3 className="tw-text-lg tw-font-semibold">
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">
         Click buttons to show toasts:
       </h3>
       <ToastTriggers />
@@ -236,16 +236,16 @@ const PlaygroundComponent = ({
   };
 
   return (
-    <div className="tw-space-y-4">
-      <div className="tw-p-4 tw-bg-gray-50 tw-rounded-lg tw-space-y-2">
-        <p className="tw-text-sm tw-text-gray-600">
+    <div className="space-y-4">
+      <div className="p-4 bg-gray-50 rounded-lg space-y-2">
+        <p className="text-sm text-gray-600">
           <strong>Variant:</strong> {variant}
         </p>
-        <p className="tw-text-sm tw-text-gray-600">
+        <p className="text-sm text-gray-600">
           <strong>Title:</strong> {title}
         </p>
         {description && (
-          <p className="tw-text-sm tw-text-gray-600">
+          <p className="text-sm text-gray-600">
             <strong>Description:</strong> {description}
           </p>
         )}
@@ -333,7 +333,7 @@ export const WithAction: Story = {
 
 export const WithDescription: Story = {
   render: () => (
-    <div className="tw-flex tw-gap-3">
+    <div className="flex gap-3">
       <Button
         onClick={() =>
           toast.success({
@@ -358,7 +358,7 @@ export const WithDescription: Story = {
 export const DismissToasts: Story = {
   render: () => {
     return (
-      <div className="tw-flex tw-gap-3">
+      <div className="flex gap-3">
         <Button
           onClick={() => {
             toast({
@@ -380,7 +380,7 @@ export const DismissToasts: Story = {
 export const CustomDuration: Story = {
   name: "Custom duration",
   render: () => (
-    <div className="tw-flex tw-flex-wrap tw-gap-3">
+    <div className="flex flex-wrap gap-3">
       <Button
         onClick={() =>
           toast.success({
@@ -514,8 +514,8 @@ export const InfoVariant: Story = {
 // Show all variants at once for comparison
 export const VariantComparison: Story = {
   render: () => (
-    <div className="tw-space-y-4">
-      <h3 className="tw-text-lg tw-font-semibold tw-mb-4">
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold mb-4">
         Compare all variants side by side:
       </h3>
       <Button
@@ -566,8 +566,8 @@ export const StackingBehavior: Story = {
   render: () => {
     const [count, setCount] = useState(0);
     return (
-      <div className="tw-space-y-4">
-        <p className="tw-text-sm tw-text-gray-600">
+      <div className="space-y-4">
+        <p className="text-sm text-gray-600">
           Toasts stack up to 5 at a time. Older toasts are dismissed as new ones
           arrive.
         </p>
