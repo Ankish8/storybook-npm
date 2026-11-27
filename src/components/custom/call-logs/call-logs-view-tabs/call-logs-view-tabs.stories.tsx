@@ -220,7 +220,7 @@ export const OverflowDropdown: Story = {
     maxVisiblePresets: 3,
     onRemoveTab: fn(),
     onReorderTabs: fn(),
-    onAddNew: fn(), 
+    onAddNew: fn(),
   },
   render: (args) => (
     <RowContainer>
