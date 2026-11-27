@@ -207,6 +207,7 @@ describe("Toast", () => {
 
       const toast = screen.getByTestId("toast");
       expect(toast).toHaveClass("bg-semantic-success-surface");
+      expect(toast).toHaveClass("text-semantic-success-text");
     });
 
     it("renders with error variant", () => {
@@ -221,6 +222,7 @@ describe("Toast", () => {
 
       const toast = screen.getByTestId("toast");
       expect(toast).toHaveClass("bg-semantic-error-surface");
+      expect(toast).toHaveClass("text-semantic-error-text");
     });
 
     it("renders with warning variant", () => {
@@ -235,6 +237,7 @@ describe("Toast", () => {
 
       const toast = screen.getByTestId("toast");
       expect(toast).toHaveClass("bg-semantic-warning-surface");
+      expect(toast).toHaveClass("text-semantic-warning-text");
     });
 
     it("renders with info variant", () => {
@@ -249,6 +252,7 @@ describe("Toast", () => {
 
       const toast = screen.getByTestId("toast");
       expect(toast).toHaveClass("bg-semantic-info-surface");
+      expect(toast).toHaveClass("text-semantic-info-text");
     });
 
     it("applies custom className", () => {

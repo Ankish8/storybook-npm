@@ -67,7 +67,7 @@ import { Toaster, toast, ToastAction } from "@/components/ui/toast"
       <td style="padding: 12px 16px;">Info</td>
       <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">EBF5FF</code></td>
       <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">4275D6/20</code></td>
-      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">1849A9</code></td>
+      <td style="padding: 12px 16px;"><code style="background: #F5F5F5; padding: 2px 6px; border-radius: 4px; font-size: 12px;">2F5398</code></td>
       <td style="padding: 12px 16px;"><div style="width: 32px; height: 32px; background-color: #EBF5FF; border: 1px solid #4275D633; border-radius: 4px;"></div></td>
     </tr>
     <tr style="border-bottom: 1px solid #E9EAEB;">

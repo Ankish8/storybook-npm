@@ -27,12 +27,12 @@ const toastVariants = cva(
         default:
           "border-semantic-border-layout bg-semantic-bg-primary text-semantic-text-primary",
         success:
-          "border-transparent bg-semantic-success-surface text-semantic-text-primary",
+          "border-transparent bg-semantic-success-surface text-semantic-success-text",
         error:
-          "border-transparent bg-semantic-error-surface text-semantic-text-primary",
+          "border-transparent bg-semantic-error-surface text-semantic-error-text",
         warning:
-          "border-transparent bg-semantic-warning-surface text-semantic-text-primary",
-        info: "border-transparent bg-semantic-info-surface text-semantic-text-primary",
+          "border-transparent bg-semantic-warning-surface text-semantic-warning-text",
+        info: "border-transparent bg-semantic-info-surface text-semantic-info-text",
       },
     },
     defaultVariants: {
